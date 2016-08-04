@@ -606,6 +606,9 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
     + new Vector3(-0.195367F, 1.57111F, 0.117661F)) / 4F;
   private float _previewStrokeScalingFactor = 0.9F;  // scales the preview stroke Vector3s, not the tube itself
 
+  private List<TubeStroke> _tubeStrokes = new List<TubeStroke>();
+  private List<TubeStroke> _undoneTubeStrokes = new List<TubeStroke>();
+
   #endregion
 
   #region UNITY CALLBACKS
@@ -666,71 +669,6 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
 
   #endregion
 
-  #region PUBLIC METHODS
-
-  /// <summary>
-  /// Hides the last-draw tube object created and adds it to the redo history.
-  /// More presses will hide older tubes.
-  /// </summary>
-  public void Undo() {
-    if (_undoHistory.Count > 0) {
-      GameObject toUndo = _undoHistory[_undoHistory.Count - 1];
-      _undoHistory.RemoveAt(_undoHistory.Count - 1);
-      toUndo.SetActive(false);
-      _redoHistory.Add(toUndo);
-    }
-  }
-
-  /// <summary>
-  /// Unhides the last-undone tube object and re-adds it to the undo history.
-  /// More presses will un-undo more recent tubes. Upon making a new stroke,
-  /// the redo history is cleared and its objects are deleted.
-  /// </summary>
-  public void Redo() {
-    if (_redoHistory.Count > 0) {
-      GameObject toRedo = _redoHistory[_redoHistory.Count - 1];
-      _redoHistory.RemoveAt(_redoHistory.Count - 1);
-      toRedo.SetActive(true);
-      _undoHistory.Add(toRedo);
-    }
-  }
-
-  /// <summary>
-  /// Sets drawn tube color.
-  /// </summary>
-  public void SetColor(Color color) {
-    _tubeColor = color;
-    RefreshPreviewStroke();
-  }
-
-  /// <summary>
-  /// Sets drawn tube thickness. Expects a value from 0 (min) to 1 (max).
-  /// </summary>
-  public void SetThickness(float normalizedThickness) {
-    _tubeRadius = Mathf.Lerp(0.001F, 0.01F, normalizedThickness);
-    RefreshPreviewStroke();
-  }
-
-  /// <summary>
-  /// Sets the tube smoothing delay. Expects a value from 0 (min) to 1 (max);
-  /// </summary>
-  public void SetSmoothing(float normalizedSmoothing) {
-    _tubeSmoothingDelay = Mathf.Lerp(0F, 0.15F, normalizedSmoothing);
-    RefreshPreviewStroke();
-  }
-
-  public void DisplayPreviewStroke() {
-    _displayPreviewStroke = true;
-    RefreshPreviewStroke();
-  }
-
-  public void HidePreviewStroke() {
-    _displayPreviewStroke = false;
-    RefreshPreviewStroke();
-  }
-
-  #endregion
-
   #region PRIVATE METHODS
 
   private void ClearRedoHistory() {
@@ -738,6 +676,9 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
       Destroy(_redoHistory[i]);
     }
     _redoHistory.Clear();
+
+    // TubeStroke undo tracking
+    _undoneTubeStrokes.Clear();
   }
 
   /// <summary>
@@ -789,6 +730,128 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
     //}
 
     previewDrawState.FinishLine();
+  }
+
+  #endregion
+
+  #region PUBLIC METHODS
+
+  /// <summary>
+  /// Hides the last-draw tube object created and adds it to the redo history.
+  /// More presses will hide older tubes.
+  /// </summary>
+  public void Undo() {
+    if (_undoHistory.Count > 0) {
+      GameObject toUndo = _undoHistory[_undoHistory.Count - 1];
+      _undoHistory.RemoveAt(_undoHistory.Count - 1);
+      toUndo.SetActive(false);
+      _redoHistory.Add(toUndo);
+
+      // TubeStroke undo tracking
+      _undoneTubeStrokes.Add(_tubeStrokes[_undoHistory.Count - 1]);
+      _tubeStrokes.RemoveAt(_undoHistory.Count - 1);
+    }
+  }
+
+  /// <summary>
+  /// Unhides the last-undone tube object and re-adds it to the undo history.
+  /// More presses will un-undo more recent tubes. Upon making a new stroke,
+  /// the redo history is cleared and its objects are deleted.
+  /// </summary>
+  public void Redo() {
+    if (_redoHistory.Count > 0) {
+      GameObject toRedo = _redoHistory[_redoHistory.Count - 1];
+      _redoHistory.RemoveAt(_redoHistory.Count - 1);
+      toRedo.SetActive(true);
+      _undoHistory.Add(toRedo);
+
+      // TubeStroke redo tracking
+      _tubeStrokes.Add(_undoneTubeStrokes[_redoHistory.Count - 1]);
+      _undoneTubeStrokes.RemoveAt(_redoHistory.Count - 1);
+    }
+  }
+
+  /// <summary>
+  /// Sets drawn tube color.
+  /// </summary>
+  public void SetColor(Color color) {
+    _tubeColor = color;
+    RefreshPreviewStroke();
+  }
+
+  /// <summary>
+  /// Sets drawn tube thickness. Expects a value from 0 (min) to 1 (max).
+  /// </summary>
+  public void SetThickness(float normalizedThickness) {
+    _tubeRadius = Mathf.Lerp(0.001F, 0.01F, normalizedThickness);
+    RefreshPreviewStroke();
+  }
+
+  /// <summary>
+  /// Sets the tube smoothing delay. Expects a value from 0 (min) to 1 (max);
+  /// </summary>
+  public void SetSmoothing(float normalizedSmoothing) {
+    _tubeSmoothingDelay = Mathf.Lerp(0F, 0.15F, normalizedSmoothing);
+    RefreshPreviewStroke();
+  }
+
+  public void DisplayPreviewStroke() {
+    _displayPreviewStroke = true;
+    RefreshPreviewStroke();
+  }
+
+  public void HidePreviewStroke() {
+    _displayPreviewStroke = false;
+    RefreshPreviewStroke();
+  }
+
+  public void Save(string filePath) {
+    SavedScene toSave = new SavedScene();
+    toSave._tubeStrokes = new TubeStroke[_tubeStrokes.Count];
+    for (int i = 0; i < _tubeStrokes.Count; i++) {
+      toSave._tubeStrokes[i] = _tubeStrokes[i];
+    }
+
+    string savedSceneJSON = toSave.WriteToJSON();
+
+    if (File.Exists(filePath)) {
+      File.Delete(filePath);
+    }
+    StreamWriter writer = new StreamWriter(filePath);
+    writer.Write(savedSceneJSON);
+    writer.Close();
+
+    Debug.Log("Successfully saved file: " + filePath);
+  }
+
+  public void Load(string filePath) {
+    // Clear all strokes -- TODO: make this not just use undo
+    for (int i = 0; i < _undoHistory.Count; i++) {
+      Undo();
+    }
+    ClearRedoHistory();
+
+    // Get JSON string from filename
+    StreamReader reader = new StreamReader(filePath);
+    string json = reader.ReadToEnd();
+
+    // Load SavedScene object from JSON
+    SavedScene savedScene = SavedScene.CreateFromJSON(json);
+
+    // Recreate each tube from stroke data
+    for (int i = 0; i < savedScene._tubeStrokes.Length; i++) {
+      TubeStroke tubeStroke = savedScene._tubeStrokes[i];
+
+      _tubeRadius = tubeStroke._radius;
+      _tubeColor = tubeStroke._color;
+      _tubeResolution = tubeStroke._resolution;
+      _tubeSmoothingDelay = tubeStroke._smoothingDelay;
+      _drawState.BeginNewLine();
+      for (int j = 0; j < tubeStroke._strokePoints.Count; j++) {
+        _drawState.UpdateLine(tubeStroke._strokePoints[j], tubeStroke._strokePointDeltaTimes[j]);
+      }
+      _drawState.FinishLine();
+    }
   }
 
   #endregion
@@ -864,6 +927,9 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
     private Mesh _mesh;
     private SmoothedVector3 _smoothedPosition;
 
+    // quick-and-dirty I/O support
+    private TubeStroke _curTubeStroke = null;
+
     public DrawState(PinchDrawing parent) {
       _parent = parent;
 
@@ -894,6 +960,15 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
       lineObj.AddComponent<MeshFilter>().mesh = _mesh;
       lineObj.AddComponent<MeshRenderer>().sharedMaterial = _parent._tubeMaterial;
 
+      // quick-and-dirty I/O support
+      if (this == _parent._drawState) { // ignore _previewDrawState
+        _curTubeStroke = new TubeStroke();
+        _curTubeStroke._radius = _parent._tubeRadius;
+        _curTubeStroke._color = _parent._tubeColor;
+        _curTubeStroke._resolution = _parent._tubeResolution;
+        _curTubeStroke._smoothingDelay = _parent._tubeSmoothingDelay;
+      }
+
       return lineObj;
     }
 
@@ -910,6 +985,11 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
       // Recording a line for the preview display
       _parent.RecordPoint(position);
       _parent.RecordDeltaTime(deltaTime);
+
+      // quick-and-dirty I/O support
+      if (this == _parent._drawState) { // ignore _previewDrawState
+        _curTubeStroke.RecordStrokePoint(position, deltaTime);
+      }
 
       _smoothedPosition.Update(position, deltaTime);
 
@@ -929,8 +1009,13 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
     }
 
     public void FinishLine() {
-      // TODO: DELETEME (outputting last drawn line 
+      // TODO: DELETEME (outputting last drawn line)
       _parent.OutputPoints();
+
+      // quick-and-dirty I/O support
+      if (this == _parent._drawState) { // ignore preview drawstate things
+        _parent._tubeStrokes.Add(_curTubeStroke);
+      }
 
       _mesh.Optimize();
       _mesh.UploadMeshData(true);

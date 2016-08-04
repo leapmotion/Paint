@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class FileBrowser : MonoBehaviour {
 
@@ -19,13 +20,25 @@ public class FileBrowser : MonoBehaviour {
 
   #endregion
 
+  #region PRIVATE FIELDS
+
   private string[] _files;
   private Text[] _childrenTextObjs = new Text[0];
-  private bool _shouldRefreshFileList = true;
   private Image _fileSelectionObj;
   private FileSelectionClaimer _selected;
 
   private const string _saveDir = "Drawing Saves";
+
+  #endregion
+
+  #region UNITY EVENTS
+
+  [System.Serializable]
+  public class FilePathEvent : UnityEvent<string> { }
+  public FilePathEvent OnSaveRequested;
+  public FilePathEvent OnLoadRequested;
+
+  #endregion
 
   #region UNITY CALLBACKS
 
@@ -38,7 +51,7 @@ public class FileBrowser : MonoBehaviour {
 
 #endregion
 
-#region PRIVATE METHODS
+  #region PRIVATE METHODS
 
   private void RefreshFileList() {
 
@@ -92,7 +105,7 @@ public class FileBrowser : MonoBehaviour {
     return -1;
   }
 
-#endregion
+  #endregion
 
   #region PUBLIC METHODS
 
@@ -100,16 +113,24 @@ public class FileBrowser : MonoBehaviour {
     RefreshFileList();
   }
 
-  public void Load() {
-    if (_selected != null) {
-      Debug.Log("Chose to load index: " + GetSelectedIdx());
-    }
-  }
-
   public void Save() {
     if (_selected != null) {
       Debug.Log("Chose to save to index: " + GetSelectedIdx());
     }
+
+    // TODO: make this actually work
+
+    OnSaveRequested.Invoke("./" + _saveDir + "/savedScene.txt");
+  }
+
+  public void Load() {
+    if (_selected != null) {
+      Debug.Log("Chose to load index: " + GetSelectedIdx());
+    }
+
+    // TODO: make this actually work
+
+    OnLoadRequested.Invoke("./" + _saveDir + "/savedScene.txt");
   }
 
   public void Select(FileSelectionClaimer toSelect) {
