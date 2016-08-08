@@ -580,7 +580,6 @@ namespace Leap.Unity.InputModule {
         if (!perFingerPointer) {
           float numberOfExtendedFingers = 0.1f;
           IndexFingerPosition = curFrame.Hands[whichHand].Fingers[whichFinger].TipPosition.ToVector3() * 0.1f;
-          /*
           for (int i = 1; i < 4; i++) {
             float fingerExtension = Mathf.Clamp01(Vector3.Dot(curFrame.Hands[whichHand].Fingers[i].Direction.ToVector3(), curFrame.Hands[whichPointer].Direction.ToVector3()));
             if (fingerExtension > 0f) {
@@ -588,7 +587,6 @@ namespace Leap.Unity.InputModule {
               IndexFingerPosition += curFrame.Hands[whichHand].Fingers[i].TipPosition.ToVector3() * fingerExtension;
             }
           }
-           * */
           IndexFingerPosition /= numberOfExtendedFingers;
         } else {
           IndexFingerPosition = curFrame.Hands[whichHand].Fingers[whichFinger].TipPosition.ToVector3();
@@ -737,11 +735,7 @@ namespace Leap.Unity.InputModule {
           SoundPlayer.PlayOneShot(EndMissedSound);
         }
       } else if (PrevState[whichPointer] == pointerStates.TouchingElement) {
-        if (pointerState[whichPointer] == pointerStates.TouchingElement) {
-          // Still touching an element, call whileClickHeld.
-          whileClickHeld.Invoke(Pointers[whichPointer].transform.position);
-        }
-        else if (pointerState[whichPointer] == pointerStates.NearCanvas) {
+        if (pointerState[whichPointer] == pointerStates.NearCanvas) {
           //When you physically pull out of an element
           SoundPlayer.PlayOneShot(EndTriggerSound);
           onClickUp.Invoke(Pointers[whichPointer].transform.position);

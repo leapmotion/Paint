@@ -23,11 +23,9 @@ namespace Leap.Unity.InputModule {
     private bool showEventTrigger() {
       CompressibleUI module = target as CompressibleUI;
       bool showEventTrigger = false;
-      if (module.Layers != null) {
-        for (int i = 0; i < module.Layers.Length; i++) {
-          if (module.Layers[i].TriggerLayerEvent) {
-            showEventTrigger = true;
-          }
+      for (int i = 0; i < module.Layers.Length; i++) {
+        if (module.Layers[i].TriggerLayerEvent) {
+          showEventTrigger = true;
         }
       }
       return showEventTrigger;

@@ -14,17 +14,15 @@ namespace Leap.Unity.Interaction {
 
       if (targets.Length == 1) {
         _interactionBehaviour = target as InteractionBehaviourBase;
-        if (target != null) {
-          _manager = _interactionBehaviour.GetComponentInParent<InteractionManager>();
-          if (_manager == null) {
-            _manager = FindObjectOfType<InteractionManager>();
-          }
+        _manager = _interactionBehaviour.GetComponentInParent<InteractionManager>();
+        if (_manager == null) {
+          _manager = FindObjectOfType<InteractionManager>();
         }
       } else {
         _interactionBehaviour = null;
       }
 
-      if (target as Component != null && PrefabUtility.GetPrefabType((target as Component).gameObject) != PrefabType.Prefab) {
+      if (PrefabUtility.GetPrefabType((target as Component).gameObject) != PrefabType.Prefab) {
         specifyCustomDecorator("_manager", managerDectorator);
       }
     }

@@ -16,11 +16,11 @@ namespace Leap.Unity {
     /// <param name="propertyName"></param>
     /// <param name="propertyDrawer"></param>
     protected void specifyCustomDrawer(string propertyName, Action<SerializedProperty> propertyDrawer) {
-      if (!validateProperty(propertyName)) {
-        return;
+      if (serializedObject.FindProperty(propertyName) != null) {
+        _specifiedDrawers[propertyName] = propertyDrawer;
+      } else {
+        Debug.LogWarning("Specified a custom drawer for the nonexistant property [" + propertyName + "] !\nWas it renamed or deleted?");
       }
-
-      _specifiedDrawers[propertyName] = propertyDrawer;
     }
 
     /// <summary>
@@ -29,17 +29,18 @@ namespace Leap.Unity {
     /// <param name="propertyName"></param>
     /// <param name="decoratorDrawer"></param>
     protected void specifyCustomDecorator(string propertyName, Action<SerializedProperty> decoratorDrawer) {
-      if (!validateProperty(propertyName)) {
-        return;
-      }
+      if (serializedObject.FindProperty(propertyName) != null) {
 
-      List<Action<SerializedProperty>> list;
-      if (!_specifiedDecorators.TryGetValue(propertyName, out list)) {
-        list = new List<Action<SerializedProperty>>();
-        _specifiedDecorators[propertyName] = list;
-      }
+        List<Action<SerializedProperty>> list;
+        if (!_specifiedDecorators.TryGetValue(propertyName, out list)) {
+          list = new List<Action<SerializedProperty>>();
+          _specifiedDecorators[propertyName] = list;
+        }
 
-      list.Add(decoratorDrawer);
+        list.Add(decoratorDrawer);
+      } else {
+        Debug.LogWarning("Specified a custom drawer for the nonexistant property [" + propertyName + "] !\nWas it renamed or deleted?");
+      }
     }
 
     /// <summary>
@@ -49,23 +50,14 @@ namespace Leap.Unity {
     /// <param name="conditionalName"></param>
     /// <param name="dependantProperties"></param>
     protected void specifyConditionalDrawing(string conditionalName, params string[] dependantProperties) {
-      if (!validateProperty(conditionalName)) {
-        return;
-      }
-
       SerializedProperty conditionalProp = serializedObject.FindProperty(conditionalName);
       specifyConditionalDrawing(() => conditionalProp.boolValue, dependantProperties);
     }
 
     protected void specifyConditionalDrawing(Func<bool> conditional, params string[] dependantProperties) {
       for (int i = 0; i < dependantProperties.Length; i++) {
-        string dependant = dependantProperties[i];
-
-        if (!validateProperty(dependant)) {
-          continue;
-        }
-
         List<Func<bool>> list;
+        string dependant = dependantProperties[i];
         if (!_conditionalProperties.TryGetValue(dependant, out list)) {
           list = new List<Func<bool>>();
           _conditionalProperties[dependant] = list;
@@ -78,14 +70,6 @@ namespace Leap.Unity {
       _specifiedDrawers = new Dictionary<string, Action<SerializedProperty>>();
       _specifiedDecorators = new Dictionary<string, List<Action<SerializedProperty>>>();
       _conditionalProperties = new Dictionary<string, List<Func<bool>>>();
-    }
-
-    protected bool validateProperty(string propertyName) {
-      if (serializedObject.FindProperty(propertyName) == null) {
-        Debug.LogWarning("Property " + propertyName + " does not exist, was it removed or renamed?");
-        return false;
-      }
-      return true;
     }
 
     /* 

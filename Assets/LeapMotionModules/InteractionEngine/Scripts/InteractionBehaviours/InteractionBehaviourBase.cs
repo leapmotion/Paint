@@ -26,7 +26,7 @@ namespace Leap.Unity.Interaction {
   ///      and must not be on a child transform.  The collider must also have a center value of zero.
   /// </remarks>
   [DisallowMultipleComponent]
-  public abstract class InteractionBehaviourBase : IInteractionBehaviour {
+  public abstract partial class InteractionBehaviourBase : IInteractionBehaviour {
 
     #region SERIALIZED FIELDS
     [SerializeField]
@@ -52,7 +52,12 @@ namespace Leap.Unity.Interaction {
     private List<int> _graspingIds = new List<int>();
     private List<int> _untrackedIds = new List<int>();
 
+#if UNITY_ASSERTIONS
     private BaseCallGuard _baseCallGuard = new BaseCallGuard();
+#else
+    protected BaseCallGuard _baseCallGuard = null;
+#endif
+
     #endregion
 
     #region PUBLIC METHODS
@@ -172,6 +177,12 @@ namespace Leap.Unity.Interaction {
         enabled = false;
       }
 
+      if (_hasShapeDescriptionBeenCreated) {
+        _manager.ShapePool.ReturnShape(_shapeDescriptionHandle);
+        _shapeDescriptionHandle = new INTERACTION_SHAPE_DESCRIPTION_HANDLE();
+        _hasShapeDescriptionBeenCreated = false;
+      }
+
       _baseCallGuard.Begin("OnUnregistered");
       OnUnregistered();
       _baseCallGuard.AssertBaseCalled();
@@ -200,8 +211,6 @@ namespace Leap.Unity.Interaction {
 
     public override sealed void NotifyInteractionShapeDestroyed() {
       _shapeInstanceHandle = new INTERACTION_SHAPE_INSTANCE_HANDLE();
-      _shapeDescriptionHandle = new INTERACTION_SHAPE_DESCRIPTION_HANDLE();
-      _hasShapeDescriptionBeenCreated = false;
       _hasShapeInstanceHandle = false;
 
       _baseCallGuard.Begin("OnInteractionShapeDestroyed");
@@ -450,7 +459,16 @@ namespace Leap.Unity.Interaction {
     #endregion
 
     #region UNITY MESSAGES
+
+    protected virtual void Awake() {
+      FindInteractionManager();
+    }
+
     protected virtual void Reset() {
+      FindInteractionManager();
+    }
+
+    private void FindInteractionManager() {
       if (_manager == null) {
         //If manager is null, first check our parents for one, then search the whole scene
         _manager = GetComponentInParent<InteractionManager>();

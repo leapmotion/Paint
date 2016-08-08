@@ -35,7 +35,7 @@ namespace Leap.Unity.Interaction {
   /// </remarks>
   [SelectionBase]
   [RequireComponent(typeof(Rigidbody))]
-  public class InteractionBehaviour : InteractionBehaviourBase {
+  public partial class InteractionBehaviour : InteractionBehaviourBase {
     protected enum ContactMode {
       NORMAL = 0,  // Influenced by brushes and not by soft contact.
       SOFT = 1,    // Influenced by soft contact and not by brushes.  Will not return to NORMAL until no brush or soft contact remains.
@@ -55,7 +55,7 @@ namespace Leap.Unity.Interaction {
     protected float _angularDrag;
 
     // Try to allow brushes to exit gracefully when passing fingers between objects.
-    private const int DISLOCATED_BRUSH_COOLDOWN = 60;
+    private const int DISLOCATED_BRUSH_COOLDOWN = 120;
     protected uint _dislocatedBrushCounter = DISLOCATED_BRUSH_COOLDOWN;
     protected ContactMode _contactMode = ContactMode.NORMAL;
 
@@ -107,7 +107,11 @@ namespace Leap.Unity.Interaction {
       }
     }
 
-    public new Rigidbody rigidbody {
+    public
+#if UNITY_EDITOR
+      new
+#endif
+      Rigidbody rigidbody {
       get {
         return _rigidbody;
       }
@@ -175,13 +179,6 @@ namespace Leap.Unity.Interaction {
 
       _controllers = new ControllerContainer(this, _material);
 
-      _rigidbody = GetComponent<Rigidbody>();
-      if (_rigidbody == null) {
-        //Should only happen if the user has done some trickery since there is a RequireComponent attribute
-        throw new InvalidOperationException("InteractionBehaviour must have a Rigidbody component attached to it.");
-      }
-      _rigidbody.maxAngularVelocity = float.PositiveInfinity;
-
       _materialReplacer = new PhysicMaterialReplacer(transform, _material);
       _warper = new RigidbodyWarper(_manager, transform, _rigidbody, _material.GraphicalReturnTime);
 
@@ -193,7 +190,9 @@ namespace Leap.Unity.Interaction {
       base.OnUnregistered();
 
       Assert.IsTrue(UntrackedHandCount == 0);
-      _contactMode = ContactMode.NORMAL;
+
+      // Ditch this object in the layer that doesn't collide with brushes in case they are still embedded.
+      _contactMode = ContactMode.SOFT;
       updateLayer();
 
       _warper.Dispose();
@@ -258,6 +257,7 @@ namespace Leap.Unity.Interaction {
       //Reset so we can accumulate for the next frame
       _accumulatedLinearAcceleration = Vector3.zero;
       _accumulatedAngularAcceleration = Vector3.zero;
+      _minHandDistance = float.MaxValue;
     }
 
     public override void GetInteractionShapeCreationInfo(out INTERACTION_CREATE_SHAPE_INFO createInfo, out INTERACTION_TRANSFORM createTransform) {
@@ -270,12 +270,6 @@ namespace Leap.Unity.Interaction {
     protected override void OnInteractionShapeCreated(INTERACTION_SHAPE_INSTANCE_HANDLE instanceHandle) {
       base.OnInteractionShapeCreated(instanceHandle);
 
-      //Copy over existing settings for defaults
-      _isKinematic = _rigidbody.isKinematic;
-      _useGravity = _rigidbody.useGravity;
-      _drag = _rigidbody.drag;
-      _angularDrag = _rigidbody.angularDrag;
-
       _solvedPosition = _rigidbody.position;
       _solvedRotation = _rigidbody.rotation;
 
@@ -284,6 +278,8 @@ namespace Leap.Unity.Interaction {
 
     protected override void OnInteractionShapeDestroyed() {
       base.OnInteractionShapeDestroyed();
+      updateContactMode();
+      revertRigidbodyState();
     }
 
     public override void GetInteractionShapeUpdateInfo(out INTERACTION_UPDATE_SHAPE_INFO updateInfo, out INTERACTION_TRANSFORM interactionTransform) {
@@ -293,8 +289,8 @@ namespace Leap.Unity.Interaction {
       updateInfo.linearVelocity = _rigidbody.velocity.ToCVector();
       updateInfo.angularVelocity = _rigidbody.angularVelocity.ToCVector();
 
-      if(_isKinematic) {
-          updateInfo.updateFlags |= UpdateInfoFlags.Kinematic;
+      if (_isKinematic) {
+        updateInfo.updateFlags |= UpdateInfoFlags.Kinematic;
       } else {
         // Generates notifications even when hands are no longer influencing
         if (_contactMode == ContactMode.SOFT) {
@@ -328,7 +324,9 @@ namespace Leap.Unity.Interaction {
         _recievedVelocityUpdate = true;
       }
 
-      _minHandDistance = (results.resultFlags & ShapeInstanceResultFlags.MaxHand) == 0 ? float.MaxValue : results.minHandDistance;
+      if ((results.resultFlags & ShapeInstanceResultFlags.MaxHand) != 0) {
+        _minHandDistance = results.minHandDistance;
+      }
 
       updateContactMode();
     }
@@ -436,7 +434,10 @@ namespace Leap.Unity.Interaction {
       }
 
       revertRigidbodyState();
-      _materialReplacer.RevertMaterials();
+
+      // Transition to soft contact when exiting grasp.  This is because the fingers
+      // are probably embedded.
+      _dislocatedBrushCounter = 0;
       updateContactMode();
     }
     #endregion
@@ -451,6 +452,42 @@ namespace Leap.Unity.Interaction {
     #endregion
 
     #region UNITY CALLBACKS
+
+    protected override void Awake() {
+      base.Awake();
+
+      _rigidbody = GetComponent<Rigidbody>();
+      if (_rigidbody == null) {
+        //Should only happen if the user has done some trickery since there is a RequireComponent attribute
+        enabled = false;
+        throw new InvalidOperationException("InteractionBehaviour must have a Rigidbody component attached to it.");
+      }
+      _rigidbody.maxAngularVelocity = float.PositiveInfinity;
+
+      //Copy over existing settings for defaults
+      _isKinematic = _rigidbody.isKinematic;
+      _useGravity = _rigidbody.useGravity;
+      _drag = _rigidbody.drag;
+      _angularDrag = _rigidbody.angularDrag;
+
+      CheckMaterial();
+    }
+
+    protected override void Reset() {
+      base.Reset();
+      CheckMaterial();
+    }
+
+    private void CheckMaterial() {
+      if (_material == null) {
+        if (_manager == null) {
+          return;
+        } else {
+          Debug.LogWarning("No InteractionMaterial specified; will use the default InteractionMaterial as specified by the InteractionManager.");
+          _material = _manager.DefaultInteractionMaterial;
+        }
+      }
+    }
 
 #if UNITY_EDITOR
     private void OnCollisionEnter(Collision collision) {
@@ -469,14 +506,13 @@ namespace Leap.Unity.Interaction {
 
     protected void updateContactMode() {
       ContactMode desiredContactMode = ContactMode.NORMAL;
-      if(base.IsBeingGrasped) {
+      if (base.IsBeingGrasped) {
         desiredContactMode = ContactMode.GRASPED;
-      }
-      else if(_dislocatedBrushCounter < DISLOCATED_BRUSH_COOLDOWN || (_contactMode != ContactMode.NORMAL && _minHandDistance <= 0.0f )) {
+      } else if (_dislocatedBrushCounter < DISLOCATED_BRUSH_COOLDOWN || (_contactMode != ContactMode.NORMAL && _minHandDistance <= 0.0f)) {
         desiredContactMode = ContactMode.SOFT;
       }
 
-      if(_contactMode != desiredContactMode) {
+      if (_contactMode != desiredContactMode) {
         _contactMode = desiredContactMode;
         updateLayer();
       }
@@ -508,10 +544,18 @@ namespace Leap.Unity.Interaction {
     }
 
     protected virtual void revertRigidbodyState() {
-      _rigidbody.useGravity = _useGravity;
-      _rigidbody.isKinematic = _isKinematic;
-      _rigidbody.drag = _drag;
-      _rigidbody.angularDrag = _angularDrag;
+      if (_rigidbody.useGravity != _useGravity) {
+        _rigidbody.useGravity = _useGravity;
+      }
+      if (_rigidbody.isKinematic != _isKinematic) {
+        _rigidbody.isKinematic = _isKinematic;
+      }
+      if (_rigidbody.drag != _drag) {
+        _rigidbody.drag = _drag;
+      }
+      if (_rigidbody.angularDrag != _angularDrag) {
+        _rigidbody.angularDrag = _angularDrag;
+      }
     }
 
     protected INTERACTION_TRANSFORM getRigidbodyTransform() {

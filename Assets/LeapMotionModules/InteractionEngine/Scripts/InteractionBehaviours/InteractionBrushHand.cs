@@ -20,6 +20,9 @@ namespace Leap.Unity.Interaction {
     private InteractionBrushBone[] _brushBones;
     private Hand _hand;
     private GameObject _handParent;
+    public GameObject GetHandParent() {
+      return _handParent;
+    }
 
     public override ModelType HandModelType {
       get { return ModelType.Physics; }
@@ -32,6 +35,7 @@ namespace Leap.Unity.Interaction {
     private Chirality handedness;
     public override Chirality Handedness {
       get { return handedness; }
+      set { handedness = value; }
     }
 
     [SerializeField]
@@ -80,6 +84,7 @@ namespace Leap.Unity.Interaction {
 
           GameObject brushGameObject = new GameObject(gameObject.name, typeof(CapsuleCollider), typeof(Rigidbody), typeof(InteractionBrushBone));
           brushGameObject.layer = gameObject.layer;
+          brushGameObject.transform.localScale = Vector3.one;
 
           InteractionBrushBone brushBone = brushGameObject.GetComponent<InteractionBrushBone>();
           brushBone.manager = _manager;
@@ -87,7 +92,6 @@ namespace Leap.Unity.Interaction {
 
           Transform capsuleTransform = brushGameObject.transform;
           capsuleTransform.SetParent(_handParent.transform, false);
-          capsuleTransform.localScale = new Vector3(1f / transform.lossyScale.x, 1f / transform.lossyScale.y, 1f / transform.lossyScale.z);
 
           CapsuleCollider capsule = brushGameObject.GetComponent<CapsuleCollider>();
           capsule.direction = 2;

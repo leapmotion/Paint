@@ -32,7 +32,7 @@ namespace Leap.Unity.Interaction {
   ///    - The DataSubfolder property must point to a valid subfolder in the StreamingAssets data folder.
   ///      The subfolder must contain a valid ldat file names IE.
   /// </remarks>
-  public class InteractionManager : MonoBehaviour {
+  public partial class InteractionManager : MonoBehaviour {
     #region SERIALIZED FIELDS
     [SerializeField]
     protected LeapProvider _leapProvider;
@@ -42,6 +42,10 @@ namespace Leap.Unity.Interaction {
     protected string _ldatPath = "InteractionEngine/IE.ldat";
 
     [Header("Interaction Settings")]
+    [Tooltip("The default Interaction Material to use for Interaction Behaviours if none is specified, or for Interaction Behaviours created via scripting.")]
+    [SerializeField]
+    protected InteractionMaterial _defaultInteractionMaterial;
+
     [Tooltip("Allow the Interaction Engine to modify object velocities when pushing.")]
     [SerializeField]
     protected bool _contactEnabled = true;
@@ -83,6 +87,10 @@ namespace Leap.Unity.Interaction {
     protected SingleLayer _brushLayer = 0;
 
     [Header("Debug")]
+    [Tooltip("Automatically validate integrity of simulation state each frame.  Can cause slowdown, but is always compiled out for release builds.")]
+    [SerializeField]
+    protected bool _automaticValidation = false;
+
     [Tooltip("Allows simulation to be disabled without destroying the scene in any way.")]
     [SerializeField]
     protected bool _pauseSimulation = false;
@@ -101,6 +109,13 @@ namespace Leap.Unity.Interaction {
     #endregion
 
     #region INTERNAL FIELDS
+    private const float UNSCALED_RECOMMENDED_CONTACT_OFFSET_MAXIMUM = 0.001f; //One millimeter
+    public float RecommendedContactOffsetMaximum {
+      get {
+        return UNSCALED_RECOMMENDED_CONTACT_OFFSET_MAXIMUM * SimulationScale;
+      }
+    }
+
     protected INTERACTION_SCENE _scene;
     private bool _hasSceneBeenCreated = false;
     private bool _enableGraspingLast = false;
@@ -115,7 +130,7 @@ namespace Leap.Unity.Interaction {
     protected Dictionary<int, InteractionHand> _idToInteractionHand = new Dictionary<int, InteractionHand>();
     protected List<IInteractionBehaviour> _graspedBehaviours = new List<IInteractionBehaviour>();
 
-    private float _cachedSimulationScale = 1;
+    private float _cachedSimulationScale = -1;
     //A temp list that is recycled.  Used to remove items from _handIdToIeHand.
     private List<int> _handIdsToRemove = new List<int>();
     //A temp list that is recycled.  Used as the argument to OnHandsHold.
@@ -150,7 +165,19 @@ namespace Leap.Unity.Interaction {
 
     public float SimulationScale {
       get {
+#if UNITY_EDITOR
+        if (Application.isPlaying) {
+          return _cachedSimulationScale;
+        } else {
+          if (_leapProvider != null) {
+            return _leapProvider.transform.lossyScale.x;
+          } else {
+            return 1;
+          }
+        }
+#else
         return _cachedSimulationScale;
+#endif
       }
     }
 
@@ -201,20 +228,45 @@ namespace Leap.Unity.Interaction {
     }
 
     /// <summary>
-    /// Gets whether or not the Interaction Engine can modify object velocities when pushing.
+    /// Gets or sets the default InteractionMaterial used when InteractionBehaviours are spawned without a material explicitly assigned.
+    /// </summary>
+    public InteractionMaterial DefaultInteractionMaterial {
+      get {
+        return _defaultInteractionMaterial;
+      }
+      set {
+        _defaultInteractionMaterial = value;
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets whether or not the Interaction Engine can modify object velocities when pushing.
     /// </summary>
     public bool ContactEnabled {
       get {
         return _contactEnabled;
       }
+      set {
+        if (_contactEnabled != value) {
+          _contactEnabled = value;
+          UpdateSceneInfo();
+          Physics.IgnoreLayerCollision(_brushLayer, _interactionLayer, !_contactEnabled);
+        }
+      }
     }
 
     /// <summary>
-    /// Gets whether or not the Interaction plugin to modify object positions by grasping.
+    /// Gets or sets whether or not the Interaction Engine can modify object positions by grasping.
     /// </summary>
     public bool GraspingEnabled {
       get {
         return _graspingEnabled;
+      }
+      set {
+        if (_graspingEnabled != value) {
+          _graspingEnabled = value;
+          UpdateSceneInfo();
+        }
       }
     }
 
@@ -267,6 +319,45 @@ namespace Leap.Unity.Interaction {
       }
     }
 
+    /// <summary>
+    /// Gets or sets the max activation depth.
+    /// </summary>
+    public int MaxActivationDepth {
+      get {
+        return _maxActivationDepth;
+      }
+      set {
+        _maxActivationDepth = value;
+        _activityManager.MaxDepth = value;
+      }
+    }
+
+    /// <summary>
+    /// Enables the display of proximity information from the library.
+    /// </summary>
+    public bool ShowDebugLines {
+      get {
+        return _showDebugLines;
+      }
+      set {
+        _showDebugLines = value;
+        applyDebugSettings();
+      }
+    }
+
+    /// <summary>
+    /// Enables the display of debug text from the library.
+    /// </summary>
+    public bool ShowDebugOutput {
+      get {
+        return _showDebugOutput;
+      }
+      set {
+        _showDebugOutput = value;
+        applyDebugSettings();
+      }
+    }
+
     /// Force an update of the internal scene info.  This should be called if gravity has changed.
     /// </summary>
     public void UpdateSceneInfo() {
@@ -284,6 +375,9 @@ namespace Leap.Unity.Interaction {
         InteractionC.UpdateSceneInfo(ref _scene, ref info);
       }
       _enableGraspingLast = _graspingEnabled;
+
+      _cachedSimulationScale = _leapProvider.transform.lossyScale.x;
+      _activityManager.OverlapRadius = _activationRadius * _cachedSimulationScale;
     }
 
     /// <summary>
@@ -312,17 +406,20 @@ namespace Leap.Unity.Interaction {
         return false;
       }
 
-      INTERACTION_HAND_RESULT result = new INTERACTION_HAND_RESULT();
-      result.classification = ManipulatorMode.Contact;
-      result.handFlags = HandResultFlags.ManipulatorMode;
-      result.instanceHandle = new INTERACTION_SHAPE_INSTANCE_HANDLE();
-
       foreach (var interactionHand in _idToInteractionHand.Values) {
         if (interactionHand.graspedObject == graspedObject) {
-          if (_graspingEnabled) {
-            InteractionC.OverrideHandResult(ref _scene, (uint)interactionHand.hand.Id, ref result);
+          if (interactionHand.isUntracked) {
+            interactionHand.MarkTimeout();
+          } else {
+            if (_graspingEnabled) {
+              INTERACTION_HAND_RESULT result = new INTERACTION_HAND_RESULT();
+              result.classification = ManipulatorMode.Contact;
+              result.handFlags = HandResultFlags.ManipulatorMode;
+              result.instanceHandle = new INTERACTION_SHAPE_INSTANCE_HANDLE();
+              InteractionC.OverrideHandResult(ref _scene, (uint)interactionHand.hand.Id, ref result);
+            }
+            interactionHand.ReleaseObject();
           }
-          interactionHand.ReleaseObject();
         }
       }
 
@@ -361,11 +458,22 @@ namespace Leap.Unity.Interaction {
         throw new InvalidOperationException("Cannot grasp " + interactionBehaviour + " because it is not registered with this manager.");
       }
 
+      InteractionHand interactionHand;
+      if (!_idToInteractionHand.TryGetValue(hand.Id, out interactionHand)) {
+        throw new InvalidOperationException("Hand with id " + hand.Id + " is not registered with this manager.");
+      }
+
+      if (interactionHand.graspedObject != null) {
+        throw new InvalidOperationException("Cannot grasp with hand " + hand.Id + " because that hand is already grasping " + interactionHand.graspedObject);
+      }
+
+      //Ensure behaviour is active already
+      _activityManager.Activate(interactionBehaviour);
+
       if (!interactionBehaviour.IsBeingGrasped) {
         _graspedBehaviours.Add(interactionBehaviour);
       }
 
-      InteractionHand interactionHand = _idToInteractionHand[hand.Id];
       interactionHand.GraspObject(interactionBehaviour, isUserGrasp: true);
     }
 
@@ -392,7 +500,11 @@ namespace Leap.Unity.Interaction {
         foreach (var interactionHand in _idToInteractionHand.Values) {
           if (interactionHand.graspedObject == interactionBehaviour) {
             try {
-              interactionHand.ReleaseObject();
+              if (interactionHand.isUntracked) {
+                interactionHand.MarkTimeout();
+              } else {
+                interactionHand.ReleaseObject();
+              }
             } catch (Exception e) {
               //Only log to console
               //We want to continue so we can destroy the shape and dispatch OnUnregister
@@ -411,6 +523,7 @@ namespace Leap.Unity.Interaction {
         _activityManager.Activate(interactionBehaviour);
       }
     }
+
     #endregion
 
     #region UNITY CALLBACKS
@@ -464,23 +577,18 @@ namespace Leap.Unity.Interaction {
 
       Assert.AreEqual(_instanceHandleToBehaviour.Count, 0, "There should not be any instances before the creation step.");
 
+      _cachedSimulationScale = _leapProvider.transform.lossyScale.x;
+
       _activityManager.BrushLayer = InteractionBrushLayer;
-      _activityManager.OverlapRadius = _activationRadius;
+      _activityManager.OverlapRadius = _activationRadius * _cachedSimulationScale;
+      _activityManager.MaxDepth = _maxActivationDepth;
       _activityManager.OnActivate += createInteractionShape;
       _activityManager.OnDeactivate += destroyInteractionShape;
     }
 
     protected virtual void OnDisable() {
-      foreach (var interactionHand in _idToInteractionHand.Values) {
-        IInteractionBehaviour graspedBehaviour = interactionHand.graspedObject;
-        if (graspedBehaviour != null) {
-          try {
-            interactionHand.ReleaseObject();
-          } catch (Exception e) {
-            _activityManager.NotifyMisbehaving(graspedBehaviour);
-            Debug.LogException(e);
-          }
-        }
+      for (int i = _graspedBehaviours.Count; i-- != 0;) {
+        ReleaseObject(_graspedBehaviours[i]);
       }
 
       _activityManager.UnregisterMisbehavingObjects();
@@ -553,6 +661,10 @@ namespace Leap.Unity.Interaction {
         }
         _debugTextView.text = text;
       }
+
+      if (_automaticValidation) {
+        Validate();
+      }
     }
 
     protected virtual void OnGUI() {
@@ -612,7 +724,7 @@ namespace Leap.Unity.Interaction {
     }
 
     protected virtual void simulateFrame(Frame frame) {
-      _activityManager.Update(frame);
+      _activityManager.UpdateState(frame);
 
       var active = _activityManager.ActiveBehaviours;
 
@@ -745,6 +857,10 @@ namespace Leap.Unity.Interaction {
               //This also dispatched InteractionObject.OnHandRegainedTracking()
               interactionHand.RegainTracking(hand);
 
+              if (interactionHand.graspedObject == null) {
+                continue;
+              }
+
               // NotifyHandRegainedTracking() did not throw, continue on to NotifyHandsHoldPhysics().
               dispatchOnHandsHolding(hands, interactionHand.graspedObject, isPhysics: true);
             } catch (Exception e) {
@@ -789,7 +905,11 @@ namespace Leap.Unity.Interaction {
                     try {
                       interactionHand.GraspObject(interactionBehaviour, isUserGrasp: false);
 
-                      dispatchOnHandsHolding(hands, interactionBehaviour, isPhysics: true);
+                      //the grasp callback might have caused the object to become ungrasped
+                      //the component might have also destroyed itself!
+                      if (interactionHand.graspedObject == interactionBehaviour && interactionBehaviour != null) {
+                        dispatchOnHandsHolding(hands, interactionBehaviour, isPhysics: true);
+                      }
                     } catch (Exception e) {
                       _activityManager.NotifyMisbehaving(interactionBehaviour);
                       Debug.LogException(e);
@@ -987,7 +1107,7 @@ namespace Leap.Unity.Interaction {
 
     //A persistant structure for storing useful data about a hand as it interacts with objects
     //TODO: Investigate pooling?
-    protected class InteractionHand {
+    protected partial class InteractionHand {
       public Hand hand { get; protected set; }
       public float lastTimeUpdated { get; protected set; }
       public float maxSuspensionTime { get; protected set; }
@@ -996,13 +1116,13 @@ namespace Leap.Unity.Interaction {
       public bool isUserGrasp { get; protected set; }
 
       public InteractionHand(Hand hand) {
-        this.hand = hand;
+        this.hand = new Hand().CopyFrom(hand);
         lastTimeUpdated = Time.unscaledTime;
         graspedObject = null;
       }
 
       public void UpdateHand(Hand hand) {
-        this.hand = hand;
+        this.hand.CopyFrom(hand);
         lastTimeUpdated = Time.unscaledTime;
       }
 
