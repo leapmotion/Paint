@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Leap.Unity;
 using System.IO;
 using System.Text;
+using UnityEngine.Events;
+
+[System.Serializable]
+public class StringEvent : UnityEvent<string>  { }
 
 public class PinchDrawing : MonoBehaviour {
 
@@ -611,6 +615,21 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
 
   #endregion
 
+  #region PROPERTIES
+
+  public bool IsCurrentlyDrawing {
+    get;
+    private set;
+  }
+
+  #endregion
+
+  #region UNITY EVENTS
+
+  public StringEvent OnSaveSuccessful;
+
+  #endregion
+
   #region UNITY CALLBACKS
 
   void OnValidate() {
@@ -656,15 +675,6 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
         _drawState.UpdateLine(detector.Position);
       }
     }
-  }
-
-  #endregion
-
-  #region PUBLIC PROPERTIES
-
-  public bool IsCurrentlyDrawing {
-    get;
-    private set;
   }
 
   #endregion
@@ -817,11 +827,11 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
     if (File.Exists(filePath)) {
       File.Delete(filePath);
     }
-    StreamWriter writer = new StreamWriter(filePath);
-    writer.Write(savedSceneJSON);
-    writer.Close();
+    using (StreamWriter writer = File.CreateText(filePath)) {
+      writer.Write(savedSceneJSON);
+    }
 
-    Debug.Log("Successfully saved file: " + filePath);
+    OnSaveSuccessful.Invoke("Saved " + Path.GetFileName(filePath));
   }
 
   public void Load(string filePath) {
@@ -833,7 +843,10 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
 
     // Get JSON string from filename
     StreamReader reader = new StreamReader(filePath);
+    Debug.Log("Trying to read path: " + filePath);
     string json = reader.ReadToEnd();
+
+    Debug.Log("Got json: " + json);
 
     // Load SavedScene object from JSON
     SavedScene savedScene = SavedScene.CreateFromJSON(json);

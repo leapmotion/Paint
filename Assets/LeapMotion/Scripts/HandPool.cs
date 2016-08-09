@@ -104,7 +104,8 @@ namespace Leap.Unity {
           GameObject spawnedGO = GameObject.Instantiate(modelToSpawn.gameObject);
           leftModel = spawnedGO.GetComponent<IHandModel>();
           leftModel.transform.parent = transform;
-        } else {
+        }
+        else {
           leftModel = collectionGroup.LeftModel;
         }
         collectionGroup.modelList.Add(leftModel);
@@ -115,7 +116,8 @@ namespace Leap.Unity {
           GameObject spawnedGO = GameObject.Instantiate(modelToSpawn.gameObject);
           rightModel = spawnedGO.GetComponent<IHandModel>();
           rightModel.transform.parent = transform;
-        } else {
+        }
+        else {
           rightModel = collectionGroup.RightModel;
         }
         collectionGroup.modelList.Add(rightModel);
@@ -213,11 +215,13 @@ namespace Leap.Unity {
         if (modelGroup.IsEnabled == true) {
           DisableGroup(groupName);
           modelGroup.IsEnabled = false;
-        } else {
+        }
+        else {
           EnableGroup(groupName);
           modelGroup.IsEnabled = true;
         }
-      } else Debug.LogWarning("A group matching that name does not exisit in the modelPool");
+      }
+      else Debug.LogWarning("A group matching that name does not exisit in the modelPool");
     }
     public void AddNewGroup(string groupName, IHandModel leftModel, IHandModel rightModel) {
       ModelGroup newGroup = new ModelGroup();
@@ -243,21 +247,12 @@ namespace Leap.Unity {
       for (int i = 0; i < ModelPool.Count; i++) {
         if (ModelPool[i] != null) {
           if (ModelPool[i].LeftModel) {
-            ModelPool[i].IsLeftToBeSpawned = shouldBeSpawned(ModelPool[i].LeftModel);
+            ModelPool[i].IsLeftToBeSpawned = PrefabUtility.GetPrefabType(ModelPool[i].LeftModel) == PrefabType.Prefab;
           }
           if (ModelPool[i].RightModel) {
-            ModelPool[i].IsRightToBeSpawned = shouldBeSpawned(ModelPool[i].RightModel);
+            ModelPool[i].IsRightToBeSpawned = PrefabUtility.GetPrefabType(ModelPool[i].RightModel) == PrefabType.Prefab;
           }
         }
-      }
-    }
-
-    private bool shouldBeSpawned(Object model) {
-      var prefabType = PrefabUtility.GetPrefabType(model);
-      if (PrefabUtility.GetPrefabType(this) != PrefabType.Prefab) {
-        return prefabType == PrefabType.Prefab;
-      } else {
-        return PrefabUtility.GetPrefabObject(model) != PrefabUtility.GetPrefabObject(this);
       }
     }
 
