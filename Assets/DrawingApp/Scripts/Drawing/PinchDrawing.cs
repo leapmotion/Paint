@@ -613,6 +613,10 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
   private List<TubeStroke> _tubeStrokes = new List<TubeStroke>();
   private List<TubeStroke> _undoneTubeStrokes = new List<TubeStroke>();
 
+  [Tooltip("Temporary fix to allow the query system to handle pinching activation for pinch-drawing.")]
+  [SerializeField]
+  private bool _startPinchRequestPending = false;
+
   #endregion
 
   #region PROPERTIES
@@ -620,6 +624,10 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
   public bool IsCurrentlyDrawing {
     get;
     private set;
+  }
+
+  public bool IsPreviewStrokeDisplaying {
+    get { return _displayPreviewStroke; }
   }
 
   #endregion
@@ -661,11 +669,10 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
 
       if (detector == null) return;
 
-      if (detector.DidStartPinch && (_dontDrawDetector != null && !_dontDrawDetector.IsActive)) {
+      if ((detector.IsPinching && _startPinchRequestPending) && (_dontDrawDetector != null && !_dontDrawDetector.IsActive)) {
         IsCurrentlyDrawing = true;
-
-        _undoHistory.Add(_drawState.BeginNewLine());
-        ClearRedoHistory();
+        _drawState.BeginNewLine();
+        _startPinchRequestPending = false;
       }
       if (detector.DidEndPinch && IsCurrentlyDrawing) {
         _drawState.FinishLine();
@@ -758,8 +765,8 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
       _redoHistory.Add(toUndo);
 
       // TubeStroke undo tracking
-      _undoneTubeStrokes.Add(_tubeStrokes[_undoHistory.Count - 1]);
-      _tubeStrokes.RemoveAt(_undoHistory.Count - 1);
+      _undoneTubeStrokes.Add(_tubeStrokes[_undoHistory.Count]);
+      _tubeStrokes.RemoveAt(_undoHistory.Count);
     }
   }
 
@@ -776,8 +783,8 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
       _undoHistory.Add(toRedo);
 
       // TubeStroke redo tracking
-      _tubeStrokes.Add(_undoneTubeStrokes[_redoHistory.Count - 1]);
-      _undoneTubeStrokes.RemoveAt(_redoHistory.Count - 1);
+      _tubeStrokes.Add(_undoneTubeStrokes[_redoHistory.Count]);
+      _undoneTubeStrokes.RemoveAt(_redoHistory.Count);
     }
   }
 
@@ -846,8 +853,6 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
     Debug.Log("Trying to read path: " + filePath);
     string json = reader.ReadToEnd();
 
-    Debug.Log("Got json: " + json);
-
     // Load SavedScene object from JSON
     SavedScene savedScene = SavedScene.CreateFromJSON(json);
 
@@ -865,6 +870,11 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
       }
       _drawState.FinishLine();
     }
+  }
+
+  // TODO: integrate pinch drawing with query system so this is unnecessary
+  public void StartPinchDrawRequest() {
+    _startPinchRequestPending = true;
   }
 
   #endregion
@@ -920,8 +930,6 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
 
   #region DRAWSTATE
 
-  // TODO: Look into Alex's more generalized Mesh drawing code
-
   private class DrawState {
     private List<Vector3> _vertices = new List<Vector3>();
     private List<int> _tris = new List<int>();
@@ -942,6 +950,9 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
 
     // quick-and-dirty I/O support
     private TubeStroke _curTubeStroke = null;
+
+    // matching I/O support with undo history
+    private GameObject _lastLineObj = null;
 
     public DrawState(PinchDrawing parent) {
       _parent = parent;
@@ -982,6 +993,7 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
         _curTubeStroke._smoothingDelay = _parent._tubeSmoothingDelay;
       }
 
+      _lastLineObj = lineObj;
       return lineObj;
     }
 
@@ -1028,6 +1040,8 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
       // quick-and-dirty I/O support
       if (this == _parent._drawState) { // ignore preview drawstate things
         _parent._tubeStrokes.Add(_curTubeStroke);
+        _parent._undoHistory.Add(_lastLineObj);
+        _parent.ClearRedoHistory();
       }
 
       _mesh.Optimize();

@@ -28,7 +28,10 @@ public class PinchMoveableUI : MonoBehaviour {
 
   #region UNITY EVENTS
 
+  public UnityEvent PrePreOnGrabbed;
+  public UnityEvent PreOnGrabbed;
   public UnityEvent OnGrabbed;
+  public UnityEvent PreOnReleased;
   public UnityEvent OnReleased;
 
   #endregion
@@ -48,6 +51,8 @@ public class PinchMoveableUI : MonoBehaviour {
   public void BePinchedBy(Transform pinchPoint) {
     _pinchCursor = pinchPoint;
     _cursorAnchorOffset = _moveableAnchor.position - _pinchCursor.position;
+    PrePreOnGrabbed.Invoke();
+    PreOnGrabbed.Invoke();
     OnGrabbed.Invoke();
   }
 
@@ -58,6 +63,7 @@ public class PinchMoveableUI : MonoBehaviour {
     else {
       _pinchCursor = null;
       _cursorAnchorOffset = Vector3.zero;
+      PreOnReleased.Invoke();
       OnReleased.Invoke();
     }
   }

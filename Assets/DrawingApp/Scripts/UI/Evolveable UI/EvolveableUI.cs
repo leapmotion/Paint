@@ -19,6 +19,16 @@ public class EvolveableUI : MonoBehaviour, IEvolveable {
 
   private Vector3 _originalScale = Vector3.zero;
 
+  private bool _isVisible = true;
+
+  #endregion
+
+  #region PROPERTIES
+
+  public bool IsVisible {
+    get { return _isVisible; }
+  }
+
   #endregion
 
   #region UNITY CALLBACKS
@@ -174,17 +184,19 @@ public class EvolveableUI : MonoBehaviour, IEvolveable {
   }
 
   public virtual void Appear() {
-    // TODO: Fix appear/disappear transition
-    //for (int i = 0; i < _origGraphics.Count; i++) {
-    //  _mapOrigToClone[_origGraphics[i]].enabled = true;
-    //}
+    _isVisible = true;
+    var graphics = GetComponentsInChildren<Graphic>();
+    for (int i = 0; i < graphics.Length; i++) {
+      graphics[i].enabled = true;
+    }
   }
 
   public virtual void Disappear() {
-    // TODO: Fix appear/disappear transition
-    //for (int i = 0; i < _origGraphics.Count; i++) {
-    //  _mapOrigToClone[_origGraphics[i]].enabled = false;
-    //}
+    _isVisible = false;
+    var graphics = GetComponentsInChildren<Graphic>();
+    for (int i = 0; i < graphics.Length; i++) {
+      graphics[i].enabled = false;
+    }
   }
 
   #endregion

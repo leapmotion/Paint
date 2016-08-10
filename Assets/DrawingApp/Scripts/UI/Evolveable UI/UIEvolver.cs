@@ -87,12 +87,12 @@ public class UIEvolver : MonoBehaviour {
 
   #region UNITY CALLBACKS
 
+  protected void Start() {
+    _B.Disappear();
+  }
+
   protected void Update() {
     UpdateEvolution();
-
-    if (Input.GetKeyDown(KeyCode.Space)) {
-      EvolveToB();
-    }
   }
 
   #endregion

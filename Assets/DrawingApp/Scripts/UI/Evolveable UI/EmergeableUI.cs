@@ -44,6 +44,8 @@ public class EmergeableUI : MonoBehaviour {
   private float _sizeTransitionTimer = 0F;
   private float _fadeBackToOrigColorTimer = 0F;
 
+  private bool _locked = false;
+
   #endregion
 
   #region PROPERTIES
@@ -216,19 +218,43 @@ public class EmergeableUI : MonoBehaviour {
   #region PUBLIC METHODS
 
   public void Emerge() {
-    OnBegunEmerging.Invoke();
-    BeginEvolution();
-    _evolving = true;
-    _emerging = true;
-    IsEmerged = true;
+    if (!_locked) {
+      OnBegunEmerging.Invoke();
+      BeginEvolution();
+      _evolving = true;
+      _emerging = true;
+      IsEmerged = true;
+    }
+  }
+
+  public void EnsureEmerged() {
+    if (!_emerging) {
+      Emerge();
+    }
   }
 
   public void Vanish() {
-    OnBegunVanishing.Invoke();
-    BeginEvolution();
-    _evolving = true;
-    _emerging = false;
-    IsVanished = true;
+    if (!_locked) {
+      OnBegunVanishing.Invoke();
+      BeginEvolution();
+      _evolving = true;
+      _emerging = false;
+      IsVanished = true;
+    }
+  }
+
+  public void EnsureVanished() {
+    if (_emerging) {
+      Vanish();
+    }
+  }
+
+  public void Lock() {
+    _locked = true;
+  }
+
+  public void Unlock() {
+    _locked = false;
   }
 
   public void Toggle() {

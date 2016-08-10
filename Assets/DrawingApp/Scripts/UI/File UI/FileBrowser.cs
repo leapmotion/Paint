@@ -55,6 +55,9 @@ public class FileBrowser : MonoBehaviour {
 
   private void RefreshFileList() {
 
+    // TODO: remove this logic from FileBrowser, should be agnostic of EvolveableUI things
+    EvolveableUI evolveableUI = GetComponentInParent<EvolveableUI>();
+
     // Remove old text objects
     ClearChildrenTextObjs();
 
@@ -71,6 +74,11 @@ public class FileBrowser : MonoBehaviour {
       textObj.text = Path.GetFileName(_files[i]);
       textObj.gameObject.AddComponent<FileSelectionClaimer>()._toClaimSelectionFrom = this;
       _childrenTextObjs[i] = textObj;
+
+      if (evolveableUI != null && !evolveableUI.IsVisible) {
+        textObj.enabled = false;
+      }
+
     }
 
     // Selection
@@ -82,6 +90,10 @@ public class FileBrowser : MonoBehaviour {
       _fileSelectionObj.transform.localScale = Vector3.one;
       _fileSelectionObj.GetComponent<RectTransform>().localPosition = new Vector3(_fileSelectionObj.GetComponent<RectTransform>().localPosition.x, _fileSelectionObj.GetComponent<RectTransform>().localPosition.y, 0F);
       _fileSelectionObj.GetComponent<Image>().enabled = true;
+
+      if (evolveableUI != null && !evolveableUI.IsVisible) {
+        _fileSelectionObj.GetComponent<Image>().enabled = false;
+      }
 
       _selected = _childrenTextObjs[0].GetComponent<FileSelectionClaimer>();
     }
