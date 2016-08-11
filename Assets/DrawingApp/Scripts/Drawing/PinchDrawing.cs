@@ -703,33 +703,33 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
   /// using the preview DrawState and the current tube settings.
   /// </summary>
   private void RefreshPreviewStroke() {
-    DrawState previewDrawState = _previewDrawState;
+    //DrawState previewDrawState = _previewDrawState;
 
-    if (_previewTube != null) {
-      Destroy(_previewTube);
-    }
-    _previewTube = previewDrawState.BeginNewLine();
-    _previewTube.transform.parent = _previewStrokeTransform;
-    _previewTube.transform.localPosition = _previewStrokeLocalCenter * _previewStrokeScalingFactor;
-    _previewTube.transform.localRotation = Quaternion.identity;
+    //if (_previewTube != null) {
+    //  Destroy(_previewTube);
+    //}
+    //_previewTube = previewDrawState.BeginNewLine();
+    //_previewTube.transform.parent = _previewStrokeTransform;
+    //_previewTube.transform.localPosition = _previewStrokeLocalCenter * _previewStrokeScalingFactor;
+    //_previewTube.transform.localRotation = Quaternion.identity;
 
-    float timeSkipped = 0F;
-    for (int i = 0; i < _previewStrokePoints.Length; i++) {
-      if (i % 3 != 0) {
-        timeSkipped += _previewStrokeDeltaTimes[i];
-      }
-      else {
-        previewDrawState.UpdateLine(_previewStrokePoints[i] * _previewStrokeScalingFactor, _previewStrokeDeltaTimes[i] + timeSkipped);
-        timeSkipped = 0F;
-      }
-    }
+    //float timeSkipped = 0F;
+    //for (int i = 0; i < _previewStrokePoints.Length; i++) {
+    //  if (i % 3 != 0) {
+    //    timeSkipped += _previewStrokeDeltaTimes[i];
+    //  }
+    //  else {
+    //    previewDrawState.UpdateLine(_previewStrokePoints[i] * _previewStrokeScalingFactor, _previewStrokeDeltaTimes[i] + timeSkipped);
+    //    timeSkipped = 0F;
+    //  }
+    //}
 
-    if (_displayPreviewStroke) {
-      _previewTube.GetComponentInChildren<Renderer>().enabled = true;
-    }
-    else {
-      _previewTube.GetComponentInChildren<Renderer>().enabled = false;
-    }
+    //if (_displayPreviewStroke) {
+    //  _previewTube.GetComponentInChildren<Renderer>().enabled = true;
+    //}
+    //else {
+    //  _previewTube.GetComponentInChildren<Renderer>().enabled = false;
+    //}
 
     //for (int i = 0; i < _previewStrokePoints.Length - 1; i++) {
     //  Vector2 strokeStart = _previewStrokePoints[i];
@@ -746,7 +746,7 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
     //  previewDrawState.UpdateLine(_previewStrokePoints[_previewStrokePoints.Length - 1] * _previewStrokeScalingFactor, _previewStrokeTimePerPoint);
     //}
 
-    previewDrawState.FinishLine();
+    //previewDrawState.FinishLine();
   }
 
   #endregion
@@ -808,7 +808,7 @@ new Vector3(-0.195367F, 1.57111F, 0.117661F)
   /// Sets the tube smoothing delay. Expects a value from 0 (min) to 1 (max);
   /// </summary>
   public void SetSmoothing(float normalizedSmoothing) {
-    _tubeSmoothingDelay = Mathf.Lerp(0F, 0.15F, normalizedSmoothing);
+    _tubeSmoothingDelay = Mathf.Lerp(0.01F, 0.15F, normalizedSmoothing);
     RefreshPreviewStroke();
   }
 

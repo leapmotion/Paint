@@ -19,6 +19,11 @@ namespace MeshGeneration {
     protected bool _shouldUpload;
     protected bool _infiniteBounds;
 
+    protected Mesh _lastCreatedMesh;
+    public Mesh GetLastMesh() {
+      return _lastCreatedMesh;
+    }
+
     public ShapeCombiner(int maxVertices, bool shouldOptimize = true, bool shouldUpload = true, bool infiniteBounds = false) {
       _maxVertices = maxVertices;
       _shouldOptimize = shouldOptimize;
@@ -121,6 +126,7 @@ namespace MeshGeneration {
       }
 
       _meshList.Add(mesh);
+      _lastCreatedMesh = mesh;
 
       if(OnNewMesh != null) {
         OnNewMesh(mesh);

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System;
 using System.Collections.Generic;
 
@@ -9,20 +8,36 @@ namespace MeshGeneration {
     private List<MeshPoint> _points = new List<MeshPoint>();
     private List<float> _radii = new List<float>();
 
+    private bool _hasNormals = false;
+
     private List<Vector3> _tangents = new List<Vector3>();
 
     public void Clear() {
       _points.Clear();
       _radii.Clear();
+      _hasNormals = false;
     }
 
     public void Add(MeshPoint point, float radius) {
+      if (_points.Count > 0) {
+        if (_hasNormals && !point.HasNormal) {
+          throw new Exception("This ribbon needs normals.");
+        }
+
+        if (!_hasNormals && point.HasNormal) {
+          throw new Exception("This ribbon does not need normals.");
+        }
+      }
+      else {
+        _hasNormals = point.HasNormal;
+      }
+
       _points.Add(point);
       _radii.Add(radius);
     }
 
     public override void CreateMeshData(MeshPoints points, List<int> connections) {
-      if(_points.Count <= 2) {
+      if (_points.Count <= 2) {
         return;
       }
 
@@ -34,7 +49,7 @@ namespace MeshGeneration {
         Vector3 b = _points[i].Position;
         Vector3 c = _points[i + 1].Position;
 
-        Vector3 dir = c - a;
+        Vector3 dir = _hasNormals ? _points[i].Normal : c - a;
         Vector3 tangent = Vector3.Cross(dir, c - b);
         _tangents.Add(tangent.normalized);
       }
@@ -80,5 +95,4 @@ namespace MeshGeneration {
       }
     }
   }
-
 }

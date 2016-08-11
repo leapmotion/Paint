@@ -5,6 +5,7 @@ using System.Collections;
 public class SavedScene {
 
   public TubeStroke[] _tubeStrokes;
+  public RibbonStroke[] _ribbonStrokes;
 
   /// <summary> Writes this SavedScene object to a JSON string. </summary>
   public string WriteToJSON() {
