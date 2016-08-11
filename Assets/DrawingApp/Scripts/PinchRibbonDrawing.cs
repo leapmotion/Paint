@@ -13,6 +13,9 @@ public class PinchRibbonDrawing : MonoBehaviour {
   [Tooltip("When a pinch is detected, this behaviour will initiate drawing a tube at the pinch location.")]
   public PinchDetector[] _pinchDetectors;
 
+  [Tooltip("This is the hand that is used to draw things. Currently only one hand is supported for drawing (currently only used by Audio FX).")]
+  public IHandModel _drawingHand;
+
   [Tooltip("Before starting drawing, this detector will be checked. If it is active, drawing won't actually begin.")]
   public Detector _dontDrawDetector;
 
@@ -38,6 +41,12 @@ public class PinchRibbonDrawing : MonoBehaviour {
 
   [Tooltip("Ribbons are drawn in segments; this is the minimum length of a segment before it is added to the ribbon currently being drawn.")]
   public float _ribbonMinSegmentLength = 0.005F;
+
+  [Header("Audio")]
+  public AudioSource _strokeFXSource;
+  public AudioClip   _strokeFXLoop;
+  public AudioSource _beginStrokeFXSource;
+  public AudioClip[] _beginStrokeFXs;
 
   #endregion PUBLIC ATTRIBUTES
 
@@ -109,21 +118,25 @@ public class PinchRibbonDrawing : MonoBehaviour {
     for (int i = 0; i < _pinchDetectors.Length; i++) {
       var detector = _pinchDetectors[i];
 
-      if (detector == null) return;
+      if (detector != null) {
+        if ((detector.IsPinching && !IsCurrentlyDrawing && _startPinchRequestPending) && (_dontDrawDetector == null || (_dontDrawDetector != null && !_dontDrawDetector.IsActive))) {
+          IsCurrentlyDrawing = true;
+          _drawState.BeginNewLine();
+          _startPinchRequestPending = false;
 
-      if ((detector.IsPinching && !IsCurrentlyDrawing && _startPinchRequestPending) && (_dontDrawDetector == null || (_dontDrawDetector != null && !_dontDrawDetector.IsActive))) {
-        IsCurrentlyDrawing = true;
-        _drawState.BeginNewLine();
-        _startPinchRequestPending = false;
-      }
-      if (detector.DidEndPinch && IsCurrentlyDrawing) {
-        _drawState.FinishLine();
-        IsCurrentlyDrawing = false;
-      }
-      if (detector.IsPinching && IsCurrentlyDrawing) {
-        _drawState.UpdateLine(detector.Position, detector.Rotation);
+          PlayStrokeBeginFX();
+        }
+        else if (detector.IsPinching && IsCurrentlyDrawing) {
+          _drawState.UpdateLine(detector.Position, detector.Rotation);
+        }
+        else if (detector.DidEndPinch && IsCurrentlyDrawing) {
+          _drawState.FinishLine();
+          IsCurrentlyDrawing = false;
+        }
       }
     }
+
+    UpdateStrokeFX();
   }
 
   #endregion
@@ -138,6 +151,29 @@ public class PinchRibbonDrawing : MonoBehaviour {
 
     // TubeStroke undo tracking
     _undoneRibbonStrokes.Clear();
+  }
+
+  // Audio FX
+
+  private void PlayStrokeBeginFX() {
+    _beginStrokeFXSource.PlayOneShot(_beginStrokeFXs[Random.Range(0, _beginStrokeFXs.Length)]);
+  }
+
+  private void UpdateStrokeFX() {
+    if (!_strokeFXSource.isPlaying) {
+      _strokeFXSource.loop = true;
+      _strokeFXSource.clip = _strokeFXLoop;
+      _strokeFXSource.Play();
+    }
+
+    if (_drawingHand.IsTracked && IsCurrentlyDrawing) {
+      float drawVelocityVolumeCoefficient = 0.33F;
+      _strokeFXSource.volume = Mathf.Lerp(0F, 1F, _drawingHand.GetLeapHand().PalmVelocity.Magnitude * drawVelocityVolumeCoefficient);
+      Debug.Log(_drawingHand.GetLeapHand().PalmVelocity.Magnitude);
+    }
+    else {
+      _strokeFXSource.volume = 0F;
+    }
   }
 
   #endregion
