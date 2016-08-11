@@ -160,16 +160,16 @@ public class PinchRibbonDrawing : MonoBehaviour {
   }
 
   private void UpdateStrokeFX() {
-    if (!_strokeFXSource.isPlaying) {
+    if (!_strokeFXSource.isPlaying && _drawingHand.IsTracked) {
       _strokeFXSource.loop = true;
       _strokeFXSource.clip = _strokeFXLoop;
+      _strokeFXSource.volume = 0F;
       _strokeFXSource.Play();
     }
 
     if (_drawingHand.IsTracked && IsCurrentlyDrawing) {
       float drawVelocityVolumeCoefficient = 0.33F;
       _strokeFXSource.volume = Mathf.Lerp(0F, 1F, _drawingHand.GetLeapHand().PalmVelocity.Magnitude * drawVelocityVolumeCoefficient);
-      Debug.Log(_drawingHand.GetLeapHand().PalmVelocity.Magnitude);
     }
     else {
       _strokeFXSource.volume = 0F;

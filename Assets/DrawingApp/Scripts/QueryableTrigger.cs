@@ -52,11 +52,13 @@ public class QueryableTrigger : MonoBehaviour {
 
   /// <summary> O(N) with the number of GameObjects currently colliding with the QueryableTrigger. </summary>
   public T Query<T>() where T : Component {
-    _collider.radius = sphereColliderRadius;
-    foreach (GameObject obj in _collidingObjs) {
-      T queryComponent = obj.GetComponentInParent<T>();
-      if (queryComponent != null) {
-        return queryComponent;
+    if (_collider != null) {
+      _collider.radius = sphereColliderRadius;
+      foreach (GameObject obj in _collidingObjs) {
+        T queryComponent = obj.GetComponentInParent<T>();
+        if (queryComponent != null) {
+          return queryComponent;
+        }
       }
     }
     return null;
