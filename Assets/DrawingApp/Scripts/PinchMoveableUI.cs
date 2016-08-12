@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Events;
+using Leap.Unity;
+
+[System.Serializable]
+public class Vector3Event : UnityEvent<Vector3> { }
 
 public class PinchMoveableUI : MonoBehaviour {
 
@@ -15,6 +19,7 @@ public class PinchMoveableUI : MonoBehaviour {
 
   private Transform _pinchCursor = null;
   private Vector3 _cursorAnchorOffset = Vector3.zero;
+  private IHandModel _pinchedByHand = null;
 
   #endregion
 
@@ -33,6 +38,7 @@ public class PinchMoveableUI : MonoBehaviour {
   public UnityEvent OnGrabbed;
   public UnityEvent PreOnReleased;
   public UnityEvent OnReleased;
+  public Vector3Event OnReleaseVelocity;
 
   #endregion
 
@@ -49,6 +55,9 @@ public class PinchMoveableUI : MonoBehaviour {
   #region PUBLIC METHODS
 
   public void BePinchedBy(Transform pinchPoint) {
+
+    _pinchedByHand = pinchPoint.GetComponentInParent<PinchDetector>().GetHandModel();
+
     _pinchCursor = pinchPoint;
     _cursorAnchorOffset = _moveableAnchor.position - _pinchCursor.position;
     PrePreOnGrabbed.Invoke();
@@ -65,6 +74,7 @@ public class PinchMoveableUI : MonoBehaviour {
       _cursorAnchorOffset = Vector3.zero;
       PreOnReleased.Invoke();
       OnReleased.Invoke();
+      OnReleaseVelocity.Invoke(_pinchedByHand.GetLeapHand().PalmVelocity.ToVector3());
     }
   }
 

@@ -28,12 +28,12 @@ public class PinchRibbonDrawing : MonoBehaviour {
   public Material _ribbonMaterial;
 
   [Tooltip("The thickness of newly drawn ribbons.")]
-  [Range(0.001F, 0.01F)]
-  public float _ribbonRadius = 0.002F;
+  [Range(0.001F, 0.02F)]
+  public float _ribbonRadius = 0.001F;
 
   [Tooltip("Higher values require longer strokes but make the strokes smoother.")]
-  [Range(0.01F, 0.15F)]
-  public float _ribbonSmoothingDelay = 0.01F;
+  [Range(0.04F, 0.15F)]
+  public float _ribbonSmoothingDelay = 0.04F;
 
   [Tooltip("Makes ribbon rotation smoother but slower.")]
   [Range(0.01F, 0.15F)]
@@ -97,6 +97,7 @@ public class PinchRibbonDrawing : MonoBehaviour {
   #region UNITY EVENTS
 
   public StringEvent OnSaveSuccessful;
+  public UnityEvent OnLoadSuccessful;
 
   #endregion
 
@@ -226,7 +227,7 @@ public class PinchRibbonDrawing : MonoBehaviour {
   /// Sets drawn tube thickness. Expects a value from 0 (min) to 1 (max).
   /// </summary>
   public void SetThickness(float normalizedThickness) {
-    _ribbonRadius = Mathf.Lerp(0.001F, 0.01F, normalizedThickness);
+    _ribbonRadius = Mathf.Lerp(0.001F, 0.02F, normalizedThickness);
   }
 
   /// <summary>
@@ -257,11 +258,7 @@ public class PinchRibbonDrawing : MonoBehaviour {
   }
 
   public void Load(string filePath) {
-    // Clear all strokes -- TODO: make this not just use undo
-    for (int i = 0; i < _undoHistory.Count; i++) {
-      Undo();
-    }
-    ClearRedoHistory();
+    Clear();
 
     // Get JSON string from filename
     StreamReader reader = new StreamReader(filePath);
@@ -285,6 +282,19 @@ public class PinchRibbonDrawing : MonoBehaviour {
       }
       _drawState.FinishLine();
     }
+
+    OnLoadSuccessful.Invoke();
+  }
+
+  public void Clear() {
+    GameObject[] strokeObjs = GameObject.FindGameObjectsWithTag("Stroke Object");
+    for (int i = 0; i < strokeObjs.Length; i++) {
+      Destroy(strokeObjs[i]);
+      _undoHistory.Clear();
+      _redoHistory.Clear();
+      _ribbonStrokes.Clear();
+      _undoneRibbonStrokes.Clear();
+		}
   }
 
   // TODO: integrate pinch drawing with query system so this is unnecessary
@@ -463,6 +473,8 @@ public class PinchRibbonDrawing : MonoBehaviour {
 
       _mesh.Optimize();
       _mesh.UploadMeshData(true);
+
+      _gameObject.tag = "Stroke Object";
     }
 
   }

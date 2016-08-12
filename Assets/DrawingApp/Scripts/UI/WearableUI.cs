@@ -19,6 +19,8 @@ public class WearableUI : MonoBehaviour {
 
   private bool _canDisplay = true;
   private bool _currentlyDisplaying = true;
+
+  [SerializeField]
   private bool _isIndependent = false;
 
   #endregion

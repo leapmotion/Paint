@@ -8,8 +8,32 @@ public class SimpleFaceCamera : MonoBehaviour {
   [Header("Optional")]
   public Transform _faceFromPoint;
 
-  public void FaceCameraInstantly() {
+  private bool _activelyFaceCamera = false;
 
+  public void SetFaceFromPoint(Transform faceFrom) {
+    _faceFromPoint = faceFrom;
+  }
+
+  public void ActivateFacing() {
+    _activelyFaceCamera = true;
+  }
+
+  public void DeactivateFacing() {
+    _activelyFaceCamera = false;
+
+    Rigidbody body = GetComponent<Rigidbody>();
+    if (body != null) {
+      body.angularVelocity = Vector3.zero;
+    }
+  }
+
+  protected void Update() {
+    if (_activelyFaceCamera) {
+      FaceCameraInstantly();
+    }
+  }
+
+  public void FaceCameraInstantly() {
     Transform faceFrom;
     if (_faceFromPoint != null) {
       faceFrom = _faceFromPoint;
@@ -37,6 +61,11 @@ public class SimpleFaceCamera : MonoBehaviour {
 
       yield return new WaitForFixedUpdate();
       time += Time.fixedDeltaTime;
+    }
+
+    Rigidbody body = GetComponent<Rigidbody>();
+    if (body != null) {
+      body.angularVelocity = Vector3.zero;
     }
   }
 

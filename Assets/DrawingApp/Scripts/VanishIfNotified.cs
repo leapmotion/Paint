@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ColorPaletteVanishIfNotified : MonoBehaviour {
+public class VanishIfNotified : MonoBehaviour {
 
   public EmergeableUI _emergeableUI;
 
