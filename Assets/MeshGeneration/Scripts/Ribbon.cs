@@ -12,6 +12,13 @@ namespace MeshGeneration {
 
     private List<Vector3> _tangents = new List<Vector3>();
 
+    public List<MeshPoint> Points {
+      get { return _points; }
+    }
+    public List<float> Radii {
+      get { return _radii; }
+    }
+
     public void Clear() {
       _points.Clear();
       _radii.Clear();

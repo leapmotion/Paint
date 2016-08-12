@@ -15,11 +15,11 @@ public class RibbonStroke {
   /// <summary> The number of points per circular cross-section of the ribbon. </summary>
   public int _resolution = 8;
 
-  /// <summary> The smoothing delay value for this stroke (See Leap.Util.SmoothedVector3). </summary>
-  public float _smoothingDelay = 1F;
+  /// <summary> The smoothing delay value for this stroke. </summary>
+  public int _smoothingValue = 4;
 
   /// <summary> The rotational delay value for this stroke (See Leap.Util.SmoothedQuaternion). </summary>
-  public float _rotationSmoothingDelay = 1F;
+  public float _rotationSmoothingValue = 4;
 
   /// <summary> The points that define the stroke. </summary>
   public List<Vector3> _strokePoints = new List<Vector3>();

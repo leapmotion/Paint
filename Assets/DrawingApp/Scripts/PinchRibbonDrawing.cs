@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using UnityEngine.Events;
 using MeshGeneration;
+using System;
 
 public class PinchRibbonDrawing : MonoBehaviour {
 
@@ -31,13 +32,11 @@ public class PinchRibbonDrawing : MonoBehaviour {
   [Range(0.001F, 0.02F)]
   public float _ribbonRadius = 0.001F;
 
-  [Tooltip("Higher values require longer strokes but make the strokes smoother.")]
-  [Range(0.04F, 0.15F)]
-  public float _ribbonSmoothingDelay = 0.04F;
+  [Tooltip("Higher values result in smoother strokes.")]
+  public int _ribbonSmoothingValue = 4;
 
-  [Tooltip("Makes ribbon rotation smoother but slower.")]
-  [Range(0.01F, 0.15F)]
-  public float _ribbonRotationSmoothingDelay = 0.01F;
+  [Tooltip("Higher values result in smoother stroke rotations.")]
+  public float _ribbonRotationSmoothingValue = 0.4F;
 
   [Tooltip("Ribbons are drawn in segments; this is the minimum length of a segment before it is added to the ribbon currently being drawn.")]
   public float _ribbonMinSegmentLength = 0.005F;
@@ -157,7 +156,7 @@ public class PinchRibbonDrawing : MonoBehaviour {
   // Audio FX
 
   private void PlayStrokeBeginFX() {
-    _beginStrokeFXSource.PlayOneShot(_beginStrokeFXs[Random.Range(0, _beginStrokeFXs.Length)]);
+    _beginStrokeFXSource.PlayOneShot(_beginStrokeFXs[UnityEngine.Random.Range(0, _beginStrokeFXs.Length)]);
   }
 
   private void UpdateStrokeFX() {
@@ -234,7 +233,7 @@ public class PinchRibbonDrawing : MonoBehaviour {
   /// Sets the tube smoothing delay. Expects a value from 0 (min) to 1 (max);
   /// </summary>
   public void SetSmoothing(float normalizedSmoothing) {
-    _ribbonSmoothingDelay = Mathf.Lerp(0F, 0.15F, normalizedSmoothing);
+    _ribbonSmoothingValue = (int)Mathf.Round(Mathf.Lerp(2, 10F, normalizedSmoothing));
   }
 
   public void Save(string filePath) {
@@ -274,8 +273,8 @@ public class PinchRibbonDrawing : MonoBehaviour {
 
       _ribbonRadius = ribbonStroke._radius;
       _ribbonColor = ribbonStroke._color;
-      _ribbonSmoothingDelay = ribbonStroke._smoothingDelay;
-      _ribbonRotationSmoothingDelay = ribbonStroke._rotationSmoothingDelay;
+      _ribbonSmoothingValue = ribbonStroke._smoothingValue;
+      _ribbonRotationSmoothingValue = ribbonStroke._rotationSmoothingValue;
       _drawState.BeginNewLine();
       for (int j = 0; j < ribbonStroke._strokePoints.Count; j++) {
         _drawState.UpdateLine(ribbonStroke._strokePoints[j], ribbonStroke._strokePointRotations[j], ribbonStroke._strokePointDeltaTimes[j]);
@@ -363,10 +362,12 @@ public class PinchRibbonDrawing : MonoBehaviour {
     private Mesh _mesh;
     private GameObject _gameObject;
 
-    private SmoothedVector3 _smoothedPosition;
-    private SmoothedQuaternion _smoothedRotation;
+    private List<Vector3> _rawStrokePoints = new List<Vector3>();
+    private List<Vector3> _smoothedStrokePoints = new List<Vector3>();
 
-    private List<Vector3> _addedStrokePoints = new List<Vector3>();
+    private SmoothedQuaternion _smoothedQuaternion = new SmoothedQuaternion();
+    private List<Quaternion> _strokePointRotations = new List<Quaternion>();
+
     private Vector3 _lastAddedPosition;
 
     // quick-and-dirty I/O support
@@ -374,42 +375,17 @@ public class PinchRibbonDrawing : MonoBehaviour {
 
     public DrawState(PinchRibbonDrawing parent) {
       _parent = parent;
-
-      _smoothedPosition = new SmoothedVector3();
-      _smoothedPosition.delay = _parent._ribbonSmoothingDelay;
-      _smoothedPosition.reset = true;
-
-      _smoothedRotation = new SmoothedQuaternion();
-      _smoothedRotation.delay = _parent._ribbonRotationSmoothingDelay;
-      _smoothedRotation.reset = true;
-    }
-
-    private void UpdateMesh() {
-      ShapeCombiner c = new ShapeCombiner(65536, shouldOptimize: false, shouldUpload: false, infiniteBounds: false);
-      c.AddShape(_ribbon);
-      c.FinalizeCurrentMesh();
-      Mesh ribbonMesh = c.GetLastMesh();
-      if (ribbonMesh != null) {
-        _mesh.vertices = ribbonMesh.vertices;
-        _mesh.colors = ribbonMesh.colors;
-        _mesh.uv = ribbonMesh.uv;
-        _mesh.SetIndices(ribbonMesh.triangles, MeshTopology.Triangles, 0);
-        _mesh.RecalculateBounds();
-        _mesh.RecalculateNormals();
-      }
     }
 
     public GameObject BeginNewLine() {
-      _addedStrokePoints.Clear();
+      _rawStrokePoints.Clear();
+      _strokePointRotations.Clear();
       _lastAddedPosition = Vector3.zero;
 
+      _smoothedQuaternion.reset = true;
+      _smoothedQuaternion.delay = _parent._ribbonRotationSmoothingValue;
+
       _ribbon = new Ribbon();
-
-      _smoothedPosition.reset = true;
-      _smoothedPosition.delay = _parent._ribbonSmoothingDelay;
-
-      _smoothedRotation.reset = true;
-      _smoothedRotation.delay = _parent._ribbonRotationSmoothingDelay;
       
       _mesh = new Mesh();
       _mesh.name = "Ribbon Mesh";
@@ -427,8 +403,8 @@ public class PinchRibbonDrawing : MonoBehaviour {
         _curRibbonStroke = new RibbonStroke();
         _curRibbonStroke._radius = _parent._ribbonRadius;
         _curRibbonStroke._color = _parent._ribbonColor;
-        _curRibbonStroke._smoothingDelay = _parent._ribbonSmoothingDelay;
-        _curRibbonStroke._rotationSmoothingDelay = _parent._ribbonSmoothingDelay;
+        _curRibbonStroke._smoothingValue = _parent._ribbonSmoothingValue;
+        _curRibbonStroke._rotationSmoothingValue = _parent._ribbonRotationSmoothingValue;
       }
 
       return _gameObject;
@@ -441,20 +417,29 @@ public class PinchRibbonDrawing : MonoBehaviour {
         _curRibbonStroke.RecordStrokePoint(position, rotation, deltaTime);
       }
 
-      _smoothedPosition.Update(position, deltaTime);
-      _smoothedRotation.Update(rotation, deltaTime);
+      _smoothedQuaternion.Update(rotation, deltaTime);
 
       bool shouldAdd = false;
 
-      shouldAdd |= _addedStrokePoints.Count == 0;
-      shouldAdd |= Vector3.Distance(_lastAddedPosition, _smoothedPosition.value) >= _parent._ribbonMinSegmentLength;
+      shouldAdd |= _rawStrokePoints.Count == 0;
+      shouldAdd |= Vector3.Distance(_lastAddedPosition, position) >= _parent._ribbonMinSegmentLength;
 
       if (shouldAdd) {
-        MeshPoint newMeshPoint = new MeshPoint(_smoothedPosition.value);
-        newMeshPoint.Normal = _smoothedRotation.value * Vector3.up;
-        newMeshPoint.Color = _parent._ribbonColor;
-        _ribbon.Add(newMeshPoint, _parent._ribbonRadius);
-        _addedStrokePoints.Add(_smoothedPosition.value);
+        _rawStrokePoints.Add(position);
+        _smoothedStrokePoints = CalculateSmoothed(_rawStrokePoints, _parent._ribbonSmoothingValue);
+        _lastAddedPosition = position;
+
+        _strokePointRotations.Add(_smoothedQuaternion.value);
+
+        _ribbon.Clear();
+        MeshPoint meshPoint;
+        for (int i = 0; i < _smoothedStrokePoints.Count; i++) {
+          meshPoint = new MeshPoint(_smoothedStrokePoints[i]);
+          meshPoint.Normal = _strokePointRotations[i] * Vector3.up;
+          meshPoint.Color = _parent._ribbonColor;
+          _ribbon.Add(meshPoint, _parent._ribbonRadius);
+        }
+
         UpdateMesh();
       }
     }
@@ -475,6 +460,46 @@ public class PinchRibbonDrawing : MonoBehaviour {
       _mesh.UploadMeshData(true);
 
       _gameObject.tag = "Stroke Object";
+    }
+
+    private void UpdateMesh() {
+      ShapeCombiner c = new ShapeCombiner(65536, shouldOptimize: false, shouldUpload: false, infiniteBounds: false);
+      c.AddShape(_ribbon);
+      c.FinalizeCurrentMesh();
+      Mesh ribbonMesh = c.GetLastMesh();
+      if (ribbonMesh != null) {
+        _mesh.vertices = ribbonMesh.vertices;
+        _mesh.colors = ribbonMesh.colors;
+        _mesh.uv = ribbonMesh.uv;
+        _mesh.SetIndices(ribbonMesh.triangles, MeshTopology.Triangles, 0);
+        _mesh.RecalculateBounds();
+        _mesh.RecalculateNormals();
+      }
+    }
+
+    private List<Vector3> CalculateSmoothed(List<Vector3> toSmooth, int R) {
+      List<Vector3> smoothed = new List<Vector3>();
+      int maxIdx = toSmooth.Count - 1;
+      for (int i = 0; i <= maxIdx; i++) {
+        int effR = R;
+        while (i - effR < 0) {
+          effR--;
+        }
+        while (i + effR > maxIdx) {
+          effR--;
+        }
+        Vector3 neighborSum = Vector3.zero;
+        for (int j = i - effR; j <= i + effR; j++) {
+          try {
+            neighborSum += toSmooth[j];
+          }
+          catch (ArgumentOutOfRangeException e) {
+            Debug.Log("Tried to access j = " + j + " in toSmooth which has count " + toSmooth.Count);
+          }
+        }
+        smoothed.Add(neighborSum / (1 + effR * 2));
+      }
+      return smoothed;
     }
 
   }

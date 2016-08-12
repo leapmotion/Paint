@@ -263,6 +263,7 @@ namespace Leap.Unity.InputModule {
     public override void Process() {
       Vector3 OldCameraPos = Camera.main.transform.position;
       Quaternion OldCameraRot = Camera.main.transform.rotation;
+      float OldCameraFov = Camera.main.fieldOfView;
 
       //Send update events if there is a selected object
       //This is important for InputField to receive keyboard events
@@ -540,7 +541,7 @@ namespace Leap.Unity.InputModule {
         }
 
       }
-
+      Camera.main.fieldOfView = OldCameraFov;
       Camera.main.transform.position = OldCameraPos;
       Camera.main.transform.rotation = OldCameraRot;
     }
@@ -585,16 +586,17 @@ namespace Leap.Unity.InputModule {
 
         //Else Raycast through the knuckle of the Index Finger
       } else {
-        Camera.main.transform.position = Origin;
+        //Camera.main.transform.position = Origin;
         IndexFingerPosition = curFrame.Hands[whichHand].Fingers[whichFinger].Bone(Bone.BoneType.TYPE_METACARPAL).Center.ToVector3();
       }
 
       //Draw Camera Origin
-      if (DrawDebug)
-        DebugSphereQueue.Enqueue(Camera.main.transform.position);
+      //if (DrawDebug)
+      //  DebugSphereQueue.Enqueue(Camera.main.transform.position);
 
       //Set EventCamera's Forward Direction
-      Camera.main.transform.forward = Direction;
+      //Camera.main.transform.forward = Direction;
+      Camera.main.fieldOfView = 179f;
 
       //Set the Raycast Direction and Delta
       PointEvents[whichPointer].position = Vector2.Lerp(PrevScreenPosition[whichPointer], Camera.main.WorldToScreenPoint(IndexFingerPosition), 1.0f);//new Vector2(Screen.width / 2, Screen.height / 2);
