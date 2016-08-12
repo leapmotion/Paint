@@ -32,9 +32,9 @@ public class EmergeableUI : MonoBehaviour {
   // Evolution step durations. Provided as arguments to Evolveables
   // at each step in the evolution.
   private float _movementDuration = 0.5F;
-  private float _fadeToColorDuration = 0.2F;
+  private float _fadeToColorDuration = 0.02F;
   private float _sizeTransitionDuration = 0.2F;
-  private float _fadeBackToOrigColorDuration = 0.2F;
+  private float _fadeBackToOrigColorDuration = 0.02F;
 
   // Evolution step timers. Implementers of Evolveable keep
   // track of their own time; these timers are for calling

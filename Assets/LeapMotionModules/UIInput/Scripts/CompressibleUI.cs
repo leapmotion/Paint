@@ -126,7 +126,7 @@ namespace Leap.Unity.InputModule {
                 if (image != null) {
                   image.color = new Color(image.color.r + 0.175f, image.color.g + 0.175f, image.color.b + 0.175f, image.color.a);
                 }
-                LayerCollapseStateChange.Invoke();
+                //LayerCollapseStateChange.Invoke();
               }
             }
           }

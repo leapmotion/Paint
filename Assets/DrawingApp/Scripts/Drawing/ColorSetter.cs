@@ -32,6 +32,7 @@ public class ColorSetter : MonoBehaviour {
     if (_enabled) {
       _pinchDrawing.SetColor(_color);
       _pinchRibbonDrawing.SetColor(_color);
+      GameObject.FindObjectOfType<ColorPaletteVanishIfNotified>().Notify();
       if (_colorIndicator != null) {
         _colorIndicator.color = _color;
       }

@@ -50,16 +50,23 @@ public class QueryableTrigger : MonoBehaviour {
 
   #region PUBLIC METHODS
 
-  /// <summary> O(N) with the number of GameObjects currently colliding with the QueryableTrigger. </summary>
+  /// <summary>
+  /// Returns the closest valid component colliding with this QueryTrigger.
+  /// This function is O(N) with the number of GameObjects currently colliding with the QueryableTrigger.
+  /// </summary>
   public T Query<T>() where T : Component {
     if (_collider != null) {
       _collider.radius = sphereColliderRadius;
+      T closestComp = null;
       foreach (GameObject obj in _collidingObjs) {
         T queryComponent = obj.GetComponentInParent<T>();
         if (queryComponent != null) {
-          return queryComponent;
+          if (closestComp == null || Vector3.Distance(queryComponent.transform.position, this.transform.position) < Vector3.Distance(closestComp.transform.position, this.transform.position)) {
+            closestComp = queryComponent;
+          }
         }
       }
+      return closestComp;
     }
     return null;
   }
