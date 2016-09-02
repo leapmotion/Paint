@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Leap;
+using Leap.Unity.Attributes;
 
 namespace Leap.Unity {
 
@@ -34,6 +34,7 @@ namespace Leap.Unity {
      * Set automatically if not explicitly set in the editor.
      * @since 4.1.2
      */
+    [AutoFind(AutoFindLocations.Parents)]
     [Tooltip("The hand model to watch. Set automatically if detector is on a hand.")]
     public IHandModel HandModel = null;
     /**
@@ -95,9 +96,6 @@ namespace Leap.Unity {
 
     private void Awake () {
       watcherCoroutine = palmWatcher();
-      if(HandModel == null){
-        HandModel = gameObject.GetComponentInParent<IHandModel>();
-      }
     }
 
     private void OnEnable () {
@@ -106,6 +104,7 @@ namespace Leap.Unity {
 
     private void OnDisable () {
       StopCoroutine(watcherCoroutine);
+      Deactivate();
     }
 
     private IEnumerator palmWatcher() {
@@ -151,14 +150,15 @@ namespace Leap.Unity {
       if(ShowGizmos && HandModel != null){
         Color centerColor;
         if (IsActive) {
-          centerColor = Color.green;
+          centerColor = OnColor;
         } else {
-          centerColor = Color.red;
+          centerColor = OffColor;
         }
         Hand hand = HandModel.GetLeapHand();
         Utils.DrawCone(hand.PalmPosition.ToVector3(), hand.PalmNormal.ToVector3(), OnAngle, hand.PalmWidth, centerColor, 8);
-        Utils.DrawCone(hand.PalmPosition.ToVector3(), hand.PalmNormal.ToVector3(), OffAngle, hand.PalmWidth, Color.blue, 8);
-        Debug.DrawRay(hand.PalmPosition.ToVector3(), selectedDirection(hand.PalmPosition.ToVector3()), Color.grey, 0, true);
+        Utils.DrawCone(hand.PalmPosition.ToVector3(), hand.PalmNormal.ToVector3(), OffAngle, hand.PalmWidth, LimitColor, 8);
+        Gizmos.color = DirectionColor;
+        Gizmos.DrawRay(hand.PalmPosition.ToVector3(), selectedDirection(hand.PalmPosition.ToVector3()));
       }
     }
     #endif

@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace MeshGeneration {
 
-  public class Ribbon : Shape {
-    private List<MeshPoint> _points = new List<MeshPoint>();
-    private List<float> _radii = new List<float>();
+  public class Ribbon : IShape {
+    protected List<MeshPoint> _points = new List<MeshPoint>();
+    protected List<float> _radii = new List<float>();
 
-    private bool _hasNormals = false;
+    protected bool _hasNormals = false;
 
-    private List<Vector3> _tangents = new List<Vector3>();
+    protected List<Vector3> _tangents = new List<Vector3>();
 
     public List<MeshPoint> Points {
       get { return _points; }
@@ -43,7 +43,7 @@ namespace MeshGeneration {
       _radii.Add(radius);
     }
 
-    public override void CreateMeshData(MeshPoints points, List<int> connections) {
+    public virtual void CreateMeshData(MeshPoints points, List<int> connections) {
       if (_points.Count <= 2) {
         return;
       }
@@ -96,7 +96,7 @@ namespace MeshGeneration {
       }
     }
 
-    public override MeshTopology Topology {
+    public virtual MeshTopology Topology {
       get {
         return MeshTopology.Triangles;
       }

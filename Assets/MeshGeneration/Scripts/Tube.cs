@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace MeshGeneration {
 
-  public class Tube : Shape {
+  public class Tube : IShape {
     private List<MeshPoint> _points = new List<MeshPoint>();
     private List<float> _radii = new List<float>();
     private int _resolution;
@@ -26,7 +26,7 @@ namespace MeshGeneration {
       _radii.Add(radius);
     }
 
-    public override void CreateMeshData(MeshPoints points, List<int> connections) {
+    public void CreateMeshData(MeshPoints points, List<int> connections) {
       if (_points.Count <= 2) {
         return;
       }
@@ -101,7 +101,7 @@ namespace MeshGeneration {
       }
     }
 
-    public override MeshTopology Topology {
+    public MeshTopology Topology {
       get {
         return MeshTopology.Triangles;
       }

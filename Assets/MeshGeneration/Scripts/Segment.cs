@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MeshGeneration {
 
-  public class Segment : Shape {
+  public class Segment : IShape {
     private MeshPoints _points = new MeshPoints();
 
     public void Clear() {
@@ -14,7 +14,7 @@ namespace MeshGeneration {
       _points.Add(point);
     }
 
-    public override void CreateMeshData(MeshPoints points, List<int> connections) {
+    public void CreateMeshData(MeshPoints points, List<int> connections) {
       if (_points.Count <= 1) {
         return;
       }
@@ -27,7 +27,7 @@ namespace MeshGeneration {
       }
     }
 
-    public override MeshTopology Topology {
+    public MeshTopology Topology {
       get {
         return MeshTopology.Lines;
       }

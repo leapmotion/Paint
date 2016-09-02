@@ -24,11 +24,17 @@ namespace MeshGeneration {
       return _lastCreatedMesh;
     }
 
-    public ShapeCombiner(int maxVertices, bool shouldOptimize = true, bool shouldUpload = true, bool infiniteBounds = false) {
+    public ShapeCombiner(int maxVertices = 65535, bool shouldOptimize = true, bool shouldUpload = true, bool infiniteBounds = false) {
       _maxVertices = maxVertices;
       _shouldOptimize = shouldOptimize;
       _shouldUpload = shouldUpload;
       _infiniteBounds = infiniteBounds;
+    }
+
+    public static Mesh BuildOneMesh(IShape shape, int maxVertices = 65535, bool shouldOptimize = true, bool shouldUpload = true, bool infiniteBounds = false) {
+      ShapeCombiner combiner = new ShapeCombiner(maxVertices, shouldOptimize, shouldUpload, infiniteBounds);
+      combiner.AddShape(shape);
+      return combiner.FinalizeCurrentMesh();
     }
 
     public virtual IEnumerable<Mesh> CurrentMeshes {
@@ -37,9 +43,9 @@ namespace MeshGeneration {
       }
     }
 
-    public virtual void AddShape(Shape shape) {
+    public virtual void AddShape(IShape shape) {
       shape.CreateMeshData(_tempPoints, _tempIndexes);
-      if(_tempPoints.Count == 0 || _tempIndexes.Count == 0) {
+      if (_tempPoints.Count == 0 || _tempIndexes.Count == 0) {
         return;
       }
 
@@ -85,9 +91,9 @@ namespace MeshGeneration {
     private List<Vector3> _cachedVec3 = new List<Vector3>();
     private List<Vector2> _cachedVec2 = new List<Vector2>();
     private List<Color> _cachedColor = new List<Color>();
-    public virtual void FinalizeCurrentMesh() {
+    public virtual Mesh FinalizeCurrentMesh() {
       if (_meshPoints.Count == 0) {
-        return;
+        return _lastCreatedMesh;
       }
 
       Mesh mesh = new Mesh();
@@ -128,12 +134,14 @@ namespace MeshGeneration {
       _meshList.Add(mesh);
       _lastCreatedMesh = mesh;
 
-      if(OnNewMesh != null) {
+      if (OnNewMesh != null) {
         OnNewMesh(mesh);
       }
 
       _meshPoints.Clear();
       _meshIndexes.Clear();
+
+      return _lastCreatedMesh;
     }
   }
 }
