@@ -48,7 +48,13 @@ public class ColorSwatch : MonoBehaviour {
   public void ReceiveNearestIndexTipColor() {
     IndexTipColor nearestIndexTipColor = GetNearestTipColor();
     if (nearestIndexTipColor != null) {
-      this.SetColor(nearestIndexTipColor.GetColor());
+      if (nearestIndexTipColor.IsClean) {
+        // If the index tip is clean, set its color instead of receiving its color.
+        nearestIndexTipColor.SetColor(this.GetColor());
+      }
+      else {
+        this.SetColor(nearestIndexTipColor.GetColor());
+      }
     }
   }
 

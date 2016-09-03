@@ -1,43 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class EmergeableBehaviour : MonoBehaviour {
 
   public bool _beginEmerged = false;
 
+  [Header("(Automatic) To Enable/Disable on Appear/Vanish")]
+  public Renderer[] _renderers; // includes MeshRenderers and SpriteRenderers
+  public Graphic[] _graphics;   // includes uGUI Images and the like
+
   [Header("Optional")]
-  [Tooltip("If None, will use own Transform.")]
+  [Tooltip("If None, will use own Transform. TODO: Currently unused.")]
   public Transform _vanishingPoint;
-
-  public Action OnBegunEmerging     = new Action(() => { });
-  public Action OnFinishedEmerging  = new Action(() => { });
-  public Action OnBegunVanishing    = new Action(() => { });
-  public Action OnFinishedVanishing = new Action(() => { });
-
-  private bool _isEmergedOrEmerging = true;
-  //private bool _isFullyEmerged = true;
-  //private bool _isVanishedOrVanishing = false;
-  //private bool _isFullyVanished = false;
 
   private TweenHandle _vanishTween;
 
-  protected virtual void Start() {
-    _vanishTween = CreateVanishTween();
-
-    if (!_beginEmerged) {
-      _vanishTween.Progress = 1F;
+  public bool IsEmergedOrEmerging {
+    get {
+      return (_vanishTween.IsRunning && _vanishTween.Direction == TweenDirection.BACKWARD)
+           || _vanishTween.Progress == 0F;
     }
   }
 
-  protected virtual void Update() {
-    if (Input.GetKeyDown(KeyCode.Space)) {
-      if (_isEmergedOrEmerging) {
-        TryVanish();
-      }      
-      else {
-        TryEmerge();
-      }
+  protected virtual void Start() {
+    // TODO: This won't work if there are nested EmergeableBehaviours!
+    // Traverse the child hierarchy and don't register any children of objects that are themselves EmergeableBehaviours.
+    _renderers = GetComponentsInChildren<Renderer>();
+    _graphics = GetComponentsInChildren<Graphic>();
+
+    _vanishTween = CreateVanishTween();
+    if (!_beginEmerged) {
+      _vanishTween.Progress = 1F;
     }
   }
 
@@ -63,34 +58,28 @@ public class EmergeableBehaviour : MonoBehaviour {
       .Keep();
   }
 
-  private void DoOnBegunEmerging() {
-    _isEmergedOrEmerging = true;
-    //_isFullyEmerged = false;
-    //_isVanishedOrVanishing = false;
-    //_isFullyVanished = false;
-    OnBegunEmerging();
+  protected virtual void DoOnBegunEmerging() {
+    for (int i = 0; i < _renderers.Length; i++) {
+      _renderers[i].enabled = true;
+    }
+    for (int i = 0; i < _graphics.Length; i++) {
+      _graphics[i].enabled = true;
+    }
   }
-  private void DoOnFinishedEmerging() {
-    _isEmergedOrEmerging = true;
-    //_isFullyEmerged = true;
-    //_isVanishedOrVanishing = false;
-    //_isFullyVanished = false;
-    OnFinishedEmerging();
+  protected virtual void DoOnFinishedEmerging() {
+
   }
 
-  private void DoOnBegunVanishing() {
-    _isEmergedOrEmerging = false;
-    //_isFullyEmerged = false;
-    //_isVanishedOrVanishing = true;
-    //_isFullyVanished = false;
-    OnBegunVanishing();
+  protected virtual void DoOnBegunVanishing() {
+
   }
-  private void DoOnFinishedVanishing() {
-    _isEmergedOrEmerging = false;
-    //_isFullyEmerged = false;
-    //_isVanishedOrVanishing = true;
-    //_isFullyVanished = true;
-    OnFinishedVanishing();
+  protected virtual void DoOnFinishedVanishing() {
+    for (int i = 0; i < _renderers.Length; i++) {
+      _renderers[i].enabled = false;
+    }
+    for (int i = 0; i < _graphics.Length; i++) {
+      _graphics[i].enabled = false;
+    }
   }
 
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Leap.Unity.RuntimeGizmos;
 
-public class MixingBasin : MonoBehaviour {
+public class ColorMixingBasin : MonoBehaviour {
 
   public MeshRenderer _liquidMeshRenderer;
 

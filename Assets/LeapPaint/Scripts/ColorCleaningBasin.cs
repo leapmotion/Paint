@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CleaningBasin : MonoBehaviour {
+public class ColorCleaningBasin : MonoBehaviour {
 
 
 

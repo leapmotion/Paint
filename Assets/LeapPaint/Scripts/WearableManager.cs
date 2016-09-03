@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Leap.Unity;
 
-public class WearableUIManager : MonoBehaviour {
+public class WearableManager : MonoBehaviour {
 
   public Transform _centerEyeAnchor;
 
@@ -18,8 +18,9 @@ public class WearableUIManager : MonoBehaviour {
   public float _pinchGrabDistance = 0.05F;
 
   // Wearable/Anchor registration
-  public List<WearableUI> _wearables = new List<WearableUI>();
-  public WearableAnchor[] _anchors;
+  public WearableUI[] _wearableUIs;
+  public WearableAnchor[] _wearableAnchors;
+  public List<IWearable> _wearables = new List<IWearable>();
 
   [Header("Effects")]
   public Material _fadeableAnchorRingMaterial;
@@ -33,14 +34,21 @@ public class WearableUIManager : MonoBehaviour {
   private Chirality _lastHandFacingCamera;
   
   // Wearable state tracking
-  private WearableUI _leftGrabbedWearable = null;
-  private WearableUI _rightGrabbedWearable = null;
+  private IWearable _leftGrabbedWearable = null;
+  private IWearable _rightGrabbedWearable = null;
 
   protected void Start() {
     _leftPinchDetector.OnActivate.AddListener(OnLeftPinchDetected);
     _leftPinchDetector.OnDeactivate.AddListener(OnLeftPinchEnded);
     _rightPinchDetector.OnActivate.AddListener(OnRightPinchDetected);
     _rightPinchDetector.OnDeactivate.AddListener(OnRightPinchEnded);
+
+    for (int i = 0; i < _wearableUIs.Length; i++) {
+      _wearables.Add(_wearableUIs[i]);
+    }
+    for (int i = 0; i < _wearableAnchors.Length; i++) {
+      _wearables.Add(_wearableAnchors[i]);
+    }
   }
 
   protected void Update() {
@@ -83,82 +91,96 @@ public class WearableUIManager : MonoBehaviour {
 
   private void OnLeftHandBeganTracking() {
     for (int i = 0; i < _wearables.Count; i++) {
-      _wearables[i].NotifyHandTracked(true);
+      _wearables[i].NotifyHandTracked(true, Chirality.Left);
     }
   }
   private void OnLeftHandStoppedTracking() {
     for (int i = 0; i < _wearables.Count; i++) {
-      _wearables[i].NotifyHandTracked(false);
+      _wearables[i].NotifyHandTracked(false, Chirality.Left);
     }
   }
   private void OnLeftHandBeganFacingCamera() {
     for (int i = 0; i < _wearables.Count; i++) {
-      _wearables[i].NotifyPalmFacingCamera(true);
+      _wearables[i].NotifyPalmFacingCamera(true, Chirality.Left);
     }
   }
   private void OnLeftHandStoppedFacingCamera() {
     for (int i = 0; i < _wearables.Count; i++) {
-      _wearables[i].NotifyPalmFacingCamera(false);
+      _wearables[i].NotifyPalmFacingCamera(false, Chirality.Left);
     }
   }
 
   private void OnRightHandBeganTracking() {
-    //for (int i = 0; i < _rWearables.Count; i++) {
-    //  _rWearables[i].NotifyHandTracked(true);
-    //}
+    for (int i = 0; i < _wearables.Count; i++) {
+      _wearables[i].NotifyHandTracked(true, Chirality.Right);
+    }
   }
   private void OnRightHandStoppedTracking() {
-    //for (int i = 0; i < _rWearables.Count; i++) {
-    //  _rWearables[i].NotifyHandTracked(false);
-    //}
+    for (int i = 0; i < _wearables.Count; i++) {
+      _wearables[i].NotifyHandTracked(false, Chirality.Right);
+    }
   }
   private void OnRightHandBeganFacingCamera() {
-    //for (int i = 0; i < _rWearables.Count; i++) {
-    //  _rWearables[i].NotifyPalmFacingCamera(true);
-    //}
+    for (int i = 0; i < _wearables.Count; i++) {
+      _wearables[i].NotifyPalmFacingCamera(true, Chirality.Right);
+    }
   }
   private void OnRightHandStoppedFacingCamera() {
-    //for (int i = 0; i < _rWearables.Count; i++) {
-    //  _rWearables[i].NotifyPalmFacingCamera(false);
-    //}
+    for (int i = 0; i < _wearables.Count; i++) {
+      _wearables[i].NotifyPalmFacingCamera(false, Chirality.Right);
+    }
   }
 
   private void OnLeftPinchDetected() {
+    for (int i = 0; i < _wearables.Count; i++) {
+      _wearables[i].NotifyPinchChanged(true, Chirality.Left);
+    }
     TryGrab(EvaluatePossiblePinch(_leftPinchDetector), Chirality.Left);
   }
 
   private void OnLeftPinchEnded() {
+    for (int i = 0; i < _wearables.Count; i++) {
+      _wearables[i].NotifyPinchChanged(false, Chirality.Left);
+    }
     if (_leftGrabbedWearable != null) {
-      _leftGrabbedWearable.ReleaseFromGrab();
+      _leftGrabbedWearable.ReleaseFromGrab(_leftPinchDetector.transform);
     }
   }
 
   private void OnRightPinchDetected() {
+    for (int i = 0; i < _wearables.Count; i++) {
+      _wearables[i].NotifyPinchChanged(true, Chirality.Right);
+    }
     TryGrab(EvaluatePossiblePinch(_rightPinchDetector), Chirality.Right);
   }
 
   private void OnRightPinchEnded() {
+    for (int i = 0; i < _wearables.Count; i++) {
+      _wearables[i].NotifyPinchChanged(false, Chirality.Right);
+    }
     if (_rightGrabbedWearable != null) {
-      _rightGrabbedWearable.ReleaseFromGrab();
+      _rightGrabbedWearable.ReleaseFromGrab(_rightPinchDetector.transform);
     }
   }
 
   /// <summary> Returns the closest WearableUI to the PinchDetector, or null of they are all further than _pinchGrabDistance.</summary>
-  private WearableUI EvaluatePossiblePinch(PinchDetector pinchToTest) {
-    WearableUI closestWearableUI = null;
+  private IWearable EvaluatePossiblePinch(PinchDetector pinchToTest) {
+    IWearable closestWearable = null;
     float closestDistance = 1000000F;
     float pinchWearableDistance = 0F;
     for (int i = 0; i < _wearables.Count; i++) {
-      pinchWearableDistance = Vector3.Distance(_wearables[i].transform.position, pinchToTest.transform.position);
-      if (pinchWearableDistance < _pinchGrabDistance && pinchWearableDistance < closestDistance) {
-        closestDistance = pinchWearableDistance;
-        closestWearableUI = _wearables[i];
+      if (_wearables[i].CanBeGrabbed()) {
+        pinchWearableDistance = Vector3.Distance(_wearables[i].GetPosition(), pinchToTest.transform.position);
+        if (pinchWearableDistance < _pinchGrabDistance && pinchWearableDistance < closestDistance) {
+          closestDistance = pinchWearableDistance;
+          closestWearable = _wearables[i];
+        }
       }
     }
-    return closestWearableUI;
+    return closestWearable;
   }
 
-  private void TryGrab(WearableUI toGrab, Chirality whichHand) {
+  private void TryGrab(IWearable toGrab, Chirality whichHand) {
     if (toGrab == null) return;
     if (toGrab.BeGrabbedBy((whichHand == Chirality.Left ? _leftPinchDetector.transform : _rightPinchDetector.transform))) {
       if (whichHand == Chirality.Left) {
@@ -170,33 +192,8 @@ public class WearableUIManager : MonoBehaviour {
     }
   }
 
-  // TODO: Delete me if this isn't needed anywhere.
-  //public Vector3 GetPinchGrabbedVelocity(WearableUI grabbedWearable) {
-  //  Leap.Hand hand = null;
-  //  if (_leftGrabbedWearable == grabbedWearable) {
-  //    hand = _leftHand.GetLeapHand();
-  //  }
-  //  else if (_rightGrabbedWearable == grabbedWearable) {
-  //    hand = _rightHand.GetLeapHand();
-  //  }
-
-  //  if (hand != null) {
-  //    return ((hand.Fingers[(int)Leap.Finger.FingerType.TYPE_INDEX].TipVelocity
-  //      + hand.Fingers[(int)Leap.Finger.FingerType.TYPE_THUMB].TipVelocity) / 2F).ToVector3();
-  //  }
-  //  else {
-  //    Debug.LogError("[WearableUIManager] Grabbed WearableUI is not tracked as grabbed by this WearableUIManager.");
-  //    return Vector3.zero;
-  //  }
-  //}
-
-  public void RegisterWearable(WearableUI wearable) {
-    for (int i = 0; i < _wearables.Count; i++) {
-      if (_wearables[i] == wearable) {
-        return;
-      }
-    }
-    _wearables.Add(wearable);
+  public WearableAnchor GetEquivalentHandedAnchor(WearableAnchor wearableAnchor, Chirality whichHand) {
+    return wearableAnchor.GetChiralAnchor(whichHand);
   }
 
   public Vector3 GetLookDirection() {

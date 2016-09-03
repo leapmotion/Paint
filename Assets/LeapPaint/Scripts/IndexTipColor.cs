@@ -42,7 +42,7 @@ public class IndexTipColor : MonoBehaviour {
   #region Mixing Paint Colors
 
   protected void OnTriggerStay(Collider other) {
-    MixingBasin mixingLiquid = other.GetComponentInParent<MixingBasin>();
+    ColorMixingBasin mixingLiquid = other.GetComponentInParent<ColorMixingBasin>();
     if (mixingLiquid != null) {
       if (IsClean) {
         this.SetColor(mixingLiquid.GetColor());
@@ -53,7 +53,7 @@ public class IndexTipColor : MonoBehaviour {
         this.SetColor(mixingLiquid.MixWithIndexTipColor(this, handSpeed));
       }
     }
-    CleaningBasin cleaningLiquid = other.GetComponentInParent<CleaningBasin>();
+    ColorCleaningBasin cleaningLiquid = other.GetComponentInParent<ColorCleaningBasin>();
     if (cleaningLiquid != null) {
       this.SetColor(new Color(0F, 0F, 0F, 0F));
     }
