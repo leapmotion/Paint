@@ -8,6 +8,10 @@ public class ColorMixingBasin : MonoBehaviour {
 
   private float _mixingCoefficient = 0.05F;
 
+  protected void Start() {
+    SetColor(Color.white);
+  }
+
   /// <summary>
   /// Lerps this mixing liquid's color towards the index tip's color, and returns the index tip's color lerped towards the mixing liquid's color.
   /// </summary>
@@ -21,6 +25,10 @@ public class ColorMixingBasin : MonoBehaviour {
 
   public Color GetColor() {
     return _liquidMeshRenderer.material.GetColor(Shader.PropertyToID("_Color"));
+  }
+
+  public void SetColor(Color color) {
+    _liquidMeshRenderer.material.SetColor(Shader.PropertyToID("_Color"), color);
   }
 
 }

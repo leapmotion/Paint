@@ -22,6 +22,7 @@ public class WearableUI : AnchoredBehaviour, IWearable {
     WearableAnchor anchor = _anchorTransform.GetComponent<WearableAnchor>();
     if (anchor != null) {
       _wearableAnchor = anchor;
+      _wearableAnchor.OnAnchorChiralityChanged += DoOnAnchorChiralityChanged;
     }
   }
 
@@ -87,6 +88,8 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   public void OnFingerEnterMarble(Collider fingerCollider) {
     DoOnFingerPressedMarble();
   }
+
+  protected virtual void DoOnAnchorChiralityChanged(Chirality whichHand) { }
 
   protected virtual void DoOnFingerPressedMarble() { }
 
@@ -173,7 +176,7 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   }
 
   private void Appear(Chirality whichHand) {
-    WearableAnchor chiralAnchor = _manager.GetEquivalentHandedAnchor(_wearableAnchor, whichHand);
+    WearableAnchor chiralAnchor = _wearableAnchor.GetChiralAnchor(whichHand);
     _wearableAnchor = chiralAnchor;
     _anchorTransform = _wearableAnchor.transform;
     _appearTween.Play(TweenDirection.FORWARD);
@@ -282,6 +285,7 @@ public class WearableUI : AnchoredBehaviour, IWearable {
     }
     _grabbingTransform = grabber;
     _isAttached = true;
+    _isWorkstation = false;
     RefreshAnchorState();
     DoOnGrabbed();
     return true;
@@ -316,8 +320,18 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   private bool EvaluateShouldActivateWorkstation() {
     bool shouldActivateWorkstation = false;
 
+    if ((_wearableAnchor._anchorChirality == Chirality.Left
+      && _manager.LastGrabbedByLeftHand() == this
+      && _wearableAnchor.GetLastDisplayedChiralAnchor()._anchorChirality == Chirality.Left)
+     || (_wearableAnchor._anchorChirality == Chirality.Right
+      && _manager.LastGrabbedByRightHand() == this
+      && _wearableAnchor.GetLastDisplayedChiralAnchor()._anchorChirality == Chirality.Right)) {
+      return true;
+    }
+
     if ((_wearableAnchor._anchorChirality == Chirality.Left && _isLeftHandTracked)
      || (_wearableAnchor._anchorChirality == Chirality.Right && _isRightHandTracked)) {
+
       float anchorDistance = Vector3.Distance(this.transform.position, _wearableAnchor.transform.position);
       if (anchorDistance < OVERRIDE_VELOCITY_RETURN_TO_ANCHOR_DISTANCE) {
         shouldActivateWorkstation = false;
@@ -374,8 +388,7 @@ public class WearableUI : AnchoredBehaviour, IWearable {
 
   private Rigidbody _simulatedThrownBody = null;
   private Transform _workstationTargetLocation = null;
-
-  private TweenHandle _workstationPlacementTween;
+  private bool _isWorkstation = false;
 
   private float _optimalWorkstationDistance = 0.6F;
   private float _optimalWorkstationVerticalOffset = -0.3F;
@@ -386,28 +399,21 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   private Vector3 _scheduledRigidbodyVelocity;
 
   protected bool IsWorkstation {
-    get {
-      if (_workstationPlacementTween.IsValid) {
-        return (_workstationPlacementTween.IsRunning && _workstationPlacementTween.Direction == TweenDirection.FORWARD)
-             || _workstationPlacementTween.Progress == 1F;
-      }
-      else return false;
-    }
+    get { return _isWorkstation; }
   }
 
   private Transform _lerpFrom;
   private Transform _lerpTo;
-  private TweenHandle ConstructWorkstationPlacementTween(Transform from, Transform to) {
+  private TweenHandle ConstructWorkstationPlacementTween(Transform from, Transform to, float overTime) {
     _lerpFrom = from;
     _lerpTo = to;
     return Tween.Target(this.transform)
       .Rotation(from, to)
       .Value(0F, 1F, OnGetWorkstationEmergeTransformLerpAmount)
-      .OverTime(0.5F)
+      .OverTime(overTime)
       .Smooth(TweenType.SMOOTH)
       .OnLeaveStart(DoOnMovementToWorkstationBegan)
-      .OnReachEnd(DoOnMovementToWorkstationFinished)
-      .Keep();
+      .OnReachEnd(DoOnMovementToWorkstationFinished);
   }
 
   private void OnGetWorkstationEmergeTransformLerpAmount(float lerpAmount) {
@@ -434,10 +440,18 @@ public class WearableUI : AnchoredBehaviour, IWearable {
       Destroy(_workstationTargetLocation.gameObject);
     }
     _workstationTargetLocation = new GameObject("WearableUI Workstation Target Location Object").GetComponent<Transform>();
-    SetGoodWorkstationTransform(_workstationTargetLocation, _simulatedThrownBody.transform.position, throwVelocity);
+    SetGoodWorkstationTransform(_workstationTargetLocation, this.transform.position, throwVelocity);
+    
+    // Determine how long the tween should take
+    Vector3 targetPosition = _workstationTargetLocation.position;
+    Vector3 velocityOffsetPosition = this.transform.position + 0.5F * Vector3.Distance(targetPosition, this.transform.position) * (throwVelocity.normalized);
+    float timeCoefficient = 1.5F;
+    float timeToTween = timeCoefficient * Vector3.Distance(velocityOffsetPosition, targetPosition);
 
     // Construct tween and play it.
-    ConstructWorkstationPlacementTween(_simulatedThrownBody.transform, _workstationTargetLocation).Play();
+    ConstructWorkstationPlacementTween(_simulatedThrownBody.transform, _workstationTargetLocation, timeToTween).Play();
+
+    _isWorkstation = true;
   }
 
   private void ScheduleRigidbodyUpdate(Vector3 position, Quaternion rotation, Vector3 velocity) {
@@ -459,43 +473,53 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   private void SetGoodWorkstationTransform(Transform toSet, Vector3 initPosition, Vector3 initVelocity) {
     Transform centerEyeAnchor = _manager.GetCenterEyeAnchor();
 
-    // Find projection direction
-    Vector3 projectDirection;
-    Vector3 groundAlignedInitVelocity = new Vector3(initVelocity.x, 0F, initVelocity.z);
-    Vector3 effectiveLookDirection = centerEyeAnchor.forward;
-    effectiveLookDirection = new Vector3(effectiveLookDirection.x, 0F, effectiveLookDirection.z);
-    if (effectiveLookDirection.magnitude < 0.01F) {
-      if (effectiveLookDirection.y > 0F) {
-        projectDirection = -centerEyeAnchor.up;
-      }
-      else {
-        projectDirection = centerEyeAnchor.up;
-      }
-    }
-    if (initVelocity.magnitude < 0.5F || groundAlignedInitVelocity.magnitude < 0.01F) {
-      projectDirection = effectiveLookDirection;
+    Vector3 workstationPosition;
+    bool modifyHeight = true;
+    if (initVelocity.magnitude < 0.7F) {
+      // Just use current position as the position to choose.
+      workstationPosition = initPosition;
+      modifyHeight = false;
     }
     else {
-      projectDirection = groundAlignedInitVelocity;
-    }
-    
-    // Add a little bit of the effective look direction to the projectDirection to skew towards winding up
-    // in front of the user unless they really throw it hard behind them
-    float forwardSkewAmount = 1F;
-    projectDirection += effectiveLookDirection * forwardSkewAmount;
-    projectDirection = projectDirection.normalized;
+      // Find projection direction
+      Vector3 projectDirection;
+      Vector3 groundAlignedInitVelocity = new Vector3(initVelocity.x, 0F, initVelocity.z);
+      Vector3 effectiveLookDirection = centerEyeAnchor.forward;
+      effectiveLookDirection = new Vector3(effectiveLookDirection.x, 0F, effectiveLookDirection.z);
+      if (effectiveLookDirection.magnitude < 0.01F) {
+        if (effectiveLookDirection.y > 0F) {
+          projectDirection = -centerEyeAnchor.up;
+        }
+        else {
+          projectDirection = centerEyeAnchor.up;
+        }
+      }
+      if (initVelocity.magnitude < 0.5F || groundAlignedInitVelocity.magnitude < 0.01F) {
+        projectDirection = effectiveLookDirection;
+      }
+      else {
+        projectDirection = groundAlignedInitVelocity;
+      }
 
-    // Find good workstation position based on projection direction
-    Vector3 workstationPosition;
-    Vector3 workstationDirection = (initPosition + (projectDirection * 20F) - centerEyeAnchor.position);
-    Vector3 groundAlignedWorkstationDirection = new Vector3(workstationDirection.x, 0F, workstationDirection.z).normalized;
-    workstationPosition = _optimalWorkstationDistance * groundAlignedWorkstationDirection;
+      // Add a little bit of the effective look direction to the projectDirection to skew towards winding up
+      // in front of the user unless they really throw it hard behind them
+      float forwardSkewAmount = 1F;
+      projectDirection += effectiveLookDirection * forwardSkewAmount;
+      projectDirection = projectDirection.normalized;
+
+      // Find good workstation position based on projection direction
+      Vector3 workstationDirection = (initPosition + (projectDirection * 20F) - centerEyeAnchor.position);
+      Vector3 groundAlignedWorkstationDirection = new Vector3(workstationDirection.x, 0F, workstationDirection.z).normalized;
+      workstationPosition = centerEyeAnchor.position + _optimalWorkstationDistance * groundAlignedWorkstationDirection;
+    }
 
     // Find a good workstation orientation
     Vector3 optimalLookVector = GetOptimalOrientationLookVector(centerEyeAnchor, workstationPosition);
 
     // Set the workstation target transform.
-    toSet.position = new Vector3(workstationPosition.x, centerEyeAnchor.position.y + _optimalWorkstationVerticalOffset, workstationPosition.z);
+    toSet.position = new Vector3(workstationPosition.x,
+      (modifyHeight ? centerEyeAnchor.position.y + _optimalWorkstationVerticalOffset : workstationPosition.y),
+      workstationPosition.z);
     toSet.rotation = Quaternion.LookRotation(optimalLookVector);
   }
 

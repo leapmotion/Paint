@@ -185,19 +185,25 @@ public class WearableManager : MonoBehaviour {
     if (toGrab.BeGrabbedBy((whichHand == Chirality.Left ? _leftPinchDetector.transform : _rightPinchDetector.transform))) {
       if (whichHand == Chirality.Left) {
         _leftGrabbedWearable = toGrab;
+        if (_rightGrabbedWearable == toGrab) {
+          _rightGrabbedWearable = null;
+        }
       }
       else {
         _rightGrabbedWearable = toGrab;
+        if (_leftGrabbedWearable == toGrab) {
+          _leftGrabbedWearable = null;
+        }
       }
     }
   }
 
-  public WearableAnchor GetEquivalentHandedAnchor(WearableAnchor wearableAnchor, Chirality whichHand) {
-    return wearableAnchor.GetChiralAnchor(whichHand);
+  public IWearable LastGrabbedByLeftHand() {
+    return _leftGrabbedWearable;
   }
 
-  public Vector3 GetLookDirection() {
-    return _centerEyeAnchor.transform.forward;
+  public IWearable LastGrabbedByRightHand() {
+    return _rightGrabbedWearable;
   }
 
   public Transform GetCenterEyeAnchor() {

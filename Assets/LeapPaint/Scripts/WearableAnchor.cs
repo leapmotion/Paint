@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Leap.Unity;
+using System;
 
 public class WearableAnchor : MonoBehaviour, IWearable {
+
+  public Action<Chirality> OnAnchorChiralityChanged;
 
   [Header("Mirroring")]
   [Tooltip("The equivalent anchor to this one, with opposite chirality.")]
@@ -23,7 +26,7 @@ public class WearableAnchor : MonoBehaviour, IWearable {
         return _appearTween.Progress != 0F;
       }
       else {
-        Debug.LogWarning("Appear tween is invalid. (Why..?)");
+        InitAppearVanish();
         return false;
       }
     }
@@ -216,6 +219,14 @@ public class WearableAnchor : MonoBehaviour, IWearable {
     }
 
     if (_appearScheduled) {
+      if (_lastDisplayedChirality != this._anchorChirality) {
+        if (OnAnchorChiralityChanged != null) {
+          OnAnchorChiralityChanged(this._anchorChirality);
+        }
+        if (_mirroredEquivalent.OnAnchorChiralityChanged != null) {
+          _mirroredEquivalent.OnAnchorChiralityChanged(this._anchorChirality);
+        }
+      }
       _lastDisplayedChirality = this._anchorChirality;
       _mirroredEquivalent.NotifyChiralEquivalentAnchorDisplayed();
 
@@ -232,7 +243,7 @@ public class WearableAnchor : MonoBehaviour, IWearable {
   }
 
   public bool IsPlayingAppearance() {
-    return _appearTween.IsRunning && _appearTween.Direction == TweenDirection.FORWARD;
+    return _appearTween.IsValid && _appearTween.IsRunning && _appearTween.Direction == TweenDirection.FORWARD;
   }
 
   public bool IsScheduledToAppearOrAppearing() {
