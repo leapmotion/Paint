@@ -1,4 +1,5 @@
 ﻿using Leap.Unity;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PinchStrokeProcessor : MonoBehaviour {
@@ -6,6 +7,11 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private const float MIN_SEGMENT_LENGTH = 0.005F;
 
   public PinchDetector _pinchDetector;
+  [Tooltip("Used to stop drawing if the pinch detector is grabbing a UI element.")]
+  public WearableManager _wearableManager;
+  public UndoRedoManager _undoRedoManager;
+
+  public bool _usePitchYaw = true;
 
   private bool _paintingStroke = false;
   private StrokeProcessor _strokeProcessor;
@@ -13,27 +19,42 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 _lastStrokePointAdded = Vector3.zero;
   private float _timeSinceLastAddition = 0F;
 
+  private StrokeRibbonRenderer _ribbonRenderer;
+
   void Start() {
     _strokeProcessor = new StrokeProcessor();
 
     // Set up and register filters.
+    //FilterDebugLogMemory debugLogFilter = new FilterDebugLogMemory();
+    //_strokeProcessor.RegisterStrokeFilter(debugLogFilter);
     FilterPositionMovingAverage movingAvgFilter = new FilterPositionMovingAverage(6);
     _strokeProcessor.RegisterStrokeFilter(movingAvgFilter);
-    FilterPitchYawTangent pitchYawFilter = new FilterPitchYawTangent();
-    _strokeProcessor.RegisterStrokeFilter(pitchYawFilter);
+    if (_usePitchYaw) {
+      FilterPitchYawTangent pitchYawFilter = new FilterPitchYawTangent();
+      _strokeProcessor.RegisterStrokeFilter(pitchYawFilter);
+      //FilterRollToCanvasAlignment rollCanvasAlignFilter = new FilterRollToCanvasAlignment();
+      //_strokeProcessor.RegisterStrokeFilter(rollCanvasAlignFilter);
+    }
+    else {
+      FilterNaiveCanvasAlignment canvasAlignmentFilter = new FilterNaiveCanvasAlignment();
+      _strokeProcessor.RegisterStrokeFilter(canvasAlignmentFilter);
+    }
 
     // Set up and register renderers.
     GameObject rendererObj = new GameObject();
-    StrokeRibbonRenderer ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
-    ribbonRenderer.Color = Color.red;
-    ribbonRenderer.Thickness = 0.05F;
-    _strokeProcessor.RegisterStrokeRenderer(ribbonRenderer);
+    _ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
+    _ribbonRenderer.Color = Color.red; 
+    _ribbonRenderer.Thickness = 0.02F;
+    _ribbonRenderer.OnMeshFinalized += DoOnMeshFinalized;
+    _strokeProcessor.RegisterStrokeRenderer(_ribbonRenderer);
   }
 
   void Update() {
     if (_pinchDetector.IsActive && !_paintingStroke) {
-      BeginStroke();
-      _paintingStroke = true;
+      if (!_wearableManager.IsPinchDetectorGrabbing(_pinchDetector)) {
+        BeginStroke();
+        _paintingStroke = true;
+      }
     }
     else if (_pinchDetector.IsActive && _paintingStroke) {
       UpdateStroke();
@@ -45,6 +66,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   private void BeginStroke() {
+    // TODO HACK FIXME
+    _ribbonRenderer.Color = _pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
     _strokeProcessor.BeginStroke();
   }
 
@@ -71,6 +94,18 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private void EndStroke() {
     _strokeProcessor.EndStroke();
+  }
+
+  // TODO DELETEME FIXME
+  private void DoOnMeshFinalized(Mesh mesh) {
+    GameObject finishedRibbonMesh = new GameObject();
+    MeshFilter filter = finishedRibbonMesh.AddComponent<MeshFilter>();
+    MeshRenderer renderer = finishedRibbonMesh.AddComponent<MeshRenderer>();
+    Material ribbonMat = new Material(Shader.Find("LeapMotion/RibbonShader"));
+    ribbonMat.hideFlags = HideFlags.HideAndDontSave;
+    renderer.material = ribbonMat;
+    filter.mesh = mesh;
+    _undoRedoManager.NotifyAction(finishedRibbonMesh);
   }
 
 }

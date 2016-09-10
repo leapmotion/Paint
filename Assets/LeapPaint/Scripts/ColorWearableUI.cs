@@ -5,58 +5,65 @@ using Leap.Unity;
 public class ColorWearableUI : WearableUI {
 
   [Header("Color Wearable UI")]
-  public EmergeableBehaviour[] _emergeables;
-  public MoveableBehaviour _primaryColorPalette;
+  public EmergeableBehaviour _primaryPaletteEmergeable;
+  public MoveableBehaviour _primaryPaletteMoveable;
+  public ColorPalette _primaryPalette;
 
-  private Chirality _chirality = Chirality.Left;
+  public EmergeableBehaviour[] _workstationEmergeables;
 
   protected override void DoOnFingerPressedMarble() {
     base.DoOnFingerPressedMarble();
 
     if (!IsGrabbed && !IsWorkstation) {
-      _primaryColorPalette.MoveToAorC();
-      EmergeableBehaviour emergeable = _primaryColorPalette.GetComponent<EmergeableBehaviour>();
-      if (emergeable.IsEmergedOrEmerging) {
-        emergeable.TryVanish();
+      if (!_primaryPaletteEmergeable.IsEmergedOrEmerging) {
+        _primaryPaletteEmergeable.TryEmerge();
       }
       else {
-        emergeable.TryEmerge();
+        _primaryPaletteEmergeable.TryVanish();
       }
     }
   }
 
-  protected override void DoOnAnchorChiralityChanged(Chirality whichHand) {
-    base.DoOnAnchorChiralityChanged(whichHand);
+  protected override void DoOnAnchorChiralityChanged(Chirality newChirality) {
+    base.DoOnAnchorChiralityChanged(newChirality);
 
-    if (whichHand != _chirality) {
-      // Opposite hand; switch to other root transform
-      _primaryColorPalette.ToggleC();
-      _primaryColorPalette.MoveToAorC();
-      _chirality = whichHand;
+    if (newChirality != DisplayingChirality) {
+      _primaryPaletteMoveable._A.position = MirrorUtil.GetMirroredPosition(_primaryPaletteMoveable._A.position, this.transform);
+      _primaryPaletteMoveable._A.rotation = MirrorUtil.GetMirroredRotation(_primaryPaletteMoveable._A.rotation, this.transform);
+      if (!IsWorkstation) {
+        _primaryPaletteMoveable.MoveToA();
+      }
+
+      DisplayingChirality = newChirality;
     }
   }
 
   protected override void DoOnGrabbed() {
     base.DoOnGrabbed();
 
-    for (int i = 0; i < _emergeables.Length; i++) {
-      _emergeables[i].TryVanish();
+    _primaryPaletteEmergeable.TryVanish();
+
+    _primaryPalette.SetSwatchModeDoNothing();
+
+    for (int i = 0; i < _workstationEmergeables.Length; i++) {
+      _workstationEmergeables[i].TryVanish();
     }
   }
 
   protected override void DoOnMovementToWorkstationBegan() {
     base.DoOnMovementToWorkstationBegan();
 
-    _primaryColorPalette.MoveToB();
-    _primaryColorPalette.GetComponent<ColorPalette>().SetSwatchModeReceiveColor();
+    _primaryPaletteMoveable.MoveToB();
   }
 
   protected override void DoOnMovementToWorkstationFinished() {
     base.DoOnMovementToWorkstationFinished();
 
     if (!IsGrabbed) {
-      for (int i = 0; i < _emergeables.Length; i++) {
-        _emergeables[i].TryEmerge();
+      _primaryPaletteEmergeable.TryEmerge();
+      _primaryPalette.SetSwatchModeReceiveColor();
+      for (int i = 0; i < _workstationEmergeables.Length; i++) {
+        _workstationEmergeables[i].TryEmerge();
       }
     }
   }
@@ -64,9 +71,14 @@ public class ColorWearableUI : WearableUI {
   protected override void DoOnReturnedToAnchor() {
     base.DoOnReturnedToAnchor();
 
-    EmergeableBehaviour emergeable = _primaryColorPalette.GetComponent<EmergeableBehaviour>();
-    _primaryColorPalette.MoveToA();
-    _primaryColorPalette.GetComponent<ColorPalette>().SetSwatchModeAssignColor();
+    _primaryPaletteMoveable.MoveToA();
+    _primaryPalette.SetSwatchModeAssignColor();
+
+    //if (_primaryColorPalette != null) {
+    //  EmergeableBehaviour emergeable = _primaryColorPalette.GetComponent<EmergeableBehaviour>();
+    //  _primaryColorPalette.MoveToA();
+    //  _primaryColorPalette.GetComponent<ColorPalette>().SetSwatchModeAssignColor();
+    //}
   }
 
 }

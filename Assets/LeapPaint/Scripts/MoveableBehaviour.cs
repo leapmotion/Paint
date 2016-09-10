@@ -66,12 +66,12 @@ public class MoveableBehaviour : MonoBehaviour {
   }
 
   public void TransitionToB() {
-    ConstructMovementTween();
+    _movementTween = ConstructMovementTween();
     _movementTween.Play(TweenDirection.FORWARD);
   }
 
   public void TransitionToA() {
-    ConstructMovementTween();
+    _movementTween = ConstructMovementTween();
     _movementTween.Play(TweenDirection.BACKWARD);
   }
 

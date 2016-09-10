@@ -84,8 +84,13 @@ namespace TweenInternal {
         toReturn._interpolators[i] = null;
       }
       toReturn._interpolatorCount = 0;
+      toReturn.OnReachStart = null;
       toReturn.OnReachEnd = null;
+      toReturn.OnLeaveEnd = null;
+      toReturn.OnLeaveStart = null;
       toReturn.OnProgress = null;
+
+
 
       toReturn._instanceId = -1;
     }

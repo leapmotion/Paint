@@ -6,21 +6,36 @@ public class ColorSwatch : MonoBehaviour {
 
   public enum SwatchMode {
     ReceiveColor,
-    AssignColor
+    AssignColor,
+    DoNothing
   }
   public SwatchMode _swatchMode = SwatchMode.AssignColor;
 
-  [Tooltip("The swatch's color is stored in this graphic's color property.")]
+  [Header("Choose one but not both; Graphic overrides the MeshRenderer.")]
+  [Tooltip("The swatch's color is stored in this Graphic's color property.")]
   public Graphic _targetColorGraphic;
+  [Tooltip("The swatch's color is stored in a Material instance's color property.")]
+  public MeshRenderer _targetColorRenderer;
 
   private ColorPalette _palette;
 
   public void SetColor(Color color) {
-    _targetColorGraphic.color = color;
+    if (_targetColorGraphic != null) {
+      _targetColorGraphic.color = color;
+    }
+    else {
+      _targetColorRenderer.material.color = color;
+      //_targetColorRenderer.material.SetColor(Shader.PropertyToID("_EmissionColor"), color / 4F);
+    }
   }
 
   public Color GetColor() {
-    return _targetColorGraphic.color;
+    if (_targetColorGraphic != null) {
+      return _targetColorGraphic.color;
+    }
+    else {
+      return _targetColorRenderer.material.color;
+    }
   }
 
   public void SetPalette(ColorPalette palette) {
@@ -32,8 +47,10 @@ public class ColorSwatch : MonoBehaviour {
       case SwatchMode.AssignColor:
         SetNearestIndexTipColor();
         break;
-      case SwatchMode.ReceiveColor: default:
+      case SwatchMode.ReceiveColor:
         ReceiveNearestIndexTipColor();
+        break;
+      default:
         break;
     }
   }

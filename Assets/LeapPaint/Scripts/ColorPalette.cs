@@ -35,5 +35,10 @@ public class ColorPalette : MonoBehaviour {
       _swatches[i].SetMode(ColorSwatch.SwatchMode.AssignColor);
     }
   }
+  public void SetSwatchModeDoNothing() {
+    for (int i = 0; i < _swatchColors.Length; i++) {
+      _swatches[i].SetMode(ColorSwatch.SwatchMode.DoNothing);
+    }
+  }
 
 }
