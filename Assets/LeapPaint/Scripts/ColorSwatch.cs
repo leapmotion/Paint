@@ -25,7 +25,6 @@ public class ColorSwatch : MonoBehaviour {
     }
     else {
       _targetColorRenderer.material.color = color;
-      //_targetColorRenderer.material.SetColor(Shader.PropertyToID("_EmissionColor"), color / 4F);
     }
   }
 

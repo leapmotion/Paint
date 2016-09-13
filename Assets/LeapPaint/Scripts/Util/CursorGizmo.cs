@@ -5,17 +5,25 @@ using Leap.Unity;
 
 public class CursorGizmo : MonoBehaviour, IRuntimeGizmoComponent {
 
-  public PinchDetector pinchDetector;
-
-  protected virtual void Update() {
-    this.transform.position = pinchDetector.transform.position;
-    this.transform.rotation = pinchDetector.transform.rotation * Quaternion.Euler(new Vector3(90F, 0F, 180F));
-  }
+  public PinchDetector _leftPinchDetector;
+  public PinchDetector _rightPinchDetector;
+  private Vector3 _leftHandEulerRotation = new Vector3(0F, 180F, 0F);
+  private Vector3 _rightHandEulerRotation = new Vector3(0F, 180F, 0F);
 
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+    this.transform.position = _leftPinchDetector.transform.position;
+    this.transform.rotation = _leftPinchDetector.transform.rotation * Quaternion.Euler(_leftHandEulerRotation);
+    DrawPinchDetectorCursorGizmo(_leftPinchDetector, drawer);
+
+    this.transform.position = _rightPinchDetector.transform.position;
+    this.transform.rotation = _rightPinchDetector.transform.rotation * Quaternion.Euler(_rightHandEulerRotation);
+    DrawPinchDetectorCursorGizmo(_rightPinchDetector, drawer);
+  }
+
+  private void DrawPinchDetectorCursorGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
     drawer.PushMatrix();
 
-    drawer.matrix = this.transform.localToWorldMatrix;
+    drawer.matrix = pinchDetector.transform.localToWorldMatrix;
 
     drawer.color = Color.red;
     drawer.DrawLine(Vector3.zero, Vector3.right * 0.01F);

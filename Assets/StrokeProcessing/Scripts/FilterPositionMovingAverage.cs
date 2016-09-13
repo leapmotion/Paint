@@ -25,8 +25,8 @@ public class FilterPositionMovingAverage : IMemoryFilter<StrokePoint> {
     Vector3 neighborSum = data.GetFromEnd(index).position;
     int numPointsInRadius = 1;
     for (int r = 1; r <= R; r++) {
-      if (index - r < 0) break;
-      if (index + r >= data.Size) break;
+      if (index - r < 0) continue;
+      if (index + r >= data.Size) continue;
       neighborSum += data.GetFromEnd(index - r).position;
       neighborSum += data.GetFromEnd(index + r).position;
       numPointsInRadius += 2;

@@ -12,7 +12,6 @@ public class UndoRedoManager : MonoBehaviour {
   }
 
   public void Undo() {
-    Debug.Log("undo called");
     if (undoHistory.Count != 0) {
       GameObject undoneAction = undoHistory[undoHistory.Count - 1];
       redoHistory.Add(undoneAction);

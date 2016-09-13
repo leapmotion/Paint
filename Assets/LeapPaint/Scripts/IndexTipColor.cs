@@ -4,7 +4,7 @@ using Leap.Unity;
 
 public class IndexTipColor : MonoBehaviour {
 
-  public Leap.Hand _leapHand;
+  public IHandModel _hand;
   public Renderer _tipMeshRenderer;
   public Color _startingColor = Color.white;
 
@@ -25,11 +25,6 @@ public class IndexTipColor : MonoBehaviour {
     SetColor(_startingColor);
   }
 
-  protected void Start() {
-    IHandModel handModel = GetComponentInParent<IHandModel>();
-    _leapHand = handModel.GetLeapHand();
-  }
-
   public Color GetColor() {
     return _color;
   }
@@ -48,7 +43,7 @@ public class IndexTipColor : MonoBehaviour {
         this.SetColor(mixingLiquid.GetColor());
       }
       else {
-        float handSpeed = _leapHand.Fingers[(int)Leap.Finger.FingerType.TYPE_INDEX].TipVelocity.ToVector3().magnitude;
+        float handSpeed = _hand.GetLeapHand().Fingers[(int)Leap.Finger.FingerType.TYPE_INDEX].TipVelocity.ToVector3().magnitude;
         if (handSpeed < 0.1F) handSpeed = 0F;
         this.SetColor(mixingLiquid.MixWithIndexTipColor(this, handSpeed));
       }

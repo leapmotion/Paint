@@ -29,7 +29,7 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
       MeshShader = Shader.Find("LeapMotion/RibbonShader");
     }
     _meshMaterial = new Material(MeshShader);
-    //_meshMaterial.hideFlags = HideFlags.HideAndDontSave;
+    _meshMaterial.hideFlags = HideFlags.HideAndDontSave;
   }
 
   public void InitializeRenderer() {

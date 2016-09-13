@@ -27,7 +27,7 @@ public class WearableUI : AnchoredBehaviour, IWearable {
 
   private bool _isDisplayingOnAnyHand = false;
 
-  protected void Start() {
+  protected virtual void Start() {
     InitAppearVanish();
 
     _manager = GameObject.FindObjectOfType<WearableManager>();
@@ -38,7 +38,7 @@ public class WearableUI : AnchoredBehaviour, IWearable {
     }
   }
 
-  protected void FixedUpdate() {
+  protected virtual void FixedUpdate() {
     FixedAppearVanishUpdate();
     FixedGrabUpdate();
     FixedWorkstationTransitionUpdate();
@@ -158,8 +158,13 @@ public class WearableUI : AnchoredBehaviour, IWearable {
 
   private void InitAppearVanish() {
     _appearTween = ConstructAppearTween();
-    _appearTween.Progress = 0.001F;
-    Vanish();
+    if (Application.isPlaying) {
+      _appearTween.Progress = 0.001F;
+      Vanish();
+    }
+    else {
+      _appearTween.Progress = 1F;
+    }
   }
 
   private void ScheduleAppear(Chirality whichHand) {
@@ -368,7 +373,6 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   private bool _isWorkstation = false;
 
   private float _optimalWorkstationDistance = 0.6F;
-  private float _optimalWorkstationVerticalOffset = -0.3F;
 
   private bool _isRigidbodyUpdateScheduled = false;
   private Vector3 _scheduledRigidbodyPosition;
@@ -398,7 +402,8 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   }
 
   private void ActivateWorkstationTransition() {
-    Debug.Log(this.name + " is activating its workstation transition.");
+    _isWorkstation = true;
+
     // Create rigidbody throw simulation object
     if (_simulatedThrownBody == null) {
       GameObject bodyObj = new GameObject(this.name + " Rigidbody Simulation Object");
@@ -428,8 +433,6 @@ public class WearableUI : AnchoredBehaviour, IWearable {
 
     // Construct tween and play it.
     ConstructWorkstationPlacementTween(_simulatedThrownBody.transform, _workstationTargetLocation, timeToTween).Play();
-
-    _isWorkstation = true;
   }
 
   private void ScheduleRigidbodyUpdate(Vector3 position, Quaternion rotation, Vector3 velocity) {
@@ -496,10 +499,12 @@ public class WearableUI : AnchoredBehaviour, IWearable {
 
     // Set the workstation target transform.
     toSet.position = new Vector3(workstationPosition.x,
-      (modifyHeight ? centerEyeAnchor.position.y + _optimalWorkstationVerticalOffset : workstationPosition.y),
+      (modifyHeight ? centerEyeAnchor.position.y + GetOptimalWorkstationVerticalOffset() : workstationPosition.y),
       workstationPosition.z);
     toSet.rotation = Quaternion.LookRotation(optimalLookVector);
   }
+
+  protected virtual float GetOptimalWorkstationVerticalOffset() { return -0.25F; }
 
   protected virtual Vector3 GetOptimalOrientationLookVector(Transform centerEyeAnchor, Vector3 fromPosition) {
     Vector3 towardsCamera = centerEyeAnchor.position - fromPosition;
@@ -507,7 +512,6 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   }
 
   protected virtual void DoOnMovementToWorkstationBegan() {
-    Debug.Log(this.name + " got OnMovementToWorkstationBegan.");
     _isAttached = false;
   }
 

@@ -19,7 +19,7 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
     OnValidateLayers();
   }
 
-  protected void Start() {
+  protected virtual void Start() {
     OnValidateLayers();
     InitLayerState();
     _manager = GameObject.FindObjectOfType<PressableUIManager>();
@@ -98,7 +98,7 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
   private void OnValidateLayers() {
     _totalLayerHeight = 0F;
     for (int i = 0; i < _layers.Length; i++) {
-      _layers[i].label = "Layer " + (i + 1);
+      _layers[i].label = "Layer " + (i);
       _totalLayerHeight += _layers[i].maxHeight;
       float upperLayersThickness = 0F;
       for (int j = i; j < _layers.Length; j++) {
@@ -115,7 +115,7 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
     _smoothedLimitedPressDepth.value = _totalLayerHeight;
   }
 
-  private void LayerUpdate() {
+  protected virtual void LayerUpdate() {
     float rawPressDistance = GetRawPressDistance();
     if (rawPressDistance <= 0F && !_pressed) {
       OnPress.Invoke();
@@ -166,7 +166,18 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
     return Vector3.up * GetRawPressDistance();
   }
 
-  private float ConvertWorldLengthToLocal(float length, Vector3 localDirection) {
+  // General utility
+
+  protected Vector3 GetActivatorWorldPosition() {
+    if (_activator != null) {
+      return _activator.transform.position;
+    }
+    else {
+      return Vector3.zero;
+    }
+  }
+
+  protected float ConvertWorldLengthToLocal(float length, Vector3 localDirection) {
     int polarity = length < 0F ? -1 : 1;
     localDirection = localDirection.normalized;
     return new Vector3(length * localDirection.x / transform.lossyScale.x, length * localDirection.y / transform.lossyScale.y, length * localDirection.z / transform.lossyScale.z).magnitude * polarity;
@@ -215,10 +226,10 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
 
   #region Gizmos
 
-  private bool _enableGizmos = false;
+  protected bool _enableGizmos = false;
   private RingBuffer<Color> _gizmoColors;
 
-  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+  public virtual void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
     if (_enableGizmos) {
       drawer.PushMatrix();
       drawer.matrix = this.transform.localToWorldMatrix;
@@ -226,16 +237,6 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
       drawer.color = Color.green;
       if (IsActivated) { drawer.color = Color.white; }
       drawer.DrawWireCube(GetActivationVolumeBoxOffset(), GetActivationVolumeBoxBounds());
-
-      //drawer.color = new Color(0.8F, 0.3F, 0.6F);
-      //drawer.DrawWireCube(GetRawPressOffset(), new Vector3(_xWidth - 0.1F, 0.01F, _zWidth - 0.1F));
-      //drawer.DrawWireCube(GetRawPressOffset(), new Vector3(_xWidth - 0.3F, 0.01F, _zWidth - 0.3F));
-      //drawer.DrawWireCube(GetRawPressOffset(), new Vector3(_xWidth - 0.5F, 0.01F, _zWidth - 0.5F));
-
-      //drawer.color = new Color(0.8F, 0.6F, 0.3F);
-      //drawer.DrawWireCube(GetPressOffset(), new Vector3(_xWidth - 0.2F, 0.01F, _zWidth - 0.2F));
-      //drawer.DrawWireCube(GetPressOffset(), new Vector3(_xWidth - 0.4F, 0.01F, _zWidth - 0.4F));
-      //drawer.DrawWireCube(GetPressOffset(), new Vector3(_xWidth - 0.6F, 0.01F, _zWidth - 0.6F));
 
       if (_gizmoColors == null) {
         _gizmoColors = new RingBuffer<Color>(4);

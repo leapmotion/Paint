@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class FilterPitchYawTangent : IMemoryFilter<StrokePoint> {
+public class zzOldFilterPitchYawTangent : IMemoryFilter<StrokePoint> {
 
   public int GetMemorySize() {
     return 2;
@@ -14,8 +14,8 @@ public class FilterPitchYawTangent : IMemoryFilter<StrokePoint> {
     if (data.Size < 1) return;
     else if (data.Size == 1) {
       StrokePoint point = data.Get(0);
-      point.rotation = Quaternion.identity;
-      point.normal = point.handOrientation * point.rotation * Vector3.up;
+      point.rotation = point.handOrientation;
+      point.normal = point.rotation * Vector3.up;
       data.Set(0, point);
       return;
     }
@@ -23,14 +23,11 @@ public class FilterPitchYawTangent : IMemoryFilter<StrokePoint> {
     for (int offset = data.Size - 2; offset >= 0; offset--) {
       memory = data.GetFromEnd(1 + offset);
       current = data.GetFromEnd(0 + offset);
-
+      
       if (offset == data.Size - 2) {
         N = memory.rotation * Vector3.up;
         B = memory.rotation * Vector3.right;
         T = Vector3.Cross(N, B);
-        if (T.magnitude < 0.999F) {
-          Debug.LogWarning("N not orthogonal to B, got T magnitude: " + T.magnitude);
-        }
       }
       else {
         StrokePoint preMemory = data.GetFromEnd(2 + offset);
@@ -39,6 +36,7 @@ public class FilterPitchYawTangent : IMemoryFilter<StrokePoint> {
         N = memory.rotation * Vector3.up;
         B = Vector3.Cross(T, N);
         if (B.magnitude < 0.999F) {
+          //Debug.LogWarning("T not orthogonal to N, got B magnitude: " + B.magnitude);
           N = Vector3.Cross(B, T).normalized;
           memory.normal = N;
           data.SetFromEnd(1, memory);

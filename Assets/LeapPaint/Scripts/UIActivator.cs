@@ -18,7 +18,7 @@ public class UIActivator : MonoBehaviour, IRuntimeGizmoComponent {
 
   #region Gizmos
 
-  private bool _drawGizmos = true;
+  private bool _drawGizmos = false;
 
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
     if (_drawGizmos) {

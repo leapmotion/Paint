@@ -15,7 +15,7 @@ public class ColorPalette : MonoBehaviour {
     }
   }
 
-  protected void Start() {
+  protected void Awake() {
     Debug.Assert(_swatches.Length == _swatchColors.Length, "[ColorPalette] Registered swatches must be the same size as registered swatch colors!");
 
     for (int i = 0; i < _swatches.Length; i++) {
@@ -25,19 +25,9 @@ public class ColorPalette : MonoBehaviour {
     }
   }
 
-  public void SetSwatchModeReceiveColor() {
+  public void SetSwatchMode(ColorSwatch.SwatchMode toSet) {
     for (int i = 0; i < _swatchColors.Length; i++) {
-      _swatches[i].SetMode(ColorSwatch.SwatchMode.ReceiveColor);
-    }
-  }
-  public void SetSwatchModeAssignColor() {
-    for (int i = 0; i < _swatchColors.Length; i++) {
-      _swatches[i].SetMode(ColorSwatch.SwatchMode.AssignColor);
-    }
-  }
-  public void SetSwatchModeDoNothing() {
-    for (int i = 0; i < _swatchColors.Length; i++) {
-      _swatches[i].SetMode(ColorSwatch.SwatchMode.DoNothing);
+      _swatches[i].SetMode(toSet);
     }
   }
 

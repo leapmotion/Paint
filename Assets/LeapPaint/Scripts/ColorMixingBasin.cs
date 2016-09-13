@@ -19,6 +19,7 @@ public class ColorMixingBasin : MonoBehaviour {
     Color mixColor = indexTipColor.GetColor();
     Color liquidColor = _liquidMeshRenderer.material.GetColor(Shader.PropertyToID("_Color"));
     _liquidMeshRenderer.material.SetColor("_Color", Color.Lerp(liquidColor, mixColor, _mixingCoefficient * multiplier));
+    //Debug.Log("Liquid lerped to index tip distance: " + GetColorDistance(mixColor, Color.Lerp(liquidColor, mixColor, _mixingCoefficient * multiplier)));
     liquidColor = _liquidMeshRenderer.material.GetColor(Shader.PropertyToID("_Color"));
     return Color.Lerp(mixColor, liquidColor, _mixingCoefficient * multiplier);
   }
@@ -29,6 +30,10 @@ public class ColorMixingBasin : MonoBehaviour {
 
   public void SetColor(Color color) {
     _liquidMeshRenderer.material.SetColor(Shader.PropertyToID("_Color"), color);
+  }
+
+  private float GetColorDistance(Color a, Color b) {
+    return (Mathf.Sqrt((a.r - b.r) * (a.r - b.r) + (a.g - b.g) * (a.g - b.g) + (a.b - b.b) * (a.b - b.b)));
   }
 
 }

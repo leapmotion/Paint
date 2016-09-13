@@ -11,7 +11,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public WearableManager _wearableManager;
   public UndoRedoManager _undoRedoManager;
 
-  public bool _usePitchYaw = true;
+  private float _minThickness = 0.003F;
+  private float _maxThickness = 0.03F;
 
   private bool _paintingStroke = false;
   private StrokeProcessor _strokeProcessor;
@@ -19,26 +20,19 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 _lastStrokePointAdded = Vector3.zero;
   private float _timeSinceLastAddition = 0F;
 
+  private Vector3 leftHandEulerRotation = new Vector3(0F, 180F, 0F);
+  private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
+
   private StrokeRibbonRenderer _ribbonRenderer;
 
   void Start() {
     _strokeProcessor = new StrokeProcessor();
 
     // Set up and register filters.
-    //FilterDebugLogMemory debugLogFilter = new FilterDebugLogMemory();
-    //_strokeProcessor.RegisterStrokeFilter(debugLogFilter);
     FilterPositionMovingAverage movingAvgFilter = new FilterPositionMovingAverage(6);
     _strokeProcessor.RegisterStrokeFilter(movingAvgFilter);
-    if (_usePitchYaw) {
-      FilterPitchYawTangent pitchYawFilter = new FilterPitchYawTangent();
-      _strokeProcessor.RegisterStrokeFilter(pitchYawFilter);
-      //FilterRollToCanvasAlignment rollCanvasAlignFilter = new FilterRollToCanvasAlignment();
-      //_strokeProcessor.RegisterStrokeFilter(rollCanvasAlignFilter);
-    }
-    else {
-      FilterNaiveCanvasAlignment canvasAlignmentFilter = new FilterNaiveCanvasAlignment();
-      _strokeProcessor.RegisterStrokeFilter(canvasAlignmentFilter);
-    }
+    FilterPitchYawRoll pitchYawRollFilter = new FilterPitchYawRoll();
+    _strokeProcessor.RegisterStrokeFilter(pitchYawRollFilter);
 
     // Set up and register renderers.
     GameObject rendererObj = new GameObject();
@@ -52,8 +46,16 @@ public class PinchStrokeProcessor : MonoBehaviour {
   void Update() {
     if (_pinchDetector.IsActive && !_paintingStroke) {
       if (!_wearableManager.IsPinchDetectorGrabbing(_pinchDetector)) {
-        BeginStroke();
-        _paintingStroke = true;
+        // TODO HACK FIXME
+        Color color = new Color(0F, 0F, 0F, 0F);
+        try {
+          color = _pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
+        }
+        catch (System.NullReferenceException) { }
+        if (color.a > 0.99F) {
+          BeginStroke(color);
+          _paintingStroke = true;
+        }
       }
     }
     else if (_pinchDetector.IsActive && _paintingStroke) {
@@ -65,9 +67,13 @@ public class PinchStrokeProcessor : MonoBehaviour {
     }
   }
 
-  private void BeginStroke() {
-    // TODO HACK FIXME
-    _ribbonRenderer.Color = _pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
+  public void SetThickness(float normalizedValue) {
+    float value = Mathf.Clamp(normalizedValue, 0F, 1F);
+    _ribbonRenderer.Thickness = Mathf.Lerp(_minThickness, _maxThickness, value);
+  }
+
+  private void BeginStroke(Color color) {
+    _ribbonRenderer.Color = color;
     _strokeProcessor.BeginStroke();
   }
 
@@ -81,7 +87,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
       StrokePoint strokePoint = new StrokePoint();
       strokePoint.position = _pinchDetector.Position;
       strokePoint.rotation = Quaternion.identity;
-      strokePoint.handOrientation = _pinchDetector.Rotation * Quaternion.Euler(new Vector3(90F, 0F, 180F));
+      strokePoint.handOrientation = _pinchDetector.Rotation * Quaternion.Euler((_pinchDetector.HandModel.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
       strokePoint.deltaTime = _timeSinceLastAddition;
 
       _strokeProcessor.UpdateStroke(strokePoint);

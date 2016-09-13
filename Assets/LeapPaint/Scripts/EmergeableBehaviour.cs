@@ -7,13 +7,18 @@ public class EmergeableBehaviour : MonoBehaviour {
 
   public bool _beginEmerged = false;
 
+  [Header("Enable / Disable Components")]
+  [Header("(Finished Emerging / Begun Vanishing)")]
+  public MonoBehaviour[] _enableDisableComponents;
+
   [Header("(Automatic) To Enable/Disable on Appear/Vanish")]
   public Renderer[] _renderers; // includes MeshRenderers and SpriteRenderers
   public Graphic[] _graphics;   // includes uGUI Images and the like
 
-  [Header("Optional")]
-  [Tooltip("If None, will use own Transform. TODO: Currently unused.")]
-  public Transform _vanishingPoint;
+  public Action OnBegunEmerging = () => { };
+  public Action OnFinishedEmerging = () => { };
+  public Action OnBegunVanishing = () => { };
+  public Action OnFinishedVanishing = () => { };
 
   private TweenHandle _vanishTween;
 
@@ -33,6 +38,7 @@ public class EmergeableBehaviour : MonoBehaviour {
     _vanishTween = CreateVanishTween();
     if (!_beginEmerged) {
       _vanishTween.Progress = 1F;
+      DisableComponents();
     }
   }
 
@@ -65,20 +71,38 @@ public class EmergeableBehaviour : MonoBehaviour {
     for (int i = 0; i < _graphics.Length; i++) {
       _graphics[i].enabled = true;
     }
+    OnBegunEmerging();
   }
-  protected virtual void DoOnFinishedEmerging() {
 
+  protected virtual void DoOnFinishedEmerging() {
+    EnableComponents();
+    OnFinishedEmerging();
   }
 
   protected virtual void DoOnBegunVanishing() {
-
+    DisableComponents();
+    OnBegunVanishing();
   }
+
   protected virtual void DoOnFinishedVanishing() {
     for (int i = 0; i < _renderers.Length; i++) {
       _renderers[i].enabled = false;
     }
     for (int i = 0; i < _graphics.Length; i++) {
       _graphics[i].enabled = false;
+    }
+    OnFinishedVanishing();
+  }
+
+  private void EnableComponents() {
+    for (int i = 0; i < _enableDisableComponents.Length; i++) {
+      _enableDisableComponents[i].enabled = true;
+    }
+  }
+
+  private void DisableComponents() {
+    for (int i = 0; i < _enableDisableComponents.Length; i++) {
+      _enableDisableComponents[i].enabled = false;
     }
   }
 
