@@ -64,7 +64,7 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
   public void FinalizeRenderer() {
     _mesh.RecalculateBounds();
     _mesh.Optimize();
-    _mesh.UploadMeshData(true);
+    _mesh.UploadMeshData(false);
 
     //OnMeshChanged(_mesh);
     OnMeshStrokeFinalized(_mesh, _stroke);
