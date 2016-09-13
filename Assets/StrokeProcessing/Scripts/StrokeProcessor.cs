@@ -55,7 +55,7 @@ public class StrokeProcessor {
     }
     _strokeInProgress = true;
 
-    _strokeOutput.Clear();
+    _strokeOutput = new List<StrokePoint>(); // can't clear -- other objects have references to the old stroke output.
     _strokeBuffer.Clear();
     _strokeIdxBuffer.Clear();
     curStrokeIdx = 0;

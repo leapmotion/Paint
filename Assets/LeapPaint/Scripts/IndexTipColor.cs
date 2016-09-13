@@ -38,7 +38,7 @@ public class IndexTipColor : MonoBehaviour {
 
   protected void OnTriggerStay(Collider other) {
     ColorMixingBasin mixingLiquid = other.GetComponentInParent<ColorMixingBasin>();
-    if (mixingLiquid != null) {
+    if (mixingLiquid != null && mixingLiquid.enabled) {
       if (IsClean) {
         this.SetColor(mixingLiquid.GetColor());
       }
@@ -49,7 +49,7 @@ public class IndexTipColor : MonoBehaviour {
       }
     }
     ColorCleaningBasin cleaningLiquid = other.GetComponentInParent<ColorCleaningBasin>();
-    if (cleaningLiquid != null) {
+    if (cleaningLiquid != null && cleaningLiquid.enabled) {
       this.SetColor(new Color(0F, 0F, 0F, 0F));
     }
   }

@@ -20,19 +20,23 @@ public class CursorGizmo : MonoBehaviour, IRuntimeGizmoComponent {
     DrawPinchDetectorCursorGizmo(_rightPinchDetector, drawer);
   }
 
+  private bool _gizmosEnabled = false;
+
   private void DrawPinchDetectorCursorGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
-    drawer.PushMatrix();
+    if (_gizmosEnabled) {
+      drawer.PushMatrix();
 
-    drawer.matrix = pinchDetector.transform.localToWorldMatrix;
+      drawer.matrix = pinchDetector.transform.localToWorldMatrix;
 
-    drawer.color = Color.red;
-    drawer.DrawLine(Vector3.zero, Vector3.right * 0.01F);
-    drawer.color = Color.green;
-    drawer.DrawLine(Vector3.zero, Vector3.up * 0.01F);
-    drawer.color = Color.blue;
-    drawer.DrawLine(Vector3.zero, Vector3.forward * 0.01F);
+      drawer.color = Color.red;
+      drawer.DrawLine(Vector3.zero, Vector3.right * 0.01F);
+      drawer.color = Color.green;
+      drawer.DrawLine(Vector3.zero, Vector3.up * 0.01F);
+      drawer.color = Color.blue;
+      drawer.DrawLine(Vector3.zero, Vector3.forward * 0.01F);
 
-    drawer.PopMatrix();
+      drawer.PopMatrix();
+    }
   }
 
 }

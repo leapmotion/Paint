@@ -9,17 +9,15 @@ using Leap.Unity.RuntimeGizmos;
 public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizmoComponent {
 
   public Shader MeshShader;
-  public Color Color { get; set; }
-  public float Thickness { get; set; }
 
-  public Action<Mesh> OnMeshChanged;
-  public Action<Mesh> OnMeshFinalized;
+  public Action<Mesh, List<StrokePoint>> OnMeshStrokeFinalized;
 
   private Mesh _mesh;
   private MeshFilter _filter;
   private MeshRenderer _renderer;
   private Material _meshMaterial;
   private TwoSidedRibbon _ribbon = new TwoSidedRibbon();
+  private List<StrokePoint> _stroke;
 
   protected void Start() {
     _filter = GetComponent<MeshFilter>();
@@ -49,18 +47,18 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
 
       MeshPoint point = new MeshPoint(strokePoint.position);
       point.Normal = strokePoint.normal;
-      point.Color = this.Color;
+      point.Color = strokePoint.color;
 
       if (i > _ribbon.Points.Count - 1) {
-        _ribbon.Add(point, this.Thickness);
+        _ribbon.Add(point, strokePoint.thickness);
       }
       else {
         _ribbon.Points[i] = point;
       }
     }
 
+    _stroke = stroke;
     SetMeshDataFromRibbon(_mesh, _ribbon);
-    //OnMeshChanged(_mesh);
   }
 
   public void FinalizeRenderer() {
@@ -69,7 +67,7 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
     _mesh.UploadMeshData(true);
 
     //OnMeshChanged(_mesh);
-    OnMeshFinalized(_mesh);
+    OnMeshStrokeFinalized(_mesh, _stroke);
 
     _mesh = new Mesh();
     _filter.mesh = _mesh;

@@ -401,7 +401,12 @@ public class WearableUI : AnchoredBehaviour, IWearable {
     this.transform.position = Vector3.Lerp(_lerpFrom.position, _lerpTo.position, lerpAmount);
   }
 
-  private void ActivateWorkstationTransition() {
+  protected void ActivateWorkstationTransitionFromAnchor() {
+    ActivateWorkstationTransition(true);
+  }
+
+  private void ActivateWorkstationTransition(bool ignoreLowVelocity=false) {
+    _isAttached = false;
     _isWorkstation = true;
 
     // Create rigidbody throw simulation object
@@ -423,7 +428,7 @@ public class WearableUI : AnchoredBehaviour, IWearable {
       Destroy(_workstationTargetLocation.gameObject);
     }
     _workstationTargetLocation = new GameObject("WearableUI Workstation Target Location Object").GetComponent<Transform>();
-    SetGoodWorkstationTransform(_workstationTargetLocation, this.transform.position, throwVelocity);
+    SetGoodWorkstationTransform(_workstationTargetLocation, this.transform.position, throwVelocity, ignoreLowVelocity);
     
     // Determine how long the tween should take
     Vector3 targetPosition = _workstationTargetLocation.position;
@@ -451,12 +456,12 @@ public class WearableUI : AnchoredBehaviour, IWearable {
     }
   }
 
-  private void SetGoodWorkstationTransform(Transform toSet, Vector3 initPosition, Vector3 initVelocity) {
+  private void SetGoodWorkstationTransform(Transform toSet, Vector3 initPosition, Vector3 initVelocity, bool ignoreLowVelocity=false) {
     Transform centerEyeAnchor = _manager.GetCenterEyeAnchor();
 
     Vector3 workstationPosition;
     bool modifyHeight = true;
-    if (initVelocity.magnitude < 0.7F) {
+    if (initVelocity.magnitude < 0.7F && !ignoreLowVelocity) {
       // Just use current position as the position to choose.
       workstationPosition = initPosition;
       modifyHeight = false;

@@ -9,10 +9,11 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public PinchDetector _pinchDetector;
   [Tooltip("Used to stop drawing if the pinch detector is grabbing a UI element.")]
   public WearableManager _wearableManager;
-  public UndoRedoManager _undoRedoManager;
-
-  private float _minThickness = 0.003F;
-  private float _maxThickness = 0.03F;
+  public HistoryManager _historyManager;
+  public GameObject _ribbonParentObject;
+  public RibbonIO _ribbonIO;
+  public FilterIndexTipColor _colorFilter;
+  public FilterApplyThickness _thicknessFilter;
 
   private bool _paintingStroke = false;
   private StrokeProcessor _strokeProcessor;
@@ -34,12 +35,13 @@ public class PinchStrokeProcessor : MonoBehaviour {
     FilterPitchYawRoll pitchYawRollFilter = new FilterPitchYawRoll();
     _strokeProcessor.RegisterStrokeFilter(pitchYawRollFilter);
 
+    _strokeProcessor.RegisterStrokeFilter(_colorFilter);
+    _strokeProcessor.RegisterStrokeFilter(_thicknessFilter);
+
     // Set up and register renderers.
     GameObject rendererObj = new GameObject();
     _ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
-    _ribbonRenderer.Color = Color.red; 
-    _ribbonRenderer.Thickness = 0.02F;
-    _ribbonRenderer.OnMeshFinalized += DoOnMeshFinalized;
+    _ribbonRenderer.OnMeshStrokeFinalized += DoOnMeshStrokeFinalized;
     _strokeProcessor.RegisterStrokeRenderer(_ribbonRenderer);
   }
 
@@ -53,7 +55,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
         }
         catch (System.NullReferenceException) { }
         if (color.a > 0.99F) {
-          BeginStroke(color);
+          BeginStroke();
           _paintingStroke = true;
         }
       }
@@ -67,13 +69,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
     }
   }
 
-  public void SetThickness(float normalizedValue) {
-    float value = Mathf.Clamp(normalizedValue, 0F, 1F);
-    _ribbonRenderer.Thickness = Mathf.Lerp(_minThickness, _maxThickness, value);
-  }
-
-  private void BeginStroke(Color color) {
-    _ribbonRenderer.Color = color;
+  private void BeginStroke() {
     _strokeProcessor.BeginStroke();
   }
 
@@ -103,7 +99,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   // TODO DELETEME FIXME
-  private void DoOnMeshFinalized(Mesh mesh) {
+  private void DoOnMeshStrokeFinalized(Mesh mesh, List<StrokePoint> stroke) {
     GameObject finishedRibbonMesh = new GameObject();
     MeshFilter filter = finishedRibbonMesh.AddComponent<MeshFilter>();
     MeshRenderer renderer = finishedRibbonMesh.AddComponent<MeshRenderer>();
@@ -111,7 +107,17 @@ public class PinchStrokeProcessor : MonoBehaviour {
     ribbonMat.hideFlags = HideFlags.HideAndDontSave;
     renderer.material = ribbonMat;
     filter.mesh = mesh;
-    _undoRedoManager.NotifyAction(finishedRibbonMesh);
+
+    _historyManager.NotifyStroke(finishedRibbonMesh, stroke);
+
+    finishedRibbonMesh.transform.parent = _ribbonParentObject.transform;
+  }
+
+  // Used to produce strokes from stroke objects, e.g., when loading scenes.
+  public void ShortcircuitStrokeToRenderer(List<StrokePoint> stroke) {
+    _ribbonRenderer.InitializeRenderer();
+    _ribbonRenderer.RefreshRenderer(stroke, stroke.Count - 1);
+    _ribbonRenderer.FinalizeRenderer();
   }
 
 }

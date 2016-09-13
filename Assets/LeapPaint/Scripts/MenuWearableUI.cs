@@ -3,8 +3,15 @@ using System.Collections;
 
 public class MenuWearableUI : WearableUI {
 
-  public EmergeableBehaviour _menuButtonsEmergeable;
+  public EmergeableBehaviour[] _menuButtonEmergeables;
+  public MoveableBehaviour[] _menuButtonMoveables;
   public PressableUI[] _menuButtons;
+
+  public EmergeableBehaviour _fileMenuEmergeable;
+  public EmergeableBehaviour _sceneMenuEmergeable;
+  public EmergeableBehaviour _clearMenuEmergeable;
+
+  private Menu _awaitingMenu = Menu.None;
 
   private bool _emergeableCallbacksInitialized = false;
   protected override void Start() {
@@ -12,8 +19,8 @@ public class MenuWearableUI : WearableUI {
 
     if (!_emergeableCallbacksInitialized) {
       DoOnMenuBeganVanishing();
-      _menuButtonsEmergeable.OnFinishedEmerging += DoOnMenuFinishedEmerging;
-      _menuButtonsEmergeable.OnBegunVanishing += DoOnMenuBeganVanishing;
+      _menuButtonEmergeables[0].OnFinishedEmerging += DoOnMenuFinishedEmerging;
+      _menuButtonEmergeables[0].OnBegunVanishing += DoOnMenuBeganVanishing;
 
       _emergeableCallbacksInitialized = true;
     }
@@ -36,16 +43,127 @@ public class MenuWearableUI : WearableUI {
   protected override void DoOnFingerPressedMarble() {
     base.DoOnFingerPressedMarble();
 
-    if (_menuButtonsEmergeable.IsEmergedOrEmerging) {
-      _menuButtonsEmergeable.TryVanish();
-    }
-    else {
-      _menuButtonsEmergeable.TryEmerge();
+    if (!IsGrabbed && !IsWorkstation) {
+      if (_menuButtonEmergeables[0].IsEmergedOrEmerging) {
+        for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
+          _menuButtonEmergeables[i].TryVanish();
+        }
+      }
+      else {
+        for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
+          _menuButtonEmergeables[i].TryEmerge();
+        }
+      }
     }
   }
 
+  protected override void DoOnMovementToWorkstationFinished() {
+    base.DoOnMovementToWorkstationFinished();
 
+    for (int i = 0; i < _menuButtonMoveables.Length; i++) {
+      _menuButtonMoveables[i].MoveToB();
+    }
+    for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
+      _menuButtonEmergeables[i].TryEmerge();
+    }
+
+    if (_awaitingMenu != Menu.None) {
+      if (_awaitingMenu == Menu.File) {
+        EmergeFileMenu();
+      }
+      else if (_awaitingMenu == Menu.Scene) {
+        EmergeSceneMenu();
+      }
+      else {
+        EmergeClearMenu();
+      }
+    }
+  }
+
+  protected override void DoOnGrabbed() {
+    base.DoOnGrabbed();
+    _awaitingMenu = Menu.None;
+
+    for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
+      _menuButtonEmergeables[i].TryVanish();
+    }
+    _fileMenuEmergeable.TryVanish();
+    _sceneMenuEmergeable.TryVanish();
+    _clearMenuEmergeable.TryVanish();
+  }
+
+  protected override void DoOnReturnedToAnchor() {
+    base.DoOnReturnedToAnchor();
+
+    for (int i = 0; i < _menuButtonMoveables.Length; i++) {
+      _menuButtonMoveables[i].MoveToA();
+    }
+  }
 
   #endregion
 
+  private void EmergeFileMenu() {
+    _fileMenuEmergeable.TryEmerge();
+    _sceneMenuEmergeable.TryVanish();
+    _clearMenuEmergeable.TryVanish();
+  }
+
+  private void EmergeSceneMenu() {
+    _fileMenuEmergeable.TryVanish();
+    _sceneMenuEmergeable.TryEmerge();
+    _clearMenuEmergeable.TryVanish();
+  }
+
+  private void EmergeClearMenu() {
+    _fileMenuEmergeable.TryVanish();
+    _sceneMenuEmergeable.TryVanish();
+    _clearMenuEmergeable.TryEmerge();
+  }
+
+  public void OpenFileMenu() {
+    if (!IsWorkstation) {
+      ActivateWorkstationTransitionFromAnchor();
+      _awaitingMenu = Menu.File;
+      for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
+        _menuButtonEmergeables[i].TryVanish();
+      }
+    }
+    else {
+      EmergeFileMenu();
+    }
+  }
+
+  public void OpenSceneMenu() {
+    if (!IsWorkstation) {
+      ActivateWorkstationTransitionFromAnchor();
+      _awaitingMenu = Menu.Scene;
+      for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
+        _menuButtonEmergeables[i].TryVanish();
+      }
+    }
+    else {
+      EmergeSceneMenu();
+    }
+  }
+
+  public void OpenClearMenu() {
+    if (!IsWorkstation) {
+      ActivateWorkstationTransitionFromAnchor();
+      _awaitingMenu = Menu.Clear;
+      for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
+        _menuButtonEmergeables[i].TryVanish();
+      }
+    }
+    else {
+      EmergeClearMenu();
+    }
+  }
+
+}
+
+public enum Menu {
+  None,
+  File,
+  Scene,
+  Clear
 }
