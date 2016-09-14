@@ -4038,7 +4038,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737703, y: 0.9868922, z: -0.103457816, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4091,7 +4091,7 @@ MonoBehaviour:
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
-    _pitchVariance: 0
+    _pitchVariance: 0.25
     _pitchCenter: 1
   _maxVolumeVelocity: 5
   _returnEffect:
@@ -14467,7 +14467,7 @@ MonoBehaviour:
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
-    _pitchVariance: 0
+    _pitchVariance: 0.25
     _pitchCenter: 1
   _maxVolumeVelocity: 5
   _returnEffect:
@@ -19937,7 +19937,7 @@ MonoBehaviour:
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
-    _pitchVariance: 0
+    _pitchVariance: 0.25
     _pitchCenter: 1
   _maxVolumeVelocity: 5
   _returnEffect:
