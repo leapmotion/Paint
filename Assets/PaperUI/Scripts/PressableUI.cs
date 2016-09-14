@@ -88,6 +88,7 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
   public Layer[] _layers = new Layer[0];
 
   public UnityEvent OnPress;
+  public UnityEvent OnRelease;
   private bool _pressed = false;
 
   private float _activationVolumeHeight;
@@ -122,6 +123,7 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
       _pressed = true;
     }
     else if (rawPressDistance > 0F && _pressed) {
+      OnRelease.Invoke();
       _pressed = false;
     }
     float limitedRawPressDepth = Mathf.Max(0F, rawPressDistance);
@@ -145,7 +147,7 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
 
   #region Utility
 
-  private float GetPressDistance() {
+  public float GetPressDistance() {
     return _smoothedLimitedPressDepth.value;
   }
 

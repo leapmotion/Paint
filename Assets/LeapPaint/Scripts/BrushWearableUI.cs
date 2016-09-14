@@ -14,8 +14,8 @@ public class BrushWearableUI : WearableUI {
   }
 
   private bool _brushControlsEmerged = false;
-  protected override void DoOnFingerPressedMarble() {
-    base.DoOnFingerPressedMarble();
+  protected override void DoOnMarbleActivated() {
+    base.DoOnMarbleActivated();
 
     if (!IsGrabbed && !IsWorkstation) {
       if (!_brushControlsEmerged) {

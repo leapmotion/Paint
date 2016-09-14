@@ -40,8 +40,8 @@ public class MenuWearableUI : WearableUI {
 
   #region WearableUI Implementations
 
-  protected override void DoOnFingerPressedMarble() {
-    base.DoOnFingerPressedMarble();
+  protected override void DoOnMarbleActivated() {
+    base.DoOnMarbleActivated();
 
     if (!IsGrabbed && !IsWorkstation) {
       if (_menuButtonEmergeables[0].IsEmergedOrEmerging) {

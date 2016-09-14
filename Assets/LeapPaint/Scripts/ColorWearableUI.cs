@@ -54,8 +54,8 @@ public class ColorWearableUI : WearableUI {
 
   #region WearableUI Implementations
 
-  protected override void DoOnFingerPressedMarble() {
-    base.DoOnFingerPressedMarble();
+  protected override void DoOnMarbleActivated() {
+    base.DoOnMarbleActivated();
 
     if (!IsGrabbed && !IsWorkstation) {
       if (!_primaryPaletteEmergeable.IsEmergedOrEmerging) {

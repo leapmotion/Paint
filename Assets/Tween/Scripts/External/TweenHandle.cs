@@ -150,7 +150,7 @@ public struct TweenHandle {
   /// the first interpolator specified.
   /// </summary>
   public TweenHandle AtRate(float rate) {
-    Instance.OverTime(rate);
+    Instance.AtRate(rate);
     return this;
   }
 
