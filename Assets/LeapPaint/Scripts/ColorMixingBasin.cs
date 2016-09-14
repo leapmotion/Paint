@@ -21,7 +21,6 @@ public class ColorMixingBasin : MonoBehaviour {
   /// Lerps this mixing liquid's color towards the index tip's color, and returns the index tip's color lerped towards the mixing liquid's color.
   /// </summary>
   public Color MixWithIndexTipColor(IndexTipColor indexTipColor, float multiplier = 1F) {
-    Debug.Log(multiplier);
     int extra = (int)((Time.time - _nextEffectTime) / _effectPeriod);
     if (extra > 1) {
       _nextEffectTime += extra * _effectPeriod;
