@@ -75,8 +75,6 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _strokeProcessor.BeginStroke();
   }
 
-  private List<Vector3> _cachedPositions = new List<Vector3>();
-  private List<float> _cachedDeltaTimes = new List<float>();
   private void UpdateStroke() {
     Vector3 strokePosition = _pinchDetector.Position;
 
