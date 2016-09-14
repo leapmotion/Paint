@@ -1,6 +1,7 @@
 ﻿using Leap.Unity;
 using System.Collections.Generic;
 using UnityEngine;
+using Leap.Unity.Attributes;
 
 public class PinchStrokeProcessor : MonoBehaviour {
 
@@ -17,6 +18,19 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public FilterIndexTipColor _colorFilter;
   public FilterApplyThickness _thicknessFilter;
 
+  [Header("Effect Settings")]
+  public SoundEffect _beginEffect;
+  public AudioSource _soundEffectSource;
+  [Range(0, 1)]
+  public float _volumeScale = 1;
+  [MinValue(0)]
+  public float _maxEffectSpeed = 10;
+  [MinMax(0, 2)]
+  public Vector2 _pitchRange = new Vector2(0.8f, 1);
+  [MinValue(0)]
+  public float _smoothingDelay = 0.05f;
+
+
   private bool _paintingStroke = false;
   private StrokeProcessor _strokeProcessor;
   private bool _firstStrokePointAdded = false;
@@ -27,8 +41,13 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
 
   private StrokeRibbonRenderer _ribbonRenderer;
+  
+  private Vector3 _prevPosition;
+  private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
 
   void Start() {
+    _smoothedSpeed.delay = _smoothingDelay;
+
     _strokeProcessor = new StrokeProcessor();
 
     // Set up and register filters.
@@ -72,10 +91,22 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   private void BeginStroke() {
+    _beginEffect.PlayOnTransform(_soundEffectSource.transform);
     _strokeProcessor.BeginStroke();
+    _soundEffectSource.Play();
+    _prevPosition = _pinchDetector.Position;
   }
 
   private void UpdateStroke() {
+    float speed = Vector3.Distance(_pinchDetector.Position, _prevPosition) / Time.deltaTime;  
+    _prevPosition = _pinchDetector.Position;
+    _smoothedSpeed.Update(speed, Time.deltaTime);
+
+    float effectPercent = Mathf.Clamp01(_smoothedSpeed.value / _maxEffectSpeed);
+    _soundEffectSource.volume = effectPercent * _volumeScale;
+    _soundEffectSource.pitch = Mathf.Lerp(_pitchRange.x, _pitchRange.y, effectPercent);
+
+    
     Vector3 strokePosition = _pinchDetector.Position;
 
     if (_firstStrokePointAdded) {
@@ -130,6 +161,9 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private void EndStroke() {
     _strokeProcessor.EndStroke();
+    _soundEffectSource.Pause();
+    _soundEffectSource.volume = 0;
+    _smoothedSpeed.reset = true;
     _firstStrokePointAdded = false;
   }
 

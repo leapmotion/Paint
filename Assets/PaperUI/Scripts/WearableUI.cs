@@ -9,6 +9,11 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   public MeshRenderer _appearanceExplosionRenderer;
   public Collider _marbleCollider;
   public MeshRenderer _marbleRenderer;
+  public SoundEffect _activateEffect;
+  public SoundEffect _grabEffect;
+  public SoundEffect _throwEffect;
+  public float _maxVolumeVelocity = 1;
+  public SoundEffect _returnEffect;
 
   private WearableManager _manager;
   private WearableAnchor _wearableAnchor;
@@ -110,7 +115,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     }
   }
 
-  protected virtual void DoOnReturnedToAnchor() { }
+  protected virtual void DoOnReturnedToAnchor() {
+    _returnEffect.PlayOnTransform(transform);
+  }
 
   #region Wearable Implementation
 
@@ -332,6 +339,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   protected virtual void DoOnMarbleActivated() {
+    _activateEffect.PlayOnTransform(transform);
     _marblePulsator.Activate();
   }
 
@@ -388,7 +396,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     return true;
   }
 
-  protected virtual void DoOnGrabbed() { }
+  protected virtual void DoOnGrabbed() {
+    _grabEffect.PlayOnTransform(transform);
+  }
 
   public void ReleaseFromGrab(Transform grabber) {
     bool doOnReleased = false;
@@ -534,6 +544,8 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     }
     Vector3 throwVelocity = GetGrabVelocity();
     ScheduleRigidbodyUpdate(this.transform.position, this.transform.rotation, throwVelocity);
+
+    _throwEffect.PlayOnTransform(transform, Mathf.Clamp01(throwVelocity.magnitude / _maxVolumeVelocity));
 
     // Construct target workstation location object
     if (_workstationTargetLocation != null) {

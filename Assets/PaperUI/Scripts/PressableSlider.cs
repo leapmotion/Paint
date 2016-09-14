@@ -17,8 +17,15 @@ public class PressableSlider : PressableUI {
 
   public FloatEvent OnSliderValueChanged;
 
+  public SoundEffect _tickEffect;
+  public float _distancePerTick = 0.02f;
+  public int tickCooldown = 2;
+
   private Vector3 _slideXZPosition = Vector3.zero;
   private float _lastSliderValue = 0F;
+
+  private float _distTillTick = 0;
+  private int _framesUntilTickAllowed = 0;
 
   protected override void Start() {
     base.Start();
@@ -30,11 +37,21 @@ public class PressableSlider : PressableUI {
   protected override void LayerUpdate() {
     base.LayerUpdate();
 
+    _framesUntilTickAllowed--;
+
     if (IsActivated) {
       _slideXZPosition = GetAxisSlideXZPosition();
 
       float sliderValue = GetSliderValue();
       if (sliderValue != _lastSliderValue) {
+
+        _distTillTick -= Mathf.Abs(_lastSliderValue - sliderValue);
+        if (_distTillTick < _distancePerTick && _framesUntilTickAllowed <= 0) {
+          while (_distTillTick < _distancePerTick) _distTillTick += _distancePerTick;
+          _tickEffect.PlayAtPosition(transform);
+          _framesUntilTickAllowed = tickCooldown + 1;
+        }
+
         _lastSliderValue = sliderValue;
         OnSliderValueChanged.Invoke(sliderValue);
       }

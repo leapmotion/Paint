@@ -6,7 +6,12 @@ public class ColorMixingBasin : MonoBehaviour {
 
   public MeshRenderer _liquidMeshRenderer;
 
+  public SoundEffect _mixEffect;
+  public float _effectPeriod = 0.2f;
+  public float _maxEffectValue = 1;
+
   private float _mixingCoefficient = 0.05F;
+  private float _nextEffectTime = 0;
 
   protected void Start() {
     SetColor(Color.white);
@@ -15,7 +20,13 @@ public class ColorMixingBasin : MonoBehaviour {
   /// <summary>
   /// Lerps this mixing liquid's color towards the index tip's color, and returns the index tip's color lerped towards the mixing liquid's color.
   /// </summary>
-  public Color MixWithIndexTipColor(IndexTipColor indexTipColor, float multiplier=1F) {
+  public Color MixWithIndexTipColor(IndexTipColor indexTipColor, float multiplier = 1F) {
+    int extra = (int)((Time.time - _nextEffectTime) / _effectPeriod);
+    if (extra > 1) {
+      _nextEffectTime += extra * _effectPeriod;
+      _mixEffect.PlayAtPosition(transform, Mathf.Clamp01(multiplier / _maxEffectValue));
+    }
+
     Color mixColor = indexTipColor.GetColor();
     Color liquidColor = _liquidMeshRenderer.material.GetColor(Shader.PropertyToID("_Color"));
     _liquidMeshRenderer.material.SetColor("_Color", Color.Lerp(liquidColor, mixColor, _mixingCoefficient * multiplier));

@@ -15,6 +15,9 @@ public class EmergeableBehaviour : MonoBehaviour {
   public Renderer[] _renderers; // includes MeshRenderers and SpriteRenderers
   public Graphic[] _graphics;   // includes uGUI Images and the like
 
+  public SoundEffect _emergeEffect;
+  public SoundEffect _vanishEffect;
+
   public Action OnBegunEmerging = () => { };
   public Action OnFinishedEmerging = () => { };
   public Action OnBegunVanishing = () => { };
@@ -43,10 +46,12 @@ public class EmergeableBehaviour : MonoBehaviour {
   }
 
   public void TryEmerge() {
+    _emergeEffect.PlayAtPosition(transform);
     _vanishTween.Play(TweenDirection.BACKWARD);
   }
 
   public void TryVanish() {
+    _vanishEffect.PlayAtPosition(transform);
     _vanishTween.Play(TweenDirection.FORWARD);
   }
 
