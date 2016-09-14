@@ -61,13 +61,41 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
     SetMeshDataFromRibbon(_mesh, _ribbon);
   }
 
+  public void RefreshRenderer(RingBuffer<StrokePoint> strokeBuffer) {
+    _ribbon.Clear();
+    for (int i = 0; i < strokeBuffer.Size; i++) {
+      StrokePoint strokePoint = strokeBuffer.Get(i);
+
+      MeshPoint point = new MeshPoint(strokePoint.position);
+      point.Normal = strokePoint.normal;
+      point.Color = strokePoint.color;
+
+      if (i > _ribbon.Points.Count - 1) {
+        _ribbon.Add(point, strokePoint.thickness);
+        Debug.Log("added.");
+      }
+      else {
+        _ribbon.Points[i] = point;
+        _ribbon.Radii[i] = strokePoint.thickness;
+        Debug.Log("modified.");
+      }
+    }
+
+    // TODO: Should probably write a separate interface for preview renderers. This method is the refresh call used by
+    // preview ribbon renderers, which never Finalize() and never store List<StrokePoint> objects (for save/load functionality).
+    _stroke = null;
+    SetMeshDataFromRibbon(_mesh, _ribbon);
+  }
+
   public void FinalizeRenderer() {
     _mesh.RecalculateBounds();
     _mesh.Optimize();
     _mesh.UploadMeshData(false);
 
     //OnMeshChanged(_mesh);
-    OnMeshStrokeFinalized(_mesh, _stroke);
+    if (_stroke != null) {
+      OnMeshStrokeFinalized(_mesh, _stroke);
+    }
 
     _mesh = new Mesh();
     _filter.mesh = _mesh;

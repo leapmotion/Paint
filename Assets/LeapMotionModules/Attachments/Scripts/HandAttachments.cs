@@ -87,7 +87,8 @@ namespace Leap.Unity.Attachments {
     public override void UpdateHand () {
       if(Palm != null) {
         Palm.position = _hand.PalmPosition.ToVector3();
-        Palm.rotation = _hand.Basis.rotation.ToQuaternion();
+        //Palm.rotation = _hand.Basis.rotation.ToQuaternion();
+        Palm.rotation = Quaternion.LookRotation(_hand.Basis.rotation.ToQuaternion() * Vector3.forward, Palm.position - Camera.main.transform.position);
       }
       if(Arm != null) {
         Arm.position = _hand.Arm.Center.ToVector3();

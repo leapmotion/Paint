@@ -14,7 +14,9 @@ public class RingBuffer<T> {
     _size = 0;
   }
 
+  /// <summary>The current number of elements in the RingBuffer. Less than or equal to Capacity.</summary>
   public int Size { get { return _size; } }
+  /// <summary>The maximum number of elements that will fit in the RingBuffer.</summary>
   public int Capacity { get { return _data.Length; } }
 
   private int RingIndex(int index) {

@@ -12,6 +12,7 @@ public class StrokeProcessor {
 
   // Stroke state
   private bool _strokeInProgress = false;
+  private bool _shouldActualizeStroke = false;
   private RingBuffer<StrokePoint> _strokeBuffer;
   private RingBuffer<int> _strokeIdxBuffer;
   private int curStrokeIdx = 0;
@@ -19,10 +20,12 @@ public class StrokeProcessor {
 
   // Stroke renderers
   private List<IStrokeRenderer> _strokeRenderers = null;
+  private List<IStrokeRenderer> _previewStrokeRenderers = null;
 
   public StrokeProcessor() {
     _strokeFilters = new List<IMemoryFilter<StrokePoint>>();
     _strokeRenderers = new List<IStrokeRenderer>();
+    _previewStrokeRenderers = new List<IStrokeRenderer>();
     _strokeOutput = new List<StrokePoint>();
   }
 
@@ -44,18 +47,24 @@ public class StrokeProcessor {
   public void RegisterStrokeRenderer(IStrokeRenderer strokeRenderer) {
     _strokeRenderers.Add(strokeRenderer);
     if (_strokeInProgress) {
-      Debug.LogWarning("[StrokeProcessor] Stroke in progress; Newly registered stroke renderers will not render the entire stroke if a stroke is already in progress.");
+      Debug.LogError("[StrokeProcessor] Stroke in progress; Newly registered stroke renderers will not render the entire stroke if a stroke is already in progress.");
+    }
+  }
+
+  public void RegisterPreviewStrokeRenderer(IStrokeRenderer strokeRenderer) {
+    _previewStrokeRenderers.Add(strokeRenderer);
+    if (_strokeInProgress) {
+      Debug.LogError("[StrokeProcessor] Stroke in progress; Newly registered preview stroke renderers will not render the entire preview stroke if a stroke is already in progress.");
     }
   }
 
   public void BeginStroke() {
     if (_strokeInProgress) {
-      Debug.LogError("[StrokeMeshGenerator] Stroke in progress; cannot begin new stroke. Call EndStroke() to finalize the current stroke first.");
+      Debug.LogError("[StrokeProcessor] Stroke in progress; cannot begin new stroke. Call EndStroke() to finalize the current stroke first.");
       return;
     }
     _strokeInProgress = true;
 
-    _strokeOutput = new List<StrokePoint>(); // can't clear -- other objects have references to the old stroke output.
     _strokeBuffer.Clear();
     _strokeIdxBuffer.Clear();
     curStrokeIdx = 0;
@@ -63,9 +72,25 @@ public class StrokeProcessor {
     for (int i = 0; i < _strokeFilters.Count; i++) {
       _strokeFilters[i].Reset();
     }
+    for (int i = 0; i < _previewStrokeRenderers.Count; i++) {
+      _previewStrokeRenderers[i].InitializeRenderer();
+    }
     for (int i = 0; i < _strokeRenderers.Count; i++) {
       _strokeRenderers[i].InitializeRenderer();
     }
+  }
+
+  public void StartActualizingStroke() {
+    //if (!_strokeInProgress) {
+    //  BeginStroke();
+    //}
+
+    //if (_shouldActualizeStroke) {
+    //  Debug.LogError("[StrokeProcessor] Stroke already actualizing; cannot begin actualizing stroke. Call StopActualizingStroke() first.");
+    //  return;
+    //}
+    //_shouldActualizeStroke = true;
+    //_strokeOutput = new List<StrokePoint>(); // can't clear -- other objects have references to the old stroke output.
   }
 
   public void UpdateStroke(StrokePoint strokePoint) {
@@ -84,15 +109,31 @@ public class StrokeProcessor {
       _strokeOutput[i] = _strokeBuffer.Get(bufferIdx++);
     }
 
-    // Refresh all renderers.
+    // Refresh stroke preview renderers.
+    for (int i = 0; i < _previewStrokeRenderers.Count; i++) {
+      _previewStrokeRenderers[i].RefreshRenderer(_strokeBuffer);
+    }
+
+    // Refresh stroke renderers.
     for (int i = 0; i < _strokeRenderers.Count; i++) {
       _strokeRenderers[i].RefreshRenderer(_strokeOutput, _maxMemory);
     }
   }
 
+  public void StopActualizingStroke() {
+    //_shouldActualizeStroke = false;
+  }
+
   public void EndStroke() {
+    if (_shouldActualizeStroke) {
+      StopActualizingStroke();
+    }
+
     _strokeInProgress = false;
 
+    for (int i = 0; i < _previewStrokeRenderers.Count; i++) {
+      _previewStrokeRenderers[i].FinalizeRenderer();
+    }
     for (int i = 0; i < _strokeRenderers.Count; i++) {
       _strokeRenderers[i].FinalizeRenderer();
     }

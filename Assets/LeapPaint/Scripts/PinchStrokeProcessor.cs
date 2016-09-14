@@ -18,6 +18,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public FilterApplyThickness _thicknessFilter;
 
   private bool _paintingStroke = false;
+  private bool _paintingPreviewStroke = false;
   private StrokeProcessor _strokeProcessor;
   private bool _firstStrokePointAdded = false;
   private Vector3 _lastStrokePointAdded = Vector3.zero;
@@ -27,6 +28,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
 
   private StrokeRibbonRenderer _ribbonRenderer;
+  private StrokeRibbonRenderer _previewRibbonRenderer;
 
   void Start() {
     _strokeProcessor = new StrokeProcessor();
@@ -42,37 +44,59 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
     // Set up and register renderers.
     GameObject rendererObj = new GameObject();
+    rendererObj.name = "Stroke Ribbon Renderer";
     _ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
     _ribbonRenderer.OnMeshStrokeFinalized += DoOnMeshStrokeFinalized;
     _strokeProcessor.RegisterStrokeRenderer(_ribbonRenderer);
+
+    GameObject previewRendererObj = new GameObject();
+    previewRendererObj.name = "Stroke Preview Ribbon Renderer";
+    _previewRibbonRenderer = previewRendererObj.AddComponent<StrokeRibbonRenderer>();
+    _strokeProcessor.RegisterPreviewStrokeRenderer(_previewRibbonRenderer);
   }
 
   void Update() {
+    if (_pinchDetector.HandModel.IsTracked && !_paintingPreviewStroke) {
+      BeginStroke();
+      _paintingPreviewStroke = true;
+    }
+
     if (_pinchDetector.IsActive && !_paintingStroke) {
       if (!_wearableManager.IsPinchDetectorGrabbing(_pinchDetector)) {
-        // TODO HACK FIXME
+        // TODO HACK FIXME preventing drawing if IndexTipColor is transparent
         Color color = new Color(0F, 0F, 0F, 0F);
         try {
           color = _pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
         }
         catch (System.NullReferenceException) { }
         if (color.a > 0.99F) {
-          BeginStroke();
+          StartActualizingStroke();
           _paintingStroke = true;
         }
       }
     }
-    else if (_pinchDetector.IsActive && _paintingStroke) {
+
+    if (_pinchDetector.HandModel.IsTracked && _paintingPreviewStroke) {
       UpdateStroke();
     }
-    else if (!_pinchDetector.IsActive && _paintingStroke) {
-      EndStroke();
+
+    if (!_pinchDetector.IsActive && _paintingStroke) {
+      StopActualizingStroke();
       _paintingStroke = false;
+    }
+
+    if (!_pinchDetector.HandModel.IsTracked && _paintingPreviewStroke) {
+      EndStroke();
+      _paintingPreviewStroke = false;
     }
   }
 
   private void BeginStroke() {
     _strokeProcessor.BeginStroke();
+  }
+
+  private void StartActualizingStroke() {
+    _strokeProcessor.StartActualizingStroke();
   }
 
   private void UpdateStroke() {
@@ -126,6 +150,10 @@ public class PinchStrokeProcessor : MonoBehaviour {
       _lastStrokePointAdded = strokePoint.position;
       _timeSinceLastAddition = 0F;
     }
+  }
+
+  private void StopActualizingStroke() {
+    _strokeProcessor.StopActualizingStroke();
   }
 
   private void EndStroke() {
