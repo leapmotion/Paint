@@ -3953,7 +3953,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737695, y: 0.9868922, z: -0.103457786, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12111,6 +12111,12 @@ MonoBehaviour:
   _transparentMarbleMaterial: {fileID: 2100000, guid: 934c4f9882e1fa74aab1b10cb36aef08,
     type: 2}
   _colorMarbleRenderer: {fileID: 607205407}
+  _dipEffect:
+    _clips:
+    - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
+    _volume: 1
+    _pitchVariance: 0.15
+    _pitchCenter: 1
 --- !u!114 &879182408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24526,6 +24532,12 @@ MonoBehaviour:
   _transparentMarbleMaterial: {fileID: 2100000, guid: 555b3b3077ccb834a937dfe603025ebf,
     type: 2}
   _colorMarbleRenderer: {fileID: 607205406}
+  _dipEffect:
+    _clips:
+    - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
+    _volume: 1
+    _pitchVariance: 0.15
+    _pitchCenter: 1
 --- !u!114 &1886534746
 MonoBehaviour:
   m_ObjectHideFlags: 0
