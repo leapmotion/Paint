@@ -104,6 +104,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   // TODO DELETEME FIXME
   private void DoOnMeshStrokeFinalized(Mesh mesh, List<StrokePoint> stroke) {
     GameObject finishedRibbonMesh = new GameObject();
+    finishedRibbonMesh.name = stroke[0].color.r + ", "+stroke[0].color.g + ", "+stroke[0].color.b;
     MeshFilter filter = finishedRibbonMesh.AddComponent<MeshFilter>();
     MeshRenderer renderer = finishedRibbonMesh.AddComponent<MeshRenderer>();
     Material ribbonMat = new Material(Shader.Find("LeapMotion/RibbonShader"));
