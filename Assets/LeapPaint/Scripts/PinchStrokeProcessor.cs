@@ -6,7 +6,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
   private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.007F;
-  //private const float MAX_SEGMENT_LENGTH
+  private const float MAX_SEGMENT_LENGTH = 0.03F;
 
   public PinchDetector _pinchDetector;
   [Tooltip("Used to stop drawing if the pinch detector is grabbing a UI element.")]
@@ -76,15 +76,46 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   private void UpdateStroke() {
+    Vector3 strokePosition = _pinchDetector.Position;
+
+    if (_firstStrokePointAdded) {
+      float posDelta = Vector3.Distance(_lastStrokePointAdded, strokePosition);
+      if (posDelta > MAX_SEGMENT_LENGTH) {
+        float segmentFraction = posDelta / MAX_SEGMENT_LENGTH;
+        float segmentRemainder = segmentFraction % 1F;
+        int numSegments = (int)Mathf.Floor(segmentFraction);
+        Vector3 segment = (strokePosition - _lastStrokePointAdded).normalized * MAX_SEGMENT_LENGTH;
+        Vector3 curPos = _lastStrokePointAdded;
+        float segmentDeltaTime = Time.deltaTime * segmentFraction;
+        float remainderDeltaTime = Time.deltaTime * segmentRemainder;
+        float curDeltaTime = 0F;
+        for (int i = 0; i < numSegments; i++) {
+          ProcessAddStrokePoint(curPos + segment, curDeltaTime + segmentDeltaTime);
+          curPos += segment;
+          curDeltaTime += segmentDeltaTime;
+        }
+        ProcessAddStrokePoint(strokePosition, curDeltaTime + remainderDeltaTime);
+      }
+      else {
+        ProcessAddStrokePoint(strokePosition, Time.deltaTime);
+      }
+    }
+    else {
+      ProcessAddStrokePoint(strokePosition, Time.deltaTime);
+    }
+
+  }
+
+  private void ProcessAddStrokePoint(Vector3 point, float effDeltaTime) {
     bool shouldAdd = !_firstStrokePointAdded
-      || Vector3.Distance(_lastStrokePointAdded, _pinchDetector.Position)
+      || Vector3.Distance(_lastStrokePointAdded, point)
           >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MIN_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
 
-    _timeSinceLastAddition += Time.deltaTime;
+    _timeSinceLastAddition += effDeltaTime;
 
     if (shouldAdd) {
       StrokePoint strokePoint = new StrokePoint();
-      strokePoint.position = _pinchDetector.Position;
+      strokePoint.position = point;
       strokePoint.rotation = Quaternion.identity;
       strokePoint.handOrientation = _pinchDetector.Rotation * Quaternion.Euler((_pinchDetector.HandModel.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
       strokePoint.deltaTime = _timeSinceLastAddition;
@@ -99,6 +130,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private void EndStroke() {
     _strokeProcessor.EndStroke();
+    _firstStrokePointAdded = false;
   }
 
   // TODO DELETEME FIXME
