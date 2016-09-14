@@ -19,6 +19,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public FilterApplyThickness _thicknessFilter;
 
   [Header("Effect Settings")]
+  public SoundEffect _beginEffect;
   public AudioSource _soundEffectSource;
   [Range(0, 1)]
   public float _volumeScale = 1;
@@ -90,6 +91,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   private void BeginStroke() {
+    _beginEffect.PlayOnTransform(_soundEffectSource.transform);
     _strokeProcessor.BeginStroke();
     _soundEffectSource.Play();
     _prevPosition = _pinchDetector.Position;

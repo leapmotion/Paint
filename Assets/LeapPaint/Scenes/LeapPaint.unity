@@ -3969,7 +3969,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737706, y: 0.9868922, z: -0.10345783, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4000,6 +4000,12 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 1300284115}
   _marbleCollider: {fileID: 1376844628}
   _marbleRenderer: {fileID: 1376844627}
+  _appearEffect:
+    _clips:
+    - {fileID: 8300000, guid: e044bd24d3f4c8648ad68883b37e2492, type: 3}
+    _volume: 1
+    _pitchVariance: 0.15
+    _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
@@ -8692,6 +8698,11 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 165998497}
   _marbleCollider: {fileID: 0}
   _marbleRenderer: {fileID: 0}
+  _appearEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _activateEffect:
     _clips: []
     _volume: 1
@@ -14209,6 +14220,11 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 1940697499}
   _marbleCollider: {fileID: 728797257}
   _marbleRenderer: {fileID: 728797256}
+  _appearEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
@@ -19457,6 +19473,11 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 353366397}
   _marbleCollider: {fileID: 472494976}
   _marbleRenderer: {fileID: 472494975}
+  _appearEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
@@ -25385,8 +25406,16 @@ MonoBehaviour:
   _ribbonIO: {fileID: 265852805}
   _colorFilter: {fileID: 879182408}
   _thicknessFilter: {fileID: 2014610516}
+  _beginEffect:
+    _clips:
+    - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
+    - {fileID: 8300000, guid: 35b37b9ce3d97924980fc2dc98d13f6b, type: 3}
+    - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
+    _volume: 1
+    _pitchVariance: 0.15
+    _pitchCenter: 1
   _soundEffectSource: {fileID: 1840238058}
-  _volumeScale: 1
+  _volumeScale: 0.5
   _maxEffectSpeed: 3
   _pitchRange: {x: 0.8, y: 1}
   _smoothingDelay: 0.03
@@ -26049,8 +26078,16 @@ MonoBehaviour:
   _ribbonIO: {fileID: 265852805}
   _colorFilter: {fileID: 1886534746}
   _thicknessFilter: {fileID: 2014610516}
+  _beginEffect:
+    _clips:
+    - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
+    - {fileID: 8300000, guid: 35b37b9ce3d97924980fc2dc98d13f6b, type: 3}
+    - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
+    _volume: 1
+    _pitchVariance: 0.15
+    _pitchCenter: 1
   _soundEffectSource: {fileID: 832037570}
-  _volumeScale: 1
+  _volumeScale: 0.5
   _maxEffectSpeed: 3
   _pitchRange: {x: 0.8, y: 1}
   _smoothingDelay: 0.03
