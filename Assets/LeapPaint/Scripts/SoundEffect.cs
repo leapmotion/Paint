@@ -20,11 +20,15 @@ public class SoundEffect {
   private float _pitchCenter = 1;
 
   public void PlayAtPosition(Vector3 position, float volumeScale = 1) {
+    if (_clips.Length == 0) return;
+
     var source = prepAudioSource(volumeScale);
     source.transform.position = position;
   }
 
   public void PlayOnTransform(Transform transform, float volumeScale = 1) {
+    if (_clips.Length == 0) return;
+
     var source = prepAudioSource(volumeScale);
     source.transform.parent = transform;
     source.transform.localPosition = Vector3.zero;

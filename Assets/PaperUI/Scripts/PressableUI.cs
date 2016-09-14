@@ -88,6 +88,9 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
   public Layer[] _layers = new Layer[0];
 
   public UnityEvent OnPress;
+
+  public SoundEffect soundEffect;
+
   private bool _pressed = false;
 
   private float _activationVolumeHeight;
@@ -120,6 +123,7 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
     if (rawPressDistance <= 0F && !_pressed) {
       OnPress.Invoke();
       _pressed = true;
+      soundEffect.PlayOnTransform(transform, 1);
     }
     else if (rawPressDistance > 0F && _pressed) {
       _pressed = false;
