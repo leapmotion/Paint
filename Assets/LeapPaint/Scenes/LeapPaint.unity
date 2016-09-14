@@ -224,11 +224,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -324,8 +326,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -492,6 +500,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 2a7efc16446f98a43a2d29977e7b431a, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -671,8 +681,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -783,11 +799,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -982,8 +1000,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -1151,8 +1175,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -1902,12 +1932,14 @@ MonoBehaviour:
   _emergeEffect:
     _clips:
     - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips:
     - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -2264,8 +2296,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -2364,6 +2402,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -2592,8 +2632,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -2861,8 +2907,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -3334,8 +3386,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -3457,8 +3515,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -3862,6 +3926,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: f7ccce4c51869e14e8c7af4a3673f4d6, type: 3}
     - {fileID: 8300000, guid: 98dbbaed4f2ea2442ae794f68502b49e, type: 3}
     - {fileID: 8300000, guid: f82cd31ebfb147244adaaf45be57b08b, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0.15
     _pitchCenter: 1
@@ -3899,11 +3964,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -4003,24 +4070,28 @@ MonoBehaviour:
   _appearEffect:
     _clips:
     - {fileID: 8300000, guid: e044bd24d3f4c8648ad68883b37e2492, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0.15
     _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _throwEffect:
     _clips:
     - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -4028,6 +4099,7 @@ MonoBehaviour:
   _returnEffect:
     _clips:
     - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -4338,8 +4410,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -4618,8 +4696,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -5499,8 +5583,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -5698,6 +5788,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -6507,8 +6599,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -6856,6 +6954,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -6996,8 +7096,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -7230,8 +7336,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -8098,8 +8210,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -8393,8 +8511,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -8700,27 +8824,32 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 0}
   _appearEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _activateEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _grabEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _throwEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _maxVolumeVelocity: 1
   _returnEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -8852,8 +8981,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -9144,8 +9279,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -9381,8 +9522,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -9677,8 +9824,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -9909,11 +10062,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -10258,8 +10413,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -10534,8 +10695,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -10838,8 +11005,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -11050,8 +11223,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -11396,7 +11575,8 @@ AudioSource:
   m_GameObject: {fileID: 832037568}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 6f5a650c3de44044f98886081b52cb38, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -12141,6 +12321,7 @@ MonoBehaviour:
   _dipEffect:
     _clips:
     - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0.15
     _pitchCenter: 1
@@ -12261,12 +12442,14 @@ MonoBehaviour:
   _emergeEffect:
     _clips:
     - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips:
     - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -12401,6 +12584,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -12468,12 +12653,14 @@ MonoBehaviour:
   _emergeEffect:
     _clips:
     - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips:
     - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -12776,11 +12963,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -13044,11 +13233,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -13131,6 +13322,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -13255,8 +13448,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -13363,8 +13562,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -14057,8 +14262,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -14222,24 +14433,28 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 728797256}
   _appearEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _throwEffect:
     _clips:
     - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -14247,6 +14462,7 @@ MonoBehaviour:
   _returnEffect:
     _clips:
     - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -14620,8 +14836,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -14757,8 +14979,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -14969,6 +15197,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -15184,8 +15414,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -15676,8 +15912,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -16228,8 +16470,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -16358,11 +16606,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -16458,8 +16708,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -16660,8 +16916,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -16719,11 +16981,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -16996,8 +17260,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -17079,8 +17349,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -17436,8 +17712,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -17663,8 +17945,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -17990,8 +18278,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -18071,7 +18365,8 @@ AudioSource:
   m_GameObject: {fileID: 1334337106}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243000011950306458, guid: 43de2443e9a4ff54e842fdf9d3168906,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -18465,8 +18760,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -18752,8 +19053,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -18835,8 +19142,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -18903,11 +19216,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -19119,8 +19434,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -19578,24 +19899,28 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 472494975}
   _appearEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _throwEffect:
     _clips:
     - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -19603,6 +19928,7 @@ MonoBehaviour:
   _returnEffect:
     _clips:
     - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -19705,6 +20031,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -20460,8 +20788,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -20917,8 +21251,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -21393,11 +21733,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -21756,8 +22098,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -21882,11 +22230,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -22040,8 +22390,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -22206,6 +22562,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -22346,8 +22704,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -22910,8 +23274,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -23062,11 +23432,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -23364,8 +23736,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -24020,7 +24398,8 @@ AudioSource:
   m_GameObject: {fileID: 1840238056}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 6f5a650c3de44044f98886081b52cb38, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -24224,8 +24603,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -24439,8 +24824,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -24618,8 +25009,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -24821,6 +25218,7 @@ MonoBehaviour:
   _dipEffect:
     _clips:
     - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0.15
     _pitchCenter: 1
@@ -25170,6 +25568,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -25472,11 +25872,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -25660,6 +26062,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
     - {fileID: 8300000, guid: 35b37b9ce3d97924980fc2dc98d13f6b, type: 3}
     - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
+    _mixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0.15
     _pitchCenter: 1
@@ -25771,8 +26175,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -25879,6 +26289,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 2a7efc16446f98a43a2d29977e7b431a, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -26003,8 +26415,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -26332,6 +26750,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
     - {fileID: 8300000, guid: 35b37b9ce3d97924980fc2dc98d13f6b, type: 3}
     - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
+    _mixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0.15
     _pitchCenter: 1
@@ -26567,6 +26987,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -26829,8 +27251,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -26952,8 +27380,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -27203,8 +27637,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -27303,6 +27743,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -27438,11 +27880,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -27598,8 +28042,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -27849,6 +28299,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -28123,6 +28575,8 @@ MonoBehaviour:
   soundEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -28261,8 +28715,14 @@ Prefab:
     - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -28489,8 +28949,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -28758,11 +29224,13 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips: []
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -28789,6 +29257,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: f7ccce4c51869e14e8c7af4a3673f4d6, type: 3}
     - {fileID: 8300000, guid: 98dbbaed4f2ea2442ae794f68502b49e, type: 3}
     - {fileID: 8300000, guid: f82cd31ebfb147244adaaf45be57b08b, type: 3}
+    _mixerGroup: {fileID: 0}
     _volume: 1
     _pitchVariance: 0.15
     _pitchCenter: 1
@@ -28998,8 +29467,14 @@ Prefab:
     - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
         type: 2}
       propertyPath: soundEffect._volume
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._mixerGroup
+      value: 
+      objectReference: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 using System.Collections.Generic;
 
 public class AudioSourceCache : MonoBehaviour {
@@ -21,15 +22,27 @@ public class AudioSourceCache : MonoBehaviour {
     }
   }
 
-  public AudioSource GetAudioSource() {
+  public AudioSource GetAudioSource(AudioMixerGroup group = null) {
+    AudioSource source = null;
+
     for (int i = 0; i < _pool.Count; i++) {
       if (!_pool[i].isPlaying) {
-        return _pool[i];
+        source = _pool[i];
+        break;
       }
     }
 
-    var obj = Instantiate(_template);
-    _pool.Add(obj);
-    return obj;
+    if (source == null) {
+      source = Instantiate(_template);
+      _pool.Add(source);
+    }
+
+    if (group == null) {
+      source.outputAudioMixerGroup = _template.outputAudioMixerGroup;
+    } else {
+      source.outputAudioMixerGroup = group;
+    }
+
+    return source;
   }
 }

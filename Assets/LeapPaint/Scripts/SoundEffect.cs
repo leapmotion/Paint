@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 using System;
 using Leap.Unity.Attributes;
 
@@ -7,6 +8,9 @@ public class SoundEffect {
 
   [SerializeField]
   private AudioClip[] _clips;
+
+  [SerializeField]
+  private AudioMixerGroup _mixerGroup;
 
   [Range(0, 1)]
   [SerializeField]
@@ -35,7 +39,7 @@ public class SoundEffect {
   }
 
   private AudioSource prepAudioSource(float volumeScale) {
-    AudioSource source = AudioSourceCache.instance.GetAudioSource();
+    AudioSource source = AudioSourceCache.instance.GetAudioSource(_mixerGroup);
     source.clip = getRandomClip();
     source.volume = _volume * volumeScale;
     source.pitch = _pitchCenter + (UnityEngine.Random.value - 0.5f) * _pitchVariance;
