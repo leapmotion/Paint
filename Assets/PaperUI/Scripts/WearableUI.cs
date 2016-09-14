@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Leap.Unity;
+using Leap.Unity.RuntimeGizmos;
 
-public class WearableUI : AnchoredBehaviour, IWearable {
-
-  private const float VELOCITY_DEPENDENT_RETURN_TO_ANCHOR_DISTANCE = 0.2F;
-  private const float OVERRIDE_VELOCITY_RETURN_TO_ANCHOR_DISTANCE = 0.05F;
+public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   [Header("Wearable UI")]
   public MeshRenderer _appearanceExplosionRenderer;
+  public Collider _marbleCollider;
+  public MeshRenderer _marbleRenderer;
 
   private WearableManager _manager;
   private WearableAnchor _wearableAnchor;
@@ -36,12 +36,28 @@ public class WearableUI : AnchoredBehaviour, IWearable {
       _wearableAnchor = anchor;
       _wearableAnchor.OnAnchorChiralityChanged += DoOnAnchorChiralityChanged;
     }
+
+    if (Application.isPlaying) {
+      InitMarbleTouch();
+    }
   }
 
   protected virtual void FixedUpdate() {
     FixedAppearVanishUpdate();
     FixedGrabUpdate();
     FixedWorkstationTransitionUpdate();
+  }
+
+  protected override void Update() {
+    base.Update();
+
+    if (Application.isPlaying) {
+      MarbleTouchUpdate();
+    }
+  }
+
+  protected virtual void OnApplicationQuit() {
+    FinalizeMarbleTouch();
   }
 
   private void RefreshVisibility() {
@@ -88,18 +104,11 @@ public class WearableUI : AnchoredBehaviour, IWearable {
     }
   }
 
-  // TODO: Make emerge action happen on hover instead of relying on passing OnTriggerStay from the marble
-  public void OnFingerEnterMarble(Collider fingerCollider) {
-    DoOnFingerPressedMarble();
-  }
-
   protected virtual void DoOnAnchorChiralityChanged(Chirality whichHand) {
     if (whichHand != _anchorChirality) {
       _anchorChirality = whichHand;
     }
   }
-
-  protected virtual void DoOnFingerPressedMarble() { }
 
   protected virtual void DoOnReturnedToAnchor() { }
 
@@ -228,7 +237,113 @@ public class WearableUI : AnchoredBehaviour, IWearable {
 
   #endregion
 
-  #region Grab State
+  #region Marble Touching
+
+  private const float MARBLE_COOLDOWN = 0.02F;
+  private float _marbleCooldownTimer = 0F;
+  private bool _marbleReady = true;
+
+  private bool _fingerTouchingMarble = false;
+  private bool _fingerTouchingDepthCollider = false;
+  private CapsuleCollider _marbleDepthCollider;
+
+  private Pulsator _marblePulsator;
+
+  private void InitMarbleTouch() {
+    PassTriggerEvents triggerEvents = _marbleCollider.GetComponent<PassTriggerEvents>();
+    if (triggerEvents == null) {
+      triggerEvents = _marbleCollider.gameObject.AddComponent<PassTriggerEvents>();
+    }
+    triggerEvents.PassedOnTriggerEnter.AddListener(NotifyFingerEnterMarble);
+    triggerEvents.PassedOnTriggerExit.AddListener(NotifyFingerExitMarble);
+
+    if (_marbleDepthCollider == null) {
+      GameObject depthColliderObj = new GameObject();
+      depthColliderObj.transform.parent = _marbleCollider.transform.parent;
+      depthColliderObj.transform.localRotation = Quaternion.Euler(new Vector3(90F, 0F, 0F));
+      depthColliderObj.transform.localScale = Vector3.one;
+      depthColliderObj.name = "Marble Depth Touch Collider";
+
+      _marbleDepthCollider = depthColliderObj.AddComponent<CapsuleCollider>();
+      _marbleDepthCollider.isTrigger = true;
+      _marbleDepthCollider.radius = 0.96F;
+      _marbleDepthCollider.height = 2.88F;
+      _marbleDepthCollider.transform.localPosition = new Vector3(0F, 0F, -1.144F);
+      triggerEvents = depthColliderObj.AddComponent<PassTriggerEvents>();
+      triggerEvents.PassedOnTriggerEnter.AddListener(NotifyFingerEnterDepthCollider);
+      triggerEvents.PassedOnTriggerExit.AddListener(NotifyFingerExitDepthCollider);
+    }
+
+    if (_marblePulsator == null) {
+      _marblePulsator = gameObject.AddComponent<Pulsator>();
+      _marblePulsator._restValue = 0F;
+      _marblePulsator._pulseValue = 0.4F;
+      _marblePulsator._holdValue = 0.15F;
+      _marblePulsator._speed = 2F;
+      _marblePulsator.OnValueChanged += DoOnMarblePulsateValue;
+    }
+  }
+
+  private void MarbleTouchUpdate() {
+    if (!_marbleReady && _marbleCooldownTimer > 0F) {
+      _marbleCooldownTimer -= Time.deltaTime;
+      if (_marbleCooldownTimer <= 0F) {
+        _marbleCooldownTimer = 0F;
+        _marbleReady = true;
+        _marblePulsator.Release();
+      }
+    }
+  }
+
+  private void DoOnMarblePulsateValue(float normalizedValue) {
+    if (Application.isPlaying) {
+      _marbleRenderer.material.SetColor("_EmissionColor", Color.Lerp(Color.black, Color.white, normalizedValue));
+    }
+  }
+
+  public void NotifyFingerEnterMarble(Collider fingerCollider) {
+    if (_marbleReady) {
+      DoOnMarbleActivated();
+      _marbleReady = false;
+
+      _fingerTouchingMarble = true;
+    }
+  }
+
+  public void NotifyFingerExitMarble(Collider fingerCollider) {
+    _fingerTouchingMarble = false;
+    RefreshMarbleCountdown();
+  }
+
+  public void NotifyFingerEnterDepthCollider(Collider fingerCollider) {
+    _fingerTouchingDepthCollider = true;
+  }
+
+  public void NotifyFingerExitDepthCollider(Collider fingerCollider) {
+    _fingerTouchingDepthCollider = false;
+    RefreshMarbleCountdown();
+  }
+
+  private void RefreshMarbleCountdown() {
+    if (!_fingerTouchingDepthCollider && !_fingerTouchingMarble && !_marbleReady) {
+      _marbleCooldownTimer = MARBLE_COOLDOWN;
+    }
+  }
+
+  private void FinalizeMarbleTouch() {
+    DestroyImmediate(_marbleDepthCollider.gameObject);
+  }
+
+  protected virtual void DoOnMarbleActivated() {
+    _marblePulsator.Activate();
+  }
+
+  #endregion
+
+  #region Grab and Release
+
+  private const float VELOCITY_DEPENDENT_RETURN_TO_ANCHOR_DISTANCE = 0.2F;
+  private const float OVERRIDE_VELOCITY_RETURN_TO_ANCHOR_DISTANCE = 0.05F;
 
   private Transform _grabbingTransform = null;
 
@@ -521,6 +636,18 @@ public class WearableUI : AnchoredBehaviour, IWearable {
   }
 
   protected virtual void DoOnMovementToWorkstationFinished() { }
+
+  #endregion
+
+  #region Gizmos
+
+  private bool _enableGizmos = true;
+
+  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+    if (_enableGizmos) {
+
+    }
+  }
 
   #endregion
 

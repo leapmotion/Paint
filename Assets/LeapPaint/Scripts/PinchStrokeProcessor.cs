@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PinchStrokeProcessor : MonoBehaviour {
 
-  private const float MIN_SEGMENT_LENGTH = 0.005F;
+  private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
+  private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.007F;
+  //private const float MAX_SEGMENT_LENGTH
 
   public PinchDetector _pinchDetector;
   [Tooltip("Used to stop drawing if the pinch detector is grabbing a UI element.")]
@@ -75,7 +77,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private void UpdateStroke() {
     bool shouldAdd = !_firstStrokePointAdded
-      || Vector3.Distance(_lastStrokePointAdded, _pinchDetector.Position) >= MIN_SEGMENT_LENGTH;
+      || Vector3.Distance(_lastStrokePointAdded, _pinchDetector.Position)
+          >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MIN_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
 
     _timeSinceLastAddition += Time.deltaTime;
 
@@ -101,6 +104,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   // TODO DELETEME FIXME
   private void DoOnMeshStrokeFinalized(Mesh mesh, List<StrokePoint> stroke) {
     GameObject finishedRibbonMesh = new GameObject();
+    finishedRibbonMesh.name = stroke[0].color.r + ", "+stroke[0].color.g + ", "+stroke[0].color.b;
     MeshFilter filter = finishedRibbonMesh.AddComponent<MeshFilter>();
     MeshRenderer renderer = finishedRibbonMesh.AddComponent<MeshRenderer>();
     Material ribbonMat = new Material(Shader.Find("LeapMotion/RibbonShader"));

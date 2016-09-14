@@ -8,6 +8,12 @@ public class IndexTipColor : MonoBehaviour {
   public Renderer _tipMeshRenderer;
   public Color _startingColor = Color.white;
 
+  [Header("Color Marble")]
+  public Material _colorMarbleMaterial;
+  [Tooltip("The material to use for the color marble when the index tip color is transparent.")]
+  public Material _transparentMarbleMaterial;
+  public Renderer _colorMarbleRenderer;
+
   private Color _color;
   private Material _material;
 
@@ -32,6 +38,13 @@ public class IndexTipColor : MonoBehaviour {
   public void SetColor(Color color) {
     _color = color;
     _material.SetColor(Shader.PropertyToID("_Color"), color);
+    if (color.a < 0.01F) {
+      _colorMarbleRenderer.sharedMaterial = _transparentMarbleMaterial;
+    }
+    else {
+      _colorMarbleRenderer.sharedMaterial = _colorMarbleMaterial;
+      _colorMarbleMaterial.color = color;
+    }
   }
 
   #region Mixing Paint Colors
