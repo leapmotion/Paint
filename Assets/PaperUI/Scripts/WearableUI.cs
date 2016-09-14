@@ -9,9 +9,11 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   public MeshRenderer _appearanceExplosionRenderer;
   public Collider _marbleCollider;
   public MeshRenderer _marbleRenderer;
+  public SoundEffect _activateEffect;
   public SoundEffect _grabEffect;
   public SoundEffect _throwEffect;
   public float _maxVolumeVelocity = 1;
+  public SoundEffect _returnEffect;
 
   private WearableManager _manager;
   private WearableAnchor _wearableAnchor;
@@ -113,7 +115,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     }
   }
 
-  protected virtual void DoOnReturnedToAnchor() { }
+  protected virtual void DoOnReturnedToAnchor() {
+    _returnEffect.PlayOnTransform(transform);
+  }
 
   #region Wearable Implementation
 
@@ -335,6 +339,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   protected virtual void DoOnMarbleActivated() {
+    _activateEffect.PlayOnTransform(transform);
     _marblePulsator.Activate();
   }
 

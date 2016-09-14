@@ -222,6 +222,16 @@ MonoBehaviour:
   - {fileID: 1920987624}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1001 &10209387
 Prefab:
   m_ObjectHideFlags: 0
@@ -761,6 +771,16 @@ MonoBehaviour:
   - {fileID: 50601988}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!114 &50601988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1859,6 +1879,18 @@ MonoBehaviour:
   - {fileID: 2020222183}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips:
+    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips:
+    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &136887988
 GameObject:
   m_ObjectHideFlags: 0
@@ -3804,6 +3836,16 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!23 &274433676 stripped
 MeshRenderer:
   m_PrefabParentObject: {fileID: 2300000, guid: 5a046ec970a25224a81c775e7056f7ad,
@@ -3866,7 +3908,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.02373771, y: 0.9868922, z: -0.103457846, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3897,6 +3939,12 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 1300284115}
   _marbleCollider: {fileID: 1376844628}
   _marbleRenderer: {fileID: 1376844627}
+  _activateEffect:
+    _clips:
+    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
@@ -3910,6 +3958,12 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _maxVolumeVelocity: 5
+  _returnEffect:
+    _clips:
+    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _primaryPaletteEmergeable: {fileID: 910649345}
   _primaryPaletteMoveable: {fileID: 651685536}
   _primaryPalette: {fileID: 651685535}
@@ -8537,6 +8591,11 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 165998497}
   _marbleCollider: {fileID: 0}
   _marbleRenderer: {fileID: 0}
+  _activateEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _grabEffect:
     _clips: []
     _volume: 1
@@ -8548,6 +8607,11 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _maxVolumeVelocity: 1
+  _returnEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _primaryPaletteEmergeable: {fileID: 0}
   _primaryPaletteMoveable: {fileID: 0}
   _primaryPalette: {fileID: 0}
@@ -9711,6 +9775,16 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &697477097
 GameObject:
   m_ObjectHideFlags: 0
@@ -11951,6 +12025,18 @@ MonoBehaviour:
   - {fileID: 1963669652}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips:
+    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips:
+    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &895512428
 GameObject:
   m_ObjectHideFlags: 0
@@ -12146,6 +12232,18 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips:
+    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips:
+    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &919069044
 GameObject:
   m_ObjectHideFlags: 0
@@ -12443,6 +12541,16 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &921923601
 GameObject:
   m_ObjectHideFlags: 0
@@ -12701,6 +12809,16 @@ MonoBehaviour:
   - {fileID: 2104593141}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!114 &928463805 stripped
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
@@ -13854,6 +13972,12 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 1940697499}
   _marbleCollider: {fileID: 728797257}
   _marbleRenderer: {fileID: 728797256}
+  _activateEffect:
+    _clips:
+    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
@@ -13867,6 +13991,12 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _maxVolumeVelocity: 5
+  _returnEffect:
+    _clips:
+    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _brushControlsEmergeable: {fileID: 893306006}
   _brushControlsMoveable: {fileID: 1482129052}
   _brushWorkstationEmergeable: {fileID: 1212648067}
@@ -15948,6 +16078,16 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1001 &1200234870
 Prefab:
   m_ObjectHideFlags: 0
@@ -16289,6 +16429,16 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1219668906
 GameObject:
   m_ObjectHideFlags: 0
@@ -18320,6 +18470,16 @@ MonoBehaviour:
   - {fileID: 2039137995}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1402531101
 GameObject:
   m_ObjectHideFlags: 0
@@ -18980,6 +19140,12 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 353366397}
   _marbleCollider: {fileID: 472494976}
   _marbleRenderer: {fileID: 472494975}
+  _activateEffect:
+    _clips:
+    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
@@ -18993,6 +19159,12 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _maxVolumeVelocity: 5
+  _returnEffect:
+    _clips:
+    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
   _menuButtonEmergeables:
   - {fileID: 134566105}
   - {fileID: 2181479}
@@ -20622,6 +20794,16 @@ MonoBehaviour:
   - {fileID: 1060705938}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1624824705
 GameObject:
   m_ObjectHideFlags: 0
@@ -21096,6 +21278,16 @@ MonoBehaviour:
   - {fileID: 1466787902}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1655978081
 GameObject:
   m_ObjectHideFlags: 0
@@ -22251,6 +22443,16 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!114 &1757732365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24550,6 +24752,16 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1936036704
 GameObject:
   m_ObjectHideFlags: 0
@@ -26455,6 +26667,16 @@ MonoBehaviour:
   _enableDisableComponents: []
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!114 &2043679294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27748,6 +27970,16 @@ MonoBehaviour:
   - {fileID: 2134410061}
   _renderers: []
   _graphics: []
+  _emergeEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _vanishEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!114 &2134410061
 MonoBehaviour:
   m_ObjectHideFlags: 0
