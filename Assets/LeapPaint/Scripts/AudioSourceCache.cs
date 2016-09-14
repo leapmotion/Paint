@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 public class AudioSourceCache : MonoBehaviour {
 
+  [SerializeField]
+  private AudioSource _template;
+
   private List<AudioSource> _pool = new List<AudioSource>();
 
   private static AudioSourceCache _cachedInstance = null;
@@ -25,14 +28,8 @@ public class AudioSourceCache : MonoBehaviour {
       }
     }
 
-    GameObject audioSourceObj = new GameObject();
-    audioSourceObj.transform.parent = transform;
-
-    var source = audioSourceObj.AddComponent<AudioSource>();
-    source.spatialBlend = 1;
-    source.playOnAwake = false;
-    source.loop = false;
-    _pool.Add(source);
-    return source;
+    var obj = Instantiate(_template);
+    _pool.Add(obj);
+    return obj;
   }
 }
