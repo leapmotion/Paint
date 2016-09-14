@@ -15,6 +15,7 @@ public class IndexTipColor : MonoBehaviour {
   public Renderer _colorMarbleRenderer;
 
   public SoundEffect _dipEffect;
+  private float _canPlayDipTime;
 
   private Color _color;
   private Material _material;
@@ -60,7 +61,11 @@ public class IndexTipColor : MonoBehaviour {
     }
     ColorCleaningBasin cleaningLiquid = other.GetComponentInParent<ColorCleaningBasin>();
     if (cleaningLiquid != null && cleaningLiquid.enabled) {
-      _dipEffect.PlayOnTransform(transform);
+      if(Time.time > _canPlayDipTime) {
+        _dipEffect.PlayOnTransform(transform);
+      }
+      _canPlayDipTime = Time.time + 0.5f;
+      
       this.SetColor(new Color(0F, 0F, 0F, 0F));
     }
   }
