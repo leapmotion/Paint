@@ -321,6 +321,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -663,6 +668,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -969,6 +979,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -1132,6 +1147,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -2241,6 +2261,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -2564,6 +2589,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -2827,6 +2857,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -3296,6 +3331,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -3413,6 +3453,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -3908,7 +3953,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
+  m_LocalRotation: {x: -0.02373771, y: 0.9868922, z: -0.103457846, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4268,6 +4313,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -4542,6 +4592,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -5418,6 +5473,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -6422,6 +6482,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -6906,6 +6971,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -7134,6 +7204,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -7998,6 +8073,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -8287,6 +8367,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -8737,6 +8822,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -9024,6 +9114,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -9255,6 +9350,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -9546,6 +9646,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -10123,6 +10228,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -10393,6 +10503,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -10693,6 +10808,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -10899,6 +11019,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -13019,6 +13144,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -13121,6 +13251,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -13811,6 +13946,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -14364,6 +14504,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -14495,6 +14640,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -14917,6 +15067,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -15404,6 +15559,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -15952,6 +16112,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -16177,6 +16342,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -16373,6 +16543,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -16705,6 +16880,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -16782,6 +16962,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -17135,6 +17320,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -17356,6 +17546,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -17678,6 +17873,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -18046,6 +18246,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -18328,6 +18533,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -18405,6 +18615,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -18684,6 +18899,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -19912,6 +20132,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -20321,6 +20546,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -21156,6 +21386,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -21434,6 +21669,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -21735,6 +21975,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -22295,6 +22540,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -22743,6 +22993,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -23524,6 +23779,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -23734,6 +23994,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -23907,6 +24172,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -25037,6 +25307,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -25263,6 +25538,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -26072,6 +26352,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
   m_IsPrefabParent: 0
@@ -26189,6 +26474,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -26435,6 +26725,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -26825,6 +27120,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
@@ -27484,6 +27784,11 @@ Prefab:
       propertyPath: soundEffect._pitchVariance
       value: 0.15
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012847094562, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0
@@ -27706,6 +28011,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
@@ -28192,6 +28502,11 @@ Prefab:
         type: 2}
       propertyPath: soundEffect._pitchVariance
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011356062638, guid: 94df7bb01d4340e45ae1f24d2a996c5d,
+        type: 2}
+      propertyPath: soundEffect._volume
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94df7bb01d4340e45ae1f24d2a996c5d, type: 2}
