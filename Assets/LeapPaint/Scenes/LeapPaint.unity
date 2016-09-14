@@ -3706,7 +3706,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.02373771, y: 0.9868922, z: -0.103457846, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3737,6 +3737,19 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 1300284115}
   _marbleCollider: {fileID: 1376844628}
   _marbleRenderer: {fileID: 1376844627}
+  _grabEffect:
+    _clips:
+    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _throwEffect:
+    _clips:
+    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _maxVolumeVelocity: 5
   _primaryPaletteEmergeable: {fileID: 910649345}
   _primaryPaletteMoveable: {fileID: 651685536}
   _primaryPalette: {fileID: 651685535}
@@ -8219,6 +8232,17 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 165998497}
   _marbleCollider: {fileID: 0}
   _marbleRenderer: {fileID: 0}
+  _grabEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _throwEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _maxVolumeVelocity: 1
   _primaryPaletteEmergeable: {fileID: 0}
   _primaryPaletteMoveable: {fileID: 0}
   _primaryPalette: {fileID: 0}
@@ -13330,6 +13354,19 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 1940697499}
   _marbleCollider: {fileID: 728797257}
   _marbleRenderer: {fileID: 728797256}
+  _grabEffect:
+    _clips:
+    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _throwEffect:
+    _clips:
+    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _maxVolumeVelocity: 5
   _brushControlsEmergeable: {fileID: 893306006}
   _brushControlsMoveable: {fileID: 1482129052}
   _brushWorkstationEmergeable: {fileID: 1212648067}
@@ -18163,6 +18200,19 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 353366397}
   _marbleCollider: {fileID: 472494976}
   _marbleRenderer: {fileID: 472494975}
+  _grabEffect:
+    _clips:
+    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _throwEffect:
+    _clips:
+    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _maxVolumeVelocity: 5
   _menuButtonEmergeables:
   - {fileID: 134566105}
   - {fileID: 2181479}
