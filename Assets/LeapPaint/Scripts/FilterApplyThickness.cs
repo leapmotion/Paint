@@ -4,6 +4,7 @@ using System.Collections;
 public class FilterApplyThickness : MonoBehaviour, IMemoryFilter<StrokePoint> {
 
   public float _thickness = 0.003F;
+  public float _lastNormalizedValue = 0F;
 
   private float _minThickness = 0.003F;
   private float _maxThickness = 0.03F;
@@ -11,6 +12,7 @@ public class FilterApplyThickness : MonoBehaviour, IMemoryFilter<StrokePoint> {
   public void SetThickness(float normalizedValue) {
     float value = Mathf.Clamp(normalizedValue, 0F, 1F);
     _thickness = Mathf.Lerp(_minThickness, _maxThickness, value);
+    _lastNormalizedValue = normalizedValue;
   }
 
   public int GetMemorySize() {
