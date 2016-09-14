@@ -45,7 +45,7 @@ public class ColorSwatch : MonoBehaviour {
 
   public void DoSwatchAction() {
     if(_swatchMode != SwatchMode.DoNothing) {
-      soundEffect.PlayOnTransform(transform);
+      soundEffect.PlayAtPosition(transform);
     }
 
     switch (_swatchMode) {

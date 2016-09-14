@@ -1932,14 +1932,16 @@ MonoBehaviour:
   _emergeEffect:
     _clips:
     - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips:
     - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -4036,7 +4038,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737699, y: 0.9868922, z: -0.1034578, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4067,31 +4069,27 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 1300284115}
   _marbleCollider: {fileID: 1376844628}
   _marbleRenderer: {fileID: 1376844627}
-  _appearEffect:
-    _clips:
-    - {fileID: 8300000, guid: e044bd24d3f4c8648ad68883b37e2492, type: 3}
-    _mixerGroup: {fileID: 0}
-    _volume: 1
-    _pitchVariance: 0.15
-    _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _throwEffect:
     _clips:
     - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -4099,7 +4097,8 @@ MonoBehaviour:
   _returnEffect:
     _clips:
     - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -6731,6 +6730,12 @@ MonoBehaviour:
   _anchorRingRenderer: {fileID: 382852648}
   _opaqueMaterial: {fileID: 2100000, guid: c855668d629c08044928cf661d97e75b, type: 2}
   _fadeMaterial: {fileID: 2100000, guid: 9d4796bb1fb6ce643be7d2e6e976ca62, type: 2}
+  showEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &472494972
 GameObject:
   m_ObjectHideFlags: 0
@@ -8822,12 +8827,6 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 165998497}
   _marbleCollider: {fileID: 0}
   _marbleRenderer: {fileID: 0}
-  _appearEffect:
-    _clips: []
-    _mixerGroup: {fileID: 0}
-    _volume: 1
-    _pitchVariance: 0
-    _pitchCenter: 1
   _activateEffect:
     _clips: []
     _mixerGroup: {fileID: 0}
@@ -12321,8 +12320,9 @@ MonoBehaviour:
   _dipEffect:
     _clips:
     - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
-    _mixerGroup: {fileID: 0}
-    _volume: 1
+    _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 0.5
     _pitchVariance: 0.15
     _pitchCenter: 1
 --- !u!114 &879182408
@@ -12442,14 +12442,16 @@ MonoBehaviour:
   _emergeEffect:
     _clips:
     - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips:
     - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -12653,14 +12655,16 @@ MonoBehaviour:
   _emergeEffect:
     _clips:
     - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
     _clips:
     - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -14431,30 +14435,27 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 1940697499}
   _marbleCollider: {fileID: 728797257}
   _marbleRenderer: {fileID: 728797256}
-  _appearEffect:
-    _clips: []
-    _mixerGroup: {fileID: 0}
-    _volume: 1
-    _pitchVariance: 0
-    _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _throwEffect:
     _clips:
     - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -14462,7 +14463,8 @@ MonoBehaviour:
   _returnEffect:
     _clips:
     - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -16113,6 +16115,12 @@ MonoBehaviour:
   _anchorRingRenderer: {fileID: 2123397991}
   _opaqueMaterial: {fileID: 2100000, guid: c855668d629c08044928cf661d97e75b, type: 2}
   _fadeMaterial: {fileID: 2100000, guid: 9d4796bb1fb6ce643be7d2e6e976ca62, type: 2}
+  showEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1153417488
 GameObject:
   m_ObjectHideFlags: 0
@@ -19897,30 +19905,27 @@ MonoBehaviour:
   _appearanceExplosionRenderer: {fileID: 353366397}
   _marbleCollider: {fileID: 472494976}
   _marbleRenderer: {fileID: 472494975}
-  _appearEffect:
-    _clips: []
-    _mixerGroup: {fileID: 0}
-    _volume: 1
-    _pitchVariance: 0
-    _pitchCenter: 1
   _activateEffect:
     _clips:
     - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _grabEffect:
     _clips:
     - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
   _throwEffect:
     _clips:
     - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -19928,7 +19933,8 @@ MonoBehaviour:
   _returnEffect:
     _clips:
     - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
@@ -21034,6 +21040,14 @@ MonoBehaviour:
   _anchorRingRenderer: {fileID: 1413650905}
   _opaqueMaterial: {fileID: 2100000, guid: c855668d629c08044928cf661d97e75b, type: 2}
   _fadeMaterial: {fileID: 2100000, guid: 9d4796bb1fb6ce643be7d2e6e976ca62, type: 2}
+  showEffect:
+    _clips:
+    - {fileID: 8300000, guid: e044bd24d3f4c8648ad68883b37e2492, type: 3}
+    _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1536701264
 GameObject:
   m_ObjectHideFlags: 0
@@ -25218,8 +25232,9 @@ MonoBehaviour:
   _dipEffect:
     _clips:
     - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
-    _mixerGroup: {fileID: 0}
-    _volume: 1
+    _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 0.5
     _pitchVariance: 0.15
     _pitchCenter: 1
 --- !u!114 &1886534746
@@ -26069,8 +26084,8 @@ MonoBehaviour:
     _pitchCenter: 1
   _soundEffectSource: {fileID: 1840238058}
   _volumeScale: 0.5
-  _maxEffectSpeed: 3
-  _pitchRange: {x: 0.8, y: 1}
+  _maxEffectSpeed: 5
+  _pitchRange: {x: 0.8, y: 1.2}
   _smoothingDelay: 0.03
 --- !u!1001 &1953132422
 Prefab:
@@ -26757,8 +26772,8 @@ MonoBehaviour:
     _pitchCenter: 1
   _soundEffectSource: {fileID: 832037570}
   _volumeScale: 0.5
-  _maxEffectSpeed: 3
-  _pitchRange: {x: 0.8, y: 1}
+  _maxEffectSpeed: 5
+  _pitchRange: {x: 0.8, y: 1.2}
   _smoothingDelay: 0.03
 --- !u!1001 &2007424450
 Prefab:
@@ -29257,7 +29272,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: f7ccce4c51869e14e8c7af4a3673f4d6, type: 3}
     - {fileID: 8300000, guid: 98dbbaed4f2ea2442ae794f68502b49e, type: 3}
     - {fileID: 8300000, guid: f82cd31ebfb147244adaaf45be57b08b, type: 3}
-    _mixerGroup: {fileID: 0}
+    _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
     _volume: 1
     _pitchVariance: 0.15
     _pitchCenter: 1

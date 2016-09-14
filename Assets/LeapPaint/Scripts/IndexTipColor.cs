@@ -62,7 +62,7 @@ public class IndexTipColor : MonoBehaviour {
     ColorCleaningBasin cleaningLiquid = other.GetComponentInParent<ColorCleaningBasin>();
     if (cleaningLiquid != null && cleaningLiquid.enabled) {
       if(Time.time > _canPlayDipTime) {
-        _dipEffect.PlayOnTransform(transform);
+        _dipEffect.PlayAtPosition(transform);
       }
       _canPlayDipTime = Time.time + 0.5f;
       

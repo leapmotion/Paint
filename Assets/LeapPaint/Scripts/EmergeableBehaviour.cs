@@ -46,12 +46,12 @@ public class EmergeableBehaviour : MonoBehaviour {
   }
 
   public void TryEmerge() {
-    _emergeEffect.PlayOnTransform(transform);
+    _emergeEffect.PlayAtPosition(transform);
     _vanishTween.Play(TweenDirection.BACKWARD);
   }
 
   public void TryVanish() {
-    _vanishEffect.PlayOnTransform(transform);
+    _vanishEffect.PlayAtPosition(transform);
     _vanishTween.Play(TweenDirection.FORWARD);
   }
 

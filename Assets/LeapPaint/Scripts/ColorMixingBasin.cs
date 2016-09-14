@@ -25,7 +25,7 @@ public class ColorMixingBasin : MonoBehaviour {
     int extra = (int)((Time.time - _nextEffectTime) / _effectPeriod);
     if (extra > 1) {
       _nextEffectTime += extra * _effectPeriod;
-      _mixEffect.PlayOnTransform(transform, Mathf.Clamp01(multiplier / _maxEffectValue));
+      _mixEffect.PlayAtPosition(transform, Mathf.Clamp01(multiplier / _maxEffectValue));
     }
 
     Color mixColor = indexTipColor.GetColor();

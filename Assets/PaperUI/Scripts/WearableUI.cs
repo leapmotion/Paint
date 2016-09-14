@@ -9,7 +9,6 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   public MeshRenderer _appearanceExplosionRenderer;
   public Collider _marbleCollider;
   public MeshRenderer _marbleRenderer;
-  public SoundEffect _appearEffect;
   public SoundEffect _activateEffect;
   public SoundEffect _grabEffect;
   public SoundEffect _throwEffect;
@@ -225,7 +224,6 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   private void DoOnStartAppearing() {
     _isDisplayingOnAnyHand = true;
     OnExplosionShouldAppear();
-    _appearEffect.PlayOnTransform(transform);
   }
 
   private void OnExplosionShouldAppear() {
