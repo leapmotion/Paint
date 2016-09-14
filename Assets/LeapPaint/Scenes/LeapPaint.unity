@@ -3851,6 +3851,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _liquidMeshRenderer: {fileID: 2117372234}
+  _mixEffect:
+    _clips:
+    - {fileID: 8300000, guid: 554987831b4732c4bbc19f5cf6ea9895, type: 3}
+    - {fileID: 8300000, guid: 944404e3d30a80442acc09e59b372e66, type: 3}
+    - {fileID: 8300000, guid: 402285045a408514f84d804cc271db41, type: 3}
+    - {fileID: 8300000, guid: 3ad94d256c2cb89458f75c18704b57af, type: 3}
+    - {fileID: 8300000, guid: f444ec864113b8d4b8366a9404e492bc, type: 3}
+    - {fileID: 8300000, guid: f47e773c09396294f987ff836067dd47, type: 3}
+    - {fileID: 8300000, guid: f7ccce4c51869e14e8c7af4a3673f4d6, type: 3}
+    - {fileID: 8300000, guid: 98dbbaed4f2ea2442ae794f68502b49e, type: 3}
+    - {fileID: 8300000, guid: f82cd31ebfb147244adaaf45be57b08b, type: 3}
+    _volume: 1
+    _pitchVariance: 0.15
+    _pitchCenter: 1
+  _effectPeriod: 0.2
+  _maxEffectValue: 2
 --- !u!54 &266362536
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3953,7 +3969,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737706, y: 0.9868922, z: -0.10345783, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -28474,6 +28490,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _liquidMeshRenderer: {fileID: 702021099}
+  _mixEffect:
+    _clips:
+    - {fileID: 8300000, guid: 554987831b4732c4bbc19f5cf6ea9895, type: 3}
+    - {fileID: 8300000, guid: 944404e3d30a80442acc09e59b372e66, type: 3}
+    - {fileID: 8300000, guid: 402285045a408514f84d804cc271db41, type: 3}
+    - {fileID: 8300000, guid: 3ad94d256c2cb89458f75c18704b57af, type: 3}
+    - {fileID: 8300000, guid: f444ec864113b8d4b8366a9404e492bc, type: 3}
+    - {fileID: 8300000, guid: f47e773c09396294f987ff836067dd47, type: 3}
+    - {fileID: 8300000, guid: f7ccce4c51869e14e8c7af4a3673f4d6, type: 3}
+    - {fileID: 8300000, guid: 98dbbaed4f2ea2442ae794f68502b49e, type: 3}
+    - {fileID: 8300000, guid: f82cd31ebfb147244adaaf45be57b08b, type: 3}
+    _volume: 1
+    _pitchVariance: 0.15
+    _pitchCenter: 1
+  _effectPeriod: 0.2
+  _maxEffectValue: 2
 --- !u!54 &2134410062
 Rigidbody:
   m_ObjectHideFlags: 0
