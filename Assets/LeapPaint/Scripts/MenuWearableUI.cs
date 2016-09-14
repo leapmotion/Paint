@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Leap.Unity;
 
 public class MenuWearableUI : WearableUI {
 
@@ -54,6 +55,21 @@ public class MenuWearableUI : WearableUI {
           _menuButtonEmergeables[i].TryEmerge();
         }
       }
+    }
+  }
+
+  protected override void DoOnAnchorChiralityChanged(Chirality newChirality) {
+    base.DoOnAnchorChiralityChanged(newChirality);
+
+    if (newChirality != DisplayingChirality) {
+      for (int i = 0; i < _menuButtonMoveables.Length; i++) {
+        _menuButtonMoveables[i]._A.position = MirrorUtil.GetMirroredPosition(_menuButtonMoveables[i]._A.position, _menuButtonMoveables[i].transform.parent);
+        _menuButtonMoveables[i]._A.rotation = MirrorUtil.GetMirroredRotation(_menuButtonMoveables[i]._A.rotation, _menuButtonMoveables[i].transform.parent);
+        if (!IsWorkstation) {
+          _menuButtonMoveables[i].MoveToA();
+        }
+      }
+      DisplayingChirality = newChirality;
     }
   }
 
