@@ -96,9 +96,7 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
     _meshPoints.GetColors(_cachedColor);
     mesh.SetColors(_cachedColor);
 
-    mesh.SetIndices(_meshIndices.ToArray(), ribbon.Topology, 0);
-    // TODO FIXME: ToArray() causes a LOT of garbage because it's allocating an array every frame.
-    // Cap max ribbon length and use a cache array.
+    mesh.SetTriangles(_meshIndices, 0);
 
     mesh.RecalculateNormals();
   }
