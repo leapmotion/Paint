@@ -26,11 +26,6 @@ public class IndexTipColor : MonoBehaviour {
     _tipMeshRenderer.material = _material;
   }
 
-  protected void OnValidate() {
-    OnEnable();
-    SetColor(_startingColor);
-  }
-
   public Color GetColor() {
     return _color;
   }

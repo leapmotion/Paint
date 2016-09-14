@@ -166,13 +166,10 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   private bool _vanishScheduled = false;
 
   private void InitAppearVanish() {
-    _appearTween = ConstructAppearTween();
     if (Application.isPlaying) {
+      _appearTween = ConstructAppearTween();
       _appearTween.Progress = 0.001F;
       Vanish();
-    }
-    else {
-      _appearTween.Progress = 1F;
     }
   }
 
