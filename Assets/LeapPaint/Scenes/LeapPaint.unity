@@ -4038,7 +4038,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737699, y: 0.9868922, z: -0.1034578, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737665, y: 0.9868922, z: -0.10345767, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5817,10 +5817,10 @@ MonoBehaviour:
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.4
-    _pitchVariance: 0
+    _pitchVariance: 0.15
     _pitchCenter: 1
   _distancePerTick: 0.14
-  tickCooldown: 3
+  tickCooldown: 6
 --- !u!114 &367387702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26089,9 +26089,9 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
     _mixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
-    _volume: 0.6
-    _pitchVariance: 0.15
-    _pitchCenter: 1
+    _volume: 0.45
+    _pitchVariance: 0.2
+    _pitchCenter: 0.9
   _soundEffectSource: {fileID: 1840238058}
   _volumeScale: 0.5
   _maxEffectSpeed: 5
@@ -26777,9 +26777,9 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
     _mixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
-    _volume: 0.6
-    _pitchVariance: 0.15
-    _pitchCenter: 1
+    _volume: 0.45
+    _pitchVariance: 0.2
+    _pitchCenter: 1.1
   _soundEffectSource: {fileID: 832037570}
   _volumeScale: 0.5
   _maxEffectSpeed: 5
@@ -28206,7 +28206,7 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2067000820}
-  m_LocalRotation: {x: 0.44055066, y: -0.82120764, z: 0.12365992, w: -0.34094167}
+  m_LocalRotation: {x: 0.4405507, y: -0.82120776, z: 0.12365994, w: -0.3409417}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
