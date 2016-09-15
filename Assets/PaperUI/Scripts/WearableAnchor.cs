@@ -5,12 +5,18 @@ using System;
 
 public class WearableAnchor : HandedPalmAnchor, IWearable {
 
+  public Action OnAnchorBeginAppearing = () => { };
+  public Action OnAnchorBeginDisappearing = () => { };
+  public Action OnAnchorFinishDisappearing = () => { };
+
   [Header("Rendering")]
   public MeshRenderer _anchorRingRenderer;
   [Tooltip("The material to use when this object is fully opaque. Prevents tearing when multiple transparent materials overlap.")]
   public Material _opaqueMaterial;
   [Tooltip("The material to use when this object is fading in or out.")]
   public Material _fadeMaterial;
+
+  public SoundEffect showEffect;
 
   public bool IsDisplaying {
     get {
@@ -130,6 +136,7 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
 
   private void DoOnFinishedVanishing() {
     RefreshVisibility();
+    OnAnchorFinishDisappearing();
   }
 
   private void ScheduleAppear() {
@@ -153,10 +160,13 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
 
   public void Appear() {
     _appearTween.Play(TweenDirection.FORWARD);
+    OnAnchorBeginAppearing();
+    showEffect.PlayOnTransform(transform);
   }
 
   public void Vanish() {
     _appearTween.Play(TweenDirection.BACKWARD);
+    OnAnchorBeginDisappearing();
   }
 
   public bool IsScheduledToAppear() {

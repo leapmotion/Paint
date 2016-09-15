@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Leap.Unity;
 
 public class MenuWearableUI : WearableUI {
 
+  [Header("Menu Wearable UI")]
   public EmergeableBehaviour[] _menuButtonEmergeables;
   public MoveableBehaviour[] _menuButtonMoveables;
   public PressableUI[] _menuButtons;
@@ -40,8 +42,8 @@ public class MenuWearableUI : WearableUI {
 
   #region WearableUI Implementations
 
-  protected override void DoOnFingerPressedMarble() {
-    base.DoOnFingerPressedMarble();
+  protected override void DoOnMarbleActivated() {
+    base.DoOnMarbleActivated();
 
     if (!IsGrabbed && !IsWorkstation) {
       if (_menuButtonEmergeables[0].IsEmergedOrEmerging) {
@@ -54,6 +56,21 @@ public class MenuWearableUI : WearableUI {
           _menuButtonEmergeables[i].TryEmerge();
         }
       }
+    }
+  }
+
+  protected override void DoOnAnchorChiralityChanged(Chirality newChirality) {
+    base.DoOnAnchorChiralityChanged(newChirality);
+
+    if (newChirality != DisplayingChirality) {
+      for (int i = 0; i < _menuButtonMoveables.Length; i++) {
+        _menuButtonMoveables[i]._A.localPosition = new Vector3(-_menuButtonMoveables[i]._A.localPosition.x, _menuButtonMoveables[i]._A.localPosition.y, _menuButtonMoveables[i]._A.localPosition.z);
+        _menuButtonMoveables[i]._A.rotation = MirrorUtil.GetMirroredRotation(_menuButtonMoveables[i]._A.rotation, _menuButtonMoveables[i].transform.parent);
+        if (!IsWorkstation) {
+          _menuButtonMoveables[i].MoveToA();
+        }
+      }
+      DisplayingChirality = newChirality;
     }
   }
 

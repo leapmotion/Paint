@@ -8,6 +8,15 @@ public class IndexTipColor : MonoBehaviour {
   public Renderer _tipMeshRenderer;
   public Color _startingColor = Color.white;
 
+  [Header("Color Marble")]
+  public Material _colorMarbleMaterial;
+  [Tooltip("The material to use for the color marble when the index tip color is transparent.")]
+  public Material _transparentMarbleMaterial;
+  public Renderer _colorMarbleRenderer;
+
+  public SoundEffect _dipEffect;
+  private float _canPlayDipTime;
+
   private Color _color;
   private Material _material;
 
@@ -20,9 +29,8 @@ public class IndexTipColor : MonoBehaviour {
     _tipMeshRenderer.material = _material;
   }
 
-  protected void OnValidate() {
-    OnEnable();
-    SetColor(_startingColor);
+  protected void Start() {
+    this.SetColor(_startingColor);
   }
 
   public Color GetColor() {
@@ -32,6 +40,13 @@ public class IndexTipColor : MonoBehaviour {
   public void SetColor(Color color) {
     _color = color;
     _material.SetColor(Shader.PropertyToID("_Color"), color);
+    if (color.a < 0.01F) {
+      _colorMarbleRenderer.sharedMaterial = _transparentMarbleMaterial;
+    }
+    else {
+      _colorMarbleRenderer.sharedMaterial = _colorMarbleMaterial;
+      _colorMarbleMaterial.color = color;
+    }
   }
 
   #region Mixing Paint Colors
@@ -50,6 +65,11 @@ public class IndexTipColor : MonoBehaviour {
     }
     ColorCleaningBasin cleaningLiquid = other.GetComponentInParent<ColorCleaningBasin>();
     if (cleaningLiquid != null && cleaningLiquid.enabled) {
+      if(Time.time > _canPlayDipTime) {
+        _dipEffect.PlayAtPosition(transform);
+      }
+      _canPlayDipTime = Time.time + 0.5f;
+      
       this.SetColor(new Color(0F, 0F, 0F, 0F));
     }
   }

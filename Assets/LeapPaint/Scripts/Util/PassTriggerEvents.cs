@@ -7,9 +7,9 @@ public class ColliderEvent : UnityEvent<Collider> { }
 
 public class PassTriggerEvents : MonoBehaviour {
 
-  public ColliderEvent PassedOnTriggerEnter;
-  public ColliderEvent PassedOnTriggerStay;
-  public ColliderEvent PassedOnTriggerExit;
+  public ColliderEvent PassedOnTriggerEnter = new ColliderEvent();
+  public ColliderEvent PassedOnTriggerStay = new ColliderEvent();
+  public ColliderEvent PassedOnTriggerExit = new ColliderEvent();
 
   protected void OnTriggerEnter(Collider other) {
     PassedOnTriggerEnter.Invoke(other);

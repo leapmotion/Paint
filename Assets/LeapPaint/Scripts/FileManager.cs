@@ -17,14 +17,13 @@ public class FileManager : MonoBehaviour {
 
   public string[] GetFiles() {
     string[] files = Directory.GetFiles(_localSaveDir);
-    List<string> goodFiles = new List<string>(files.Length);
-    foreach (string file in files) {
-      string[] splitFileName = file.Split('.');
-      if (splitFileName[splitFileName.Length - 1].Equals("json")) {
-        goodFiles.Add(file);
+    List<string> jsonFiles = new List<string>(files.Length);
+    for (int i = 0; i < files.Length; i++) {
+      if (Path.GetExtension(files[i]).Equals(".json")) {
+        jsonFiles.Add(files[i]);
       }
     }
-    return goodFiles.ToArray();
+    return jsonFiles.ToArray();
   }
 
   public string NameFromPath(string path) {

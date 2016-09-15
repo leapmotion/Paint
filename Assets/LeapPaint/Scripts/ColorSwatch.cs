@@ -17,6 +17,8 @@ public class ColorSwatch : MonoBehaviour {
   [Tooltip("The swatch's color is stored in a Material instance's color property.")]
   public MeshRenderer _targetColorRenderer;
 
+  public SoundEffect soundEffect;
+
   private ColorPalette _palette;
 
   public void SetColor(Color color) {
@@ -42,6 +44,10 @@ public class ColorSwatch : MonoBehaviour {
   }
 
   public void DoSwatchAction() {
+    if(_swatchMode != SwatchMode.DoNothing) {
+      soundEffect.PlayAtPosition(transform);
+    }
+
     switch (_swatchMode) {
       case SwatchMode.AssignColor:
         SetNearestIndexTipColor();

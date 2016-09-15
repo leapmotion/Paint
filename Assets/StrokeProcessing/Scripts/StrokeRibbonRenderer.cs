@@ -96,7 +96,7 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
     _meshPoints.GetColors(_cachedColor);
     mesh.SetColors(_cachedColor);
 
-    mesh.SetIndices(_meshIndices.ToArray(), ribbon.Topology, 0);
+    mesh.SetTriangles(_meshIndices, 0);
 
     mesh.RecalculateNormals();
   }

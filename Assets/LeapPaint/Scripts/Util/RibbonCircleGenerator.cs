@@ -29,6 +29,9 @@ public class RibbonCircleGenerator : MonoBehaviour {
   [MinValue(3)]
   public int _radialSubdivisions = 64;
 
+  [SerializeField]
+  public bool doGenerate = false;
+
   public bool _shouldMeshUseShadows = true;
 
   [Header("Generated Object Settings")]
@@ -45,7 +48,9 @@ public class RibbonCircleGenerator : MonoBehaviour {
     if (_ribbonCircleObject == null) {
       _ribbonCircleObject = new GameObject();
     }
-    RefreshRibbonCircles();
+    if (doGenerate) {
+      RefreshRibbonCircles();
+    }
   }
 
   protected virtual void OnDestroy() {

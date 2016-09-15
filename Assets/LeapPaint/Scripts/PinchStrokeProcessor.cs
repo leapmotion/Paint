@@ -1,10 +1,13 @@
 ﻿using Leap.Unity;
 using System.Collections.Generic;
 using UnityEngine;
+using Leap.Unity.Attributes;
 
 public class PinchStrokeProcessor : MonoBehaviour {
 
-  private const float MIN_SEGMENT_LENGTH = 0.005F;
+  private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
+  private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.007F;
+  private const float MAX_SEGMENT_LENGTH = 0.03F;
 
   public PinchDetector _pinchDetector;
   [Tooltip("Used to stop drawing if the pinch detector is grabbing a UI element.")]
@@ -14,6 +17,19 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public RibbonIO _ribbonIO;
   public FilterIndexTipColor _colorFilter;
   public FilterApplyThickness _thicknessFilter;
+
+  [Header("Effect Settings")]
+  public SoundEffect _beginEffect;
+  public AudioSource _soundEffectSource;
+  [Range(0, 1)]
+  public float _volumeScale = 1;
+  [MinValue(0)]
+  public float _maxEffectSpeed = 10;
+  [MinMax(0, 2)]
+  public Vector2 _pitchRange = new Vector2(0.8f, 1);
+  [MinValue(0)]
+  public float _smoothingDelay = 0.05f;
+
 
   private bool _paintingStroke = false;
   private StrokeProcessor _strokeProcessor;
@@ -25,8 +41,15 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
 
   private StrokeRibbonRenderer _ribbonRenderer;
+  
+  private Vector3 _prevPosition;
+  private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
+  [HideInInspector]
+  public float drawTime = 0f;
 
   void Start() {
+    _smoothedSpeed.delay = _smoothingDelay;
+
     _strokeProcessor = new StrokeProcessor();
 
     // Set up and register filters.
@@ -70,18 +93,62 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   private void BeginStroke() {
+    _beginEffect.PlayOnTransform(_soundEffectSource.transform);
     _strokeProcessor.BeginStroke();
+    _soundEffectSource.Play();
+    _prevPosition = _pinchDetector.Position;
   }
 
   private void UpdateStroke() {
-    bool shouldAdd = !_firstStrokePointAdded
-      || Vector3.Distance(_lastStrokePointAdded, _pinchDetector.Position) >= MIN_SEGMENT_LENGTH;
+    float speed = Vector3.Distance(_pinchDetector.Position, _prevPosition) / Time.deltaTime;  
+    _prevPosition = _pinchDetector.Position;
+    _smoothedSpeed.Update(speed, Time.deltaTime);
 
-    _timeSinceLastAddition += Time.deltaTime;
+    float effectPercent = Mathf.Clamp01(_smoothedSpeed.value / _maxEffectSpeed);
+    _soundEffectSource.volume = effectPercent * _volumeScale;
+    _soundEffectSource.pitch = Mathf.Lerp(_pitchRange.x, _pitchRange.y, effectPercent);
+
+    
+    Vector3 strokePosition = _pinchDetector.Position;
+
+    if (_firstStrokePointAdded) {
+      float posDelta = Vector3.Distance(_lastStrokePointAdded, strokePosition);
+      if (posDelta > MAX_SEGMENT_LENGTH) {
+        float segmentFraction = posDelta / MAX_SEGMENT_LENGTH;
+        float segmentRemainder = segmentFraction % 1F;
+        int numSegments = (int)Mathf.Floor(segmentFraction);
+        Vector3 segment = (strokePosition - _lastStrokePointAdded).normalized * MAX_SEGMENT_LENGTH;
+        Vector3 curPos = _lastStrokePointAdded;
+        float segmentDeltaTime = Time.deltaTime * segmentFraction;
+        float remainderDeltaTime = Time.deltaTime * segmentRemainder;
+        float curDeltaTime = 0F;
+        for (int i = 0; i < numSegments; i++) {
+          ProcessAddStrokePoint(curPos + segment, curDeltaTime + segmentDeltaTime);
+          curPos += segment;
+          curDeltaTime += segmentDeltaTime;
+        }
+        ProcessAddStrokePoint(strokePosition, curDeltaTime + remainderDeltaTime);
+      }
+      else {
+        ProcessAddStrokePoint(strokePosition, Time.deltaTime);
+      }
+    }
+    else {
+      ProcessAddStrokePoint(strokePosition, Time.deltaTime);
+    }
+    drawTime += Time.deltaTime;
+  }
+
+  private void ProcessAddStrokePoint(Vector3 point, float effDeltaTime) {
+    bool shouldAdd = !_firstStrokePointAdded
+      || Vector3.Distance(_lastStrokePointAdded, point)
+          >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MIN_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
+
+    _timeSinceLastAddition += effDeltaTime;
 
     if (shouldAdd) {
       StrokePoint strokePoint = new StrokePoint();
-      strokePoint.position = _pinchDetector.Position;
+      strokePoint.position = point;
       strokePoint.rotation = Quaternion.identity;
       strokePoint.handOrientation = _pinchDetector.Rotation * Quaternion.Euler((_pinchDetector.HandModel.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
       strokePoint.deltaTime = _timeSinceLastAddition;
@@ -96,12 +163,18 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private void EndStroke() {
     _strokeProcessor.EndStroke();
+    _soundEffectSource.Pause();
+    _soundEffectSource.volume = 0;
+    _smoothedSpeed.reset = true;
+    _firstStrokePointAdded = false;
   }
 
   // TODO DELETEME FIXME
   private void DoOnMeshStrokeFinalized(Mesh mesh, List<StrokePoint> stroke) {
     GameObject finishedRibbonMesh = new GameObject();
-    finishedRibbonMesh.name = stroke[0].color.r + ", "+stroke[0].color.g + ", "+stroke[0].color.b;
+    if (stroke!=null && stroke.Count > 0) {
+      finishedRibbonMesh.name = stroke[0].color.r + ", " + stroke[0].color.g + ", " + stroke[0].color.b;
+    }
     MeshFilter filter = finishedRibbonMesh.AddComponent<MeshFilter>();
     MeshRenderer renderer = finishedRibbonMesh.AddComponent<MeshRenderer>();
     Material ribbonMat = new Material(Shader.Find("LeapMotion/RibbonShader"));

@@ -14,8 +14,8 @@ public class BrushWearableUI : WearableUI {
   }
 
   private bool _brushControlsEmerged = false;
-  protected override void DoOnFingerPressedMarble() {
-    base.DoOnFingerPressedMarble();
+  protected override void DoOnMarbleActivated() {
+    base.DoOnMarbleActivated();
 
     if (!IsGrabbed && !IsWorkstation) {
       if (!_brushControlsEmerged) {
@@ -33,7 +33,7 @@ public class BrushWearableUI : WearableUI {
     base.DoOnAnchorChiralityChanged(newChirality);
 
     if (newChirality != DisplayingChirality) {
-      _brushControlsMoveable._A.position = MirrorUtil.GetMirroredPosition(_brushControlsMoveable._A.position, this.transform);
+      _brushControlsMoveable._A.localPosition = new Vector3(-_brushControlsMoveable._A.localPosition.x, _brushControlsMoveable._A.localPosition.y, _brushControlsMoveable._A.localPosition.z);
       _brushControlsMoveable._A.rotation = MirrorUtil.GetMirroredRotation(_brushControlsMoveable._A.rotation, this.transform);
       if (!IsWorkstation) {
         _brushControlsMoveable.MoveToA();
