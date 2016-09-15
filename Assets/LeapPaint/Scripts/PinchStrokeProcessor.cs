@@ -9,7 +9,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.007F;
   private const float MAX_SEGMENT_LENGTH = 0.03F;
 
-  public PinchDetector _pinchDetector;
+  public PaintCursor _paintCursor;
   [Tooltip("Used to stop drawing if the pinch detector is grabbing a UI element.")]
   public WearableManager _wearableManager;
   public HistoryManager _historyManager;
@@ -32,6 +32,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
 
   private bool _paintingStroke = false;
+  private bool _paintingPreviewStroke = false;
   private StrokeProcessor _strokeProcessor;
   private bool _firstStrokePointAdded = false;
   private Vector3 _lastStrokePointAdded = Vector3.zero;
@@ -41,7 +42,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
 
   private StrokeRibbonRenderer _ribbonRenderer;
-  
+  private StrokeBufferRibbonRenderer _previewRibbonRenderer;
+
   private Vector3 _prevPosition;
   private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
   [HideInInspector]
@@ -63,32 +65,50 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
     // Set up and register renderers.
     GameObject rendererObj = new GameObject();
+    rendererObj.name = "Stroke Ribbon Renderer";
     _ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
     _ribbonRenderer.OnMeshStrokeFinalized += DoOnMeshStrokeFinalized;
     _strokeProcessor.RegisterStrokeRenderer(_ribbonRenderer);
+
+    GameObject previewRendererObj = new GameObject();
+    previewRendererObj.name = "Stroke Preview Ribbon Renderer";
+    _previewRibbonRenderer = previewRendererObj.AddComponent<StrokeBufferRibbonRenderer>();
+    _strokeProcessor.RegisterPreviewStrokeRenderer(_previewRibbonRenderer);
   }
 
   void Update() {
-    if (_pinchDetector.IsActive && !_paintingStroke) {
-      if (!_wearableManager.IsPinchDetectorGrabbing(_pinchDetector)) {
-        // TODO HACK FIXME
+    if (_paintCursor.IsTracked && !_paintingPreviewStroke) {
+      BeginStroke();
+      _paintingPreviewStroke = true;
+    }
+
+    if (_paintCursor.IsActive && !_paintingStroke) {
+      if (!_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)) {
+        // TODO HACK FIXME preventing drawing if IndexTipColor is transparent
         Color color = new Color(0F, 0F, 0F, 0F);
         try {
-          color = _pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
+          color = _paintCursor._pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
         }
         catch (System.NullReferenceException) { }
         if (color.a > 0.99F) {
-          BeginStroke();
+          StartActualizingStroke();
           _paintingStroke = true;
         }
       }
     }
-    else if (_pinchDetector.IsActive && _paintingStroke) {
+
+    if (_paintCursor.IsTracked && _paintingPreviewStroke) {
       UpdateStroke();
     }
-    else if (!_pinchDetector.IsActive && _paintingStroke) {
-      EndStroke();
+
+    if (!_paintCursor.IsActive && _paintingStroke) {
+      StopActualizingStroke();
       _paintingStroke = false;
+    }
+
+    if (!_paintCursor.IsTracked && _paintingPreviewStroke) {
+      EndStroke();
+      _paintingPreviewStroke = false;
     }
   }
 
@@ -96,20 +116,23 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _beginEffect.PlayOnTransform(_soundEffectSource.transform);
     _strokeProcessor.BeginStroke();
     _soundEffectSource.Play();
-    _prevPosition = _pinchDetector.Position;
+    _prevPosition = _paintCursor.Position;
+  }
+
+  private void StartActualizingStroke() {
+    _strokeProcessor.StartActualizingStroke();
   }
 
   private void UpdateStroke() {
-    float speed = Vector3.Distance(_pinchDetector.Position, _prevPosition) / Time.deltaTime;  
-    _prevPosition = _pinchDetector.Position;
+    float speed = Vector3.Distance(_paintCursor.Position, _prevPosition) / Time.deltaTime;
+    _prevPosition = _paintCursor.Position;
     _smoothedSpeed.Update(speed, Time.deltaTime);
 
     float effectPercent = Mathf.Clamp01(_smoothedSpeed.value / _maxEffectSpeed);
     _soundEffectSource.volume = effectPercent * _volumeScale;
     _soundEffectSource.pitch = Mathf.Lerp(_pitchRange.x, _pitchRange.y, effectPercent);
 
-    
-    Vector3 strokePosition = _pinchDetector.Position;
+    Vector3 strokePosition = _paintCursor.Position;
 
     if (_firstStrokePointAdded) {
       float posDelta = Vector3.Distance(_lastStrokePointAdded, strokePosition);
@@ -150,7 +173,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
       StrokePoint strokePoint = new StrokePoint();
       strokePoint.position = point;
       strokePoint.rotation = Quaternion.identity;
-      strokePoint.handOrientation = _pinchDetector.Rotation * Quaternion.Euler((_pinchDetector.HandModel.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
+      strokePoint.handOrientation = _paintCursor.Rotation * Quaternion.Euler((_paintCursor.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
       strokePoint.deltaTime = _timeSinceLastAddition;
 
       _strokeProcessor.UpdateStroke(strokePoint);
@@ -159,6 +182,10 @@ public class PinchStrokeProcessor : MonoBehaviour {
       _lastStrokePointAdded = strokePoint.position;
       _timeSinceLastAddition = 0F;
     }
+  }
+
+  private void StopActualizingStroke() {
+    _strokeProcessor.StopActualizingStroke();
   }
 
   private void EndStroke() {
@@ -172,7 +199,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   // TODO DELETEME FIXME
   private void DoOnMeshStrokeFinalized(Mesh mesh, List<StrokePoint> stroke) {
     GameObject finishedRibbonMesh = new GameObject();
-    if (stroke!=null && stroke.Count > 0) {
+    if (stroke != null && stroke.Count > 0) {
       finishedRibbonMesh.name = stroke[0].color.r + ", " + stroke[0].color.g + ", " + stroke[0].color.b;
     }
     MeshFilter filter = finishedRibbonMesh.AddComponent<MeshFilter>();

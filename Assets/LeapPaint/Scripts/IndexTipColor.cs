@@ -25,8 +25,10 @@ public class IndexTipColor : MonoBehaviour {
   }
 
   protected void OnEnable() {
-    _material = new Material(_tipMeshRenderer.sharedMaterial);
-    _tipMeshRenderer.material = _material;
+    if (_material == null) {
+      _material = new Material(_tipMeshRenderer.sharedMaterial);
+      _tipMeshRenderer.material = _material;
+    }
   }
 
   protected void Start() {

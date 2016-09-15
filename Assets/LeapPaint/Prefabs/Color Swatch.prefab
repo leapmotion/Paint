@@ -97,7 +97,7 @@ Transform:
   m_GameObject: {fileID: 1000013550044236}
   m_LocalRotation: {x: -7.400445e-15, y: -0.000000010536694, z: -0.000000031610167,
     w: 1}
-  m_LocalPosition: {x: 0.5633615, y: 0, z: 2.3526769}
+  m_LocalPosition: {x: -1.2868707, y: 0, z: 4.0293655}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -191,6 +191,12 @@ MonoBehaviour:
   _swatchMode: 1
   _targetColorGraphic: {fileID: 0}
   _targetColorRenderer: {fileID: 23000011022216260}
+  soundEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!114 &114000013088959802
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -253,3 +259,9 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
+  soundEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1

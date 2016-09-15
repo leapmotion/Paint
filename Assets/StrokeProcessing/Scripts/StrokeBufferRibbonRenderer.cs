@@ -6,7 +6,7 @@ using Leap.Unity.RuntimeGizmos;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizmoComponent {
+public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, IRuntimeGizmoComponent {
 
   public Shader MeshShader;
 
@@ -24,26 +24,29 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
     _renderer = GetComponent<MeshRenderer>();
 
     if (MeshShader == null) {
-      MeshShader = Shader.Find("LeapMotion/RibbonShader");
+      MeshShader = Shader.Find("LeapMotion/RibbonBufferShader");
     }
     _meshMaterial = new Material(MeshShader);
     _meshMaterial.hideFlags = HideFlags.HideAndDontSave;
   }
 
   public void InitializeRenderer() {
-    _mesh = new Mesh();
-    _mesh.MarkDynamic();
+    if (_mesh == null) {
+      _mesh = new Mesh();
+      _mesh.MarkDynamic();
+    }
+    else {
+      _mesh.Clear();
+    }
     _ribbon.Clear();
 
     _filter.mesh = _mesh;
     _renderer.material = _meshMaterial;
   }
 
-  public void RefreshRenderer(List<StrokePoint> stroke, int maxChangedFromEnd) {
-    int startIdx = Mathf.Max(0, stroke.Count - 1 - maxChangedFromEnd);
-    int endIdx = stroke.Count - 1;
-    for (int i = startIdx; i <= endIdx; i++) {
-      StrokePoint strokePoint = stroke[i];
+  public void RefreshRenderer(RingBuffer<StrokePoint> strokeBuffer) {
+    for (int i = 0; i < strokeBuffer.Size; i++) {
+      StrokePoint strokePoint = strokeBuffer.Get(i);
 
       MeshPoint point = new MeshPoint(strokePoint.position);
       point.Normal = strokePoint.normal;
@@ -54,25 +57,15 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
       }
       else {
         _ribbon.Points[i] = point;
+        _ribbon.Radii[i] = strokePoint.thickness;
       }
     }
 
-    _stroke = stroke;
     SetMeshDataFromRibbon(_mesh, _ribbon);
   }
 
-  public void FinalizeRenderer() {
-    _mesh.RecalculateBounds();
-    _mesh.Optimize();
-    _mesh.UploadMeshData(false);
-
-    //OnMeshChanged(_mesh);
-    if (_stroke != null) {
-      OnMeshStrokeFinalized(_mesh, _stroke);
-    }
-
-    _mesh = new Mesh();
-    _filter.mesh = _mesh;
+  public void StopRenderer() {
+    _mesh.Clear();
   }
 
   List<Vector3> _cachedVec3 = new List<Vector3>();
@@ -103,6 +96,8 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
     mesh.RecalculateNormals();
   }
 
+  #region Gizmos
+
   private bool _drawGizmos = false;
 
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
@@ -125,4 +120,7 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
       }
     }
   }
+
+  #endregion
+
 }

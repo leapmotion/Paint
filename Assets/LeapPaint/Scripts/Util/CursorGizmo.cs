@@ -13,17 +13,18 @@ public class CursorGizmo : MonoBehaviour, IRuntimeGizmoComponent {
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
     this.transform.position = _leftPinchDetector.transform.position;
     this.transform.rotation = _leftPinchDetector.transform.rotation * Quaternion.Euler(_leftHandEulerRotation);
-    DrawPinchDetectorCursorGizmo(_leftPinchDetector, drawer);
+    DrawPinchDetectorAlignmentGizmo(_leftPinchDetector, drawer);
 
     this.transform.position = _rightPinchDetector.transform.position;
     this.transform.rotation = _rightPinchDetector.transform.rotation * Quaternion.Euler(_rightHandEulerRotation);
-    DrawPinchDetectorCursorGizmo(_rightPinchDetector, drawer);
+    DrawPinchDetectorAlignmentGizmo(_rightPinchDetector, drawer);
   }
 
-  private bool _gizmosEnabled = false;
+  private bool _alignmentGizmoEnabled = false;
+  private bool _cursorRingEnabled = true;
 
-  private void DrawPinchDetectorCursorGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
-    if (_gizmosEnabled) {
+  private void DrawPinchDetectorAlignmentGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
+    if (_alignmentGizmoEnabled) {
       drawer.PushMatrix();
 
       drawer.matrix = pinchDetector.transform.localToWorldMatrix;
