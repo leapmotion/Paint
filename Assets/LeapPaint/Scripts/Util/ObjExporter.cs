@@ -24,7 +24,7 @@ public class ObjExporterScript {
     if (!m) {
       return "####Error####";
     }
-    Material[] mats = mf.GetComponent<Renderer>().sharedMaterials;
+    //Material[] mats = mf.GetComponent<Renderer>().sharedMaterials;
 
     StringBuilder sb = new StringBuilder();
 

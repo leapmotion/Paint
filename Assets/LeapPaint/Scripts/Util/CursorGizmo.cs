@@ -63,7 +63,6 @@ public static class RuntimeGizmoDrawerExtensions {
     if (perpDirection.magnitude < 0.99F) {
       perpDirection = Vector3.Cross(planeDirection, Vector3.right).normalized;
     }
-    Debug.Log(perpDirection.magnitude);
     int numSegments = 64;
     for (int i = 0; i < numSegments; i++) {
       drawer.DrawLine(position + Quaternion.AngleAxis(360F * (i / (float)numSegments), planeDirection) * perpDirection * radius,

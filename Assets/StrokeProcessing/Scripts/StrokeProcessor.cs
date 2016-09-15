@@ -15,8 +15,9 @@ public class StrokeProcessor {
   private bool _isActualizingStroke = false;
   private RingBuffer<StrokePoint> _strokeBuffer;
   private RingBuffer<int> _strokeIdxBuffer;
-  private int curStrokeIdx = 0;
+  private int _curStrokeIdx = 0;
   private List<StrokePoint> _strokeOutput = null;
+  private int _outputBufferEndOffset = 0;
 
   // Stroke renderers
   private List<IStrokeRenderer> _strokeRenderers = null;
@@ -69,7 +70,6 @@ public class StrokeProcessor {
 
     _strokeBuffer.Clear();
     _strokeIdxBuffer.Clear();
-    curStrokeIdx = 0;
 
     for (int i = 0; i < _strokeFilters.Count; i++) {
       _strokeFilters[i].Reset();
@@ -83,22 +83,22 @@ public class StrokeProcessor {
   }
 
   public void StartActualizingStroke() {
-    //if (!_strokeInProgress) {
-    //  BeginStroke();
-    //}
+    if (!_isBufferingStroke) {
+      BeginStroke();
+    }
 
-    //if (_shouldActualizeStroke) {
-    //  Debug.LogError("[StrokeProcessor] Stroke already actualizing; cannot begin actualizing stroke. Call StopActualizingStroke() first.");
-    //  return;
-    //}
-    //_shouldActualizeStroke = true;
-    //_strokeOutput = new List<StrokePoint>(); // can't clear -- other objects have references to the old stroke output.
+    if (_isActualizingStroke) {
+      Debug.LogError("[StrokeProcessor] Stroke already actualizing; cannot begin actualizing stroke. Call StopActualizingStroke() first.");
+      return;
+    }
+    _isActualizingStroke = true;
+    _strokeOutput = new List<StrokePoint>(); // can't clear -- other objects have references to the old stroke output.
+    _outputBufferEndOffset = 0;
   }
 
   public void UpdateStroke(StrokePoint strokePoint) {
-    _strokeOutput.Add(strokePoint);
     _strokeBuffer.Add(strokePoint);
-    _strokeIdxBuffer.Add(curStrokeIdx++);
+    _strokeIdxBuffer.Add(_curStrokeIdx++);
 
     // Apply all filters in order on current stroke buffer.
     for (int i = 0; i < _strokeFilters.Count; i++) {
@@ -106,11 +106,19 @@ public class StrokeProcessor {
     }
 
     if (_isActualizingStroke) {
-      // Update latest points in stroke output with latest points from the filtered buffer.
-      int bufferIdx = 0;
-      for (int i = _strokeOutput.Count - _strokeBuffer.Size; i < _strokeOutput.Count; i++) {
-        _strokeOutput[i] = _strokeBuffer.Get(bufferIdx++);
+      // Output points from the buffer to the actualized stroke output.
+      int offset = Mathf.Min(_outputBufferEndOffset, _strokeBuffer.Size - 1);
+      for (int i = 0; i <= offset; i++) {
+        int outputIdx = Mathf.Max(0, _outputBufferEndOffset - (_strokeBuffer.Size - 1)) + i;
+        StrokePoint bufferStrokePoint = _strokeBuffer.GetFromEnd(Mathf.Min(_strokeBuffer.Size - 1, _outputBufferEndOffset) - i);
+        if (outputIdx > _strokeOutput.Count - 1) {
+          _strokeOutput.Add(bufferStrokePoint);
+        }
+        else {
+          _strokeOutput[outputIdx] = bufferStrokePoint;
+        }
       }
+      _outputBufferEndOffset += 1;
 
       // Refresh stroke renderers.
       for (int i = 0; i < _strokeRenderers.Count; i++) {
@@ -125,7 +133,11 @@ public class StrokeProcessor {
   }
 
   public void StopActualizingStroke() {
-    //_shouldActualizeStroke = false;
+    _isActualizingStroke = false;
+
+    for (int i = 0; i < _strokeRenderers.Count; i++) {
+      _strokeRenderers[i].FinalizeRenderer();
+    }
   }
 
   public void EndStroke() {
@@ -137,9 +149,6 @@ public class StrokeProcessor {
 
     for (int i = 0; i < _strokeBufferRenderers.Count; i++) {
       _strokeBufferRenderers[i].StopRenderer();
-    }
-    for (int i = 0; i < _strokeRenderers.Count; i++) {
-      _strokeRenderers[i].FinalizeRenderer();
     }
   }
 

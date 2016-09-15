@@ -636,16 +636,4 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   #endregion
 
-  #region Gizmos
-
-  private bool _enableGizmos = true;
-
-  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-    if (_enableGizmos) {
-
-    }
-  }
-
-  #endregion
-
 }
