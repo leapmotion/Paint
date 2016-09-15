@@ -17,6 +17,8 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
   public Material _fadeMaterial;
 
   public SoundEffect showEffect;
+  private Material _opaqueInstance;
+  private Material _fadeInsatnce;
 
   public bool IsDisplaying {
     get {
@@ -28,6 +30,11 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
         return false;
       }
     }
+  }
+
+  protected void Awake() {
+    _opaqueInstance = new Material(_opaqueMaterial);
+    _fadeInsatnce = new Material(_fadeMaterial);
   }
 
   protected void Start() {
@@ -196,12 +203,13 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
 
   public void SetColor(Color color) {
     if (color.a < 0.99F) {
-      _anchorRingRenderer.material = _fadeMaterial;
+      _fadeInsatnce.color = color;
+      _anchorRingRenderer.material = _fadeInsatnce;
     }
     else {
-      _anchorRingRenderer.material = _opaqueMaterial;
+      _opaqueInstance.color = color;
+      _anchorRingRenderer.material = _opaqueInstance;
     }
-    _anchorRingRenderer.material.color = color;
   }
 
   #endregion
