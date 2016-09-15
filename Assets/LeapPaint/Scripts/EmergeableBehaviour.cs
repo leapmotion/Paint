@@ -45,7 +45,7 @@ public class EmergeableBehaviour : MonoBehaviour {
     }
   }
 
-  public void TryEmerge() {
+  public void TryEmerge(bool isInWorkstation) {
     _emergeEffect.PlayAtPosition(transform);
     _vanishTween.Play(TweenDirection.BACKWARD);
   }

@@ -53,7 +53,7 @@ public class MenuWearableUI : WearableUI {
       }
       else {
         for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-          _menuButtonEmergeables[i].TryEmerge();
+          _menuButtonEmergeables[i].TryEmerge(isInWorkstation: false);
         }
       }
     }
@@ -81,7 +81,7 @@ public class MenuWearableUI : WearableUI {
       _menuButtonMoveables[i].MoveToB();
     }
     for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-      _menuButtonEmergeables[i].TryEmerge();
+      _menuButtonEmergeables[i].TryEmerge(isInWorkstation: true);
     }
 
     if (_awaitingMenu != Menu.None) {
@@ -120,21 +120,21 @@ public class MenuWearableUI : WearableUI {
   #endregion
 
   private void EmergeFileMenu() {
-    _fileMenuEmergeable.TryEmerge();
+    _fileMenuEmergeable.TryEmerge(isInWorkstation: false);
     _sceneMenuEmergeable.TryVanish();
     _clearMenuEmergeable.TryVanish();
   }
 
   private void EmergeSceneMenu() {
     _fileMenuEmergeable.TryVanish();
-    _sceneMenuEmergeable.TryEmerge();
+    _sceneMenuEmergeable.TryEmerge(isInWorkstation: false);
     _clearMenuEmergeable.TryVanish();
   }
 
   private void EmergeClearMenu() {
     _fileMenuEmergeable.TryVanish();
     _sceneMenuEmergeable.TryVanish();
-    _clearMenuEmergeable.TryEmerge();
+    _clearMenuEmergeable.TryEmerge(isInWorkstation: false);
   }
 
   public void OpenFileMenu() {

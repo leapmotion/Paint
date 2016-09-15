@@ -19,7 +19,7 @@ public class BrushWearableUI : WearableUI {
 
     if (!IsGrabbed && !IsWorkstation) {
       if (!_brushControlsEmerged) {
-        _brushControlsEmergeable.TryEmerge();
+        _brushControlsEmergeable.TryEmerge(isInWorkstation: false);
         _brushControlsEmerged = true;
       }
       else {
@@ -60,8 +60,8 @@ public class BrushWearableUI : WearableUI {
     _brushControlsMoveable.MoveToB();
 
     if (!IsGrabbed) {
-      _brushControlsEmergeable.TryEmerge();
-      _brushWorkstationEmergeable.TryEmerge();
+      _brushControlsEmergeable.TryEmerge(isInWorkstation: true);
+      _brushWorkstationEmergeable.TryEmerge(isInWorkstation: true);
     }
   }
 
