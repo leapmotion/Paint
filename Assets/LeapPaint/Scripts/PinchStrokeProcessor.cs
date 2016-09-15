@@ -44,6 +44,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
   
   private Vector3 _prevPosition;
   private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
+  [HideInInspector]
+  public float drawTime = 0f;
 
   void Start() {
     _smoothedSpeed.delay = _smoothingDelay;
@@ -134,7 +136,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
     else {
       ProcessAddStrokePoint(strokePosition, Time.deltaTime);
     }
-
+    drawTime += Time.deltaTime;
   }
 
   private void ProcessAddStrokePoint(Vector3 point, float effDeltaTime) {
@@ -170,7 +172,9 @@ public class PinchStrokeProcessor : MonoBehaviour {
   // TODO DELETEME FIXME
   private void DoOnMeshStrokeFinalized(Mesh mesh, List<StrokePoint> stroke) {
     GameObject finishedRibbonMesh = new GameObject();
-    finishedRibbonMesh.name = stroke[0].color.r + ", "+stroke[0].color.g + ", "+stroke[0].color.b;
+    if (stroke!=null && stroke.Count > 0) {
+      finishedRibbonMesh.name = stroke[0].color.r + ", " + stroke[0].color.g + ", " + stroke[0].color.b;
+    }
     MeshFilter filter = finishedRibbonMesh.AddComponent<MeshFilter>();
     MeshRenderer renderer = finishedRibbonMesh.AddComponent<MeshRenderer>();
     Material ribbonMat = new Material(Shader.Find("LeapMotion/RibbonShader"));
