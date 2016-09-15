@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class WearableManager : MonoBehaviour {
 
   public Action OnGrabBegin = () => { };
+  public Action OnGrabEnd = () => { };
 
   public Transform _centerEyeAnchor;
 
@@ -34,9 +35,11 @@ public class WearableManager : MonoBehaviour {
   private Chirality _lastHandFacingCamera;
   
   // Wearable state tracking
-  private IWearable _leftGrabbedWearable = null;
+  [HideInInspector]
+  public IWearable _leftGrabbedWearable = null;
   private bool _isLeftHandGrabbing = false;
-  private IWearable _rightGrabbedWearable = null;
+  [HideInInspector]
+  public IWearable _rightGrabbedWearable = null;
   private bool _isRightHandGrabbing = false;
 
   protected void Start() {
@@ -145,6 +148,7 @@ public class WearableManager : MonoBehaviour {
       _wearables[i].NotifyPinchChanged(false, Chirality.Left);
     }
     if (_leftGrabbedWearable != null) {
+      OnGrabEnd();
       _leftGrabbedWearable.ReleaseFromGrab(_leftPinchDetector.transform);
       _isLeftHandGrabbing = false;
     }
@@ -162,6 +166,7 @@ public class WearableManager : MonoBehaviour {
       _wearables[i].NotifyPinchChanged(false, Chirality.Right);
     }
     if (_rightGrabbedWearable != null) {
+      OnGrabEnd();
       _rightGrabbedWearable.ReleaseFromGrab(_rightPinchDetector.transform);
       _isRightHandGrabbing = false;
     }

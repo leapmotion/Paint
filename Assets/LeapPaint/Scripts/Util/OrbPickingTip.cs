@@ -22,6 +22,7 @@ public class OrbPickingTip : MonoBehaviour {
 
   void DoOnBeginDisappearing() {
     if (!hasShownOnce) {
+      //Tween Disappear
       text.gameObject.SetActive(false);
       hasShownOnce = true;
     }
