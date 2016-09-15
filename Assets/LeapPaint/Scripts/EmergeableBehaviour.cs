@@ -27,6 +27,9 @@ public class EmergeableBehaviour : MonoBehaviour {
 
   public bool IsEmergedOrEmerging {
     get {
+      if (!_vanishTween.IsValid) {
+        _vanishTween = CreateVanishTween();
+      }
       return (_vanishTween.IsRunning && _vanishTween.Direction == TweenDirection.BACKWARD)
            || _vanishTween.Progress == 0F;
     }

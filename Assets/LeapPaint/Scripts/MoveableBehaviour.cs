@@ -5,18 +5,8 @@ public class MoveableBehaviour : MonoBehaviour {
 
   public Transform _A;
   public Transform _B;
-  public bool _startAtA = true;
 
   private TweenHandle _movementTween;
-
-  void Start() {
-    if (_startAtA) {
-      MoveToA();
-    }
-    else {
-      MoveToB();
-    }
-  }
 
   public void MoveToA() {
     MoveTo(_A);

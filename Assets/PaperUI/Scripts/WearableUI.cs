@@ -7,6 +7,7 @@ using Leap.Unity.RuntimeGizmos;
 public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   public Action OnActivateMarble = () => { };
+  public Action OnWorkstationActivated = () => { };
 
   [Header("Wearable UI")]
   public MeshRenderer _appearanceExplosionRenderer;
@@ -648,7 +649,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     _isAttached = false;
   }
 
-  protected virtual void DoOnMovementToWorkstationFinished() { }
+  protected virtual void DoOnMovementToWorkstationFinished() {
+    OnWorkstationActivated();
+  }
 
   #endregion
 
