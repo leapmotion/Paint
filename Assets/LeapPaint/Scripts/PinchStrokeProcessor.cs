@@ -28,7 +28,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
 
   private StrokeRibbonRenderer _ribbonRenderer;
-  private StrokeRibbonRenderer _previewRibbonRenderer;
+  private StrokeBufferRibbonRenderer _previewRibbonRenderer;
 
   void Start() {
     _strokeProcessor = new StrokeProcessor();
@@ -51,7 +51,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
     GameObject previewRendererObj = new GameObject();
     previewRendererObj.name = "Stroke Preview Ribbon Renderer";
-    _previewRibbonRenderer = previewRendererObj.AddComponent<StrokeRibbonRenderer>();
+    _previewRibbonRenderer = previewRendererObj.AddComponent<StrokeBufferRibbonRenderer>();
     _strokeProcessor.RegisterPreviewStrokeRenderer(_previewRibbonRenderer);
   }
 

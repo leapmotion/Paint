@@ -136,7 +136,7 @@ public class StrokeProcessor {
     _isBufferingStroke = false;
 
     for (int i = 0; i < _strokeBufferRenderers.Count; i++) {
-      _strokeBufferRenderers[i].FinalizeRenderer();
+      _strokeBufferRenderers[i].StopRenderer();
     }
     for (int i = 0; i < _strokeRenderers.Count; i++) {
       _strokeRenderers[i].FinalizeRenderer();

@@ -97,7 +97,7 @@ Transform:
   m_GameObject: {fileID: 1000013550044236}
   m_LocalRotation: {x: -7.400445e-15, y: -0.000000010536694, z: -0.000000031610167,
     w: 1}
-  m_LocalPosition: {x: 0.5633615, y: 0, z: 2.3526769}
+  m_LocalPosition: {x: -2.66343, y: 0, z: 3.0209837}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -202,7 +202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35a472517ff849b4cb05c739ac0fac8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _buttonRenderer: {fileID: 23000010081545854}
+  _buttonRenderer: {fileID: 1700949551}
   _normalColor: {r: 0.8745098, g: 0.8745098, b: 0.8745098, a: 1}
   _pressedColor: {r: 0.59607846, g: 0.59607846, b: 0.59607846, a: 1}
 --- !u!114 &114000014244550774
@@ -221,13 +221,13 @@ MonoBehaviour:
   _maxPenetrationDistance: 2.14
   _layers:
   - label: Layer 0
-    layerTransform: {fileID: 4000013218696686}
+    layerTransform: {fileID: 54942240}
     maxHeight: 0.2
     minHeight: 0.05
     height: 0
     upperLayersThickness: 0.1
   - label: Layer 1
-    layerTransform: {fileID: 4000010440079410}
+    layerTransform: {fileID: 1700949551}
     maxHeight: 0.2
     minHeight: 0.05
     height: 0
@@ -235,7 +235,7 @@ MonoBehaviour:
   OnPress:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114000012847094562}
+      - m_Target: {fileID: 1700949551}
         m_MethodName: DoSwatchAction
         m_Mode: 1
         m_Arguments:
@@ -253,3 +253,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
+  soundEffect:
+    _clips: []
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1

@@ -20,7 +20,7 @@ public class CursorGizmo : MonoBehaviour, IRuntimeGizmoComponent {
     DrawPinchDetectorCursorGizmo(_rightPinchDetector, drawer);
   }
 
-  private bool _gizmosEnabled = false;
+  private bool _gizmosEnabled = true;
 
   private void DrawPinchDetectorCursorGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
     if (_gizmosEnabled) {
