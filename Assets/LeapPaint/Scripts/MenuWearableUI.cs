@@ -48,12 +48,12 @@ public class MenuWearableUI : WearableUI {
     if (!IsGrabbed && !IsWorkstation) {
       if (_menuButtonEmergeables[0].IsEmergedOrEmerging) {
         for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-          _menuButtonEmergeables[i].TryVanish();
+          _menuButtonEmergeables[i].TryVanish(IsWorkstation);
         }
       }
       else {
         for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-          _menuButtonEmergeables[i].TryEmerge();
+          _menuButtonEmergeables[i].TryEmerge(IsWorkstation);
         }
       }
     }
@@ -81,7 +81,7 @@ public class MenuWearableUI : WearableUI {
       _menuButtonMoveables[i].MoveToB();
     }
     for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-      _menuButtonEmergeables[i].TryEmerge();
+      _menuButtonEmergeables[i].TryEmerge(isInWorkstation: true);
     }
 
     if (_awaitingMenu != Menu.None) {
@@ -102,11 +102,11 @@ public class MenuWearableUI : WearableUI {
     _awaitingMenu = Menu.None;
 
     for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-      _menuButtonEmergeables[i].TryVanish();
+      _menuButtonEmergeables[i].TryVanish(IsWorkstation);
     }
-    _fileMenuEmergeable.TryVanish();
-    _sceneMenuEmergeable.TryVanish();
-    _clearMenuEmergeable.TryVanish();
+    _fileMenuEmergeable.TryVanish(IsWorkstation);
+    _sceneMenuEmergeable.TryVanish(IsWorkstation);
+    _clearMenuEmergeable.TryVanish(IsWorkstation);
   }
 
   protected override void DoOnReturnedToAnchor() {
@@ -120,21 +120,21 @@ public class MenuWearableUI : WearableUI {
   #endregion
 
   private void EmergeFileMenu() {
-    _fileMenuEmergeable.TryEmerge();
-    _sceneMenuEmergeable.TryVanish();
-    _clearMenuEmergeable.TryVanish();
+    _fileMenuEmergeable.TryEmerge(isInWorkstation: false);
+    _sceneMenuEmergeable.TryVanish(IsWorkstation);
+    _clearMenuEmergeable.TryVanish(IsWorkstation);
   }
 
   private void EmergeSceneMenu() {
-    _fileMenuEmergeable.TryVanish();
-    _sceneMenuEmergeable.TryEmerge();
-    _clearMenuEmergeable.TryVanish();
+    _fileMenuEmergeable.TryVanish(IsWorkstation);
+    _sceneMenuEmergeable.TryEmerge(isInWorkstation: false);
+    _clearMenuEmergeable.TryVanish(IsWorkstation);
   }
 
   private void EmergeClearMenu() {
-    _fileMenuEmergeable.TryVanish();
-    _sceneMenuEmergeable.TryVanish();
-    _clearMenuEmergeable.TryEmerge();
+    _fileMenuEmergeable.TryVanish(IsWorkstation);
+    _sceneMenuEmergeable.TryVanish(IsWorkstation);
+    _clearMenuEmergeable.TryEmerge(isInWorkstation: false);
   }
 
   public void OpenFileMenu() {
@@ -142,7 +142,7 @@ public class MenuWearableUI : WearableUI {
       ActivateWorkstationTransitionFromAnchor();
       _awaitingMenu = Menu.File;
       for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-        _menuButtonEmergeables[i].TryVanish();
+        _menuButtonEmergeables[i].TryVanish(IsWorkstation);
       }
     }
     else {
@@ -155,7 +155,7 @@ public class MenuWearableUI : WearableUI {
       ActivateWorkstationTransitionFromAnchor();
       _awaitingMenu = Menu.Scene;
       for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-        _menuButtonEmergeables[i].TryVanish();
+        _menuButtonEmergeables[i].TryVanish(IsWorkstation);
       }
     }
     else {
@@ -168,7 +168,7 @@ public class MenuWearableUI : WearableUI {
       ActivateWorkstationTransitionFromAnchor();
       _awaitingMenu = Menu.Clear;
       for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
-        _menuButtonEmergeables[i].TryVanish();
+        _menuButtonEmergeables[i].TryVanish(IsWorkstation);
       }
     }
     else {

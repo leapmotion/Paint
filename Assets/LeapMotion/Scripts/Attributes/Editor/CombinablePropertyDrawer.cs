@@ -101,10 +101,10 @@ namespace Leap.Unity.Attributes {
             } else if (property.propertyType == SerializedPropertyType.Float) {
               property.floatValue = EditorGUI.Slider(r, label, property.floatValue, rangeAttribute.min, rangeAttribute.max);
             } else {
-              EditorGUI.PropertyField(r, property, label);
+              EditorGUI.PropertyField(r, property, label, includeChildren: true);
             }
           } else {
-            EditorGUI.PropertyField(r, property, label);
+            EditorGUI.PropertyField(r, property, label, includeChildren: true);
           }
         }
 
@@ -117,7 +117,7 @@ namespace Leap.Unity.Attributes {
         drawAdditive<IBeforeFieldAdditiveDrawer>(ref r, property);
 
         r.width = fieldWidth;
-        EditorGUI.PropertyField(r, property, GUIContent.none);
+        EditorGUI.PropertyField(r, property, GUIContent.none, includeChildren: true);
         r.x += r.width;
       }
 
@@ -146,6 +146,10 @@ namespace Leap.Unity.Attributes {
           r.x += r.width;
         }
       }
+    }
+
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+      return EditorGUI.GetPropertyHeight(property, label);
     }
   }
 }
