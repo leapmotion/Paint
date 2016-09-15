@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using Leap.Unity;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class WearableManager : MonoBehaviour {
+
+  public Action OnGrabBegin = () => { };
 
   public Transform _centerEyeAnchor;
 
@@ -182,6 +186,7 @@ public class WearableManager : MonoBehaviour {
 
   private void TryGrab(IWearable toGrab, Chirality whichHand) {
     if (toGrab == null) return;
+    OnGrabBegin();
     if (toGrab.BeGrabbedBy((whichHand == Chirality.Left ? _leftPinchDetector.transform : _rightPinchDetector.transform))) {
       if (whichHand == Chirality.Left) {
         _leftGrabbedWearable = toGrab;
