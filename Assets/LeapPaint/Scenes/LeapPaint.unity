@@ -4039,7 +4039,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737714, y: 0.9868922, z: -0.10345786, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737706, y: 0.9868922, z: -0.10345783, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -21560,7 +21560,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1578623727}
   m_LocalRotation: {x: -0, y: 0.9936703, z: 0.000000024680045, w: -0.112336025}
-  m_LocalPosition: {x: -2.670008, y: -0.020002067, z: 0.9000039}
+  m_LocalPosition: {x: -3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 192.9, z: 0}
   m_Children: []
@@ -21591,18 +21591,12 @@ TextMesh:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1578623727}
-  m_Text: 'Select a marble
-
-    -
-
-    Pinch a marble
-
-    for advanced features'
+  m_Text: "\u2022Select marble\nor\n\u2022Pinch to expand"
   m_OffsetZ: 0
-  m_CharacterSize: 0.05
+  m_CharacterSize: 0.06
   m_LineSpacing: 1
   m_Anchor: 4
-  m_Alignment: 1
+  m_Alignment: 0
   m_TabSize: 4
   m_FontSize: 100
   m_FontStyle: 0
@@ -23546,7 +23540,7 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1752500803}
-  m_LocalRotation: {x: 0.10546957, y: -0.23165435, z: -0.0119654145, w: -0.96698976}
+  m_LocalRotation: {x: 0.10546958, y: -0.23165436, z: -0.011965415, w: -0.9669898}
   m_LocalPosition: {x: 0.49705598, y: 27.001133, z: 4.917154}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 192.9, z: 0}
@@ -23574,7 +23568,7 @@ TextMesh:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1752500803}
-  m_Text: Throw me!
+  m_Text: Place me!
   m_OffsetZ: 0
   m_CharacterSize: 0.05
   m_LineSpacing: 1

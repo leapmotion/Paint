@@ -71,7 +71,7 @@ public class ColorWearableUI : WearableUI {
     base.DoOnAnchorChiralityChanged(newChirality);
 
     if (newChirality != DisplayingChirality) {
-      _primaryPaletteMoveable._A.position = MirrorUtil.GetMirroredPosition(_primaryPaletteMoveable._A.position, this.transform);
+      _primaryPaletteMoveable._A.localPosition = new Vector3(-_primaryPaletteMoveable._A.localPosition.x, _primaryPaletteMoveable._A.localPosition.y, _primaryPaletteMoveable._A.localPosition.z);
       _primaryPaletteMoveable._A.rotation = MirrorUtil.GetMirroredRotation(_primaryPaletteMoveable._A.rotation, this.transform);
       if (!IsWorkstation) {
         _primaryPaletteMoveable.MoveToA();

@@ -6,10 +6,10 @@ Shader "InteractionEngine101/3D Text Occlusion Shader" {
 	}
  
 	SubShader {
-		Tags { "Queue"="Geometry" "IgnoreProjector"="True" "RenderType"="TransparentCutout" }
-		AlphaTest Greater 0.5
+		Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
+		//AlphaTest Greater 0.5
 		Lighting Off Cull Off ZWrite On Fog { Mode Off }
-		//Blend SrcAlpha OneMinusSrcAlpha
+		Blend SrcAlpha OneMinusSrcAlpha
 		Pass {
 			Color [_Color]
 			SetTexture [_MainTex] {
