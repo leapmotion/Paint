@@ -1,14 +1,23 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using Leap.Unity;
 using Leap.Unity.RuntimeGizmos;
 
 public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
+  public Action OnActivateMarble = () => { };
+  public Action OnWorkstationActivated = () => { };
+
   [Header("Wearable UI")]
   public MeshRenderer _appearanceExplosionRenderer;
   public Collider _marbleCollider;
   public MeshRenderer _marbleRenderer;
+  public SoundEffect _activateEffect;
+  public SoundEffect _grabEffect;
+  public SoundEffect _throwEffect;
+  public float _maxVolumeVelocity = 1;
+  public SoundEffect _returnEffect;
 
   private WearableManager _manager;
   private WearableAnchor _wearableAnchor;
@@ -110,7 +119,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     }
   }
 
-  protected virtual void DoOnReturnedToAnchor() { }
+  protected virtual void DoOnReturnedToAnchor() {
+    _returnEffect.PlayOnTransform(transform);
+  }
 
   #region Wearable Implementation
 
@@ -290,6 +301,10 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
         _marblePulsator.Release();
       }
     }
+
+    if (!_fingerTouchingMarble && !_fingerTouchingDepthCollider && _marblePulsator != null && !_marblePulsator.IsReleasing) {
+      _marblePulsator.Release();
+    }
   }
 
   private void DoOnMarblePulsateValue(float normalizedValue) {
@@ -299,16 +314,20 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   public void NotifyFingerEnterMarble(Collider fingerCollider) {
-    if (_marbleReady) {
-      DoOnMarbleActivated();
-      _marbleReady = false;
+    _fingerTouchingMarble = true;
 
-      _fingerTouchingMarble = true;
+    if (_marbleReady) {
+      //_marblePulsator.WarmUp();
     }
   }
 
   public void NotifyFingerExitMarble(Collider fingerCollider) {
     _fingerTouchingMarble = false;
+
+    if (_marbleReady) {
+      DoOnMarbleActivated();
+      _marbleReady = false;
+    }
     RefreshMarbleCountdown();
   }
 
@@ -332,6 +351,8 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   protected virtual void DoOnMarbleActivated() {
+    OnActivateMarble();
+    _activateEffect.PlayOnTransform(transform);
     _marblePulsator.Activate();
   }
 
@@ -388,7 +409,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     return true;
   }
 
-  protected virtual void DoOnGrabbed() { }
+  protected virtual void DoOnGrabbed() {
+    _grabEffect.PlayOnTransform(transform);
+  }
 
   public void ReleaseFromGrab(Transform grabber) {
     bool doOnReleased = false;
@@ -535,6 +558,8 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     Vector3 throwVelocity = GetGrabVelocity();
     ScheduleRigidbodyUpdate(this.transform.position, this.transform.rotation, throwVelocity);
 
+    _throwEffect.PlayOnTransform(transform, Mathf.Clamp01(throwVelocity.magnitude / _maxVolumeVelocity));
+
     // Construct target workstation location object
     if (_workstationTargetLocation != null) {
       Destroy(_workstationTargetLocation.gameObject);
@@ -632,7 +657,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     _isAttached = false;
   }
 
-  protected virtual void DoOnMovementToWorkstationFinished() { }
+  protected virtual void DoOnMovementToWorkstationFinished() {
+    OnWorkstationActivated();
+  }
 
   #endregion
 

@@ -15,6 +15,8 @@ public class Pulsator : MonoBehaviour {
   private TweenHandle _valueTween;
   private bool _pulsing = false;
   private bool _awaitingRelease = false;
+  private bool _releasing = false;
+  public bool IsReleasing { get { return _releasing; } }
 
   public float Value { get { return _value; } }
   public Action<float> OnValueChanged = (x) => { };
@@ -25,7 +27,6 @@ public class Pulsator : MonoBehaviour {
   }
 
   private void TweenTo(float to, Action OnReachEnd, float speedMultiplier) {
-    _pulsing = false;
     if (_valueTween.IsValid) {
       _valueTween.Release();
     }
@@ -48,12 +49,30 @@ public class Pulsator : MonoBehaviour {
     }
   }
 
+  public void Release() {
+    if (_pulsing) {
+      _awaitingRelease = true;
+    }
+    else {
+      TweenTo(_restValue, () => { _releasing = false; }, 1F);
+      _awaitingRelease = false;
+      _releasing = true;
+    }
+  }
+
+  public void WarmUp() {
+    if (!_pulsing && !_awaitingRelease && !_releasing) {
+      TweenTo(_holdValue, () => { }, 0.75F);
+    }
+  }
+
   private void StartPulse() {
     TweenTo(_pulseValue, DoOnReachedPulsePeak, 3F);
     _pulsing = true;
   }
 
   private void DoOnReachedPulsePeak() {
+    _pulsing = false;
     StartCoroutine(OnNextFrameTweenToHoldValue());
   }
 
@@ -61,16 +80,6 @@ public class Pulsator : MonoBehaviour {
     yield return new WaitForEndOfFrame();
     if (!_awaitingRelease) {
       TweenTo(_holdValue, () => { }, 1F);
-    }
-    else {
-      TweenTo(_restValue, () => { }, 1F);
-      _awaitingRelease = false;
-    }
-  }
-
-  public void Release() {
-    if (_pulsing) {
-      _awaitingRelease = true;
     }
     else {
       TweenTo(_restValue, () => { }, 1F);

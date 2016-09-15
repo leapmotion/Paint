@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -29,7 +28,7 @@ public class ObjExporterScript {
     StringBuilder sb = new StringBuilder();
 
     for (int i = 0; i < m.vertices.Length; i++) {
-    //foreach (Vector3 vv in m.vertices) {
+      //foreach (Vector3 vv in m.vertices) {
       Vector3 v = t.TransformPoint(m.vertices[i]);
       numVertices++;
       sb.Append(string.Format("v {0} {1} {2} {3} {4} {5} \n", v.x, v.y, -v.z, m.colors[i].r, m.colors[i].g, m.colors[i].b));
@@ -65,6 +64,7 @@ public class ObjExporterScript {
 }
 
 public class ObjExporter : ScriptableObject {
+  /*
   [MenuItem("File/Export/Wavefront OBJ")]
   static void DoExportWSubmeshes() {
     DoExport(true);
@@ -89,7 +89,7 @@ public class ObjExporter : ScriptableObject {
     WriteToFile(meshString.ToString(), fileName);
     Debug.Log("Exported Mesh: " + fileName);
   }
-
+  */
 
   public static StringBuilder makeObj(bool makeSubmeshes, string meshName, GameObject root) {
     ObjExporterScript.Start();
@@ -140,11 +140,5 @@ public class ObjExporter : ScriptableObject {
     }
 
     return meshString.ToString();
-  }
-
-  static void WriteToFile(string s, string filename) {
-    using (StreamWriter sw = new StreamWriter(filename)) {
-      sw.Write(s);
-    }
   }
 }

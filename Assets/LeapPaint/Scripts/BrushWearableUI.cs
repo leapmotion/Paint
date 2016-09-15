@@ -19,11 +19,11 @@ public class BrushWearableUI : WearableUI {
 
     if (!IsGrabbed && !IsWorkstation) {
       if (!_brushControlsEmerged) {
-        _brushControlsEmergeable.TryEmerge();
+        _brushControlsEmergeable.TryEmerge(IsWorkstation);
         _brushControlsEmerged = true;
       }
       else {
-        _brushControlsEmergeable.TryVanish();
+        _brushControlsEmergeable.TryVanish(IsWorkstation);
         _brushControlsEmerged = false;
       }
     }
@@ -33,7 +33,7 @@ public class BrushWearableUI : WearableUI {
     base.DoOnAnchorChiralityChanged(newChirality);
 
     if (newChirality != DisplayingChirality) {
-      _brushControlsMoveable._A.position = MirrorUtil.GetMirroredPosition(_brushControlsMoveable._A.position, this.transform);
+      _brushControlsMoveable._A.localPosition = new Vector3(-_brushControlsMoveable._A.localPosition.x, _brushControlsMoveable._A.localPosition.y, _brushControlsMoveable._A.localPosition.z);
       _brushControlsMoveable._A.rotation = MirrorUtil.GetMirroredRotation(_brushControlsMoveable._A.rotation, this.transform);
       if (!IsWorkstation) {
         _brushControlsMoveable.MoveToA();
@@ -46,8 +46,8 @@ public class BrushWearableUI : WearableUI {
   protected override void DoOnGrabbed() {
     base.DoOnGrabbed();
 
-    _brushControlsEmergeable.TryVanish();
-    _brushWorkstationEmergeable.TryVanish();
+    _brushControlsEmergeable.TryVanish(IsWorkstation);
+    _brushWorkstationEmergeable.TryVanish(IsWorkstation);
   }
 
   protected override void DoOnMovementToWorkstationBegan() {
@@ -60,8 +60,8 @@ public class BrushWearableUI : WearableUI {
     _brushControlsMoveable.MoveToB();
 
     if (!IsGrabbed) {
-      _brushControlsEmergeable.TryEmerge();
-      _brushWorkstationEmergeable.TryEmerge();
+      _brushControlsEmergeable.TryEmerge(IsWorkstation);
+      _brushWorkstationEmergeable.TryEmerge(IsWorkstation);
     }
   }
 

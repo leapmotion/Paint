@@ -77,9 +77,6 @@ public class StrokeProcessor {
     for (int i = 0; i < _strokeBufferRenderers.Count; i++) {
       _strokeBufferRenderers[i].InitializeRenderer();
     }
-    for (int i = 0; i < _strokeRenderers.Count; i++) {
-      _strokeRenderers[i].InitializeRenderer();
-    }
   }
 
   public void StartActualizingStroke() {
@@ -94,6 +91,10 @@ public class StrokeProcessor {
     _isActualizingStroke = true;
     _strokeOutput = new List<StrokePoint>(); // can't clear -- other objects have references to the old stroke output.
     _outputBufferEndOffset = 0;
+
+    for (int i = 0; i < _strokeRenderers.Count; i++) {
+      _strokeRenderers[i].InitializeRenderer();
+    }
   }
 
   public void UpdateStroke(StrokePoint strokePoint) {

@@ -14,6 +14,9 @@ public class IndexTipColor : MonoBehaviour {
   public Material _transparentMarbleMaterial;
   public Renderer _colorMarbleRenderer;
 
+  public SoundEffect _dipEffect;
+  private float _canPlayDipTime;
+
   private Color _color;
   private Material _material;
 
@@ -22,8 +25,10 @@ public class IndexTipColor : MonoBehaviour {
   }
 
   protected void OnEnable() {
-    _material = new Material(_tipMeshRenderer.sharedMaterial);
-    _tipMeshRenderer.material = _material;
+    if (_material == null) {
+      _material = new Material(_tipMeshRenderer.sharedMaterial);
+      _tipMeshRenderer.material = _material;
+    }
   }
 
   protected void Start() {
@@ -62,6 +67,11 @@ public class IndexTipColor : MonoBehaviour {
     }
     ColorCleaningBasin cleaningLiquid = other.GetComponentInParent<ColorCleaningBasin>();
     if (cleaningLiquid != null && cleaningLiquid.enabled) {
+      if(Time.time > _canPlayDipTime) {
+        _dipEffect.PlayAtPosition(transform);
+      }
+      _canPlayDipTime = Time.time + 0.5f;
+      
       this.SetColor(new Color(0F, 0F, 0F, 0F));
     }
   }

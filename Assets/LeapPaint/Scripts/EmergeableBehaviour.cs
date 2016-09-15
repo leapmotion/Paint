@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using UnityEngine.UI;
+using Leap.Unity.Attributes;
 
 public class EmergeableBehaviour : MonoBehaviour {
 
@@ -12,8 +13,20 @@ public class EmergeableBehaviour : MonoBehaviour {
   public MonoBehaviour[] _enableDisableComponents;
 
   [Header("(Automatic) To Enable/Disable on Appear/Vanish")]
+  [Disable]
   public Renderer[] _renderers; // includes MeshRenderers and SpriteRenderers
+  [Disable]
   public Graphic[] _graphics;   // includes uGUI Images and the like
+
+  [Header("Sounds")]
+  public SoundEffect _emergeEffect;
+  public SoundEffect _vanishEffect;
+
+  public bool _seperateWorkstationEffect = false;
+  [DisableIf("_seperateWorkstationEffect", equalTo: false)]
+  public SoundEffect _workstationEmergeEffect;
+  [DisableIf("_seperateWorkstationEffect", equalTo: false)]
+  public SoundEffect _workstationVanishEffect;
 
   public Action OnBegunEmerging = () => { };
   public Action OnFinishedEmerging = () => { };
@@ -24,6 +37,9 @@ public class EmergeableBehaviour : MonoBehaviour {
 
   public bool IsEmergedOrEmerging {
     get {
+      if (!_vanishTween.IsValid) {
+        _vanishTween = CreateVanishTween();
+      }
       return (_vanishTween.IsRunning && _vanishTween.Direction == TweenDirection.BACKWARD)
            || _vanishTween.Progress == 0F;
     }
@@ -42,11 +58,23 @@ public class EmergeableBehaviour : MonoBehaviour {
     }
   }
 
-  public void TryEmerge() {
+  public void TryEmerge(bool isInWorkstation) {
+    if (_seperateWorkstationEffect && isInWorkstation) {
+      _workstationEmergeEffect.PlayAtPosition(transform);
+    } else {
+      _emergeEffect.PlayAtPosition(transform);
+    }
+
     _vanishTween.Play(TweenDirection.BACKWARD);
   }
 
-  public void TryVanish() {
+  public void TryVanish(bool isInWorkstation) {
+    if (_seperateWorkstationEffect && isInWorkstation) {
+      _workstationVanishEffect.PlayAtPosition(transform);
+    } else {
+      _vanishEffect.PlayAtPosition(transform);
+    }
+
     _vanishTween.Play(TweenDirection.FORWARD);
   }
 
