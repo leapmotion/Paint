@@ -13,17 +13,20 @@ public class CursorGizmo : MonoBehaviour, IRuntimeGizmoComponent {
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
     this.transform.position = _leftPinchDetector.transform.position;
     this.transform.rotation = _leftPinchDetector.transform.rotation * Quaternion.Euler(_leftHandEulerRotation);
-    DrawPinchDetectorCursorGizmo(_leftPinchDetector, drawer);
+    DrawPinchDetectorAlignmentGizmo(_leftPinchDetector, drawer);
+    DrawCursorGizmo(_leftPinchDetector, drawer);
 
     this.transform.position = _rightPinchDetector.transform.position;
     this.transform.rotation = _rightPinchDetector.transform.rotation * Quaternion.Euler(_rightHandEulerRotation);
-    DrawPinchDetectorCursorGizmo(_rightPinchDetector, drawer);
+    DrawPinchDetectorAlignmentGizmo(_rightPinchDetector, drawer);
+    DrawCursorGizmo(_rightPinchDetector, drawer);
   }
 
-  private bool _gizmosEnabled = true;
+  private bool _alignmentGizmoEnabled = false;
+  private bool _cursorRingEnabled = true;
 
-  private void DrawPinchDetectorCursorGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
-    if (_gizmosEnabled) {
+  private void DrawPinchDetectorAlignmentGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
+    if (_alignmentGizmoEnabled) {
       drawer.PushMatrix();
 
       drawer.matrix = pinchDetector.transform.localToWorldMatrix;
@@ -39,4 +42,32 @@ public class CursorGizmo : MonoBehaviour, IRuntimeGizmoComponent {
     }
   }
 
+  private void DrawCursorGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
+    if (_cursorRingEnabled) {
+      drawer.PushMatrix();
+
+      drawer.matrix = pinchDetector.transform.localToWorldMatrix;
+
+      drawer.color = Color.white;
+      drawer.DrawCircle(Vector3.zero, 0.02F, Vector3.up);
+
+      drawer.PopMatrix();
+    }
+  }
+
+}
+
+public static class RuntimeGizmoDrawerExtensions {
+  public static void DrawCircle(this RuntimeGizmoDrawer drawer, Vector3 position, float radius, Vector3 planeDirection) {
+    Vector3 perpDirection = Vector3.Cross(planeDirection, Vector3.up).normalized;
+    if (perpDirection.magnitude < 0.99F) {
+      perpDirection = Vector3.Cross(planeDirection, Vector3.right).normalized;
+    }
+    Debug.Log(perpDirection.magnitude);
+    int numSegments = 64;
+    for (int i = 0; i < numSegments; i++) {
+      drawer.DrawLine(position + Quaternion.AngleAxis(360F * (i / (float)numSegments), planeDirection) * perpDirection * radius,
+        position + Quaternion.AngleAxis(360F * ((i + 1) / (float)numSegments), planeDirection) * perpDirection * radius);
+    }
+  }
 }
