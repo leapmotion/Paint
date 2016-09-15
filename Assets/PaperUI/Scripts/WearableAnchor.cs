@@ -16,6 +16,8 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
   [Tooltip("The material to use when this object is fading in or out.")]
   public Material _fadeMaterial;
 
+  public SoundEffect showEffect;
+
   public bool IsDisplaying {
     get {
       if (_appearTween.IsValid) {
@@ -159,6 +161,7 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
   public void Appear() {
     _appearTween.Play(TweenDirection.FORWARD);
     OnAnchorBeginAppearing();
+    showEffect.PlayOnTransform(transform);
   }
 
   public void Vanish() {

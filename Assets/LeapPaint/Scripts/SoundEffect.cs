@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 using System;
 using Leap.Unity.Attributes;
 
@@ -7,6 +8,9 @@ public class SoundEffect {
 
   [SerializeField]
   private AudioClip[] _clips;
+
+  [SerializeField]
+  private AudioMixerGroup _mixerGroup;
 
   [Range(0, 1)]
   [SerializeField]
@@ -22,25 +26,17 @@ public class SoundEffect {
   public void PlayAtPosition(Vector3 position, float volumeScale = 1) {
     if (_clips.Length == 0) return;
 
-    var source = prepAudioSource(volumeScale);
-    source.transform.position = position;
+    AudioSourceCache.instance.PlayAtPosition(getRandomClip(), _mixerGroup, position, _volume * volumeScale, getRandomPitch());
+  }
+
+  public void PlayAtPosition(Transform transform, float volumeScale = 1) {
+    PlayAtPosition(transform.position, volumeScale);
   }
 
   public void PlayOnTransform(Transform transform, float volumeScale = 1) {
     if (_clips.Length == 0) return;
 
-    var source = prepAudioSource(volumeScale);
-    source.transform.parent = transform;
-    source.transform.localPosition = Vector3.zero;
-  }
-
-  private AudioSource prepAudioSource(float volumeScale) {
-    AudioSource source = AudioSourceCache.instance.GetAudioSource();
-    source.clip = getRandomClip();
-    source.volume = _volume * volumeScale;
-    source.pitch = _pitchCenter + (UnityEngine.Random.value - 0.5f) * _pitchVariance;
-    source.Play();
-    return source;
+    AudioSourceCache.instance.PlayOnTransform(getRandomClip(), _mixerGroup, transform, _volume * volumeScale, getRandomPitch());
   }
 
   private AudioClip getRandomClip() {
@@ -53,6 +49,10 @@ public class SoundEffect {
     }
 
     return clip;
+  }
+
+  private float getRandomPitch() {
+    return _pitchCenter + (UnityEngine.Random.value - 0.5f) * _pitchVariance;
   }
 
 }

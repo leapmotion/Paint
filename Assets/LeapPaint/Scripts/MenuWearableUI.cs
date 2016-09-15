@@ -4,6 +4,7 @@ using Leap.Unity;
 
 public class MenuWearableUI : WearableUI {
 
+  [Header("Menu Wearable UI")]
   public EmergeableBehaviour[] _menuButtonEmergeables;
   public MoveableBehaviour[] _menuButtonMoveables;
   public PressableUI[] _menuButtons;
