@@ -48,7 +48,7 @@ namespace MeshGeneration {
         return;
       }
 
-      //Add dummy tangent at the begining and end
+      //Add dummy tangent at the beginning and end
       _tangents.Add(Vector3.zero);
 
       for (int i = 1; i < _points.Count - 1; i++) {

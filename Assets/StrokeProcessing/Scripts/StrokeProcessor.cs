@@ -11,8 +11,8 @@ public class StrokeProcessor {
   private int _maxMemory = 0;
 
   // Stroke state
-  private bool _strokeInProgress = false;
-  private bool _shouldActualizeStroke = false;
+  private bool _isBufferingStroke = false;
+  private bool _isActualizingStroke = false;
   private RingBuffer<StrokePoint> _strokeBuffer;
   private RingBuffer<int> _strokeIdxBuffer;
   private int curStrokeIdx = 0;
@@ -20,12 +20,14 @@ public class StrokeProcessor {
 
   // Stroke renderers
   private List<IStrokeRenderer> _strokeRenderers = null;
-  private List<IStrokeRenderer> _previewStrokeRenderers = null;
+
+  // Stroke buffer renderers
+  private List<IStrokeBufferRenderer> _strokeBufferRenderers = null;
 
   public StrokeProcessor() {
     _strokeFilters = new List<IMemoryFilter<StrokePoint>>();
     _strokeRenderers = new List<IStrokeRenderer>();
-    _previewStrokeRenderers = new List<IStrokeRenderer>();
+    _strokeBufferRenderers = new List<IStrokeBufferRenderer>();
     _strokeOutput = new List<StrokePoint>();
   }
 
@@ -37,7 +39,7 @@ public class StrokeProcessor {
       _maxMemory = filterMemorySize + 1;
     }
 
-    if (_strokeInProgress) {
+    if (_isBufferingStroke) {
       Debug.LogWarning("[StrokeProcessor] Registering stroke filters destroys the current stroke processing queue.");
     }
     _strokeBuffer = new RingBuffer<StrokePoint>(_maxMemory);
@@ -46,24 +48,24 @@ public class StrokeProcessor {
 
   public void RegisterStrokeRenderer(IStrokeRenderer strokeRenderer) {
     _strokeRenderers.Add(strokeRenderer);
-    if (_strokeInProgress) {
+    if (_isBufferingStroke) {
       Debug.LogError("[StrokeProcessor] Stroke in progress; Newly registered stroke renderers will not render the entire stroke if a stroke is already in progress.");
     }
   }
 
-  public void RegisterPreviewStrokeRenderer(IStrokeRenderer strokeRenderer) {
-    _previewStrokeRenderers.Add(strokeRenderer);
-    if (_strokeInProgress) {
-      Debug.LogError("[StrokeProcessor] Stroke in progress; Newly registered preview stroke renderers will not render the entire preview stroke if a stroke is already in progress.");
+  public void RegisterPreviewStrokeRenderer(IStrokeBufferRenderer strokeBufferRenderer) {
+    _strokeBufferRenderers.Add(strokeBufferRenderer);
+    if (_isBufferingStroke) {
+      Debug.LogError("[StrokeProcessor] Stroke buffer already active; Newly registered stroke buffer renderers will not render the entire preview stroke if a stroke is already in progress.");
     }
   }
 
   public void BeginStroke() {
-    if (_strokeInProgress) {
+    if (_isBufferingStroke) {
       Debug.LogError("[StrokeProcessor] Stroke in progress; cannot begin new stroke. Call EndStroke() to finalize the current stroke first.");
       return;
     }
-    _strokeInProgress = true;
+    _isBufferingStroke = true;
 
     _strokeBuffer.Clear();
     _strokeIdxBuffer.Clear();
@@ -72,8 +74,8 @@ public class StrokeProcessor {
     for (int i = 0; i < _strokeFilters.Count; i++) {
       _strokeFilters[i].Reset();
     }
-    for (int i = 0; i < _previewStrokeRenderers.Count; i++) {
-      _previewStrokeRenderers[i].InitializeRenderer();
+    for (int i = 0; i < _strokeBufferRenderers.Count; i++) {
+      _strokeBufferRenderers[i].InitializeRenderer();
     }
     for (int i = 0; i < _strokeRenderers.Count; i++) {
       _strokeRenderers[i].InitializeRenderer();
@@ -103,20 +105,22 @@ public class StrokeProcessor {
       _strokeFilters[i].Process(_strokeBuffer, _strokeIdxBuffer);
     }
 
-    // Update latest points in stroke output with latest points from the filtered buffer.
-    int bufferIdx = 0;
-    for (int i = _strokeOutput.Count - _strokeBuffer.Size; i < _strokeOutput.Count; i++) {
-      _strokeOutput[i] = _strokeBuffer.Get(bufferIdx++);
+    if (_isActualizingStroke) {
+      // Update latest points in stroke output with latest points from the filtered buffer.
+      int bufferIdx = 0;
+      for (int i = _strokeOutput.Count - _strokeBuffer.Size; i < _strokeOutput.Count; i++) {
+        _strokeOutput[i] = _strokeBuffer.Get(bufferIdx++);
+      }
+
+      // Refresh stroke renderers.
+      for (int i = 0; i < _strokeRenderers.Count; i++) {
+        _strokeRenderers[i].RefreshRenderer(_strokeOutput, _maxMemory);
+      }
     }
 
     // Refresh stroke preview renderers.
-    for (int i = 0; i < _previewStrokeRenderers.Count; i++) {
-      _previewStrokeRenderers[i].RefreshRenderer(_strokeBuffer);
-    }
-
-    // Refresh stroke renderers.
-    for (int i = 0; i < _strokeRenderers.Count; i++) {
-      _strokeRenderers[i].RefreshRenderer(_strokeOutput, _maxMemory);
+    for (int i = 0; i < _strokeBufferRenderers.Count; i++) {
+      _strokeBufferRenderers[i].RefreshRenderer(_strokeBuffer);
     }
   }
 
@@ -125,14 +129,14 @@ public class StrokeProcessor {
   }
 
   public void EndStroke() {
-    if (_shouldActualizeStroke) {
+    if (_isActualizingStroke) {
       StopActualizingStroke();
     }
 
-    _strokeInProgress = false;
+    _isBufferingStroke = false;
 
-    for (int i = 0; i < _previewStrokeRenderers.Count; i++) {
-      _previewStrokeRenderers[i].FinalizeRenderer();
+    for (int i = 0; i < _strokeBufferRenderers.Count; i++) {
+      _strokeBufferRenderers[i].FinalizeRenderer();
     }
     for (int i = 0; i < _strokeRenderers.Count; i++) {
       _strokeRenderers[i].FinalizeRenderer();
