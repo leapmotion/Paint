@@ -60,10 +60,9 @@ public class Pulsator : MonoBehaviour {
       _awaitingRelease = true;
     }
     else {
-      TweenTo(_restValue, () => { _releasing = false; Debug.Log("Aaand releasing is now false."); }, 1F);
+      TweenTo(_restValue, () => { _releasing = false; }, 1F);
       _awaitingRelease = false;
       _releasing = true;
-      Debug.Log("OK! Releasing." + _releasing);
     }
   }
 
@@ -85,7 +84,7 @@ public class Pulsator : MonoBehaviour {
 
   private IEnumerator OnNextFrameTweenToHoldValue() {
     yield return new WaitForEndOfFrame();
-    if (!_awaitingRelease) {
+    if (!_awaitingRelease && !_releasing && !_pulsing) {
       TweenTo(_holdValue, () => { }, 1F);
     }
     else {

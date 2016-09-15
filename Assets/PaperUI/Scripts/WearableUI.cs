@@ -305,11 +305,6 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
         _marblePulsator.Release();
       }
     }
-
-    if (_marbleReady && _marbleCooldownTimer == 0F && (!_marblePulsator.AtRest && !_marblePulsator.IsReleasing)) {
-      Debug.Log("Whoa! Better release.");
-      _marblePulsator.Release();
-    }
   }
 
   private void DoOnMarblePulsateValue(float normalizedValue) {
