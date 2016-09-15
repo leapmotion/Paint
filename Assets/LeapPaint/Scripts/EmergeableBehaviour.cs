@@ -17,6 +17,9 @@ public class EmergeableBehaviour : MonoBehaviour {
 
   public SoundEffect _emergeEffect;
   public SoundEffect _vanishEffect;
+  public bool _seperateWorkstationEffect;
+  public SoundEffect _workstationEmergeEffect;
+  public SoundEffect _workstationVanishEffect;
 
   public Action OnBegunEmerging = () => { };
   public Action OnFinishedEmerging = () => { };
@@ -46,12 +49,22 @@ public class EmergeableBehaviour : MonoBehaviour {
   }
 
   public void TryEmerge(bool isInWorkstation) {
-    _emergeEffect.PlayAtPosition(transform);
+    if (_seperateWorkstationEffect && isInWorkstation) {
+      _workstationEmergeEffect.PlayAtPosition(transform);
+    } else {
+      _emergeEffect.PlayAtPosition(transform);
+    }
+
     _vanishTween.Play(TweenDirection.BACKWARD);
   }
 
-  public void TryVanish() {
-    _vanishEffect.PlayAtPosition(transform);
+  public void TryVanish(bool isInWorkstation) {
+    if (_seperateWorkstationEffect && isInWorkstation) {
+      _workstationVanishEffect.PlayAtPosition(transform);
+    } else {
+      _vanishEffect.PlayAtPosition(transform);
+    }
+
     _vanishTween.Play(TweenDirection.FORWARD);
   }
 
