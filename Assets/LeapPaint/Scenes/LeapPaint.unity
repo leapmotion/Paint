@@ -172,6 +172,19 @@ MonoBehaviour:
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &15090453
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,6 +540,19 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
     _clips: []
     _mixerGroup: {fileID: 0}
     _volume: 1
@@ -1366,6 +1392,23 @@ MonoBehaviour:
   _vanishEffect:
     _clips:
     - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _seperateWorkstationEffect: 1
+  _workstationEmergeEffect:
+    _clips:
+    - {fileID: 8300000, guid: 71a1b27e20f21954a9d4a1fa7aacc7a5, type: 3}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
+    _clips:
+    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -2620,7 +2663,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737703, y: 0.9868922, z: -0.103457816, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737699, y: 0.9868922, z: -0.1034578, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8533,6 +8576,23 @@ MonoBehaviour:
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
+  _seperateWorkstationEffect: 1
+  _workstationEmergeEffect:
+    _clips:
+    - {fileID: 8300000, guid: 71a1b27e20f21954a9d4a1fa7aacc7a5, type: 3}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
+    _clips:
+    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &895512428
 GameObject:
   m_ObjectHideFlags: 0
@@ -8741,6 +8801,23 @@ MonoBehaviour:
   _vanishEffect:
     _clips:
     - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _seperateWorkstationEffect: 1
+  _workstationEmergeEffect:
+    _clips:
+    - {fileID: 8300000, guid: 71a1b27e20f21954a9d4a1fa7aacc7a5, type: 3}
+    _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
+      type: 2}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
+    _clips:
+    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -9173,6 +9250,19 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
     _clips: []
     _mixerGroup: {fileID: 0}
     _volume: 1
@@ -11564,6 +11654,19 @@ MonoBehaviour:
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1219668906
 GameObject:
   m_ObjectHideFlags: 0
@@ -12893,6 +12996,19 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
     _clips: []
     _mixerGroup: {fileID: 0}
     _volume: 1
@@ -14601,6 +14717,19 @@ MonoBehaviour:
     _volume: 1
     _pitchVariance: 0
     _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
 --- !u!1 &1624824705
 GameObject:
   m_ObjectHideFlags: 0
@@ -14910,6 +15039,19 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
     _clips: []
     _mixerGroup: {fileID: 0}
     _volume: 1
@@ -15966,6 +16108,19 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
     _clips: []
     _mixerGroup: {fileID: 0}
     _volume: 1
@@ -20030,6 +20185,19 @@ MonoBehaviour:
     _pitchVariance: 0
     _pitchCenter: 1
   _vanishEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _seperateWorkstationEffect: 0
+  _workstationEmergeEffect:
+    _clips: []
+    _mixerGroup: {fileID: 0}
+    _volume: 1
+    _pitchVariance: 0
+    _pitchCenter: 1
+  _workstationVanishEffect:
     _clips: []
     _mixerGroup: {fileID: 0}
     _volume: 1
