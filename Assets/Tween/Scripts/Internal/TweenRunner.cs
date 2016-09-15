@@ -27,9 +27,7 @@ namespace TweenInternal {
       for (int i = _runningCount - 1; i >= 0; --i) {
         var instance = _runningTweens[i];
         try {
-          if (instance.StepProgress()) {
-            RemoveTween(instance);
-          }
+          instance.StepProgress(this);
         } catch (Exception e) {
           Debug.LogError("Error occured inside of tween!  Tween has been terminated");
           Debug.LogException(e);

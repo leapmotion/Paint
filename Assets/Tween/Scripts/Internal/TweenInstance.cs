@@ -214,7 +214,7 @@ namespace TweenInternal {
       _smoothFunc = TweenCurve.Evaluate;
     }
 
-    public WaitForSeconds Play(bool restart = false) {
+    public WaitForSeconds Play() {
       //If we are already at our destination, no time needs to pass!
       if (_percent == _goalPercent) {
         return null;
@@ -231,10 +231,8 @@ namespace TweenInternal {
       }
 
       //If we are already running no need to restart the tween.
-      if (!restart) {
-        if (IsRunning) {
-          return new WaitForSeconds(TimeLeft);
-        }
+      if (IsRunning) {
+         return new WaitForSeconds(TimeLeft);
       }
 
       TweenRunner.Instance.AddTween(this);
@@ -244,13 +242,13 @@ namespace TweenInternal {
 
     public WaitForSeconds Play(TweenDirection direction) {
       Direction = direction;
-      return Play(true);
+      return Play();
     }
 
     public WaitForSeconds Play(float destinationPercent) {
       Direction = destinationPercent >= _percent ? TweenDirection.FORWARD : TweenDirection.BACKWARD;
       _goalPercent = destinationPercent;
-      return Play(true);
+      return Play();
     }
 
     public void Pause() {
@@ -298,7 +296,7 @@ namespace TweenInternal {
       }
     }
 
-    public bool StepProgress() {
+    public void StepProgress(TweenRunner myRunner) {
       _percent += _delta * Time.deltaTime;
       if (_percent * (int)_direction >= _goalPercent) {
         _percent = _goalPercent;
@@ -313,6 +311,7 @@ namespace TweenInternal {
       interpolatePercent(progress);
 
       if (_percent == _goalPercent) {
+        myRunner.RemoveTween(this);
 
         if (_percent == 1.0f) {
           if (OnReachEnd != null) {
@@ -324,14 +323,10 @@ namespace TweenInternal {
           }
         }
 
-        if (_releaseUponComplete && _instanceId != -1) {
+        if (_releaseUponComplete) {
           Release();
         }
-
-        return true;
       }
-
-      return false;
     }
 
     private void interpolatePercent(float percent) {
