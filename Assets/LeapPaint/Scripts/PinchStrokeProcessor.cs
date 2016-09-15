@@ -172,7 +172,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   // TODO DELETEME FIXME
   private void DoOnMeshStrokeFinalized(Mesh mesh, List<StrokePoint> stroke) {
     GameObject finishedRibbonMesh = new GameObject();
-    if (stroke.Count > 0) {
+    if (stroke!=null && stroke.Count > 0) {
       finishedRibbonMesh.name = stroke[0].color.r + ", " + stroke[0].color.g + ", " + stroke[0].color.b;
     }
     MeshFilter filter = finishedRibbonMesh.AddComponent<MeshFilter>();
