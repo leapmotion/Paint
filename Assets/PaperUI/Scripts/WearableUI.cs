@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using Leap.Unity;
 using Leap.Unity.RuntimeGizmos;
 
 public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
+
+  public Action OnActivateMarble = () => { };
+  public Action OnWorkstationActivated = () => { };
 
   [Header("Wearable UI")]
   public MeshRenderer _appearanceExplosionRenderer;
@@ -339,6 +343,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   protected virtual void DoOnMarbleActivated() {
+    OnActivateMarble();
     _activateEffect.PlayOnTransform(transform);
     _marblePulsator.Activate();
   }
@@ -644,7 +649,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     _isAttached = false;
   }
 
-  protected virtual void DoOnMovementToWorkstationFinished() { }
+  protected virtual void DoOnMovementToWorkstationFinished() {
+    OnWorkstationActivated();
+  }
 
   #endregion
 

@@ -64,7 +64,7 @@ public class MenuWearableUI : WearableUI {
 
     if (newChirality != DisplayingChirality) {
       for (int i = 0; i < _menuButtonMoveables.Length; i++) {
-        _menuButtonMoveables[i]._A.position = MirrorUtil.GetMirroredPosition(_menuButtonMoveables[i]._A.position, _menuButtonMoveables[i].transform.parent);
+        _menuButtonMoveables[i]._A.localPosition = new Vector3(-_menuButtonMoveables[i]._A.localPosition.x, _menuButtonMoveables[i]._A.localPosition.y, _menuButtonMoveables[i]._A.localPosition.z);
         _menuButtonMoveables[i]._A.rotation = MirrorUtil.GetMirroredRotation(_menuButtonMoveables[i]._A.rotation, _menuButtonMoveables[i].transform.parent);
         if (!IsWorkstation) {
           _menuButtonMoveables[i].MoveToA();

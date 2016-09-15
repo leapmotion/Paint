@@ -22,7 +22,7 @@ public class RibbonIO : MonoBehaviour {
     string fileName = "My Painting " + DateTime.Now.ToString("MM-dd_HH-mm-ss");
     string json = GetHistoryAsJSON();
     _fileManager.Save(fileName + ".json", json);
-    _fileManager.Save(fileName + ".obj", ObjExporter.makeObj(true, "LeapPaintMesh", _replayProcessor._ribbonParentObject).ToString());
+    //_fileManager.Save(fileName + ".obj", ObjExporter.makeObj(true, "LeapPaintMesh", _replayProcessor._ribbonParentObject).ToString());
     OnSaveSuccessful.Invoke(fileName);
   }
 

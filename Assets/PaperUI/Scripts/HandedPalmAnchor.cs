@@ -31,9 +31,11 @@ public class HandedPalmAnchor : MonoBehaviour {
         targetPalm = _leftPalm;
       }
 
-      this.transform.position = MirrorUtil.GetMirroredPosition(this.transform.position, currentPalm, targetPalm);
+      Vector3 curLocal = transform.localPosition;
       this.transform.rotation = MirrorUtil.GetMirroredRotation(this.transform.rotation, currentPalm, targetPalm);
       this.transform.parent = targetPalm;
+      this.transform.localPosition = new Vector3(-curLocal.x, curLocal.y, curLocal.z);
+
       _chirality = whichHand;
       OnAnchorChiralityChanged(_chirality);
     }
