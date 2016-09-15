@@ -7,29 +7,37 @@ public class WelcomeTip : MonoBehaviour {
   public PinchStrokeProcessor LPinchDrawer;
   public TextMesh text;
 
-  private bool hasChanged = false;
-  private bool isFinished = false;
+  private bool hasPainted = false;
+  private bool hasOpenedMenu = false;
 
   void Start() {
+    Anchor.OnAnchorBeginAppearing += DoOnBeginAppearing;
     text.gameObject.SetActive(true);
   }
 
   void DoOnBeginAppearing() {
-    if (!isFinished) {
+    if (!hasOpenedMenu) {
+      hasOpenedMenu = true;
+    }
+    ChangeState();
+  }
+
+  void ChangeState() {
+    if (hasOpenedMenu && hasPainted) {
       //Tween Disappear
       text.gameObject.SetActive(false);
-      isFinished = true;
+    } else if(hasPainted) {
+      //Tween Disappear
+      text.text = "View palm for more options.";
+      //Tween Appear
     }
   }
 
   // Update is called once per frame
   void Update() {
-    if (!hasChanged && RPinchDrawer.drawTime + LPinchDrawer.drawTime > 1f) {
-      Anchor.OnAnchorBeginAppearing += DoOnBeginAppearing;
-      //Tween Disappear
-      text.text = "View palm for more options.";
-      //Tween Appear
-      hasChanged = true;
+    if (!hasPainted && RPinchDrawer.drawTime + LPinchDrawer.drawTime > 1f) {
+      hasPainted = true;
+      ChangeState();
     }
   }
 }
