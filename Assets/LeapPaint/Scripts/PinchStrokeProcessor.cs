@@ -9,7 +9,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.007F;
   private const float MAX_SEGMENT_LENGTH = 0.03F;
 
-  public PinchDetector _pinchDetector;
+  public PaintCursor _paintCursor;
   [Tooltip("Used to stop drawing if the pinch detector is grabbing a UI element.")]
   public WearableManager _wearableManager;
   public HistoryManager _historyManager;
@@ -77,17 +77,17 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   void Update() {
-    if (_pinchDetector.HandModel.IsTracked && !_paintingPreviewStroke) {
+    if (_paintCursor.IsTracked && !_paintingPreviewStroke) {
       BeginStroke();
       _paintingPreviewStroke = true;
     }
 
-    if (_pinchDetector.IsActive && !_paintingStroke) {
-      if (!_wearableManager.IsPinchDetectorGrabbing(_pinchDetector)) {
+    if (_paintCursor.IsActive && !_paintingStroke) {
+      if (!_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)) {
         // TODO HACK FIXME preventing drawing if IndexTipColor is transparent
         Color color = new Color(0F, 0F, 0F, 0F);
         try {
-          color = _pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
+          color = _paintCursor._pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
         }
         catch (System.NullReferenceException) { }
         if (color.a > 0.99F) {
@@ -97,16 +97,16 @@ public class PinchStrokeProcessor : MonoBehaviour {
       }
     }
 
-    if (_pinchDetector.HandModel.IsTracked && _paintingPreviewStroke) {
+    if (_paintCursor.IsTracked && _paintingPreviewStroke) {
       UpdateStroke();
     }
 
-    if (!_pinchDetector.IsActive && _paintingStroke) {
+    if (!_paintCursor.IsActive && _paintingStroke) {
       StopActualizingStroke();
       _paintingStroke = false;
     }
 
-    if (!_pinchDetector.HandModel.IsTracked && _paintingPreviewStroke) {
+    if (!_paintCursor.IsTracked && _paintingPreviewStroke) {
       EndStroke();
       _paintingPreviewStroke = false;
     }
@@ -116,7 +116,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _beginEffect.PlayOnTransform(_soundEffectSource.transform);
     _strokeProcessor.BeginStroke();
     _soundEffectSource.Play();
-    _prevPosition = _pinchDetector.Position;
+    _prevPosition = _paintCursor.Position;
   }
 
   private void StartActualizingStroke() {
@@ -124,15 +124,15 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   private void UpdateStroke() {
-    float speed = Vector3.Distance(_pinchDetector.Position, _prevPosition) / Time.deltaTime;  
-    _prevPosition = _pinchDetector.Position;
+    float speed = Vector3.Distance(_paintCursor.Position, _prevPosition) / Time.deltaTime;
+    _prevPosition = _paintCursor.Position;
     _smoothedSpeed.Update(speed, Time.deltaTime);
 
     float effectPercent = Mathf.Clamp01(_smoothedSpeed.value / _maxEffectSpeed);
     _soundEffectSource.volume = effectPercent * _volumeScale;
     _soundEffectSource.pitch = Mathf.Lerp(_pitchRange.x, _pitchRange.y, effectPercent);
 
-    Vector3 strokePosition = _pinchDetector.Position;
+    Vector3 strokePosition = _paintCursor.Position;
 
     if (_firstStrokePointAdded) {
       float posDelta = Vector3.Distance(_lastStrokePointAdded, strokePosition);
@@ -173,7 +173,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
       StrokePoint strokePoint = new StrokePoint();
       strokePoint.position = point;
       strokePoint.rotation = Quaternion.identity;
-      strokePoint.handOrientation = _pinchDetector.Rotation * Quaternion.Euler((_pinchDetector.HandModel.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
+      strokePoint.handOrientation = _paintCursor.Rotation * Quaternion.Euler((_paintCursor.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
       strokePoint.deltaTime = _timeSinceLastAddition;
 
       _strokeProcessor.UpdateStroke(strokePoint);

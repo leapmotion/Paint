@@ -248,10 +248,14 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   #region Marble Touching
 
   private const float MARBLE_COOLDOWN = 0.02F;
+  [SerializeField]
   private float _marbleCooldownTimer = 0F;
+  [SerializeField]
   private bool _marbleReady = true;
 
+  [SerializeField]
   private bool _fingerTouchingMarble = false;
+  [SerializeField]
   private bool _fingerTouchingDepthCollider = false;
   private CapsuleCollider _marbleDepthCollider;
 
@@ -302,7 +306,8 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
       }
     }
 
-    if (!_fingerTouchingMarble && !_fingerTouchingDepthCollider && _marblePulsator != null && !_marblePulsator.IsReleasing) {
+    if (_marbleReady && _marbleCooldownTimer == 0F && (!_marblePulsator.AtRest && !_marblePulsator.IsReleasing)) {
+      Debug.Log("Whoa! Better release.");
       _marblePulsator.Release();
     }
   }
@@ -317,7 +322,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     _fingerTouchingMarble = true;
 
     if (_marbleReady) {
-      //_marblePulsator.WarmUp();
+      _marblePulsator.WarmUp();
     }
   }
 
