@@ -230,6 +230,10 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
 
   #endregion
 
+  public void PlayActivationSoundEffect() {
+    soundEffect.PlayOnTransform(transform, 1);
+  }
+
   #region Gizmos
 
   protected bool _enableGizmos = false;
