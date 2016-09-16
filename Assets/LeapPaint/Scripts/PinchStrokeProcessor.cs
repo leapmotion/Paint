@@ -168,7 +168,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private void ProcessAddStrokePoint(Vector3 point, float effDeltaTime) {
     bool shouldAdd = !_firstStrokePointAdded
       || Vector3.Distance(_lastStrokePointAdded, point)
-          >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MAX_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
+          >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MIN_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
 
     _timeSinceLastAddition += effDeltaTime;
 
