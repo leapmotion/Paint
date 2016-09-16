@@ -34,6 +34,20 @@ public class HistoryManager : MonoBehaviour {
     }
   }
 
+  public void Undo(int strokeIndex) {
+    if (_undoHistory.Count != 0) {
+      GameObject undoneAction = _undoHistory[strokeIndex];
+      _redoHistory.Add(undoneAction);
+      _undoHistory.RemoveAt(strokeIndex);
+      undoneAction.SetActive(false);
+      undoneAction.transform.parent = undoneObjectParent.transform;
+
+      Stroke undoneStroke = _strokes[strokeIndex];
+      _undoneStrokes.Add(undoneStroke);
+      _strokes.RemoveAt(strokeIndex);
+    }
+  }
+
   public void Redo() {
     if (_redoHistory.Count != 0) {
       GameObject redoneAction = _redoHistory[_redoHistory.Count - 1];

@@ -48,6 +48,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
   [HideInInspector]
   public float drawTime = 0f;
+  [HideInInspector]
+  public bool deactivateDrawing = false;
 
   void Start() {
     _smoothedSpeed.delay = _smoothingDelay;
@@ -80,7 +82,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   void Update() {
-    inDangerZone = false;
+    inDangerZone = deactivateDrawing;
     if (_paintCursor._handModel!= null&&_paintCursor._handModel.GetLeapHand() != null) {
       _hand = _paintCursor._handModel.GetLeapHand();
       foreach (WearableUI marble in _wearableManager._wearableUIs) {
