@@ -31,8 +31,6 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public float _smoothingDelay = 0.05f;
 
 
-  private bool _paintingStroke = false;
-  private bool _paintingPreviewStroke = false;
   private StrokeProcessor _strokeProcessor;
   private bool _firstStrokePointAdded = false;
   private Vector3 _lastStrokePointAdded = Vector3.zero;
@@ -91,12 +89,11 @@ public class PinchStrokeProcessor : MonoBehaviour {
       }
     }
 
-    if (_paintCursor.IsTracked && !_paintingPreviewStroke && !inDangerZone) {
+    if (_paintCursor.IsTracked && !_strokeProcessor.IsBufferingStroke && !inDangerZone) {
       BeginStroke();
-      _paintingPreviewStroke = true;
     }
 
-    if (_paintCursor.IsActive && !_paintingStroke) {
+    if (_paintCursor.IsActive && !_strokeProcessor.IsActualizingStroke) {
       if (!_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)) {
         // TODO HACK FIXME preventing drawing if IndexTipColor is transparent
         Color color = new Color(0F, 0F, 0F, 0F);
@@ -110,23 +107,20 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
         if (color.a > 0.99F && fistStrength > -2f && !inDangerZone) {
           StartActualizingStroke();
-          _paintingStroke = true;
         }
       }
     }
 
-    if (_paintCursor.IsTracked && _paintingPreviewStroke) {
+    if (_paintCursor.IsTracked && _strokeProcessor.IsBufferingStroke) {
       UpdateStroke();
     }
 
-    if ((!_paintCursor.IsActive || inDangerZone) && _paintingStroke) {
+    if ((!_paintCursor.IsActive || inDangerZone) && _strokeProcessor.IsActualizingStroke) {
       StopActualizingStroke();
-      _paintingStroke = false;
     }
 
-    if ((!_paintCursor.IsTracked || inDangerZone) && _paintingPreviewStroke) {
+    if ((!_paintCursor.IsTracked || inDangerZone) && _strokeProcessor.IsActualizingStroke) {
       EndStroke();
-      _paintingPreviewStroke = false;
     }
   }
 
@@ -183,7 +177,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private void ProcessAddStrokePoint(Vector3 point, float effDeltaTime) {
     bool shouldAdd = !_firstStrokePointAdded
       || Vector3.Distance(_lastStrokePointAdded, point)
-          >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MIN_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
+          >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MAX_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
 
     _timeSinceLastAddition += effDeltaTime;
 
