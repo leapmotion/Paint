@@ -63,6 +63,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _strokeProcessor.RegisterStrokeFilter(_colorFilter);
     _strokeProcessor.RegisterStrokeFilter(_thicknessFilter);
 
+
+
     // Set up and register renderers.
     GameObject rendererObj = new GameObject();
     rendererObj.name = "Stroke Ribbon Renderer";
@@ -113,14 +115,14 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   private void BeginStroke() {
-    _beginEffect.PlayOnTransform(_soundEffectSource.transform);
     _strokeProcessor.BeginStroke();
-    _soundEffectSource.Play();
     _prevPosition = _paintCursor.Position;
   }
 
   private void StartActualizingStroke() {
     _strokeProcessor.StartActualizingStroke();
+    _beginEffect.PlayOnTransform(_soundEffectSource.transform);
+    _soundEffectSource.Play();
   }
 
   private void UpdateStroke() {
@@ -186,13 +188,13 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private void StopActualizingStroke() {
     _strokeProcessor.StopActualizingStroke();
+    _soundEffectSource.Pause();
+    _soundEffectSource.volume = 0;
+    _smoothedSpeed.reset = true;
   }
 
   private void EndStroke() {
     _strokeProcessor.EndStroke();
-    _soundEffectSource.Pause();
-    _soundEffectSource.volume = 0;
-    _smoothedSpeed.reset = true;
     _firstStrokePointAdded = false;
   }
 
