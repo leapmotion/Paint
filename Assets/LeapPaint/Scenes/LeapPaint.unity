@@ -2663,7 +2663,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737695, y: 0.9868922, z: -0.103457786, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737699, y: 0.9868922, z: -0.1034578, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6552,8 +6552,8 @@ MonoBehaviour:
       PublicKeyToken=null
   _handModel: {fileID: 426841}
   ControlsTransform: 1
-  ActivateDistance: 0.03
-  DeactivateDistance: 0.04
+  ActivateDistance: 0.025
+  DeactivateDistance: 0.038
 --- !u!1001 &646943748
 Prefab:
   m_ObjectHideFlags: 0
@@ -11728,10 +11728,10 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1224091385}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0203, y: -0.059, z: 0.0438}
+  m_LocalRotation: {x: -0.20941399, y: 0.06354969, z: 0.10637432, w: 0.96994424}
+  m_LocalPosition: {x: -0.019, y: -0.0671, z: 0.0471}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -24.79, y: 4.835, z: 11.145}
   m_Children: []
   m_Father: {fileID: 348139282}
   m_RootOrder: 0
@@ -11747,7 +11747,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pinchDetector: {fileID: 638508714}
-  _paintColor: {fileID: 1886534745}
+  _thicknessMult: 2.5
+  _handModel: {fileID: 0}
 --- !u!1 &1234234887
 GameObject:
   m_ObjectHideFlags: 0
@@ -14366,6 +14367,9 @@ MonoBehaviour:
   - {fileID: 1614288573}
   - {fileID: 1401916123}
   - {fileID: 1655838020}
+  - {fileID: 1578623727}
+  - {fileID: 1752500803}
+  - {fileID: 1712544733}
 --- !u!1001 &1550518633
 Prefab:
   m_ObjectHideFlags: 0
@@ -14619,7 +14623,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1578623728
 Transform:
   m_ObjectHideFlags: 0
@@ -15774,7 +15778,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1712544734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15875,10 +15879,10 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1719502376}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0203, y: -0.059, z: 0.0438}
+  m_LocalRotation: {x: -0.20108889, y: -0.0087309405, z: -0.12201501, w: 0.97190505}
+  m_LocalPosition: {x: 0.019, y: -0.0671, z: 0.0471}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -23.108002, y: 1.9420002, z: -14.413001}
   m_Children: []
   m_Father: {fileID: 440947875}
   m_RootOrder: 0
@@ -15894,7 +15898,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pinchDetector: {fileID: 2067000822}
-  _paintColor: {fileID: 879182407}
+  _thicknessMult: 2.5
+  _handModel: {fileID: 0}
 --- !u!1001 &1738157434
 Prefab:
   m_ObjectHideFlags: 0
@@ -15979,7 +15984,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1752500804
 Transform:
   m_ObjectHideFlags: 0
@@ -18089,7 +18094,7 @@ MonoBehaviour:
       PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 2a7efc16446f98a43a2d29977e7b431a, type: 3}
+    - {fileID: 8300000, guid: 5a78d68fd3c7d154093efcd6ec28fb71, type: 3}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -19431,8 +19436,8 @@ MonoBehaviour:
       PublicKeyToken=null
   _handModel: {fileID: 1895525253}
   ControlsTransform: 1
-  ActivateDistance: 0.03
-  DeactivateDistance: 0.04
+  ActivateDistance: 0.025
+  DeactivateDistance: 0.038
 --- !u!1 &2068136880
 GameObject:
   m_ObjectHideFlags: 0

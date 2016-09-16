@@ -19,6 +19,9 @@ public class StrokeProcessor {
   private List<StrokePoint> _strokeOutput = null;
   private int _outputBufferEndOffset = 0;
 
+  public bool IsBufferingStroke { get { return _isBufferingStroke; } }
+  public bool IsActualizingStroke { get { return _isActualizingStroke; } }
+
   // Stroke renderers
   private List<IStrokeRenderer> _strokeRenderers = null;
 
@@ -134,6 +137,10 @@ public class StrokeProcessor {
   }
 
   public void StopActualizingStroke() {
+    if (!_isActualizingStroke) {
+      Debug.LogError("[StrokeProcessor] Can't stop actualizing stroke; stroke never began actualizing in the first place.");
+      Debug.Break();
+    }
     _isActualizingStroke = false;
 
     for (int i = 0; i < _strokeRenderers.Count; i++) {
