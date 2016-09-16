@@ -15,6 +15,10 @@ public class MenuWearableUI : WearableUI {
 
   private Menu _awaitingMenu = Menu.None;
 
+  public override float GetWorkstationDangerZoneRadius() {
+    return 0.15F;
+  }
+
   private bool _emergeableCallbacksInitialized = false;
   protected override void Start() {
     base.Start();

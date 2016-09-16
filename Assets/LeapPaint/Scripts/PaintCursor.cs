@@ -6,6 +6,7 @@ using Leap.Unity;
 public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
 
   public PinchDetector _pinchDetector;
+  public IndexTipColor _indexTipColor;
 
   public float _thicknessMult = 2.5F;
 
@@ -30,8 +31,14 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   public bool IsTracked {
     get { return this._pinchDetector.HandModel.IsTracked; }
   }
+  public bool DidStartPinch {
+    get { return this._pinchDetector.DidStartPinch; }
+  }
   public Chirality Handedness {
     get { return this._pinchDetector.HandModel.Handedness; }
+  }
+  public Color Color {
+    get { return _indexTipColor.GetColor(); }
   }
 
   protected virtual void Start() {

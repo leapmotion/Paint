@@ -2726,7 +2726,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737706, y: 0.9868922, z: -0.10345783, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737691, y: 0.9868922, z: -0.10345777, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11810,6 +11810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pinchDetector: {fileID: 638508714}
+  _indexTipColor: {fileID: 1886534745}
   _thicknessMult: 2.5
   _handModel: {fileID: 0}
 --- !u!1 &1234234887
@@ -15961,6 +15962,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pinchDetector: {fileID: 2067000822}
+  _indexTipColor: {fileID: 879182407}
   _thicknessMult: 2.5
   _handModel: {fileID: 0}
 --- !u!1001 &1738157434
