@@ -115,11 +115,11 @@ public class PinchStrokeProcessor : MonoBehaviour {
       UpdateStroke();
     }
 
-    if ((!_paintCursor.IsActive && _strokeProcessor.IsActualizingStroke) || (_strokeProcessor.IsActualizingStroke && inDangerZone)) {
+    if ((!_paintCursor.IsActive || inDangerZone) && _strokeProcessor.IsActualizingStroke) {
       StopActualizingStroke();
     }
 
-    if ((!_paintCursor.IsTracked && _strokeProcessor.IsBufferingStroke) || (_strokeProcessor.IsBufferingStroke && inDangerZone)) {
+    if ((!_paintCursor.IsTracked || inDangerZone) && _strokeProcessor.IsActualizingStroke) {
       EndStroke();
     }
   }
