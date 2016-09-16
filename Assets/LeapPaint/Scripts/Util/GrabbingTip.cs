@@ -96,12 +96,12 @@ public class GrabbingTip : MonoBehaviour {
         Debug.Log("BERP");
       }
 
-      transform.position = Vector3.Lerp(transform.position, marblePos + Vector3.up * 0.04f, 0.1f);
+      transform.position = Vector3.Lerp(transform.position, marblePos + Vector3.up * 0.06f, 0.1f);
       transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position);
 
       firstLine.enabled = true;
-      firstLine.SetPosition(0, Vector3.Lerp(transform.position, marblePos, Mathf.Lerp(0f, 0.9f, fade)));
-      firstLine.SetPosition(1, Vector3.Lerp(transform.position, marblePos, 0.3f));
+      firstLine.SetPosition(0, Vector3.Lerp(transform.position, marblePos, Mathf.Lerp(0.3f, 0.9f, fade)));
+      firstLine.SetPosition(1, Vector3.Lerp(transform.position, marblePos, 0.5f));
     } else if (_workstationTipGiven && text.gameObject.activeInHierarchy) {
       transform.position = Vector3.Lerp(transform.position, thrownMarble.transform.position - (Vector3.Cross(thrownMarble.transform.position - Camera.main.transform.position, Vector3.up).normalized * 0.32f), 0.1f);
       transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position);
