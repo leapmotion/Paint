@@ -59,10 +59,10 @@ public class ColorWearableUI : WearableUI {
 
     if (!IsGrabbed && !IsWorkstation) {
       if (!_primaryPaletteEmergeable.IsEmergedOrEmerging) {
-        _primaryPaletteEmergeable.TryEmerge();
+        _primaryPaletteEmergeable.TryEmerge(IsWorkstation);
       }
       else {
-        _primaryPaletteEmergeable.TryVanish();
+        _primaryPaletteEmergeable.TryVanish(IsWorkstation);
       }
     }
   }
@@ -84,9 +84,9 @@ public class ColorWearableUI : WearableUI {
   protected override void DoOnGrabbed() {
     base.DoOnGrabbed();
 
-    _primaryPaletteEmergeable.TryVanish();
+    _primaryPaletteEmergeable.TryVanish(IsWorkstation);
     for (int i = 0; i < _workstationEmergeables.Length; i++) {
-      _workstationEmergeables[i].TryVanish();
+      _workstationEmergeables[i].TryVanish(IsWorkstation);
     }
   }
 
@@ -100,9 +100,9 @@ public class ColorWearableUI : WearableUI {
     base.DoOnMovementToWorkstationFinished();
 
     if (!IsGrabbed) {
-      _primaryPaletteEmergeable.TryEmerge();
+      _primaryPaletteEmergeable.TryEmerge(IsWorkstation);
       for (int i = 0; i < _workstationEmergeables.Length; i++) {
-        _workstationEmergeables[i].TryEmerge();
+        _workstationEmergeables[i].TryEmerge(IsWorkstation);
       }
     }
   }

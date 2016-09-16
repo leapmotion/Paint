@@ -9,13 +9,16 @@ public class WelcomeTip : MonoBehaviour {
   public TextMesh text;
 
   private bool hasPainted = false;
-  private bool hasOpenedMenu = false;
+  private bool menuOpen = false;
+  private float menuOpenTimer = 0F;
+  private float menuOpenSatisfyDuration = 0.75F;
   TweenHandle disappearTween;
   TweenHandle transitionTween;
   float xLocalRot;
 
   void Start() {
-    Anchor.OnAnchorBeginAppearing += DoOnBeginAppearing;
+    Anchor.OnAnchorBeginAppearing += DoOnMenuBeginAppearing;
+    Anchor.OnAnchorBeginDisappearing += DoOnMenuBeginDisappearing;
     text.gameObject.SetActive(true);
     xLocalRot = transform.rotation.eulerAngles.x;
     disappearTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f, 0.9f, 0.9f, 0f), SetOpacity)
@@ -31,11 +34,16 @@ public class WelcomeTip : MonoBehaviour {
       .Keep();
   }
 
-  void DoOnBeginAppearing() {
-    if (!hasOpenedMenu) {
-      hasOpenedMenu = true;
+  void DoOnMenuBeginAppearing() {
+    if (!menuOpen) {
+      menuOpen = true;
     }
-    ChangeState();
+  }
+
+  void DoOnMenuBeginDisappearing() {
+    if (menuOpen) {
+      menuOpen = false;
+    }
   }
 
   void Hide() {
@@ -44,22 +52,28 @@ public class WelcomeTip : MonoBehaviour {
 
   void TextChange() {
     transitionTween.Play(TweenDirection.BACKWARD);
-    text.text = "View palm for more options.";
+    text.text = "Look at your palm for more options.";
   }
 
   void ChangeState() {
-    if (hasOpenedMenu && hasPainted) {
+    if (menuOpenTimer > menuOpenSatisfyDuration && hasPainted) {
       transitionTween.Stop();
       disappearTween.Play();
-    } else if(hasPainted) {
+    } else if (hasPainted) {
       transitionTween.Play();
     }
   }
 
   void Update() {
-    if (!hasPainted && RPinchDrawer.drawTime + LPinchDrawer.drawTime > 1f) {
+    if (!hasPainted && RPinchDrawer.drawTime + LPinchDrawer.drawTime > 0.75f) {
       hasPainted = true;
       ChangeState();
+    }
+    if (menuOpen && menuOpenTimer < menuOpenSatisfyDuration) {
+      menuOpenTimer += Time.deltaTime;
+      if (menuOpenTimer > menuOpenSatisfyDuration) {
+        ChangeState();
+      }
     }
   }
 

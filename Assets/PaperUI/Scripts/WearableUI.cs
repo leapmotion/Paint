@@ -7,6 +7,7 @@ using Leap.Unity.RuntimeGizmos;
 public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   public Action OnActivateMarble = () => { };
+  public Action OnWorkstationActivated = () => { };
 
   [Header("Wearable UI")]
   public MeshRenderer _appearanceExplosionRenderer;
@@ -247,10 +248,14 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   #region Marble Touching
 
   private const float MARBLE_COOLDOWN = 0.02F;
+  [SerializeField]
   private float _marbleCooldownTimer = 0F;
+  [SerializeField]
   private bool _marbleReady = true;
 
+  [SerializeField]
   private bool _fingerTouchingMarble = false;
+  [SerializeField]
   private bool _fingerTouchingDepthCollider = false;
   private CapsuleCollider _marbleDepthCollider;
 
@@ -309,16 +314,20 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   public void NotifyFingerEnterMarble(Collider fingerCollider) {
-    if (_marbleReady) {
-      DoOnMarbleActivated();
-      _marbleReady = false;
+    _fingerTouchingMarble = true;
 
-      _fingerTouchingMarble = true;
+    if (_marbleReady) {
+      _marblePulsator.WarmUp();
     }
   }
 
   public void NotifyFingerExitMarble(Collider fingerCollider) {
     _fingerTouchingMarble = false;
+
+    if (_marbleReady) {
+      DoOnMarbleActivated();
+      _marbleReady = false;
+    }
     RefreshMarbleCountdown();
   }
 
@@ -648,18 +657,8 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     _isAttached = false;
   }
 
-  protected virtual void DoOnMovementToWorkstationFinished() { }
-
-  #endregion
-
-  #region Gizmos
-
-  private bool _enableGizmos = true;
-
-  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-    if (_enableGizmos) {
-
-    }
+  protected virtual void DoOnMovementToWorkstationFinished() {
+    OnWorkstationActivated();
   }
 
   #endregion

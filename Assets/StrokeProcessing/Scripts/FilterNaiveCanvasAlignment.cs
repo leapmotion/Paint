@@ -9,7 +9,6 @@ public class FilterNaiveCanvasAlignment : IMemoryFilter<StrokePoint> {
 
   public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
     StrokePoint current = data.GetFromEnd(0);
-    StrokePoint memory = data.GetFromEnd(1);
 
     current.rotation = Quaternion.identity;
     current.normal = current.handOrientation * Vector3.back;
