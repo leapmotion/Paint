@@ -37,9 +37,11 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private bool _firstStrokePointAdded = false;
   private Vector3 _lastStrokePointAdded = Vector3.zero;
   private float _timeSinceLastAddition = 0F;
+  private bool inDangerZone = false;
 
   private Vector3 leftHandEulerRotation = new Vector3(0F, 180F, 0F);
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
+  private Leap.Hand _hand;
 
   private StrokeRibbonRenderer _ribbonRenderer;
   private StrokeBufferRibbonRenderer _previewRibbonRenderer;
@@ -80,7 +82,17 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   void Update() {
-    if (_paintCursor.IsTracked && !_paintingPreviewStroke) {
+    inDangerZone = false;
+    if (_paintCursor._handModel!= null&&_paintCursor._handModel.GetLeapHand() != null) {
+      _hand = _paintCursor._handModel.GetLeapHand();
+      foreach (WearableUI marble in _wearableManager._wearableUIs) {
+        if (!marble._isAttached && Vector3.Distance(_paintCursor.transform.position, marble.transform.position) < 0.25f) {
+          inDangerZone = true;
+        }
+      }
+    }
+
+    if (_paintCursor.IsTracked && !_paintingPreviewStroke && !inDangerZone) {
       BeginStroke();
       _paintingPreviewStroke = true;
     }
@@ -90,10 +102,14 @@ public class PinchStrokeProcessor : MonoBehaviour {
         // TODO HACK FIXME preventing drawing if IndexTipColor is transparent
         Color color = new Color(0F, 0F, 0F, 0F);
         try {
-          color = _paintCursor._pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
-        }
-        catch (System.NullReferenceException) { }
-        if (color.a > 0.99F) {
+          color = _paintCursor._handModel.GetComponentInChildren<IndexTipColor>().GetColor();
+        } catch (System.NullReferenceException) { }
+
+        float fistStrength = Vector3.Dot(_hand.Fingers[2].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+          Vector3.Dot(_hand.Fingers[3].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+          Vector3.Dot(_hand.Fingers[4].Direction.ToVector3(), _hand.Direction.ToVector3());
+
+        if (color.a > 0.99F && fistStrength > -2f && !inDangerZone) {
           StartActualizingStroke();
           _paintingStroke = true;
         }
@@ -104,26 +120,26 @@ public class PinchStrokeProcessor : MonoBehaviour {
       UpdateStroke();
     }
 
-    if (!_paintCursor.IsActive && _paintingStroke) {
+    if ((!_paintCursor.IsActive || inDangerZone) && _paintingStroke) {
       StopActualizingStroke();
       _paintingStroke = false;
     }
 
-    if (!_paintCursor.IsTracked && _paintingPreviewStroke) {
+    if ((!_paintCursor.IsTracked || inDangerZone) && _paintingPreviewStroke) {
       EndStroke();
       _paintingPreviewStroke = false;
     }
   }
 
   private void BeginStroke() {
-    _beginEffect.PlayOnTransform(_soundEffectSource.transform);
     _strokeProcessor.BeginStroke();
-    _soundEffectSource.Play();
     _prevPosition = _paintCursor.Position;
   }
 
   private void StartActualizingStroke() {
     _strokeProcessor.StartActualizingStroke();
+    _beginEffect.PlayOnTransform(_soundEffectSource.transform);
+    _soundEffectSource.Play();
   }
 
   private void UpdateStroke() {
@@ -189,13 +205,13 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private void StopActualizingStroke() {
     _strokeProcessor.StopActualizingStroke();
+    _soundEffectSource.Pause();
+    _soundEffectSource.volume = 0;
+    _smoothedSpeed.reset = true;
   }
 
   private void EndStroke() {
     _strokeProcessor.EndStroke();
-    _soundEffectSource.Pause();
-    _soundEffectSource.volume = 0;
-    _smoothedSpeed.reset = true;
     _firstStrokePointAdded = false;
   }
 

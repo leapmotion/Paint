@@ -6,7 +6,11 @@ using Leap.Unity;
 public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
 
   public PinchDetector _pinchDetector;
-  public IndexTipColor _paintColor;
+
+  public float _thicknessMult = 2.5F;
+
+  [HideInInspector]
+  public IHandModel _handModel;
 
   private float _radius = 0F;
   private float _minRadius = 0.02F;
@@ -31,6 +35,7 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   }
 
   protected virtual void Start() {
+    _handModel = _pinchDetector.GetComponentInParent<IHandModel>();
     _minRadius = _pinchDetector.ActivateDistance / 2F;
   }
 
@@ -38,7 +43,7 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
     float pinchRadius = _pinchDetector.Distance / 2;
     _radius = Mathf.Max(_minRadius, pinchRadius);
     float alpha = 1F - ((_radius - _minRadius) / (_maxRadius - _minRadius));
-    _cursorColor = _paintColor.GetColor();
+    _cursorColor = Color.white;
     _cursorColor = new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, alpha);
     _drawBeginMarkerCircleColor = new Color(_drawBeginMarkerCircleColor.r, _drawBeginMarkerCircleColor.g, _drawBeginMarkerCircleColor.b, alpha);
   }
@@ -54,10 +59,10 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
       drawer.matrix = this.transform.localToWorldMatrix;
 
       drawer.color = _drawBeginMarkerCircleColor;
-      drawer.DrawCircle(Vector3.zero, _minRadius * 2.5F, Vector3.up);
+      drawer.DrawCircle(Vector3.zero, _minRadius * _thicknessMult, Vector3.up);
 
       drawer.color = _cursorColor;
-      drawer.DrawCircle(Vector3.zero, _radius * 2.5F, Vector3.up);
+      drawer.DrawCircle(Vector3.zero, _radius * _thicknessMult, Vector3.up);
 
       drawer.PopMatrix();
     }
