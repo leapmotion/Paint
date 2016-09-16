@@ -39,7 +39,7 @@ public class FilterConstrainThickness : IMemoryFilter<StrokePoint> {
 }
 
 public class FilterSmoothThickness : IMemoryFilter<StrokePoint> {
-  public const int NEIGHBORHOOD = 3;
+  public const int NEIGHBORHOOD = 4;
 
   public int GetMemorySize() {
     return 0;
@@ -56,7 +56,7 @@ public class FilterSmoothThickness : IMemoryFilter<StrokePoint> {
         int index = i + j;
         if (index < 0 || index >= data.Size) continue;
 
-        float percent = j / (NEIGHBORHOOD + 1.0f);
+        float percent = Mathf.Abs(j) / (NEIGHBORHOOD + 1.0f);
 
         thickness = Mathf.Min(thickness, data.Get(index).thickness + percent * maxThickness);
       }
