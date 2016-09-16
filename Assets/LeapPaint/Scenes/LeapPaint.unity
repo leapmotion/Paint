@@ -2663,7 +2663,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737695, y: 0.9868922, z: -0.103457786, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737706, y: 0.9868922, z: -0.10345783, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3387,6 +3387,7 @@ Transform:
   m_Children:
   - {fileID: 1224091386}
   - {fileID: 945618166}
+  - {fileID: 382834751}
   m_Father: {fileID: 1281952844}
   m_RootOrder: 0
 --- !u!114 &348139283
@@ -3968,6 +3969,34 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 379893461}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &382834750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 382834751}
+  m_Layer: 0
+  m_Name: EraserOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &382834751
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 382834750}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0.072, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 348139282}
+  m_RootOrder: 2
 --- !u!1 &382852646
 GameObject:
   m_ObjectHideFlags: 0
@@ -6940,6 +6969,49 @@ Transform:
   - {fileID: 2060003466}
   m_Father: {fileID: 415434470}
   m_RootOrder: 0
+--- !u!1 &692653161
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 692653163}
+  - 114: {fileID: 692653162}
+  m_Layer: 0
+  m_Name: Eraser
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &692653162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 692653161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da43eac0ef2b20e4a93a6c23268066b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 0.05
+  EraserPosition: {fileID: 382834751}
+  history: {fileID: 473520929}
+--- !u!4 &692653163
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 692653161}
+  m_LocalRotation: {x: 0.04578717, y: -0.7563555, z: -0.6498966, w: -0.058857698}
+  m_LocalPosition: {x: 0.14950481, y: 1.0518774, z: 0.34039557}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
 --- !u!1 &695075752
 GameObject:
   m_ObjectHideFlags: 0
@@ -11747,7 +11819,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pinchDetector: {fileID: 638508714}
-  _paintColor: {fileID: 1886534745}
+  _thicknessMult: 2.5
+  _handModel: {fileID: 0}
 --- !u!1 &1234234887
 GameObject:
   m_ObjectHideFlags: 0
@@ -15894,7 +15967,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pinchDetector: {fileID: 2067000822}
-  _paintColor: {fileID: 879182407}
+  _thicknessMult: 2.5
+  _handModel: {fileID: 0}
 --- !u!1001 &1738157434
 Prefab:
   m_ObjectHideFlags: 0
