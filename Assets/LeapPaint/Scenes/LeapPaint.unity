@@ -270,6 +270,7 @@ GameObject:
   - 4: {fileID: 15128016}
   - 114: {fileID: 15128017}
   - 114: {fileID: 15128018}
+  - 114: {fileID: 15128019}
   m_Layer: 0
   m_Name: Undo Button
   m_TagString: Untagged
@@ -334,11 +335,33 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 15128019}
+        m_MethodName: StartRepeatTimer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   OnRelease:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 15128019}
+        m_MethodName: StopRepeatTimer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   soundEffect:
@@ -363,6 +386,46 @@ MonoBehaviour:
   _buttonRenderer: {fileID: 124618651}
   _normalColor: {r: 0.8745099, g: 0.8745099, b: 0.8745099, a: 1}
   _pressedColor: {r: 0.5955882, g: 0.5955882, b: 0.5955882, a: 1}
+--- !u!114 &15128019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 15128015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4a606b5338e974f90fc57698ba354c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _waitBeforeActivation: 1
+  _timeBetweenEvents: 0.06
+  OnRepeatedEventFired:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 473520929}
+        m_MethodName: Undo
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 15128017}
+        m_MethodName: PlayActivationSoundEffect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &37156927
 Prefab:
   m_ObjectHideFlags: 0
@@ -6581,8 +6644,8 @@ MonoBehaviour:
       PublicKeyToken=null
   _handModel: {fileID: 426841}
   ControlsTransform: 1
-  ActivateDistance: 0.03
-  DeactivateDistance: 0.04
+  ActivateDistance: 0.025
+  DeactivateDistance: 0.038
 --- !u!1001 &646943748
 Prefab:
   m_ObjectHideFlags: 0
@@ -11800,10 +11863,10 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1224091385}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0203, y: -0.059, z: 0.0438}
+  m_LocalRotation: {x: -0.20941399, y: 0.06354969, z: 0.10637432, w: 0.96994424}
+  m_LocalPosition: {x: -0.019, y: -0.0671, z: 0.0471}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -24.79, y: 4.835, z: 11.145}
   m_Children: []
   m_Father: {fileID: 348139282}
   m_RootOrder: 0
@@ -14439,6 +14502,9 @@ MonoBehaviour:
   - {fileID: 1614288573}
   - {fileID: 1401916123}
   - {fileID: 1655838020}
+  - {fileID: 1578623727}
+  - {fileID: 1752500803}
+  - {fileID: 1712544733}
 --- !u!1001 &1550518633
 Prefab:
   m_ObjectHideFlags: 0
@@ -14692,7 +14758,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1578623728
 Transform:
   m_ObjectHideFlags: 0
@@ -15847,7 +15913,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1712544734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15948,10 +16014,10 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1719502376}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0203, y: -0.059, z: 0.0438}
+  m_LocalRotation: {x: -0.20108889, y: -0.0087309405, z: -0.12201501, w: 0.97190505}
+  m_LocalPosition: {x: 0.019, y: -0.0671, z: 0.0471}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -23.108002, y: 1.9420002, z: -14.413001}
   m_Children: []
   m_Father: {fileID: 440947875}
   m_RootOrder: 0
@@ -16053,7 +16119,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1752500804
 Transform:
   m_ObjectHideFlags: 0
@@ -18090,6 +18156,7 @@ GameObject:
   - 4: {fileID: 1963669651}
   - 114: {fileID: 1963669652}
   - 114: {fileID: 1963669653}
+  - 114: {fileID: 1963669654}
   m_Layer: 0
   m_Name: Redo Button
   m_TagString: Untagged
@@ -18154,16 +18221,38 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1963669654}
+        m_MethodName: StartRepeatTimer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   OnRelease:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1963669654}
+        m_MethodName: StopRepeatTimer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 2a7efc16446f98a43a2d29977e7b431a, type: 3}
+    - {fileID: 8300000, guid: 5a78d68fd3c7d154093efcd6ec28fb71, type: 3}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -18183,6 +18272,46 @@ MonoBehaviour:
   _buttonRenderer: {fileID: 165736635}
   _normalColor: {r: 0.8745098, g: 0.8745098, b: 0.8745098, a: 1}
   _pressedColor: {r: 0.59607846, g: 0.59607846, b: 0.59607846, a: 1}
+--- !u!114 &1963669654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1963669650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a4a606b5338e974f90fc57698ba354c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _waitBeforeActivation: 1
+  _timeBetweenEvents: 0.06
+  OnRepeatedEventFired:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 473520929}
+        m_MethodName: Redo
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1963669652}
+        m_MethodName: PlayActivationSoundEffect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &1971670470
 Prefab:
   m_ObjectHideFlags: 0
@@ -19505,8 +19634,8 @@ MonoBehaviour:
       PublicKeyToken=null
   _handModel: {fileID: 1895525253}
   ControlsTransform: 1
-  ActivateDistance: 0.03
-  DeactivateDistance: 0.04
+  ActivateDistance: 0.025
+  DeactivateDistance: 0.038
 --- !u!1 &2068136880
 GameObject:
   m_ObjectHideFlags: 0
