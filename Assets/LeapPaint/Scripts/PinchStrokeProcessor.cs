@@ -86,11 +86,18 @@ public class PinchStrokeProcessor : MonoBehaviour {
       if (!_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)) {
         // TODO HACK FIXME preventing drawing if IndexTipColor is transparent
         Color color = new Color(0F, 0F, 0F, 0F);
+        IHandModel handModel = _paintCursor._pinchDetector.GetComponentInParent<IHandModel>();
+        Leap.Hand hand = handModel.GetLeapHand();
         try {
-          color = _paintCursor._pinchDetector.GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
+          color = handModel.GetComponentInChildren<IndexTipColor>().GetColor();
         }
         catch (System.NullReferenceException) { }
-        if (color.a > 0.99F) {
+
+        float fistStrength = Vector3.Dot(hand.Fingers[2].Direction.ToVector3(), hand.Direction.ToVector3())+
+          Vector3.Dot(hand.Fingers[3].Direction.ToVector3(), hand.Direction.ToVector3())+
+          Vector3.Dot(hand.Fingers[4].Direction.ToVector3(), hand.Direction.ToVector3());
+
+        if (color.a > 0.99F && fistStrength > -2f) {
           StartActualizingStroke();
           _paintingStroke = true;
         }
