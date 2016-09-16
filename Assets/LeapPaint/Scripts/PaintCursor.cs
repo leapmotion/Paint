@@ -9,6 +9,9 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
 
   public float _thicknessMult = 2.5F;
 
+  [HideInInspector]
+  public IHandModel _handModel;
+
   private float _radius = 0F;
   private float _minRadius = 0.02F;
   private float _maxRadius = 0.03F;
@@ -32,6 +35,7 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   }
 
   protected virtual void Start() {
+    _handModel = _pinchDetector.GetComponentInParent<IHandModel>();
     _minRadius = _pinchDetector.ActivateDistance / 2F;
   }
 
