@@ -17,6 +17,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public RibbonIO _ribbonIO;
   public FilterIndexTipColor _colorFilter;
   public FilterApplyThickness _thicknessFilter;
+  public AnimationCurve _thicknessCurve;
 
   [Header("Effect Settings")]
   public SoundEffect _beginEffect;
@@ -76,12 +77,13 @@ public class PinchStrokeProcessor : MonoBehaviour {
     GameObject previewRendererObj = new GameObject();
     previewRendererObj.name = "Stroke Preview Ribbon Renderer";
     _previewRibbonRenderer = previewRendererObj.AddComponent<StrokeBufferRibbonRenderer>();
+    _previewRibbonRenderer.previewThicknessCurve = _thicknessCurve;
     _strokeProcessor.RegisterPreviewStrokeRenderer(_previewRibbonRenderer);
   }
 
   void Update() {
     inDangerZone = false;
-    if (_paintCursor._handModel!= null&&_paintCursor._handModel.GetLeapHand() != null) {
+    if (_paintCursor._handModel != null && _paintCursor._handModel.GetLeapHand() != null) {
       _hand = _paintCursor._handModel.GetLeapHand();
       foreach (WearableUI marble in _wearableManager._wearableUIs) {
         if (!marble._isAttached && Vector3.Distance(_paintCursor.transform.position, marble.transform.position) < 0.25f) {
@@ -172,7 +174,10 @@ public class PinchStrokeProcessor : MonoBehaviour {
     else {
       ProcessAddStrokePoint(strokePosition, Time.deltaTime);
     }
-    drawTime += Time.deltaTime;
+
+    if (_strokeProcessor.IsActualizingStroke) {
+      drawTime += Time.deltaTime;
+    }
   }
 
   private void ProcessAddStrokePoint(Vector3 point, float effDeltaTime) {

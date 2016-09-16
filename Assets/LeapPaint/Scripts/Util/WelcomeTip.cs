@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 
 public class WelcomeTip : MonoBehaviour {
+
   public WearableAnchor Anchor;
   public PinchStrokeProcessor RPinchDrawer;
   public PinchStrokeProcessor LPinchDrawer;
@@ -12,6 +13,7 @@ public class WelcomeTip : MonoBehaviour {
   private bool menuOpen = false;
   private float menuOpenTimer = 0F;
   private float menuOpenSatisfyDuration = 0.75F;
+  private float hoverDistance = 1F;
   TweenHandle disappearTween;
   TweenHandle transitionTween;
   float xLocalRot;
@@ -65,6 +67,13 @@ public class WelcomeTip : MonoBehaviour {
   }
 
   void Update() {
+    if (text.gameObject.activeSelf) {
+      Vector3 lookVector = Camera.main.transform.forward;
+      Vector3 desiredPosition = Camera.main.transform.position + new Vector3(lookVector.x, -0.1F, lookVector.z) * hoverDistance;
+      this.transform.position = Vector3.Lerp(this.transform.position, desiredPosition, 0.02F);
+      this.transform.rotation = Quaternion.LookRotation(this.transform.position - Camera.main.transform.position);
+    }
+
     if (!hasPainted && RPinchDrawer.drawTime + LPinchDrawer.drawTime > 0.75f) {
       hasPainted = true;
       ChangeState();
