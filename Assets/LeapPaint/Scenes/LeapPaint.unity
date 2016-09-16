@@ -2663,7 +2663,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737699, y: 0.9868922, z: -0.1034578, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737665, y: 0.9868922, z: -0.10345767, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6552,8 +6552,8 @@ MonoBehaviour:
       PublicKeyToken=null
   _handModel: {fileID: 426841}
   ControlsTransform: 1
-  ActivateDistance: 0.025
-  DeactivateDistance: 0.038
+  ActivateDistance: 0.03
+  DeactivateDistance: 0.04
 --- !u!1001 &646943748
 Prefab:
   m_ObjectHideFlags: 0
@@ -15778,7 +15778,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1712544734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15852,7 +15852,7 @@ Transform:
   m_GameObject: {fileID: 1712544733}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.94, z: 2.64}
-  m_LocalScale: {x: 1, y: 1, z: 1.0000001}
+  m_LocalScale: {x: 0.23265517, y: 0.23265517, z: 0.2326552}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
@@ -17862,6 +17862,32 @@ MonoBehaviour:
   _ribbonIO: {fileID: 265852805}
   _colorFilter: {fileID: 879182408}
   _thicknessFilter: {fileID: 2014610516}
+  _thicknessCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1.0005364
+      inSlope: Infinity
+      outSlope: -0.0012938192
+      tangentMode: 21
+    - time: 0.16216204
+      value: 1.0003266
+      inSlope: 0.011180659
+      outSlope: -0.00000041376688
+      tangentMode: 1
+    - time: 0.52384865
+      value: 1.0003824
+      inSlope: -0.003121941
+      outSlope: -0.020950973
+      tangentMode: 1
+    - time: 0.99527794
+      value: -0.000000059604645
+      inSlope: -6.3443108
+      outSlope: -1.3633035
+      tangentMode: 1
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
   _beginEffect:
     _clips:
     - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
@@ -18551,6 +18577,32 @@ MonoBehaviour:
   _ribbonIO: {fileID: 265852805}
   _colorFilter: {fileID: 1886534746}
   _thicknessFilter: {fileID: 2014610516}
+  _thicknessCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1.0005364
+      inSlope: Infinity
+      outSlope: -0.0012938192
+      tangentMode: 21
+    - time: 0.16216204
+      value: 1.0003266
+      inSlope: 0.011180659
+      outSlope: -0.00000041376688
+      tangentMode: 1
+    - time: 0.52384865
+      value: 1.0003824
+      inSlope: -0.003121941
+      outSlope: -0.020950973
+      tangentMode: 1
+    - time: 0.99527794
+      value: -0.000000059604645
+      inSlope: -6.3443108
+      outSlope: -1.3633035
+      tangentMode: 1
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
   _beginEffect:
     _clips:
     - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
@@ -19436,8 +19488,8 @@ MonoBehaviour:
       PublicKeyToken=null
   _handModel: {fileID: 1895525253}
   ControlsTransform: 1
-  ActivateDistance: 0.025
-  DeactivateDistance: 0.038
+  ActivateDistance: 0.03
+  DeactivateDistance: 0.04
 --- !u!1 &2068136880
 GameObject:
   m_ObjectHideFlags: 0
