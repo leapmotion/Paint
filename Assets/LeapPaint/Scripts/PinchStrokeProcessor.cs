@@ -63,7 +63,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _strokeProcessor.RegisterStrokeFilter(_colorFilter);
     _strokeProcessor.RegisterStrokeFilter(_thicknessFilter);
 
-
+    _strokeProcessor.RegisterStrokeFilter(new FilterConstrainThickness());
+    _strokeProcessor.RegisterStrokeFilter(new FilterSmoothThickness());
 
     // Set up and register renderers.
     GameObject rendererObj = new GameObject();
