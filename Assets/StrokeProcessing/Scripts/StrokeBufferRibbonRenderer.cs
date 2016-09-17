@@ -12,6 +12,11 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
 
   public Action<Mesh, List<StrokePoint>> OnMeshStrokeFinalized;
 
+  [HideInInspector]
+  public bool isErasing = false;
+  [HideInInspector]
+  public Vector3 eraserPoint = Vector3.zero;
+
   private Mesh _mesh;
   private MeshFilter _filter;
   private MeshRenderer _renderer;
@@ -51,12 +56,19 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
       MeshPoint point = new MeshPoint(strokePoint.position);
       point.Normal = strokePoint.normal;
       point.Color = strokePoint.color;
+      MeshPoint randomPoint = new MeshPoint(eraserPoint + (UnityEngine.Random.onUnitSphere * 0.01f));
+      randomPoint.Normal = UnityEngine.Random.onUnitSphere;
+      randomPoint.Color = strokePoint.color;
 
       if (i > _ribbon.Points.Count - 1) {
         _ribbon.Add(point, strokePoint.thickness);
       }
       else {
-        _ribbon.Points[i] = point;
+        if (isErasing) {
+          _ribbon.Points[i] = randomPoint;
+        } else {
+          _ribbon.Points[i] = point;
+        }
         _ribbon.Radii[i] = strokePoint.thickness;
       }
     }

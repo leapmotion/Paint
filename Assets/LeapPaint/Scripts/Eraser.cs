@@ -31,6 +31,19 @@ public class Eraser : MonoBehaviour, IRuntimeGizmoComponent {
     if(((RHand._paintCursor._handModel != null) && (RHand._paintCursor._handModel.IsTracked) && ((_hand = RHand._paintCursor._handModel.GetLeapHand()) != null) && (peaceStrength(_hand) > 1.3f)) ||
        ((LHand._paintCursor._handModel != null) && (LHand._paintCursor._handModel.IsTracked) && ((_hand = LHand._paintCursor._handModel.GetLeapHand()) != null) && (peaceStrength(_hand) > 1.3f))) {
          eraserPos = _hand.PalmPosition.ToVector3() + _hand.Direction.ToVector3() * 0.1f;
+         if (_hand.IsLeft) {
+           LHand._previewRibbonRenderer.eraserPoint = eraserPos;
+           RHand._previewRibbonRenderer.isErasing = false;
+           LHand._previewRibbonRenderer.isErasing = true;
+         } else {
+           RHand._previewRibbonRenderer.eraserPoint = eraserPos;
+           LHand._previewRibbonRenderer.isErasing = false;
+           RHand._previewRibbonRenderer.isErasing = true;
+         }
+    } else {
+      RHand._previewRibbonRenderer.eraserPoint = eraserPos;
+      LHand._previewRibbonRenderer.isErasing = false;
+      RHand._previewRibbonRenderer.isErasing = false;
     }
 
     if (!hudAnchor.IsDisplaying && !eraserPos.Equals(Vector3.zero)) {

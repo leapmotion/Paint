@@ -42,7 +42,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Leap.Hand _hand;
 
   private StrokeRibbonRenderer _ribbonRenderer;
-  private StrokeBufferRibbonRenderer _previewRibbonRenderer;
+  [HideInInspector]
+  public StrokeBufferRibbonRenderer _previewRibbonRenderer;
 
   private Vector3 _prevPosition;
   private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
