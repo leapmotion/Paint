@@ -2726,7 +2726,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737695, y: 0.9868922, z: -0.103457786, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737669, y: 0.9868922, z: -0.10345768, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3465,7 +3465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActivateOnEnable: 1
-  DeactivateOnDisable: 1
+  DeactivateOnDisable: 0
   Transition: {fileID: 0}
 --- !u!1 &349623244
 GameObject:
@@ -4441,7 +4441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActivateOnEnable: 1
-  DeactivateOnDisable: 1
+  DeactivateOnDisable: 0
   Transition: {fileID: 0}
 --- !u!1001 &451398922
 Prefab:
@@ -13500,7 +13500,7 @@ Transform:
   m_GameObject: {fileID: 1427736827}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.70669657, y: 0.70669764, z: 0.70669764}
+  m_LocalScale: {x: 1.0068456, y: 1.0068476, z: 1.0068476}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_Children: []
   m_Father: {fileID: 1957357306}
@@ -13518,7 +13518,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: c855668d629c08044928cf661d97e75b, type: 2}
+  - {fileID: 2100000, guid: 331e75ea8d3d76a4abc4ecac995da3ee, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}

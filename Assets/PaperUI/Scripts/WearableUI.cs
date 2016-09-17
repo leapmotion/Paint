@@ -124,7 +124,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   public virtual float GetAnchoredDangerZoneRadius() {
-    return 0.1F;
+    return 0.15F;
   }
 
   #region Wearable Implementation
@@ -568,6 +568,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
       _simulatedThrownBody.GetComponent<DestroyAfterDuration>().SetTimer(5F);
     }
     Vector3 throwVelocity = GetGrabVelocity();
+    _simulatedThrownBody.transform.rotation = this.transform.rotation;
     ScheduleRigidbodyUpdate(this.transform.position, this.transform.rotation, throwVelocity);
 
     _throwEffect.PlayOnTransform(transform, Mathf.Clamp01(throwVelocity.magnitude / _maxVolumeVelocity));

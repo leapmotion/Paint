@@ -53,6 +53,13 @@ public class WearableManager : MonoBehaviour {
     }
     for (int i = 0; i < _wearableAnchors.Length; i++) {
       _wearables.Add(_wearableAnchors[i]);
+      _wearableAnchors[i].ManualInitialize();
+    }
+  }
+
+  protected void FixedUpdate() {
+    for (int i = 0; i < _wearableAnchors.Length; i++) {
+      _wearableAnchors[i].ManualFixedUpdate();
     }
   }
 

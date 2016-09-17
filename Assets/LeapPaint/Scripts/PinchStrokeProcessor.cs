@@ -132,7 +132,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
     if (_paintCursor.DidStartPinch && possibleToActualize && !_strokeProcessor.IsActualizingStroke) {
       // Additional conditional logic to prevent only BEGINNING actualizing a stroke
       float angleFromCameraLookVector = Vector3.Angle(Camera.main.transform.forward, _paintCursor.transform.position - Camera.main.transform.position);
-      float acceptableFOVAngle = 30F;
+      float acceptableFOVAngle = 50F;
       bool withinAcceptableCameraFOV = angleFromCameraLookVector < acceptableFOVAngle;
 
       float fistStrength = 0F;
