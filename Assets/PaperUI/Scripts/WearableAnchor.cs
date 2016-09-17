@@ -18,30 +18,16 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
 
   public SoundEffect showEffect;
   private Material _opaqueInstance;
-  private Material _fadeInsatnce;
+  private Material _fadeInstance;
 
-  public bool IsDisplaying {
-    get {
-      if (_appearTween.IsValid) {
-        return _appearTween.Progress != 0F;
-      }
-      else {
-        InitAppearVanish();
-        return false;
-      }
-    }
-  }
-
-  protected void Awake() {
+  public void ManualInitialize() {
     _opaqueInstance = new Material(_opaqueMaterial);
-    _fadeInsatnce = new Material(_fadeMaterial);
-  }
+    _fadeInstance = new Material(_fadeMaterial);
 
-  protected void Start() {
     InitAppearVanish();
   }
 
-  protected void FixedUpdate() {
+  public void ManualFixedUpdate() {
     FixedAppearVanishUpdate();
   }
 
@@ -49,18 +35,18 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
     bool leftHandCanDisplay = _isLeftHandTracked && _isLeftPalmFacingCamera && !_isLeftHandPinching;
     bool rightHandCanDisplay = _isRightHandTracked && _isRightPalmFacingCamera && !_isRightHandPinching;
 
-    if (leftHandCanDisplay && !IsDisplaying) {
+    if (leftHandCanDisplay && !IsDisplaying && !_appearScheduled) {
       SetChirality(Chirality.Left);
       ScheduleAppear();
     }
-    else if (rightHandCanDisplay && !IsDisplaying) {
+    else if (rightHandCanDisplay && !IsDisplaying && !_appearScheduled) {
       SetChirality(Chirality.Right);
       ScheduleAppear();
     }
-    else if (!leftHandCanDisplay && _chirality == Chirality.Left && IsDisplaying) {
+    else if (!leftHandCanDisplay && _chirality == Chirality.Left && IsDisplaying && !_vanishScheduled) {
       ScheduleVanish();
     }
-    else if (!rightHandCanDisplay && _chirality == Chirality.Right && IsDisplaying) {
+    else if (!rightHandCanDisplay && _chirality == Chirality.Right && IsDisplaying && !_vanishScheduled) {
       ScheduleVanish();
     }
   }
@@ -127,10 +113,18 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
   private bool _appearScheduled = false;
   private bool _vanishScheduled = false;
 
+  private bool _isDisplaying = false;
+  public bool IsDisplaying {
+    get {
+      return _isDisplaying || _appearScheduled;
+    }
+  }
+
   private void InitAppearVanish() {
     _appearTween = ConstructAppearTween();
     _appearTween.Progress = 0.001F;
     Vanish();
+    _isDisplaying = false;
   }
 
   private TweenHandle ConstructAppearTween() {
@@ -138,12 +132,18 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
       .OverTime(0.2F)
       .Smooth(TweenType.SMOOTH)
       .OnReachStart(DoOnFinishedVanishing)
+      .OnLeaveStart(DoOnBeganAppearing)
       .Keep();
   }
 
+  private void DoOnBeganAppearing() {
+    _isDisplaying = true;
+  }
+
   private void DoOnFinishedVanishing() {
-    RefreshVisibility();
+    _isDisplaying = false;
     OnAnchorFinishDisappearing();
+    RefreshVisibility();
   }
 
   private void ScheduleAppear() {
@@ -176,35 +176,14 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
     OnAnchorBeginDisappearing();
   }
 
-  public bool IsScheduledToAppear() {
-    return _appearScheduled;
-  }
-
-  public bool IsPlayingAppearance() {
-    return _appearTween.IsValid && _appearTween.IsRunning && _appearTween.Direction == TweenDirection.FORWARD;
-  }
-
-  public bool IsScheduledToAppearOrAppearing() {
-    return IsScheduledToAppear() || IsPlayingAppearance();
-  }
-
-  public void StopAppearTween() {
-    _appearTween.Stop();
-    _appearTween.Progress = 0F;
-  }
-
-  public void CancelScheduledAppearance() {
-    _appearScheduled = false;
-  }
-
   #endregion
 
   #region Rendering
 
   public void SetColor(Color color) {
     if (color.a < 0.99F) {
-      _fadeInsatnce.color = color;
-      _anchorRingRenderer.material = _fadeInsatnce;
+      _fadeInstance.color = color;
+      _anchorRingRenderer.material = _fadeInstance;
     }
     else {
       _opaqueInstance.color = color;
