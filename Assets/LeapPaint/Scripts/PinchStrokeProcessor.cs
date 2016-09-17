@@ -111,18 +111,9 @@ public class PinchStrokeProcessor : MonoBehaviour {
       isUIDisplayingOnThisHand |= _paintCursor.Handedness == _wearableManager._wearableAnchors[i]._chirality && _wearableManager._wearableAnchors[i].IsDisplaying;
     }
 
-    float fistStrength = 0F;
-    if (_paintCursor._handModel != null && _paintCursor._handModel.GetLeapHand() != null) {
-      _hand = _paintCursor._handModel.GetLeapHand();
-      fistStrength = Vector3.Dot(_hand.Fingers[2].Direction.ToVector3(), _hand.Direction.ToVector3()) +
-        Vector3.Dot(_hand.Fingers[3].Direction.ToVector3(), _hand.Direction.ToVector3()) +
-        Vector3.Dot(_hand.Fingers[4].Direction.ToVector3(), _hand.Direction.ToVector3());
-    }
-
     bool possibleToActualize = false;
     Color drawColor = _paintCursor.Color;
     if (drawColor.a > 0.99F
-      && fistStrength > -2f
       && !_inDangerZone
       && !_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)
       && _handLifetime > MIN_HAND_DRAWING_LIFETIME
@@ -130,7 +121,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
       ) {
       possibleToActualize = true;
     }
-
+    _paintCursor.NotifyPossibleToActualize(possibleToActualize);
 
     // Drawing State //
 
@@ -144,7 +135,16 @@ public class PinchStrokeProcessor : MonoBehaviour {
       float acceptableFOVAngle = 30F;
       bool withinAcceptableCameraFOV = angleFromCameraLookVector < acceptableFOVAngle;
 
-      if (withinAcceptableCameraFOV) {
+      float fistStrength = 0F;
+      if (_paintCursor._handModel != null && _paintCursor._handModel.GetLeapHand() != null) {
+        _hand = _paintCursor._handModel.GetLeapHand();
+        fistStrength = Vector3.Dot(_hand.Fingers[2].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+          Vector3.Dot(_hand.Fingers[3].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+          Vector3.Dot(_hand.Fingers[4].Direction.ToVector3(), _hand.Direction.ToVector3());
+      }
+
+      if (withinAcceptableCameraFOV
+        && fistStrength > -2f) {
         StartActualizingStroke();
       }
     }
