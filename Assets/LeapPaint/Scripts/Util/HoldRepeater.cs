@@ -4,8 +4,8 @@ using UnityEngine.Events;
 
 public class HoldRepeater : MonoBehaviour {
 
-  public float _waitBeforeActivation = 2F;
-  public float _timeBetweenEvents = 0.1F;
+  public float _waitBeforeActivation = 1F;
+  public float _timeBetweenEvents = 0.6F;
 
   public UnityEvent OnRepeatedEventFired;
 

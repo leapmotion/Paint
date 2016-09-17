@@ -2726,7 +2726,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737706, y: 0.9868922, z: -0.10345783, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737688, y: 0.9868922, z: -0.10345776, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6644,8 +6644,8 @@ MonoBehaviour:
       PublicKeyToken=null
   _handModel: {fileID: 426841}
   ControlsTransform: 1
-  ActivateDistance: 0.025
-  DeactivateDistance: 0.038
+  ActivateDistance: 0.03
+  DeactivateDistance: 0.04
 --- !u!1001 &646943748
 Prefab:
   m_ObjectHideFlags: 0
@@ -7062,6 +7062,9 @@ MonoBehaviour:
   radius: 0.05
   EraserPosition: {fileID: 382834751}
   history: {fileID: 473520929}
+  LHand: {fileID: 1948118615}
+  RHand: {fileID: 2005169773}
+  hudAnchor: {fileID: 1530708585}
 --- !u!4 &692653163
 Transform:
   m_ObjectHideFlags: 0
@@ -11882,6 +11885,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pinchDetector: {fileID: 638508714}
+  _indexTipColor: {fileID: 1886534745}
   _thicknessMult: 2.5
   _handModel: {fileID: 0}
 --- !u!1 &1234234887
@@ -15913,7 +15917,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1712544734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15987,7 +15991,7 @@ Transform:
   m_GameObject: {fileID: 1712544733}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.94, z: 2.64}
-  m_LocalScale: {x: 1, y: 1, z: 1.0000001}
+  m_LocalScale: {x: 0.23265517, y: 0.23265517, z: 0.2326552}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
@@ -16033,6 +16037,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pinchDetector: {fileID: 2067000822}
+  _indexTipColor: {fileID: 879182407}
   _thicknessMult: 2.5
   _handModel: {fileID: 0}
 --- !u!1001 &1738157434
@@ -17997,6 +18002,32 @@ MonoBehaviour:
   _ribbonIO: {fileID: 265852805}
   _colorFilter: {fileID: 879182408}
   _thicknessFilter: {fileID: 2014610516}
+  _thicknessCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1.0005364
+      inSlope: Infinity
+      outSlope: -0.0012938192
+      tangentMode: 21
+    - time: 0.16216204
+      value: 1.0003266
+      inSlope: 0.011180659
+      outSlope: -0.00000041376688
+      tangentMode: 1
+    - time: 0.52384865
+      value: 1.0003824
+      inSlope: -0.003121941
+      outSlope: -0.020950973
+      tangentMode: 1
+    - time: 0.99527794
+      value: -0.000000059604645
+      inSlope: -6.3443108
+      outSlope: -1.3633035
+      tangentMode: 1
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
   _beginEffect:
     _clips:
     - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
@@ -18012,7 +18043,9 @@ MonoBehaviour:
   _maxEffectSpeed: 5
   _pitchRange: {x: 0.8, y: 1.2}
   _smoothingDelay: 0.03
+  _previewRibbonRenderer: {fileID: 0}
   drawTime: 0
+  deactivateDrawing: 0
 --- !u!1001 &1953132422
 Prefab:
   m_ObjectHideFlags: 0
@@ -18284,7 +18317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _waitBeforeActivation: 1
-  _timeBetweenEvents: 0.06
+  _timeBetweenEvents: 0.6
   OnRepeatedEventFired:
     m_PersistentCalls:
       m_Calls:
@@ -18749,6 +18782,32 @@ MonoBehaviour:
   _ribbonIO: {fileID: 265852805}
   _colorFilter: {fileID: 1886534746}
   _thicknessFilter: {fileID: 2014610516}
+  _thicknessCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1.0005364
+      inSlope: Infinity
+      outSlope: -0.0012938192
+      tangentMode: 21
+    - time: 0.16216204
+      value: 1.0003266
+      inSlope: 0.011180659
+      outSlope: -0.00000041376688
+      tangentMode: 1
+    - time: 0.52384865
+      value: 1.0003824
+      inSlope: -0.003121941
+      outSlope: -0.020950973
+      tangentMode: 1
+    - time: 0.99527794
+      value: -0.000000059604645
+      inSlope: -6.3443108
+      outSlope: -1.3633035
+      tangentMode: 1
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
   _beginEffect:
     _clips:
     - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
@@ -18764,7 +18823,9 @@ MonoBehaviour:
   _maxEffectSpeed: 5
   _pitchRange: {x: 0.8, y: 1.2}
   _smoothingDelay: 0.03
+  _previewRibbonRenderer: {fileID: 0}
   drawTime: 0
+  deactivateDrawing: 0
 --- !u!1001 &2007424450
 Prefab:
   m_ObjectHideFlags: 0
@@ -18786,39 +18847,35 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: -0.0000004768371
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2300000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 800b3f939a9ff5249a0adc5635c9768e, type: 2}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_LocalScale.x
-      value: 150
+      value: 0.42120162
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_LocalScale.y
-      value: 150
+      value: 0.42120147
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_LocalScale.z
-      value: 187.98303
+      value: 0.42120153
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_Name
@@ -18826,8 +18883,16 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3300000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: 06b31ad3b87bb7b45a76168724c4eb00, type: 3}
+    - target: {fileID: 2300000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 800b3f939a9ff5249a0adc5635c9768e, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9a6b3816b4a77fc4ca573348fc07e21a, type: 3}
   m_IsPrefabParent: 0
@@ -19634,8 +19699,8 @@ MonoBehaviour:
       PublicKeyToken=null
   _handModel: {fileID: 1895525253}
   ControlsTransform: 1
-  ActivateDistance: 0.025
-  DeactivateDistance: 0.038
+  ActivateDistance: 0.03
+  DeactivateDistance: 0.04
 --- !u!1 &2068136880
 GameObject:
   m_ObjectHideFlags: 0

@@ -28,9 +28,10 @@ public class Eraser : MonoBehaviour, IRuntimeGizmoComponent {
 
   void Update() {
     eraserPos = Vector3.zero;
-    if(((RHand._paintCursor._handModel != null) && (RHand._paintCursor._handModel.IsTracked) && ((_hand = RHand._paintCursor._handModel.GetLeapHand()) != null) && (peaceStrength(_hand) > 1.3f)) ||
-       ((LHand._paintCursor._handModel != null) && (LHand._paintCursor._handModel.IsTracked) && ((_hand = LHand._paintCursor._handModel.GetLeapHand()) != null) && (peaceStrength(_hand) > 1.3f))) {
-         eraserPos = _hand.PalmPosition.ToVector3() + _hand.Direction.ToVector3() * 0.1f;
+    if (/*(!hudAnchor.IsDisplaying) &&*/
+      (RHand._paintCursor._handModel != null) && (RHand._paintCursor._handModel.IsTracked) && ((_hand = RHand._paintCursor._handModel.GetLeapHand()) != null) && (peaceStrength(_hand) > 1.3f) ||
+     ((LHand._paintCursor._handModel != null) && (LHand._paintCursor._handModel.IsTracked) && ((_hand = LHand._paintCursor._handModel.GetLeapHand()) != null) && (peaceStrength(_hand) > 1.3f))) {
+         eraserPos = _hand.PalmPosition.ToVector3() + _hand.Direction.ToVector3() * 0.15f;
          if (_hand.IsLeft) {
            LHand._previewRibbonRenderer.eraserPoint = eraserPos;
            RHand._previewRibbonRenderer.isErasing = false;
@@ -46,7 +47,7 @@ public class Eraser : MonoBehaviour, IRuntimeGizmoComponent {
       RHand._previewRibbonRenderer.isErasing = false;
     }
 
-    if (!hudAnchor.IsDisplaying && !eraserPos.Equals(Vector3.zero)) {
+    if (!eraserPos.Equals(Vector3.zero)) {
       LHand.deactivateDrawing = true; RHand.deactivateDrawing = true;
       this.transform.position = eraserPos;
       this.transform.rotation = EraserPosition.rotation;
@@ -86,12 +87,13 @@ public class Eraser : MonoBehaviour, IRuntimeGizmoComponent {
     }
   }
   
+  
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-    if (LHand.deactivateDrawing) {
+    /*if (LHand.deactivateDrawing) {
       if (strokeIndexToKill != -1) {
         drawer.color = Color.red;
       }
       drawer.DrawWireSphere(transform.position, radius);
-    }
+    }*/
   }
 }

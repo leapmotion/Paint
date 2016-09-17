@@ -123,6 +123,10 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     _returnEffect.PlayOnTransform(transform);
   }
 
+  public virtual float GetAnchoredDangerZoneRadius() {
+    return 0.1F;
+  }
+
   #region Wearable Implementation
 
   private bool _isLeftHandTracked = false;
@@ -241,6 +245,10 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   private void OnExplosionShouldDisappear() {
     _appearanceExplosionRenderer.enabled = false;
+  }
+
+  public bool IsDisplaying {
+    get { return _appearTween.IsValid && _appearTween.Progress > 0.01F; }
   }
 
   #endregion
@@ -518,6 +526,10 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     get { return _isWorkstation; }
   }
 
+  public virtual float GetWorkstationDangerZoneRadius() {
+    return 0.2F;
+  }
+
   private Transform _lerpFrom;
   private Transform _lerpTo;
   private TweenHandle ConstructWorkstationPlacementTween(Transform from, Transform to, float overTime) {
@@ -659,6 +671,17 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   protected virtual void DoOnMovementToWorkstationFinished() {
     OnWorkstationActivated();
+  }
+
+  #endregion
+
+  #region Gizmos
+
+  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+    if (_gizmosEnabled) {
+      drawer.color = Color.red;
+      drawer.DrawWireSphere(this.transform.position, GetAnchoredDangerZoneRadius());
+    }
   }
 
   #endregion

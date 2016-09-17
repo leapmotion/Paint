@@ -6,6 +6,7 @@ using Leap.Unity;
 public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
 
   public PinchDetector _pinchDetector;
+  public IndexTipColor _indexTipColor;
 
   public float _thicknessMult = 2.5F;
 
@@ -17,6 +18,7 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   private float _maxRadius = 0.03F;
   private Color _cursorColor = Color.white;
   private Color _drawBeginMarkerCircleColor = Color.white;
+  private bool _isPaintingPossible = true;
 
   public Vector3 Position {
     get { return this.transform.position; }
@@ -30,8 +32,14 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   public bool IsTracked {
     get { return this._pinchDetector.HandModel.IsTracked; }
   }
+  public bool DidStartPinch {
+    get { return this._pinchDetector.DidStartPinch; }
+  }
   public Chirality Handedness {
     get { return this._pinchDetector.HandModel.Handedness; }
+  }
+  public Color Color {
+    get { return _indexTipColor.GetColor(); }
   }
 
   protected virtual void Start() {
@@ -43,9 +51,13 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
     float pinchRadius = _pinchDetector.Distance / 2;
     _radius = Mathf.Max(_minRadius, pinchRadius);
     float alpha = 1F - ((_radius - _minRadius) / (_maxRadius - _minRadius));
-    _cursorColor = Color.white;
-    _cursorColor = new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, alpha);
-    _drawBeginMarkerCircleColor = new Color(_drawBeginMarkerCircleColor.r, _drawBeginMarkerCircleColor.g, _drawBeginMarkerCircleColor.b, alpha);
+    if (!_isPaintingPossible) alpha = 0F;
+    _cursorColor = Color.Lerp(_cursorColor, new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, alpha), 0.3F);
+    _drawBeginMarkerCircleColor = Color.Lerp(_drawBeginMarkerCircleColor, new Color(_drawBeginMarkerCircleColor.r, _drawBeginMarkerCircleColor.g, _drawBeginMarkerCircleColor.b, alpha), 0.3F);
+  }
+
+  public void NotifyPossibleToActualize(bool isPossible) {
+    _isPaintingPossible = isPossible;
   }
 
   #region Gizmos

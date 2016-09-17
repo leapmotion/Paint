@@ -13,6 +13,10 @@ public class BrushWearableUI : WearableUI {
     base.Start();
   }
 
+  public override float GetWorkstationDangerZoneRadius() {
+    return 0.1F;
+  }
+
   private bool _brushControlsEmerged = false;
   protected override void DoOnMarbleActivated() {
     base.DoOnMarbleActivated();
