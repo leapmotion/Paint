@@ -12,7 +12,7 @@ public class Eraser : MonoBehaviour, IRuntimeGizmoComponent {
   public WearableAnchor hudAnchor;
   Stroke strokeToKill;
   int strokeIndexToKill = -1;
-  int AcquisitionFrames = 3;
+  int AcquisitionFrames = 5;
   int indexJitter = 0;
   Vector3 eraserPos = Vector3.zero;
   Leap.Hand _hand;
@@ -50,7 +50,7 @@ public class Eraser : MonoBehaviour, IRuntimeGizmoComponent {
       strokeIndexToKill = -1;
       for (int i = 0; i < history.GetStrokes().Count; i++) {
         selectThisStroke = false;
-        for (int j = indexJitter * 5; j < history.GetStrokes()[i].strokePoints.Count; j += (AcquisitionFrames * 5)) {
+        for (int j = indexJitter * 3; j < history.GetStrokes()[i].strokePoints.Count; j += (AcquisitionFrames * 3)) {
           float sqrDist = (transform.position - history.GetStrokes()[i].strokePoints[j].position).sqrMagnitude;
           if (sqrDist < minDist) {
             selectThisStroke = true;
