@@ -14,11 +14,28 @@ public class Eraser : MonoBehaviour, IRuntimeGizmoComponent {
   int strokeIndexToKill = -1;
   int AcquisitionFrames = 3;
   int indexJitter = 0;
+  Vector3 eraserPos = Vector3.zero;
+  Leap.Hand _hand;
+
+  float peaceStrength(Leap.Hand _hand) {
+    return 
+      -Vector3.Dot(_hand.Fingers[0].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+      Vector3.Dot(_hand.Fingers[1].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+      Vector3.Dot(_hand.Fingers[2].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+      //-Vector3.Dot(_hand.Fingers[3].Direction.ToVector3(), _hand.Direction.ToVector3()) + // Traitor finger!
+      -Vector3.Dot(_hand.Fingers[4].Direction.ToVector3(), _hand.Direction.ToVector3());
+  }
 
   void Update() {
-    if (!hudAnchor.IsDisplaying&&Vector3.Distance(LHand._paintCursor.transform.position, RHand._paintCursor.transform.position) < 0.1f) {
+    eraserPos = Vector3.zero;
+    if(((RHand._paintCursor._handModel != null) && (RHand._paintCursor._handModel.IsTracked) && ((_hand = RHand._paintCursor._handModel.GetLeapHand()) != null) && (peaceStrength(_hand) > 1.3f)) ||
+       ((LHand._paintCursor._handModel != null) && (LHand._paintCursor._handModel.IsTracked) && ((_hand = LHand._paintCursor._handModel.GetLeapHand()) != null) && (peaceStrength(_hand) > 1.3f))) {
+         eraserPos = _hand.PalmPosition.ToVector3() + _hand.Direction.ToVector3() * 0.1f;
+    }
+
+    if (!hudAnchor.IsDisplaying && !eraserPos.Equals(Vector3.zero)) {
       LHand.deactivateDrawing = true; RHand.deactivateDrawing = true;
-      this.transform.position = (LHand._paintCursor.transform.position + RHand._paintCursor.transform.position) / 2f;
+      this.transform.position = eraserPos;
       this.transform.rotation = EraserPosition.rotation;
 
       if (indexJitter == AcquisitionFrames - 1) {
