@@ -8,6 +8,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
   private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.007F;
   private const float MAX_SEGMENT_LENGTH = 0.03F;
+  private const float MIN_HAND_DRAWING_LIFETIME = 0.2F;
 
   public PaintCursor _paintCursor;
   [Tooltip("Used to stop drawing if the pinch detector is grabbing a UI element.")]
@@ -36,7 +37,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private bool _firstStrokePointAdded = false;
   private Vector3 _lastStrokePointAdded = Vector3.zero;
   private float _timeSinceLastAddition = 0F;
-  private bool inDangerZone = false;
+  private bool _inDangerZone = false;
+  private float _handLifetime = 0F;
 
   private Vector3 leftHandEulerRotation = new Vector3(0F, 180F, 0F);
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
@@ -82,35 +84,68 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   void Update() {
-    inDangerZone = false;
-    if (_paintCursor._handModel != null && _paintCursor._handModel.GetLeapHand() != null) {
-      _hand = _paintCursor._handModel.GetLeapHand();
-      foreach (WearableUI marble in _wearableManager._wearableUIs) {
-        if (!marble._isAttached && Vector3.Distance(_paintCursor.transform.position, marble.transform.position) < 0.25f) {
-          inDangerZone = true;
-        }
+    
+    // Drawing Conditionals //
+
+    if (_paintCursor.IsTracked) {
+      _handLifetime += Time.deltaTime;
+    }
+    else {
+      _handLifetime = 0F;
+    }
+
+    _inDangerZone = false;
+    for (int i = 0; i < _wearableManager._wearableUIs.Length; i++) {
+      WearableUI marble = _wearableManager._wearableUIs[i];
+      float distance = Vector3.Distance(_paintCursor.transform.position, marble.transform.position);
+      if (!marble._isAttached) {
+        _inDangerZone |= distance < marble.GetWorkstationDangerZoneRadius();
+      }
+      else {
+        _inDangerZone |= marble.IsDisplaying && distance < marble.GetAnchoredDangerZoneRadius();
       }
     }
 
-    if (_paintCursor.IsTracked && !_strokeProcessor.IsBufferingStroke && !inDangerZone) {
+    bool isUIDisplayingOnThisHand = false;
+    for (int i = 0; i < _wearableManager._wearableAnchors.Length && i < 1; i++) {
+      isUIDisplayingOnThisHand |= _paintCursor.Handedness == _wearableManager._wearableAnchors[i]._chirality && _wearableManager._wearableAnchors[i].IsDisplaying;
+    }
+
+    bool possibleToActualize = false;
+    Color drawColor = _paintCursor.Color;
+    if (drawColor.a > 0.99F
+      && !_inDangerZone
+      && !_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)
+      && _handLifetime > MIN_HAND_DRAWING_LIFETIME
+      && !isUIDisplayingOnThisHand
+      ) {
+      possibleToActualize = true;
+    }
+    _paintCursor.NotifyPossibleToActualize(possibleToActualize);
+
+    // Drawing State //
+
+    if (_paintCursor.IsTracked && !_strokeProcessor.IsBufferingStroke && !_inDangerZone && possibleToActualize) {
       BeginStroke();
     }
 
-    if (_paintCursor.IsActive && !_strokeProcessor.IsActualizingStroke) {
-      if (!_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)) {
-        // TODO HACK FIXME preventing drawing if IndexTipColor is transparent
-        Color color = new Color(0F, 0F, 0F, 0F);
-        try {
-          color = _paintCursor._handModel.GetComponentInChildren<IndexTipColor>().GetColor();
-        } catch (System.NullReferenceException) { }
+    if (_paintCursor.DidStartPinch && possibleToActualize && !_strokeProcessor.IsActualizingStroke) {
+      // Additional conditional logic to prevent only BEGINNING actualizing a stroke
+      float angleFromCameraLookVector = Vector3.Angle(Camera.main.transform.forward, _paintCursor.transform.position - Camera.main.transform.position);
+      float acceptableFOVAngle = 30F;
+      bool withinAcceptableCameraFOV = angleFromCameraLookVector < acceptableFOVAngle;
 
-        float fistStrength = Vector3.Dot(_hand.Fingers[2].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+      float fistStrength = 0F;
+      if (_paintCursor._handModel != null && _paintCursor._handModel.GetLeapHand() != null) {
+        _hand = _paintCursor._handModel.GetLeapHand();
+        fistStrength = Vector3.Dot(_hand.Fingers[2].Direction.ToVector3(), _hand.Direction.ToVector3()) +
           Vector3.Dot(_hand.Fingers[3].Direction.ToVector3(), _hand.Direction.ToVector3()) +
           Vector3.Dot(_hand.Fingers[4].Direction.ToVector3(), _hand.Direction.ToVector3());
+      }
 
-        if (color.a > 0.99F && fistStrength > -2f && !inDangerZone) {
-          StartActualizingStroke();
-        }
+      if (withinAcceptableCameraFOV
+        && fistStrength > -2f) {
+        StartActualizingStroke();
       }
     }
 
@@ -118,11 +153,11 @@ public class PinchStrokeProcessor : MonoBehaviour {
       UpdateStroke();
     }
 
-    if ((!_paintCursor.IsActive || inDangerZone) && _strokeProcessor.IsActualizingStroke) {
+    if ((!_paintCursor.IsActive || _inDangerZone || !possibleToActualize) && _strokeProcessor.IsActualizingStroke) {
       StopActualizingStroke();
     }
 
-    if ((!_paintCursor.IsTracked || inDangerZone) && _strokeProcessor.IsActualizingStroke) {
+    if ((!_paintCursor.IsTracked || _inDangerZone || !possibleToActualize) && _strokeProcessor.IsBufferingStroke) {
       EndStroke();
     }
   }

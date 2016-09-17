@@ -42,15 +42,19 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
       _mesh.Clear();
     }
     _ribbon.Clear();
+    _prevDrawRadii.Clear();
+    _prevDrawOffsets.Clear();
 
     _filter.mesh = _mesh;
     _renderer.material = _meshMaterial;
+
+    _lastStrokeBuffer = null;
 
     _canUpdateRenderer = true;
   }
 
   private List<float> _prevDrawRadii = new List<float>();
-  private List<Vector3> _prevDrawOffset = new List<Vector3>();
+  private List<Vector3> _prevDrawOffsets = new List<Vector3>();
   private RingBuffer<StrokePoint> _lastStrokeBuffer;
   private float _thicknessDecayMultiplier = 1F;
   private float _movementThicknessTick = 0.1F;
@@ -83,11 +87,11 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
         // Offset from most recent + decay
         Vector3 offsetFromEndPosition = endPosition - point.Position;
         Vector3 targetOffset = (offsetFromEndPosition * (1 - _thicknessDecayMultiplier));
-        if (i > _prevDrawOffset.Count - 1) {
-          _prevDrawOffset.Add(targetOffset);
+        if (i > _prevDrawOffsets.Count - 1) {
+          _prevDrawOffsets.Add(targetOffset);
         }
-        point.Position = point.Position + Vector3.Slerp(_prevDrawOffset[i], targetOffset, 0.1F);
-        _prevDrawOffset[i] = Vector3.Slerp(_prevDrawOffset[i], targetOffset, 0.1F);
+        point.Position = point.Position + Vector3.Slerp(_prevDrawOffsets[i], targetOffset, 0.1F);
+        _prevDrawOffsets[i] = Vector3.Slerp(_prevDrawOffsets[i], targetOffset, 0.1F);
         _ribbon.Points[i] = point;
 
         // Thickness + decay
@@ -107,10 +111,7 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
   }
 
   public void StopRenderer() {
-    _mesh.Clear();
-    _lastStrokeBuffer = null;
 
-    _canUpdateRenderer = false;
   }
 
   List<Vector3> _cachedVec3 = new List<Vector3>();
