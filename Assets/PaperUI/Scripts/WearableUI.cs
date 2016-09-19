@@ -255,7 +255,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   #region Marble Touching
 
-  private const float MARBLE_COOLDOWN = 0.02F;
+  private const float MARBLE_COOLDOWN = 0.05F;
   [SerializeField]
   private float _marbleCooldownTimer = 0F;
   [SerializeField]
@@ -426,6 +426,10 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     if (_grabbingTransform != null && _grabbingTransform == grabber) {
       doOnReleased = true;
       _grabbingTransform = null;
+
+      // Prevent the marble from activating hand UI shortly after release
+      _marbleReady = false;
+      _marbleCooldownTimer = MARBLE_COOLDOWN;
     }
 
     if (doOnReleased) {

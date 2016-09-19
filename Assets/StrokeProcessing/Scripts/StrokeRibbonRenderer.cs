@@ -42,7 +42,7 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
   public void RefreshRenderer(List<StrokePoint> stroke, int maxChangedFromEnd) {
     int startIdx = Mathf.Max(0, stroke.Count - 1 - maxChangedFromEnd);
     int endIdx = stroke.Count - 1;
-    for (int i = 0; i <= endIdx; i++) {
+    for (int i = startIdx; i <= endIdx; i++) {
       StrokePoint strokePoint = stroke[i];
 
       MeshPoint point = new MeshPoint(strokePoint.position);

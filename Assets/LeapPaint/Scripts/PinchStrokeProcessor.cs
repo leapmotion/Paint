@@ -7,7 +7,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
   private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.007F;
-  private const float MAX_SEGMENT_LENGTH = 0.03F;
+  private const float MAX_SEGMENT_LENGTH = 0.02F;
   private const float MIN_HAND_DRAWING_LIFETIME = 0.2F;
 
   public PaintCursor _paintCursor;
@@ -173,6 +173,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _soundEffectSource.Play();
   }
 
+  private List<Vector3> _cachedPoints = new List<Vector3>();
+  private List<float> _cachedDeltaTimes = new List<float>();
   private void UpdateStroke() {
     float speed = Vector3.Distance(_paintCursor.Position, _prevPosition) / Time.deltaTime;
     _prevPosition = _paintCursor.Position;
@@ -184,6 +186,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
     Vector3 strokePosition = _paintCursor.Position;
 
+    _cachedPoints.Clear();
+    _cachedDeltaTimes.Clear();
     if (_firstStrokePointAdded) {
       float posDelta = Vector3.Distance(_lastStrokePointAdded, strokePosition);
       if (posDelta > MAX_SEGMENT_LENGTH) {
@@ -196,18 +200,25 @@ public class PinchStrokeProcessor : MonoBehaviour {
         float remainderDeltaTime = Time.deltaTime * segmentRemainder;
         float curDeltaTime = 0F;
         for (int i = 0; i < numSegments; i++) {
-          ProcessAddStrokePoint(curPos + segment, curDeltaTime + segmentDeltaTime);
+          _cachedPoints.Add(curPos + segment);
+          _cachedDeltaTimes.Add(curDeltaTime + segmentDeltaTime);
           curPos += segment;
           curDeltaTime += segmentDeltaTime;
         }
-        ProcessAddStrokePoint(strokePosition, curDeltaTime + remainderDeltaTime);
+        _cachedPoints.Add(strokePosition);
+        _cachedDeltaTimes.Add(curDeltaTime + remainderDeltaTime);
+        ProcessAddStrokePoints(_cachedPoints, _cachedDeltaTimes);
       }
       else {
-        ProcessAddStrokePoint(strokePosition, Time.deltaTime);
+        _cachedPoints.Add(strokePosition);
+        _cachedDeltaTimes.Add(Time.deltaTime);
+        ProcessAddStrokePoints(_cachedPoints, _cachedDeltaTimes);
       }
     }
     else {
-      ProcessAddStrokePoint(strokePosition, Time.deltaTime);
+        _cachedPoints.Add(strokePosition);
+        _cachedDeltaTimes.Add(Time.deltaTime);
+        ProcessAddStrokePoints(_cachedPoints, _cachedDeltaTimes);
     }
 
     if (_strokeProcessor.IsActualizingStroke) {
@@ -215,26 +226,39 @@ public class PinchStrokeProcessor : MonoBehaviour {
     }
   }
 
-  private void ProcessAddStrokePoint(Vector3 point, float effDeltaTime) {
-    bool shouldAdd = !_firstStrokePointAdded
-      || Vector3.Distance(_lastStrokePointAdded, point)
-          >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MAX_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
-
-    _timeSinceLastAddition += effDeltaTime;
-
-    if (shouldAdd) {
-      StrokePoint strokePoint = new StrokePoint();
-      strokePoint.position = point;
-      strokePoint.rotation = Quaternion.identity;
-      strokePoint.handOrientation = _paintCursor.Rotation * Quaternion.Euler((_paintCursor.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
-      strokePoint.deltaTime = _timeSinceLastAddition;
-
-      _strokeProcessor.UpdateStroke(strokePoint);
-
-      _firstStrokePointAdded = true;
-      _lastStrokePointAdded = strokePoint.position;
-      _timeSinceLastAddition = 0F;
+  private List<StrokePoint> _cachedStrokePoints = new List<StrokePoint>();
+  private void ProcessAddStrokePoints(List<Vector3> points, List<float> effDeltaTimes) {
+    if (points.Count != effDeltaTimes.Count) {
+      Debug.LogError("[PinchStrokeProcessor] Points count must match effDeltaTimes count.");
+      return;
     }
+
+    _cachedStrokePoints.Clear();
+    for (int i = 0; i < points.Count; i++) {
+      Vector3 point = points[i];
+      float effDeltaTime = effDeltaTimes[i];
+
+      bool shouldAdd = !_firstStrokePointAdded
+        || Vector3.Distance(_lastStrokePointAdded, point)
+            >= Mathf.Lerp(MIN_THICKNESS_MIN_SEGMENT_LENGTH, MAX_THICKNESS_MIN_SEGMENT_LENGTH, _thicknessFilter._lastNormalizedValue);
+
+      _timeSinceLastAddition += effDeltaTime;
+
+      if (shouldAdd) {
+        StrokePoint strokePoint = new StrokePoint();
+        strokePoint.position = point;
+        strokePoint.rotation = Quaternion.identity;
+        strokePoint.handOrientation = _paintCursor.Rotation * Quaternion.Euler((_paintCursor.Handedness == Chirality.Left ? leftHandEulerRotation : rightHandEulerRotation));
+        strokePoint.deltaTime = _timeSinceLastAddition;
+
+        _cachedStrokePoints.Add(strokePoint);
+
+        _firstStrokePointAdded = true;
+        _lastStrokePointAdded = strokePoint.position;
+        _timeSinceLastAddition = 0F;
+      }
+    }
+    _strokeProcessor.UpdateStroke(_cachedStrokePoints);
   }
 
   private void StopActualizingStroke() {

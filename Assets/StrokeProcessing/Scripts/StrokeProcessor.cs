@@ -101,6 +101,13 @@ public class StrokeProcessor {
   }
 
   public void UpdateStroke(StrokePoint strokePoint) {
+    UpdateStroke(strokePoint, true);
+  }
+
+  // shouldUpdateRenderers provides an optimization for updating multiple stroke points at once,
+  // where it's more efficient to do the updating without rendering and then refreshing renderers
+  // at the end.
+  private void UpdateStroke(StrokePoint strokePoint, bool shouldUpdateRenderers=true) {
     _strokeBuffer.Add(strokePoint);
     _strokeIdxBuffer.Add(_curStrokeIdx++);
 
@@ -125,12 +132,39 @@ public class StrokeProcessor {
       _outputBufferEndOffset += 1;
 
       // Refresh stroke renderers.
-      for (int i = 0; i < _strokeRenderers.Count; i++) {
-        _strokeRenderers[i].RefreshRenderer(_strokeOutput, _maxMemory);
+      if (shouldUpdateRenderers) {
+        UpdateStrokeRenderers();
       }
     }
 
     // Refresh stroke preview renderers.
+    if (shouldUpdateRenderers) {
+      UpdateStrokeBufferRenderers();
+    }
+  }
+
+  public void UpdateStroke(List<StrokePoint> strokePoints) {
+    // UpdateStroke without updating renderers.
+    for (int i = 0; i < strokePoints.Count; i++) {
+      UpdateStroke(strokePoints[i], false);
+    }
+
+    // Manually update renderers.
+    if (strokePoints.Count > 0) {
+      if (_isActualizingStroke) {
+        UpdateStrokeRenderers();
+      }
+      UpdateStrokeBufferRenderers();
+    }
+  }
+
+  private void UpdateStrokeRenderers() {
+    for (int i = 0; i < _strokeRenderers.Count; i++) {
+      _strokeRenderers[i].RefreshRenderer(_strokeOutput, _maxMemory);
+    }
+  }
+
+  private void UpdateStrokeBufferRenderers() {
     for (int i = 0; i < _strokeBufferRenderers.Count; i++) {
       _strokeBufferRenderers[i].RefreshRenderer(_strokeBuffer);
     }
