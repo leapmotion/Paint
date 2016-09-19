@@ -14,6 +14,11 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
 
   public Action<Mesh, List<StrokePoint>> OnMeshStrokeFinalized;
 
+  [HideInInspector]
+  public bool isErasing = false;
+  [HideInInspector]
+  public Vector3 eraserPoint = Vector3.zero;
+
   private Mesh _mesh;
   private MeshFilter _filter;
   private MeshRenderer _renderer;
@@ -79,31 +84,42 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
       MeshPoint point = new MeshPoint(strokePoint.position);
       point.Normal = strokePoint.normal;
       point.Color = strokePoint.color;
+      MeshPoint randomPoint = new MeshPoint(eraserPoint + (UnityEngine.Random.onUnitSphere * 0.01f));
+      randomPoint.Normal = UnityEngine.Random.onUnitSphere;
+      randomPoint.Color = strokePoint.color;
 
       if (i > _ribbon.Points.Count - 1) {
         _ribbon.Add(point, strokePoint.thickness);
       }
       else {
-        // Offset from most recent + decay
-        Vector3 offsetFromEndPosition = endPosition - point.Position;
-        Vector3 targetOffset = (offsetFromEndPosition * (1 - _thicknessDecayMultiplier));
-        if (i > _prevDrawOffsets.Count - 1) {
-          _prevDrawOffsets.Add(targetOffset);
-        }
-        point.Position = point.Position + Vector3.Slerp(_prevDrawOffsets[i], targetOffset, 0.1F);
-        _prevDrawOffsets[i] = Vector3.Slerp(_prevDrawOffsets[i], targetOffset, 0.1F);
-        _ribbon.Points[i] = point;
+        if (isErasing) {
+          _ribbon.Points[i] = randomPoint;
+          _ribbon.Radii[i] = 0.05f;
+          if (_prevDrawRadii.Count-1>i) {
+            _prevDrawRadii[i] = strokePoint.thickness;
+          }
+        } else {
+          // Offset from most recent + decay
+          Vector3 offsetFromEndPosition = endPosition - point.Position;
+          Vector3 targetOffset = (offsetFromEndPosition * (1 - _thicknessDecayMultiplier));
+          if (i > _prevDrawOffsets.Count - 1) {
+            _prevDrawOffsets.Add(targetOffset);
+          }
+          point.Position = point.Position + Vector3.Slerp(_prevDrawOffsets[i], targetOffset, 0.1F);
+          _prevDrawOffsets[i] = Vector3.Slerp(_prevDrawOffsets[i], targetOffset, 0.1F);
+          _ribbon.Points[i] = point;
 
-        // Thickness + decay
-        float targetThickness = 0F;
-        if (_lastStrokeBuffer.Size > 1) {
-          targetThickness = strokePoint.thickness * previewThicknessCurve.Evaluate((float)(_lastStrokeBuffer.Size - 1 - i) / (_lastStrokeBuffer.Size - 1)) * _thicknessDecayMultiplier;
+          // Thickness + decay
+          float targetThickness = 0F;
+          if (_lastStrokeBuffer.Size > 1) {
+            targetThickness = strokePoint.thickness * previewThicknessCurve.Evaluate((float)(_lastStrokeBuffer.Size - 1 - i) / (_lastStrokeBuffer.Size - 1)) * _thicknessDecayMultiplier;
+          }
+          if (i > _prevDrawRadii.Count - 1) {
+            _prevDrawRadii.Add(targetThickness);
+          }
+          _ribbon.Radii[i] = Mathf.Lerp(_prevDrawRadii[i], targetThickness, 0.05F);
+          _prevDrawRadii[i] = _ribbon.Radii[i];
         }
-        if (i > _prevDrawRadii.Count - 1) {
-          _prevDrawRadii.Add(targetThickness);
-        }
-        _ribbon.Radii[i] = Mathf.Lerp(_prevDrawRadii[i], targetThickness, 0.05F);
-        _prevDrawRadii[i] = _ribbon.Radii[i];
       }
     }
 

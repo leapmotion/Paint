@@ -45,12 +45,15 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Leap.Hand _hand;
 
   private StrokeRibbonRenderer _ribbonRenderer;
-  private StrokeBufferRibbonRenderer _previewRibbonRenderer;
+  [HideInInspector]
+  public StrokeBufferRibbonRenderer _previewRibbonRenderer;
 
   private Vector3 _prevPosition;
   private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
   [HideInInspector]
   public float drawTime = 0f;
+  [HideInInspector]
+  public bool deactivateDrawing = false;
 
   void Start() {
     _smoothedSpeed.delay = _smoothingDelay;
@@ -84,9 +87,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   void Update() {
-    
     // Drawing Conditionals //
-
     if (_paintCursor.IsTracked) {
       _handLifetime += Time.deltaTime;
     }
@@ -94,7 +95,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
       _handLifetime = 0F;
     }
 
-    _inDangerZone = false;
+    _inDangerZone = deactivateDrawing;
     for (int i = 0; i < _wearableManager._wearableUIs.Length; i++) {
       WearableUI marble = _wearableManager._wearableUIs[i];
       float distance = Vector3.Distance(_paintCursor.transform.position, marble.transform.position);
