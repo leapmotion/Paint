@@ -124,7 +124,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   public virtual float GetAnchoredDangerZoneRadius() {
-    return 0.15F;
+    return 0.1F;
   }
 
   #region Wearable Implementation
@@ -682,8 +682,10 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   #region Gizmos
 
+  private bool _wearableUIGizmosEnabled = false;
+
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-    if (_gizmosEnabled) {
+    if (_wearableUIGizmosEnabled) {
       drawer.color = Color.red;
       drawer.DrawWireSphere(this.transform.position, GetAnchoredDangerZoneRadius());
     }
