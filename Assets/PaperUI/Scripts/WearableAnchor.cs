@@ -182,10 +182,17 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
 
   public void SetColor(Color color) {
     if (color.a < 0.99F) {
-      _fadeInstance.color = color;
-      _anchorRingRenderer.material = _fadeInstance;
+      if (color.a < 0.001F) {
+        _anchorRingRenderer.enabled = false;
+      }
+      else {
+        _anchorRingRenderer.enabled = true;
+        _fadeInstance.color = color;
+        _anchorRingRenderer.material = _fadeInstance;
+      }
     }
     else {
+      _anchorRingRenderer.enabled = true;
       _opaqueInstance.color = color;
       _anchorRingRenderer.material = _opaqueInstance;
     }

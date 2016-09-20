@@ -46,6 +46,10 @@ public class MenuWearableUI : WearableUI {
 
   #region WearableUI Implementations
 
+  public override float GetAnchoredDangerZoneRadius() {
+    return 0.05F;
+  }
+
   protected override void DoOnMarbleActivated() {
     base.DoOnMarbleActivated();
 

@@ -8,6 +8,7 @@ public class WelcomeTip : MonoBehaviour {
   public PinchStrokeProcessor RPinchDrawer;
   public PinchStrokeProcessor LPinchDrawer;
   public TextMesh text;
+  public MeshRenderer pinchImageRenderer;
 
   private bool hasPainted = false;
   private bool menuOpen = false;
@@ -16,6 +17,7 @@ public class WelcomeTip : MonoBehaviour {
   private float hoverDistance = 1F;
   TweenHandle disappearTween;
   TweenHandle transitionTween;
+  TweenHandle handImageDisappearTween;
   float xLocalRot;
 
   void Start() {
@@ -27,6 +29,11 @@ public class WelcomeTip : MonoBehaviour {
       .OverTime(0.5f)
       .Smooth(TweenType.SMOOTH)
       .OnReachEnd(Hide)
+      .Keep();
+
+    handImageDisappearTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f, 0.9f, 0.9f, 0f), SetHandImageOpacity)
+      .OverTime(0.5F)
+      .Smooth(TweenType.SMOOTH)
       .Keep();
 
     transitionTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f,0.9f,0.9f,0f), SetOpacity)
@@ -50,6 +57,7 @@ public class WelcomeTip : MonoBehaviour {
 
   void Hide() {
     text.gameObject.SetActive(false);
+    pinchImageRenderer.gameObject.SetActive(false);
   }
 
   void TextChange() {
@@ -61,8 +69,10 @@ public class WelcomeTip : MonoBehaviour {
     if (menuOpenTimer > menuOpenSatisfyDuration && hasPainted) {
       transitionTween.Stop();
       disappearTween.Play();
+      handImageDisappearTween.Play();
     } else if (hasPainted) {
       transitionTween.Play();
+      handImageDisappearTween.Play();
     }
   }
 
@@ -89,5 +99,9 @@ public class WelcomeTip : MonoBehaviour {
   public void SetOpacity(Color color) {
     Material textMat = text.GetComponent<Renderer>().material;
     textMat.color = color;
+  }
+
+  private void SetHandImageOpacity(Color color) {
+    pinchImageRenderer.material.SetFloat(Shader.PropertyToID("_Alpha"), color.a);
   }
 }
