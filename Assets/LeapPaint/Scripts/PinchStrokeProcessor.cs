@@ -123,30 +123,38 @@ public class PinchStrokeProcessor : MonoBehaviour {
     }
     _paintCursor.NotifyPossibleToActualize(possibleToActualize);
 
+    // Possible to begin actualizing -- if actualization already happening, this state doesn't matter
+
+    float fistStrength = 0F;
+    if (_paintCursor._handModel != null && _paintCursor._handModel.GetLeapHand() != null) {
+      _hand = _paintCursor._handModel.GetLeapHand();
+      //Debug.Log(Vector3.Dot(_hand.Fingers[1].Direction.ToVector3(), _hand.Direction.ToVector3())); tracking isn't accurate enough to just use index curl.
+      fistStrength =
+        Vector3.Dot(_hand.Fingers[2].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+        Vector3.Dot(_hand.Fingers[3].Direction.ToVector3(), _hand.Direction.ToVector3()) +
+        Vector3.Dot(_hand.Fingers[4].Direction.ToVector3(), _hand.Direction.ToVector3());
+    }
+
+    float angleFromCameraLookVector = Vector3.Angle(Camera.main.transform.forward, _paintCursor.transform.position - Camera.main.transform.position);
+    float acceptableFOVAngle = 50F;
+    bool withinAcceptableCameraFOV = angleFromCameraLookVector < acceptableFOVAngle;
+
+    bool possibleToBeginActualizing = false;
+    if (fistStrength > -2f
+      && withinAcceptableCameraFOV) {
+      possibleToBeginActualizing = true;
+    }
+    _paintCursor.NotifyPossibleToBeginActualizing(possibleToBeginActualizing);
+
     // Drawing State //
 
-    if (_paintCursor.IsTracked && !_strokeProcessor.IsBufferingStroke && !_inDangerZone && possibleToActualize) {
+    if (_paintCursor.IsTracked && !_strokeProcessor.IsBufferingStroke && !_inDangerZone && possibleToActualize && possibleToBeginActualizing) {
       BeginStroke();
     }
 
-    if (_paintCursor.DidStartPinch && possibleToActualize && !_strokeProcessor.IsActualizingStroke) {
-      // Additional conditional logic to prevent only BEGINNING actualizing a stroke
-      float angleFromCameraLookVector = Vector3.Angle(Camera.main.transform.forward, _paintCursor.transform.position - Camera.main.transform.position);
-      float acceptableFOVAngle = 50F;
-      bool withinAcceptableCameraFOV = angleFromCameraLookVector < acceptableFOVAngle;
-
-      float fistStrength = 0F;
-      if (_paintCursor._handModel != null && _paintCursor._handModel.GetLeapHand() != null) {
-        _hand = _paintCursor._handModel.GetLeapHand();
-        fistStrength = Vector3.Dot(_hand.Fingers[2].Direction.ToVector3(), _hand.Direction.ToVector3()) +
-          Vector3.Dot(_hand.Fingers[3].Direction.ToVector3(), _hand.Direction.ToVector3()) +
-          Vector3.Dot(_hand.Fingers[4].Direction.ToVector3(), _hand.Direction.ToVector3());
-      }
-
-      if (withinAcceptableCameraFOV
-        && fistStrength > -2f) {
-        StartActualizingStroke();
-      }
+    if (_paintCursor.DidStartPinch && possibleToActualize && possibleToBeginActualizing && !_strokeProcessor.IsActualizingStroke) {
+      StartActualizingStroke();
+      _paintCursor.NotifyIsPainting(true);
     }
 
     if (_paintCursor.IsTracked && _strokeProcessor.IsBufferingStroke) {
@@ -155,9 +163,10 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
     if ((!_paintCursor.IsActive || _inDangerZone || !possibleToActualize) && _strokeProcessor.IsActualizingStroke) {
       StopActualizingStroke();
+      _paintCursor.NotifyIsPainting(false);
     }
 
-    if ((!_paintCursor.IsTracked || _inDangerZone || !possibleToActualize) && _strokeProcessor.IsBufferingStroke) {
+    if ((!_paintCursor.IsTracked || _inDangerZone || !possibleToActualize || (!_strokeProcessor.IsActualizingStroke && !possibleToBeginActualizing)) && _strokeProcessor.IsBufferingStroke) {
       EndStroke();
     }
   }

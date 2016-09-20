@@ -8,6 +8,7 @@ public class WelcomeTip : MonoBehaviour {
   public PinchStrokeProcessor RPinchDrawer;
   public PinchStrokeProcessor LPinchDrawer;
   public TextMesh text;
+  public MeshRenderer pinchImageRenderer;
 
   private bool hasPainted = false;
   private bool menuOpen = false;
@@ -16,6 +17,7 @@ public class WelcomeTip : MonoBehaviour {
   private float hoverDistance = 1F;
   TweenHandle disappearTween;
   TweenHandle transitionTween;
+  TweenHandle handImageDisappearTween;
   float xLocalRot;
 
   void Start() {
@@ -27,6 +29,11 @@ public class WelcomeTip : MonoBehaviour {
       .OverTime(0.5f)
       .Smooth(TweenType.SMOOTH)
       .OnReachEnd(Hide)
+      .Keep();
+
+    handImageDisappearTween = Tween.Target(pinchImageRenderer.material).Value(1F, 0F, "_Alpha")
+      .OverTime(0.5F)
+      .Smooth(TweenType.SMOOTH)
       .Keep();
 
     transitionTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f,0.9f,0.9f,0f), SetOpacity)
@@ -50,6 +57,7 @@ public class WelcomeTip : MonoBehaviour {
 
   void Hide() {
     text.gameObject.SetActive(false);
+    pinchImageRenderer.gameObject.SetActive(false);
   }
 
   void TextChange() {
@@ -63,6 +71,7 @@ public class WelcomeTip : MonoBehaviour {
       disappearTween.Play();
     } else if (hasPainted) {
       transitionTween.Play();
+      handImageDisappearTween.Play();
     }
   }
 

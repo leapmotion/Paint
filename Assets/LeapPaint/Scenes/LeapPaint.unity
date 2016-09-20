@@ -2802,7 +2802,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 280426890}
-  m_LocalRotation: {x: -0.023737695, y: 0.9868922, z: -0.103457786, w: -0.12156026}
+  m_LocalRotation: {x: -0.023737676, y: 0.9868922, z: -0.10345771, w: -0.12156026}
   m_LocalPosition: {x: -1.8809564, y: 27.151722, z: 6.4210644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4148,10 +4148,10 @@ MeshRenderer:
   m_GameObject: {fileID: 382852646}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReceiveShadows: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
   m_Materials:
   - {fileID: 1367140633}
   m_SubsetIndices: 
@@ -7879,6 +7879,72 @@ MonoBehaviour:
     type: 2}
   m_PrefabInternal: {fileID: 732041896}
   m_Script: {fileID: 11500000, guid: db3a2de512801714fac0bb60f90b74db, type: 3}
+--- !u!1 &745833231
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 745833232}
+  - 33: {fileID: 745833235}
+  - 23: {fileID: 745833233}
+  m_Layer: 0
+  m_Name: Quad
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &745833232
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 745833231}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.472, z: 0.569}
+  m_LocalScale: {x: 0.8387028, y: 0.8387025, z: 0.8387025}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 1712544737}
+  m_RootOrder: 0
+--- !u!23 &745833233
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 745833231}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_Materials:
+  - {fileID: 2100000, guid: ec678ada2ed5e9147bed20d6502af488, type: 2}
+  m_SubsetIndices: 
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_SelectedWireframeHidden: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+--- !u!33 &745833235
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 745833231}
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &765810582
 GameObject:
   m_ObjectHideFlags: 0
@@ -13546,10 +13612,10 @@ MeshRenderer:
   m_GameObject: {fileID: 1413650904}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReceiveShadows: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
   m_Materials:
   - {fileID: 1367140633}
   m_SubsetIndices: 
@@ -16134,6 +16200,7 @@ MonoBehaviour:
   RPinchDrawer: {fileID: 2005169773}
   LPinchDrawer: {fileID: 1948118615}
   text: {fileID: 1712544735}
+  pinchImageRenderer: {fileID: 745833233}
 --- !u!102 &1712544735
 TextMesh:
   serializedVersion: 3
@@ -16194,7 +16261,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.94, z: 2.64}
   m_LocalScale: {x: 0.23265517, y: 0.23265517, z: 0.2326552}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children: []
+  m_Children:
+  - {fileID: 745833232}
   m_Father: {fileID: 0}
   m_RootOrder: 7
 --- !u!1 &1719502376
@@ -20868,10 +20936,10 @@ MeshRenderer:
   m_GameObject: {fileID: 2123397989}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReceiveShadows: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
   m_Materials:
   - {fileID: 1367140633}
   m_SubsetIndices: 

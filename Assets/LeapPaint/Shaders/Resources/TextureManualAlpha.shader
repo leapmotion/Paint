@@ -7,7 +7,7 @@
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+		Tags { "RenderType"="Transparent" "Queue"="Transparent+100" }
 		Blend SrcAlpha OneMinusSrcAlpha
 		LOD 100
 
@@ -53,7 +53,7 @@
 				fixed4 col = tex2D(_MainTex, i.uv);
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
-				col.rgba = fixed4(col.r, col.g, col.b, _Alpha);
+				col.rgba = fixed4(col.r, col.g, col.b, col.a * _Alpha);
 				return col;
 			}
 			ENDCG
