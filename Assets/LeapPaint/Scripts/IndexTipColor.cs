@@ -24,13 +24,6 @@ public class IndexTipColor : MonoBehaviour {
     get { return GetColor().a < 0.001F; }
   }
 
-  protected void OnEnable() {
-    if (_material == null) {
-      _material = new Material(_tipMeshRenderer.sharedMaterial);
-      _tipMeshRenderer.material = _material;
-    }
-  }
-
   protected void Start() {
     this.SetColor(_startingColor);
   }
@@ -41,12 +34,12 @@ public class IndexTipColor : MonoBehaviour {
 
   public void SetColor(Color color) {
     _color = color;
-    _material.SetColor(Shader.PropertyToID("_Color"), color);
+    _tipMeshRenderer.material.color = color;
     if (color.a < 0.01F) {
-      _colorMarbleRenderer.sharedMaterial = _transparentMarbleMaterial;
+      _colorMarbleRenderer.material = _transparentMarbleMaterial;
     }
     else {
-      _colorMarbleRenderer.sharedMaterial = _colorMarbleMaterial;
+      _colorMarbleRenderer.material = _colorMarbleMaterial;
       _colorMarbleMaterial.color = color;
     }
   }

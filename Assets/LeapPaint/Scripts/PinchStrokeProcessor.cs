@@ -125,6 +125,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
     // Possible to begin actualizing -- if actualization already happening, this state doesn't matter
 
+    // Currently ignored.
     float fistStrength = 0F;
     if (_paintCursor._handModel != null && _paintCursor._handModel.GetLeapHand() != null) {
       _hand = _paintCursor._handModel.GetLeapHand();
@@ -140,8 +141,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
     bool withinAcceptableCameraFOV = angleFromCameraLookVector < acceptableFOVAngle;
 
     bool possibleToBeginActualizing = false;
-    if (fistStrength > -2f
-      && withinAcceptableCameraFOV) {
+    if (//fistStrength > -2f
+      withinAcceptableCameraFOV) {
       possibleToBeginActualizing = true;
     }
     _paintCursor.NotifyPossibleToBeginActualizing(possibleToBeginActualizing);
