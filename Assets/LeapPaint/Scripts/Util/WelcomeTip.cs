@@ -31,7 +31,7 @@ public class WelcomeTip : MonoBehaviour {
       .OnReachEnd(Hide)
       .Keep();
 
-    handImageDisappearTween = Tween.Target(pinchImageRenderer.material).Value(1F, 0F, "_Alpha")
+    handImageDisappearTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f, 0.9f, 0.9f, 0f), SetHandImageOpacity)
       .OverTime(0.5F)
       .Smooth(TweenType.SMOOTH)
       .Keep();
@@ -69,6 +69,7 @@ public class WelcomeTip : MonoBehaviour {
     if (menuOpenTimer > menuOpenSatisfyDuration && hasPainted) {
       transitionTween.Stop();
       disappearTween.Play();
+      handImageDisappearTween.Play();
     } else if (hasPainted) {
       transitionTween.Play();
       handImageDisappearTween.Play();
@@ -98,5 +99,9 @@ public class WelcomeTip : MonoBehaviour {
   public void SetOpacity(Color color) {
     Material textMat = text.GetComponent<Renderer>().material;
     textMat.color = color;
+  }
+
+  private void SetHandImageOpacity(Color color) {
+    pinchImageRenderer.material.SetFloat(Shader.PropertyToID("_Alpha"), color.a);
   }
 }

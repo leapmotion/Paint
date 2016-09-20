@@ -239,4 +239,32 @@ public class WearableManager : MonoBehaviour {
     return false;
   }
 
+  public Vector3 ValidateTargetWorkstationPosition(Vector3 targetPosition, WearableUI workstation) {
+    float targetPosHeight = targetPosition.y;
+    for (int i = 0; i < _wearableUIs.Length; i++) {
+      if (_wearableUIs[i] == workstation || !_wearableUIs[i].IsWorkstation) continue;
+      else {
+        Vector3 estPosition = _wearableUIs[i].transform.position; // established workstation position
+        Vector3 estPositionToTarget = targetPosition - estPosition;
+        float totalDangerRadius = workstation.GetWorkstationDangerZoneRadius() + _wearableUIs[i].GetWorkstationDangerZoneRadius();
+        if (estPositionToTarget.magnitude >= totalDangerRadius) continue;
+        else {
+          estPositionToTarget = new Vector3(estPositionToTarget.x, 0F, estPositionToTarget.z);
+          if (estPositionToTarget.magnitude < 0.00001F) {
+            Debug.Log("Too close on XZ -- doing camera logic.");
+            Vector3 cameraXZAlignedEstWorkstationPos = new Vector3(estPosition.x, Camera.main.transform.position.y, estPosition.z);
+            Vector3 estOffsetDirection = Quaternion.LookRotation(cameraXZAlignedEstWorkstationPos - Camera.main.transform.position) * Vector3.right;
+            targetPosition = estPosition + estOffsetDirection * totalDangerRadius;
+          }
+          else {
+            Debug.Log("Can use XZ offset direction, using.");
+            targetPosition = estPosition + estPositionToTarget.normalized * totalDangerRadius;
+          }
+          targetPosition = new Vector3(targetPosition.x, targetPosHeight, targetPosition.z);
+        }
+      }
+    }
+    return targetPosition;
+  }
+
 }

@@ -55,6 +55,7 @@ public class BrushWearableUI : WearableUI {
     base.DoOnGrabbed();
 
     _brushControlsEmergeable.TryVanish(IsWorkstation);
+    _brushControlsEmerged = false;
     _brushWorkstationEmergeable.TryVanish(IsWorkstation);
   }
 
@@ -69,6 +70,7 @@ public class BrushWearableUI : WearableUI {
 
     if (!IsGrabbed) {
       _brushControlsEmergeable.TryEmerge(IsWorkstation);
+      _brushControlsEmerged = true;
       _brushWorkstationEmergeable.TryEmerge(IsWorkstation);
     }
   }

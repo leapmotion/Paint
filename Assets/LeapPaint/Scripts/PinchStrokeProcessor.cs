@@ -84,7 +84,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   }
 
   void Update() {
-    
+
     // Drawing Conditionals //
 
     if (_paintCursor.IsTracked) {
@@ -116,8 +116,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
     if (drawColor.a > 0.99F
       && !_inDangerZone
       && !_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)
-      && _handLifetime > MIN_HAND_DRAWING_LIFETIME
       && !isUIDisplayingOnThisHand
+      && _handLifetime > MIN_HAND_DRAWING_LIFETIME
       ) {
       possibleToActualize = true;
     }
@@ -152,7 +152,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
       BeginStroke();
     }
 
-    if (_paintCursor.DidStartPinch && possibleToActualize && possibleToBeginActualizing && !_strokeProcessor.IsActualizingStroke) {
+    if (_paintCursor.IsActive && possibleToActualize && possibleToBeginActualizing && !_strokeProcessor.IsActualizingStroke) {
       StartActualizingStroke();
       _paintCursor.NotifyIsPainting(true);
     }

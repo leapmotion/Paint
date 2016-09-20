@@ -526,8 +526,11 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   private Quaternion _scheduledRigidbodyRotation;
   private Vector3 _scheduledRigidbodyVelocity;
 
-  protected bool IsWorkstation {
+  public bool IsWorkstation {
     get { return _isWorkstation; }
+  }
+  public Transform WorkstationTargetTransform {
+    get { return _workstationTargetLocation; }
   }
 
   public virtual float GetWorkstationDangerZoneRadius() {
@@ -651,6 +654,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
       Vector3 workstationDirection = (initPosition + (projectDirection * 20F) - centerEyeAnchor.position);
       Vector3 groundAlignedWorkstationDirection = new Vector3(workstationDirection.x, 0F, workstationDirection.z).normalized;
       workstationPosition = centerEyeAnchor.position + _optimalWorkstationDistance * groundAlignedWorkstationDirection;
+
+      // Allow the WearableManager to pick a new location if the target location overlaps with another workstation
+      workstationPosition = _manager.ValidateTargetWorkstationPosition(workstationPosition, this);
     }
 
     // Find a good workstation orientation
@@ -687,7 +693,12 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
     if (_wearableUIGizmosEnabled) {
       drawer.color = Color.red;
-      drawer.DrawWireSphere(this.transform.position, GetAnchoredDangerZoneRadius());
+      if (IsWorkstation) {
+        drawer.DrawWireSphere(this.transform.position, GetWorkstationDangerZoneRadius());
+      }
+      else {
+        drawer.DrawWireSphere(this.transform.position, GetAnchoredDangerZoneRadius());
+      }
     }
   }
 

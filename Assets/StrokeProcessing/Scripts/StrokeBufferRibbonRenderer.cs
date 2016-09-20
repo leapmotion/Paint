@@ -57,7 +57,6 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
   private List<Vector3> _prevDrawOffsets = new List<Vector3>();
   private RingBuffer<StrokePoint> _lastStrokeBuffer;
   private float _thicknessDecayMultiplier = 1F;
-  private float _movementThicknessTick = 0.1F;
 
   public void RefreshRenderer(RingBuffer<StrokePoint> strokeBuffer) {
     _lastStrokeBuffer = strokeBuffer;
