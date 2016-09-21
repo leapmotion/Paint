@@ -7,12 +7,15 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
 
   public PinchDetector _pinchDetector;
   public IndexTipColor _indexTipColor;
-
-  public float _thicknessMult = 2.5F;
+  public Renderer _ghostableHandRenderer;
+  public Material _ghostableHandMat;
+  public Renderer _indexTipColorRenderer;
+  public Material _indexTipColorMat;
 
   [HideInInspector]
   public IHandModel _handModel;
 
+  private float _thicknessMult = 2F;
   private float _radius = 0F;
   private float _minRadius = 0.02F;
   private float _maxRadius = 0.03F;
@@ -59,6 +62,19 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
     }
     else if (!_canBeginPainting && !_isPainting) {
       alpha = 0F;
+    }
+
+    // Disappearing hands when drawing
+    if (1F - alpha < 0.0001F) {
+      _ghostableHandRenderer.enabled = false;
+      _indexTipColorRenderer.enabled = false;
+    }
+    else {
+      _ghostableHandRenderer.enabled = true;
+      Color ghostHandColor = _ghostableHandMat.color;
+      _ghostableHandMat.color = new Color(ghostHandColor.r, ghostHandColor.g, ghostHandColor.b, 1F - alpha);
+
+      _indexTipColorRenderer.enabled = true;
     }
 
     _cursorColor = Color.Lerp(_cursorColor, new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, alpha), 0.3F);

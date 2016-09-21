@@ -94,14 +94,22 @@ public class StrokeBufferRibbonRenderer : MonoBehaviour, IStrokeBufferRenderer, 
         _ribbon.Points[i] = point;
 
         // Thickness + decay
+        int maxBufferSize = 16;
+        int effBufferSize = Mathf.Min(maxBufferSize, _lastStrokeBuffer.Size - 1);
+        float thicknessCurveEvalPos = Mathf.Min(1F, (float)(_lastStrokeBuffer.Size - 1 - i) / maxBufferSize); // ([0-16]) / 8 --> 0, 1/8, 2/8, ... 1, 1, 1
         float targetThickness = 0F;
         if (_lastStrokeBuffer.Size > 1) {
-          targetThickness = strokePoint.thickness * previewThicknessCurve.Evaluate((float)(_lastStrokeBuffer.Size - 1 - i) / (_lastStrokeBuffer.Size - 1)) * _thicknessDecayMultiplier;
+          targetThickness = strokePoint.thickness * previewThicknessCurve.Evaluate(thicknessCurveEvalPos) * _thicknessDecayMultiplier;
         }
         if (i > _prevDrawRadii.Count - 1) {
           _prevDrawRadii.Add(targetThickness);
         }
-        _ribbon.Radii[i] = Mathf.Lerp(_prevDrawRadii[i], targetThickness, 0.05F);
+        if (_lastStrokeBuffer.Size - 1 - i < maxBufferSize) {
+          _ribbon.Radii[i] = Mathf.Lerp(_prevDrawRadii[i], targetThickness, 0.05F);
+        }
+        else {
+          _ribbon.Radii[i] = 0F;
+        }
         _prevDrawRadii[i] = _ribbon.Radii[i];
       }
     }

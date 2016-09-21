@@ -14,7 +14,6 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
 
   private PressableUIManager _manager;
   private UIActivator _activator;
-  private UIActivator _preOverlapIgnoreActivator;
 
   protected void OnValidate() {
     OnValidateLayers();
@@ -45,19 +44,6 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
     FixedActivatorUpdate();
   }
 
-  protected void OnEnable() {
-    if (_activator != null) {
-      Debug.Log(this.name + ": Yep, already overlapping an activator");
-      _preOverlapIgnoreActivator = _activator;
-    }
-  }
-
-  protected void OnDisable() {
-    if (this.name.Equals("File Button")) {
-      Debug.Log("File button deactivated");
-    }
-  }
-
   protected void Update() {
     LayerUpdate();
   }
@@ -65,9 +51,6 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
   #region Activator State
 
   public void NotifyClosestActivator(UIActivator activator) {
-    if (this.name.Equals("File Button")) {
-      Debug.Log("File Button got notify for: " + activator.name);
-    }
     ProcessActivator(activator);
   }
 
@@ -80,16 +63,10 @@ public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
   private void ProcessActivator(UIActivator activator) {
     if (!this.isActiveAndEnabled) return;
     if (GetUnsignedWorldPointActivationVolumeDistance(activator.transform.position) < this.transform.InverseTransformVector(Vector3.up * activator.WorldRadius).magnitude) {
-      if (activator != _preOverlapIgnoreActivator) {
-        _activator = activator;
-      }
+      _activator = activator;
     }
     else {
       _activator = null;
-      if (_preOverlapIgnoreActivator != null) {
-        _preOverlapIgnoreActivator = null;
-        Debug.Log(this.name + ": Okay, no longer ignoring any activator");
-      }
     }
   }
 

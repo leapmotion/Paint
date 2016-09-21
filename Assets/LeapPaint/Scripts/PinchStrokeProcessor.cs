@@ -6,7 +6,7 @@ using Leap.Unity.Attributes;
 public class PinchStrokeProcessor : MonoBehaviour {
 
   private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
-  private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.007F;
+  private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.003F;
   private const float MAX_SEGMENT_LENGTH = 0.02F;
   private const float MIN_HAND_DRAWING_LIFETIME = 0.2F;
 
@@ -111,6 +111,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
       isUIDisplayingOnThisHand |= _paintCursor.Handedness == _wearableManager._wearableAnchors[i]._chirality && _wearableManager._wearableAnchors[i].IsDisplaying;
     }
 
+    bool isLoading = _ribbonIO.IsLoading;
+
     bool possibleToActualize = false;
     Color drawColor = _paintCursor.Color;
     if (drawColor.a > 0.99F
@@ -118,6 +120,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
       && !_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)
       && !isUIDisplayingOnThisHand
       && _handLifetime > MIN_HAND_DRAWING_LIFETIME
+      && !isLoading
       ) {
       possibleToActualize = true;
     }

@@ -10,6 +10,11 @@ public class RibbonIO : MonoBehaviour {
 
   public PinchStrokeProcessor _replayProcessor;
 
+  private bool _isLoading = false;
+  public bool IsLoading {
+    get { return _isLoading; }
+  }
+
   public Action<string> OnSaveSuccessful = (x) => { };
 
   private string GetHistoryAsJSON() {
@@ -38,6 +43,35 @@ public class RibbonIO : MonoBehaviour {
       List<StrokePoint> stroke = strokes.strokes[i].strokePoints;
       _replayProcessor.ShortcircuitStrokeToRenderer(stroke);
     }
+  }
+
+  public void LoadAsync() {
+    if (!_isLoading) {
+      _isLoading = true;
+      FlowRunner.StartNew(AsyncLoadViaDisplayerSelected());
+    }
+  }
+
+  private IEnumerator<Flow> AsyncLoadViaDisplayerSelected() {
+    string fileName = _fileDisplayer.GetSelectedFilename();
+
+    yield return Flow.IntoNewThread();
+
+    string strokesJSON = _fileManager.Load(fileName);
+    Strokes strokes = JsonUtility.FromJson<Strokes>(strokesJSON);
+    Debug.Log("Loaded JSON for " + strokes.strokes.Count + " strokes.");
+
+    yield return Flow.IntoUpdate();
+
+    _historyManager.ClearAll();
+
+    for (int i = 0; i < strokes.strokes.Count; i++) {
+      List<StrokePoint> stroke = strokes.strokes[i].strokePoints;
+      _replayProcessor.ShortcircuitStrokeToRenderer(stroke);
+      yield return Flow.IfElapsed(2);
+    }
+
+    _isLoading = false;
   }
 
 }

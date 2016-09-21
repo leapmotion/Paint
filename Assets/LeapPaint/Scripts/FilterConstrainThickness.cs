@@ -5,7 +5,7 @@ using System;
 public class FilterConstrainThickness : IMemoryFilter<StrokePoint> {
 
   public int GetMemorySize() {
-    return 0;
+    return 2;
   }
 
   public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
@@ -39,10 +39,10 @@ public class FilterConstrainThickness : IMemoryFilter<StrokePoint> {
 }
 
 public class FilterSmoothThickness : IMemoryFilter<StrokePoint> {
-  public const int NEIGHBORHOOD = 4;
+  public const int NEIGHBORHOOD = 16;
 
   public int GetMemorySize() {
-    return 0;
+    return NEIGHBORHOOD * 2 + 1;
   }
 
   public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
