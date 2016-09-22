@@ -204,13 +204,22 @@ namespace Leap.Unity.RuntimeGizmos {
     }
 
     protected static bool areGizmosDisabled(Transform transform) {
-      var toggles = transform.GetComponentsInParent<RuntimeGizmoToggle>(includeInactive: true);
-      for (int i = 0; i < toggles.Length; i++) {
-        if (!toggles[i].enabled) {
-          return true;
+      bool isDisabled = false;
+      do {
+        var toggle = transform.GetComponentInParent<RuntimeGizmoToggle>();
+        if (toggle == null) {
+          break;
         }
-      }
-      return false;
+
+        if (!toggle.enabled) {
+          isDisabled = true;
+          break;
+        }
+
+        transform = transform.parent;
+      } while (transform != null);
+
+      return isDisabled;
     }
 
     private void assignDrawerParams() {

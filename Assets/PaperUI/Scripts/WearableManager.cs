@@ -251,13 +251,12 @@ public class WearableManager : MonoBehaviour {
         else {
           estPositionToTarget = new Vector3(estPositionToTarget.x, 0F, estPositionToTarget.z);
           if (estPositionToTarget.magnitude < 0.00001F) {
-            Debug.Log("Too close on XZ -- doing camera logic.");
+            Debug.LogWarning("Workstation position validation: Too close on XZ -- doing camera logic.");
             Vector3 cameraXZAlignedEstWorkstationPos = new Vector3(estPosition.x, Camera.main.transform.position.y, estPosition.z);
             Vector3 estOffsetDirection = Quaternion.LookRotation(cameraXZAlignedEstWorkstationPos - Camera.main.transform.position) * Vector3.right;
             targetPosition = estPosition + estOffsetDirection * totalDangerRadius;
           }
           else {
-            Debug.Log("Can use XZ offset direction, using.");
             targetPosition = estPosition + estPositionToTarget.normalized * totalDangerRadius;
           }
           targetPosition = new Vector3(targetPosition.x, targetPosHeight, targetPosition.z);

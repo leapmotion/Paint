@@ -18,52 +18,7 @@ using System.Runtime.InteropServices;
             return testFrame;
         }
 
-        public static Hand MakeTestHand(int frameId, int handId, bool isLeft) {
-          List<Finger> fingers = new List<Finger>(5);
-          fingers.Add(MakeThumb(frameId, handId, isLeft));
-          fingers.Add(MakeIndexFinger(frameId, handId, isLeft));
-          fingers.Add(MakeMiddleFinger(frameId, handId, isLeft));
-          fingers.Add(MakeRingFinger(frameId, handId, isLeft));
-          fingers.Add(MakePinky(frameId, handId, isLeft));
-
-          Vector armWrist = new Vector(-7.05809944059f, 4.0f, 50.0f);
-          Vector elbow = armWrist + 250f * Vector.Backward;
-
-          // Adrian: The previous "armBasis" used "elbow" as a translation component.
-          Arm arm = new Arm(elbow, armWrist, (elbow + armWrist) / 2, Vector.Forward, 250f, 41f, LeapQuaternion.Identity);
-          Hand testHand = new Hand(frameId,
-          handId,
-          1.0f,
-          0.0f,
-          0.0f,
-          0.0f,
-          0.0f,
-          85f,
-          isLeft,
-          0.0f,
-          arm,
-              fingers,
-              new Vector(0, 0, 0),
-              new Vector(0, 0, 0),
-              new Vector(0, 0, 0),
-              Vector.Down,
-              Vector.Forward,
-              new Vector(-4.36385750984f, 6.5f, 31.0111342526f)
-          );
-          LeapTransform restPosition = LeapTransform.Identity;
-          //restPosition.rotation = RotationFromTo(Vector.Up, Vector.Left).Multiply(RotationFromTo(Vector.Up, Vector.Left));
-          restPosition.rotation = AngleAxis(0F * Constants.DEG_TO_RAD, Vector.Forward);
-          if (isLeft) {
-            restPosition.translation = new Vector(160f, 270f, 0f);
-          }
-          else {
-            restPosition.translation = new Vector(-160f, 270f, 0f);
-            restPosition.MirrorX();
-          }
-          return testHand.TransformedCopy(restPosition);
-        }
-
-        public static Hand MakeTestHand__ORIG(int frameId, int handId, bool isLeft){
+        public static Hand MakeTestHand(int frameId, int handId, bool isLeft){
             List<Finger> fingers = new List<Finger>(5);
             fingers.Add(MakeThumb (frameId, handId, isLeft));
             fingers.Add(MakeIndexFinger (frameId, handId, isLeft));
@@ -92,6 +47,7 @@ using System.Runtime.InteropServices;
                 new Vector(0,0,0),
                 new Vector(0,0,0),
                 Vector.Down,
+                LeapQuaternion.Identity,
                 Vector.Forward,
                 new Vector(-4.36385750984f, 6.5f, 31.0111342526f)
             );

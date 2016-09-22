@@ -23,9 +23,9 @@ public class EmergeableBehaviour : MonoBehaviour {
   public SoundEffect _vanishEffect;
 
   public bool _seperateWorkstationEffect = false;
-  [DisableIf("_seperateWorkstationEffect", equalTo: false)]
+  [DisableIf("_seperateWorkstationEffect", isEqualTo: false)]
   public SoundEffect _workstationEmergeEffect;
-  [DisableIf("_seperateWorkstationEffect", equalTo: false)]
+  [DisableIf("_seperateWorkstationEffect", isEqualTo: false)]
   public SoundEffect _workstationVanishEffect;
 
   public Action OnBegunEmerging = () => { };

@@ -56,17 +56,17 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   protected virtual void Update() {
     float pinchRadius = _pinchDetector.Distance / 2;
     _radius = Mathf.Max(_minRadius, pinchRadius);
-    float alpha = 1F - ((_radius - _minRadius) / (_maxRadius - _minRadius));
+    float cursorAlpha = _radius.Map(_minRadius, _maxRadius, 1F, 0F);
 
     if (!_isPaintingPossible) {
-      alpha = 0F;
+      cursorAlpha = 0F;
     }
     else if (!_canBeginPainting && !_isPainting) {
-      alpha = 0F;
+      cursorAlpha = 0F;
     }
 
     // Disappearing hands when drawing
-    float handAlphaTarget = 1F - alpha;
+    float handAlphaTarget = (1F - cursorAlpha).Map(0F, 1F, 0.3F, 1F);
     _smoothedHandAlpha = Mathf.Lerp(_smoothedHandAlpha, handAlphaTarget, 0.2F);
     if (_smoothedHandAlpha < 0.01F) {
       _ghostableHandRenderer.enabled = false;
@@ -85,13 +85,9 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
         _ghostableHandMat.color = new Color(ghostHandColor.r, ghostHandColor.g, ghostHandColor.b, _smoothedHandAlpha);
       }
     }
-    // TODO: DELETEME! special fix for caleb
-    _indexTipColorRenderer.enabled = true;
-    _ghostableHandRenderer.enabled = true;
-    _ghostableHandRenderer.material = _nonGhostableHandMat;
 
-    _cursorColor = Color.Lerp(_cursorColor, new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, alpha), 0.3F);
-    _drawBeginMarkerCircleColor = Color.Lerp(_drawBeginMarkerCircleColor, new Color(_drawBeginMarkerCircleColor.r, _drawBeginMarkerCircleColor.g, _drawBeginMarkerCircleColor.b, alpha), 0.3F);
+    _cursorColor = Color.Lerp(_cursorColor, new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, cursorAlpha), 0.3F);
+    _drawBeginMarkerCircleColor = Color.Lerp(_drawBeginMarkerCircleColor, new Color(_drawBeginMarkerCircleColor.r, _drawBeginMarkerCircleColor.g, _drawBeginMarkerCircleColor.b, cursorAlpha), 0.3F);
   }
 
   public void NotifyPossibleToActualize(bool isPossible) {

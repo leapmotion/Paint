@@ -18,7 +18,7 @@ public class MusicPlayer : MonoBehaviour {
       }
 		}
 
-    if (_shouldPlay) {
+    if (_shouldPlay && !Application.isEditor) {
       StartMusic();
     }
   }

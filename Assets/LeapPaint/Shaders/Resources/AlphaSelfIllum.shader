@@ -9,7 +9,7 @@ Shader "Unlit/AlphaSelfIllum" {
        ZWrite Off
        Cull Back
        Blend SrcAlpha OneMinusSrcAlpha
-       Tags {Queue=Transparent}
+       Tags { Queue = Transparent }
        SubShader {
             Material {
                Emission [_Color]

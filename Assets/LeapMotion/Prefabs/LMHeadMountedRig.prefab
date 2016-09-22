@@ -19,6 +19,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &166928
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 483344}
+  m_Layer: 0
+  m_Name: PhysicsModels
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &167028
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,11 +105,12 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 167028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.9268918, y: -1.6644654, z: 9.454739}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 411020}
+  - {fileID: 483344}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &437796
@@ -124,6 +140,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 437796}
   m_RootOrder: 0
+--- !u!4 &483344
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 166928}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 414974}
+  m_RootOrder: 1
 --- !u!20 &2049984
 Camera:
   m_ObjectHideFlags: 1
@@ -132,7 +161,7 @@ Camera:
   m_GameObject: {fileID: 120602}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.32352942, g: 0.32352942, b: 0.32352942, a: 0.019607844}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -178,9 +207,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _deviceOffsets:
   - DeviceName: oculus
-    HeightOffset: 0
-  - DeviceName: openvr
-    HeightOffset: 1.3
+    HeightOffset: 1
 --- !u!114 &11435740
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -209,10 +236,10 @@ MonoBehaviour:
   recenter: 114
   tweenImageWarping: 0
   tweenRotationalWarping: 1
-  tweenPositionalWarping: 1
-  syncMode: 1
-  allowManualTimeAlignment: 1
-  warpingAdjustment: 25
+  tweenPositionalWarping: 0
+  syncMode: 0
+  allowManualTimeAlignment: 0
+  warpingAdjustment: 60
   unlockHold: 0
   moreRewind: 276
   lessRewind: 275
@@ -227,28 +254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c592f16851a620743868a31232613370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ModelsParent: {fileID: 0}
-  ModelPool:
-  - GroupName: Rigged Hands
-    _handPool: {fileID: 0}
-    LeftModel: {fileID: 0}
-    IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
-    IsRightToBeSpawned: 0
-    modelList: []
-    modelsCheckedOut: []
-    IsEnabled: 1
-    CanDuplicate: 0
-  - GroupName: Attachment Hands
-    _handPool: {fileID: 0}
-    LeftModel: {fileID: 0}
-    IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
-    IsRightToBeSpawned: 0
-    modelList: []
-    modelsCheckedOut: []
-    IsEnabled: 1
-    CanDuplicate: 0
+  ModelPool: []
 --- !u!114 &11451106
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -288,10 +294,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isHeadMounted: 1
   _temporalWarping: {fileID: 11442328}
-  _reuseFramesForPhysics: 1
   _overrideDeviceType: 1
   _overrideDeviceTypeWith: 1
-  _useInterpolation: 1
+  _useInterpolation: 0
   _interpolationDelay: 15
 --- !u!1001 &100100000
 Prefab:
