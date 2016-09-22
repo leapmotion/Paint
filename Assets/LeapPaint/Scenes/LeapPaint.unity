@@ -2654,13 +2654,13 @@ SkinnedMeshRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 257090990}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_MotionVectors: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_MotionVectors: 0
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: edf36e464dbdaf946a611ae5228a5310, type: 2}
+  - {fileID: 2100000, guid: 1568e43ce5855b74e9182d5c71f773ee, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -9314,13 +9314,13 @@ SkinnedMeshRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 921923601}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_MotionVectors: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_MotionVectors: 0
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 4d8fa28ecef433f4f9a69332cf33de0c, type: 2}
+  - {fileID: 2100000, guid: 1b2cbbbeff2a0cf499ae6db9809385ec, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -12034,8 +12034,9 @@ MonoBehaviour:
   _indexTipColor: {fileID: 1886534745}
   _ghostableHandRenderer: {fileID: 921923603}
   _ghostableHandMat: {fileID: 2100000, guid: 4d8fa28ecef433f4f9a69332cf33de0c, type: 2}
+  _nonGhostableHandMat: {fileID: 2100000, guid: 1b2cbbbeff2a0cf499ae6db9809385ec,
+    type: 2}
   _indexTipColorRenderer: {fileID: 1886534743}
-  _indexTipColorMat: {fileID: 0}
   _handModel: {fileID: 0}
 --- !u!1 &1234234887
 GameObject:
@@ -16325,8 +16326,9 @@ MonoBehaviour:
   _indexTipColor: {fileID: 879182407}
   _ghostableHandRenderer: {fileID: 257090992}
   _ghostableHandMat: {fileID: 2100000, guid: edf36e464dbdaf946a611ae5228a5310, type: 2}
+  _nonGhostableHandMat: {fileID: 2100000, guid: 1568e43ce5855b74e9182d5c71f773ee,
+    type: 2}
   _indexTipColorRenderer: {fileID: 879182405}
-  _indexTipColorMat: {fileID: 0}
   _handModel: {fileID: 0}
 --- !u!1001 &1734090457
 Prefab:

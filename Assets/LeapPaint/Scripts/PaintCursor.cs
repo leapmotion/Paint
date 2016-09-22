@@ -9,8 +9,8 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   public IndexTipColor _indexTipColor;
   public Renderer _ghostableHandRenderer;
   public Material _ghostableHandMat;
+  public Material _nonGhostableHandMat;
   public Renderer _indexTipColorRenderer;
-  public Material _indexTipColorMat;
 
   [HideInInspector]
   public IHandModel _handModel;
@@ -24,6 +24,7 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   private bool _isPaintingPossible = true;
   private bool _canBeginPainting = true;
   private bool _isPainting = false;
+  private float _smoothedHandAlpha = 1F;
 
   public Vector3 Position {
     get { return this.transform.position; }
@@ -65,17 +66,29 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
     }
 
     // Disappearing hands when drawing
-    if (1F - alpha < 0.0001F) {
+    float handAlphaTarget = 1F - alpha;
+    _smoothedHandAlpha = Mathf.Lerp(_smoothedHandAlpha, handAlphaTarget, 0.2F);
+    if (_smoothedHandAlpha < 0.01F) {
       _ghostableHandRenderer.enabled = false;
       _indexTipColorRenderer.enabled = false;
     }
     else {
       _ghostableHandRenderer.enabled = true;
-      Color ghostHandColor = _ghostableHandMat.color;
-      _ghostableHandMat.color = new Color(ghostHandColor.r, ghostHandColor.g, ghostHandColor.b, 1F - alpha);
-
       _indexTipColorRenderer.enabled = true;
+
+      if (_smoothedHandAlpha > 0.99F) {
+        _ghostableHandRenderer.material = _nonGhostableHandMat;
+      }
+      else {
+        _ghostableHandRenderer.material = _ghostableHandMat;
+        Color ghostHandColor = _ghostableHandMat.color;
+        _ghostableHandMat.color = new Color(ghostHandColor.r, ghostHandColor.g, ghostHandColor.b, _smoothedHandAlpha);
+      }
     }
+    // TODO: DELETEME! special fix for caleb
+    _indexTipColorRenderer.enabled = true;
+    _ghostableHandRenderer.enabled = true;
+    _ghostableHandRenderer.material = _nonGhostableHandMat;
 
     _cursorColor = Color.Lerp(_cursorColor, new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, alpha), 0.3F);
     _drawBeginMarkerCircleColor = Color.Lerp(_drawBeginMarkerCircleColor, new Color(_drawBeginMarkerCircleColor.r, _drawBeginMarkerCircleColor.g, _drawBeginMarkerCircleColor.b, alpha), 0.3F);
