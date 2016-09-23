@@ -44,8 +44,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
   private Leap.Hand _hand;
 
-  private StrokeRibbonRenderer _ribbonRenderer;
-  private StrokeBufferRibbonRenderer _previewRibbonRenderer;
+  //private StrokeRibbonRenderer _ribbonRenderer;
 
   private Vector3 _prevPosition;
   private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
@@ -68,17 +67,21 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _strokeProcessor.RegisterStrokeFilter(new FilterSmoothThickness());
 
     // Set up and register renderers.
+    //GameObject rendererObj = new GameObject();
+    //rendererObj.name = "Stroke Ribbon Renderer";
+    //_ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
+    //_ribbonRenderer.OnMeshStrokeFinalized += DoOnMeshStrokeFinalized;
+    //_strokeProcessor.RegisterStrokeRenderer(_ribbonRenderer);
     GameObject rendererObj = new GameObject();
-    rendererObj.name = "Stroke Ribbon Renderer";
-    _ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
-    _ribbonRenderer.OnMeshStrokeFinalized += DoOnMeshStrokeFinalized;
-    _strokeProcessor.RegisterStrokeRenderer(_ribbonRenderer);
+    rendererObj.name = "Thick Ribbon Renderer";
+    var thickRibbonRenderer = rendererObj.AddComponent<ThickRibbonRenderer>();
+    _strokeProcessor.RegisterStrokeRenderer(thickRibbonRenderer);
 
-    GameObject previewRendererObj = new GameObject();
-    previewRendererObj.name = "Stroke Preview Ribbon Renderer";
-    _previewRibbonRenderer = previewRendererObj.AddComponent<StrokeBufferRibbonRenderer>();
-    _previewRibbonRenderer.previewThicknessCurve = _thicknessCurve;
-    _strokeProcessor.RegisterPreviewStrokeRenderer(_previewRibbonRenderer);
+    //GameObject previewRendererObj = new GameObject();
+    //previewRendererObj.name = "Stroke Preview Ribbon Renderer";
+    //var previewRibbonRenderer = previewRendererObj.AddComponent<StrokeBufferRibbonRenderer>();
+    //previewRibbonRenderer.previewThicknessCurve = _thicknessCurve;
+    //_strokeProcessor.RegisterPreviewStrokeRenderer(previewRibbonRenderer);
   }
 
   void Update() {
@@ -304,9 +307,10 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   // Used to produce strokes from stroke objects, e.g., when loading scenes.
   public void ShortcircuitStrokeToRenderer(List<StrokePoint> stroke) {
-    _ribbonRenderer.InitializeRenderer();
-    _ribbonRenderer.RefreshRenderer(stroke, stroke.Count - 1);
-    _ribbonRenderer.FinalizeRenderer();
+    // TODO: FIXME, BREAKS LOADING
+    //_ribbonRenderer.InitializeRenderer();
+    //_ribbonRenderer.UpdateRenderer(stroke, stroke.Count - 1);
+    //_ribbonRenderer.FinalizeRenderer();
   }
 
 }

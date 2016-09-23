@@ -39,7 +39,7 @@ public class StrokeRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizm
     _renderer.material = _meshMaterial;
   }
 
-  public void RefreshRenderer(List<StrokePoint> stroke, int maxChangedFromEnd) {
+  public void UpdateRenderer(List<StrokePoint> stroke, int maxChangedFromEnd) {
     int startIdx = Mathf.Max(0, stroke.Count - 1 - maxChangedFromEnd);
     int endIdx = stroke.Count - 1;
     for (int i = startIdx; i <= endIdx; i++) {

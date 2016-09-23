@@ -160,7 +160,7 @@ public class StrokeProcessor {
 
   private void UpdateStrokeRenderers() {
     for (int i = 0; i < _strokeRenderers.Count; i++) {
-      _strokeRenderers[i].RefreshRenderer(_strokeOutput, _maxMemory);
+      _strokeRenderers[i].UpdateRenderer(_strokeOutput, _maxMemory);
     }
   }
 
