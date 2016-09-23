@@ -5,8 +5,8 @@ using Leap.Unity.Attributes;
 
 public class PinchStrokeProcessor : MonoBehaviour {
 
-  private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
-  private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.003F;
+  private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.01F; //0.001F;
+  private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.01F; //0.003F;
   private const float MAX_SEGMENT_LENGTH = 0.02F;
   private const float MIN_HAND_DRAWING_LIFETIME = 0.2F;
 
@@ -15,6 +15,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   public WearableManager _wearableManager;
   public HistoryManager _historyManager;
   public GameObject _ribbonParentObject;
+  public Material _ribbonMaterial;
   public RibbonIO _ribbonIO;
   public FilterIndexTipColor _colorFilter;
   public FilterApplyThickness _thicknessFilter;
@@ -75,6 +76,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
     GameObject rendererObj = new GameObject();
     rendererObj.name = "Thick Ribbon Renderer";
     var thickRibbonRenderer = rendererObj.AddComponent<ThickRibbonRenderer>();
+    thickRibbonRenderer._finalizedRibbonParent = _ribbonParentObject;
+    thickRibbonRenderer._ribbonMaterial = _ribbonMaterial;
     _strokeProcessor.RegisterStrokeRenderer(thickRibbonRenderer);
 
     //GameObject previewRendererObj = new GameObject();
