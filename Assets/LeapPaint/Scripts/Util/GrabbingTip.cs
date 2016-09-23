@@ -75,13 +75,14 @@ public class GrabbingTip : MonoBehaviour {
   private void DoOnWorkstationActivated() {
     if (!_workstationTipGiven) {
       text.gameObject.SetActive(true);
-      text.text = "You can put the bubble back\nin your hand when you're done.";
+      text.text = "Grab the bubble to put it back\nin your hand when you're done.";
       _workstationTipGiven = true;
       this.transform.position = thrownMarble.transform.position - (Vector3.Cross(thrownMarble.transform.position - Camera.main.transform.position, Vector3.up).normalized * 0.32f) + Vector3.up * 10F;
     }
   }
 
   // Update is called once per frame
+  private bool _showWorkstationTipLine = false;
   void Update() {
     Vector3 marblePos = Vector3.zero;
     if (isShowing) {
@@ -103,8 +104,16 @@ public class GrabbingTip : MonoBehaviour {
     else if (_workstationTipGiven && text.gameObject.activeInHierarchy) {
       transform.position = Vector3.Lerp(transform.position, thrownMarble.transform.position - (Vector3.Cross(thrownMarble.transform.position - Camera.main.transform.position, Vector3.up).normalized * 0.32f), 0.1f);
       transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position);
+
+      firstLine.SetPosition(0, Vector3.Lerp(transform.position, thrownMarble.transform.position, 0.5F));
+      firstLine.SetPosition(1, Vector3.Lerp(transform.position, thrownMarble.transform.position, 0.9F));
+
+      if (!_showWorkstationTipLine && Vector3.Distance(transform.position, thrownMarble.transform.position) < 0.4F) {
+        _showWorkstationTipLine = true;
+      }
     }
-    firstLine.enabled = isShowing;
+
+    firstLine.enabled = isShowing || _showWorkstationTipLine;
   }
 
   public void SetOpacity(Color color) {

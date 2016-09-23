@@ -58,10 +58,8 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _strokeProcessor = new StrokeProcessor();
 
     // Set up and register filters.
-    FilterPositionMovingAverage movingAvgFilter = new FilterPositionMovingAverage(6);
-    _strokeProcessor.RegisterStrokeFilter(movingAvgFilter);
-    FilterPitchYawRoll pitchYawRollFilter = new FilterPitchYawRoll();
-    _strokeProcessor.RegisterStrokeFilter(pitchYawRollFilter);
+    _strokeProcessor.RegisterStrokeFilter(new FilterPositionMovingAverage());
+    _strokeProcessor.RegisterStrokeFilter(new FilterPitchYawRoll());
 
     _strokeProcessor.RegisterStrokeFilter(_colorFilter);
     _strokeProcessor.RegisterStrokeFilter(_thicknessFilter);

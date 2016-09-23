@@ -7,6 +7,7 @@ public class IndexTipColor : MonoBehaviour {
   public IHandModel _hand;
   public Renderer _tipMeshRenderer;
   public Color _startingColor = Color.white;
+  public PaintCursor _cursor;
 
   [Header("Color Marble")]
   public Material _colorMarbleMaterial;
@@ -17,8 +18,7 @@ public class IndexTipColor : MonoBehaviour {
   public SoundEffect _dipEffect;
   private float _canPlayDipTime;
 
-  private Color _color;
-  private Material _material;
+  private Color _paintColor;
 
   public bool IsClean {
     get { return GetColor().a < 0.001F; }
@@ -28,14 +28,19 @@ public class IndexTipColor : MonoBehaviour {
     this.SetColor(_startingColor);
   }
 
+  protected void Update() {
+    _tipMeshRenderer.material.color = new Color(_paintColor.r, _paintColor.g, _paintColor.b, _cursor.GetHandAlpha());
+  }
+
   public Color GetColor() {
-    return _color;
+    return _paintColor;
   }
 
   public void SetColor(Color color) {
-    _color = color;
-    _tipMeshRenderer.material.color = color;
-    if (color.a < 0.01F) {
+    _paintColor = color;
+    _tipMeshRenderer.material.color = new Color(color.r, color.g, color.b, _cursor.GetHandAlpha());
+
+    if (_paintColor.a < 0.01F) {
       _colorMarbleRenderer.material = _transparentMarbleMaterial;
     }
     else {

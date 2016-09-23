@@ -3,9 +3,13 @@ using System.Collections;
 using Leap.Unity.RuntimeGizmos;
 using Leap.Unity;
 
-public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
+public class PaintCursor : MonoBehaviour {
 
   public PinchDetector _pinchDetector;
+  public RectToroid _rectToroidPinchTarget;
+  public MeshRenderer _rectToroidPinchTargetRenderer;
+  public RectToroid _rectToroidPinchState;
+  public MeshRenderer _rectToroidPinchStateRenderer;
   public IndexTipColor _indexTipColor;
   public Renderer _ghostableHandRenderer;
   public Material _ghostableHandMat;
@@ -15,7 +19,7 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   [HideInInspector]
   public IHandModel _handModel;
 
-  private float _thicknessMult = 2F;
+  private float _thicknessMult = 1.5F;
   private float _radius = 0F;
   private float _minRadius = 0.02F;
   private float _maxRadius = 0.03F;
@@ -54,10 +58,12 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
   }
 
   protected virtual void Update() {
+    // Calc radius
     float pinchRadius = _pinchDetector.Distance / 2;
     _radius = Mathf.Max(_minRadius, pinchRadius);
-    float cursorAlpha = _radius.Map(_minRadius, _maxRadius, 1F, 0F);
 
+    // Calc fade
+    float cursorAlpha = _radius.Map(_minRadius, _maxRadius, 1F, 0F);
     if (!_isPaintingPossible) {
       cursorAlpha = 0F;
     }
@@ -65,7 +71,19 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
       cursorAlpha = 0F;
     }
 
-    // Disappearing hands when drawing
+    // Set cursor radius
+    if (_rectToroidPinchTarget.Radius != _minRadius) {
+      _rectToroidPinchTarget.Radius = _minRadius * _thicknessMult;
+    }
+    _rectToroidPinchState.Radius = _radius * _thicknessMult;
+
+    // Fade cursor
+    _drawBeginMarkerCircleColor = Color.Lerp(_drawBeginMarkerCircleColor, new Color(_drawBeginMarkerCircleColor.r, _drawBeginMarkerCircleColor.g, _drawBeginMarkerCircleColor.b, cursorAlpha), 0.3F);
+    _rectToroidPinchTargetRenderer.material.color = _drawBeginMarkerCircleColor;
+    _cursorColor = Color.Lerp(_cursorColor, new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, cursorAlpha), 0.3F);
+    _rectToroidPinchStateRenderer.material.color = _cursorColor;
+
+    // Fade hands when drawing
     float handAlphaTarget = (1F - cursorAlpha).Map(0F, 1F, 0.3F, 1F);
     _smoothedHandAlpha = Mathf.Lerp(_smoothedHandAlpha, handAlphaTarget, 0.2F);
     if (_smoothedHandAlpha < 0.01F) {
@@ -85,9 +103,6 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
         _ghostableHandMat.color = new Color(ghostHandColor.r, ghostHandColor.g, ghostHandColor.b, _smoothedHandAlpha);
       }
     }
-
-    _cursorColor = Color.Lerp(_cursorColor, new Color(_cursorColor.r, _cursorColor.g, _cursorColor.b, cursorAlpha), 0.3F);
-    _drawBeginMarkerCircleColor = Color.Lerp(_drawBeginMarkerCircleColor, new Color(_drawBeginMarkerCircleColor.r, _drawBeginMarkerCircleColor.g, _drawBeginMarkerCircleColor.b, cursorAlpha), 0.3F);
   }
 
   public void NotifyPossibleToActualize(bool isPossible) {
@@ -102,27 +117,9 @@ public class PaintCursor : MonoBehaviour, IRuntimeGizmoComponent {
     _isPainting = isPainting;
   }
 
-  #region Gizmos
-
-  private bool _gizmosEnabled = true;
-
-  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-    if (_gizmosEnabled) {
-      drawer.PushMatrix();
-
-      drawer.matrix = this.transform.localToWorldMatrix;
-
-      drawer.color = _drawBeginMarkerCircleColor;
-      drawer.DrawCircle(Vector3.zero, _minRadius * _thicknessMult, Vector3.up);
-
-      drawer.color = _cursorColor;
-      drawer.DrawCircle(Vector3.zero, _radius * _thicknessMult, Vector3.up);
-
-      drawer.PopMatrix();
-    }
+  public float GetHandAlpha() {
+    return _smoothedHandAlpha;
   }
-
-  #endregion
 
 }
 

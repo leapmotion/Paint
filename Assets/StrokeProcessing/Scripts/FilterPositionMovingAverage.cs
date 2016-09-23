@@ -1,22 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Leap.Unity.Attributes;
 
 public class FilterPositionMovingAverage : IMemoryFilter<StrokePoint> {
 
-  private int _windowRadius = 0;
-
-  public FilterPositionMovingAverage(int windowRadius) {
-    _windowRadius = windowRadius;
-  }
+  private const int NEIGHBORHOOD = 16;
 
   public int GetMemorySize() {
-    return _windowRadius * 2;
+    return NEIGHBORHOOD * 2;
   }
 
   public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
-    for (int i = data.Size / 2; i >= 0; i--) {
+    for (int i = Mathf.Min(data.Size - 1, NEIGHBORHOOD); i >= 0; i--) {
       StrokePoint point = data.GetFromEnd(i);
-      point.position = CalcNeighborAverage(i, _windowRadius, data);
+      point.position = Vector3.Lerp(point.position, CalcNeighborAverage(i, NEIGHBORHOOD, data), 1F / (data.Size - NEIGHBORHOOD));
       data.SetFromEnd(i, point);
     }
   }
