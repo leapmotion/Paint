@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FilterIndexTipColor : MonoBehaviour, IMemoryFilter<StrokePoint> {
+public class FilterIndexTipColor : MonoBehaviour, IBufferFilter<StrokePoint> {
 
   public IndexTipColor _indexTipColor;
 
-  public int GetMemorySize() {
+  public int GetMinimumBufferSize() {
     return 0;
   }
 

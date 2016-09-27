@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-public class FilterNaiveCanvasAlignment : IMemoryFilter<StrokePoint> {
+public class FilterNaiveCanvasAlignment : IBufferFilter<StrokePoint> {
 
-  public int GetMemorySize() {
+  public int GetMinimumBufferSize() {
     return 1;
   }
 

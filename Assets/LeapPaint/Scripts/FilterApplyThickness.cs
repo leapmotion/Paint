@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FilterApplyThickness : MonoBehaviour, IMemoryFilter<StrokePoint> {
+public class FilterApplyThickness : MonoBehaviour, IBufferFilter<StrokePoint> {
 
   private float _thickness = 0.002F;
   public float _lastNormalizedValue = 0F;
@@ -15,7 +15,7 @@ public class FilterApplyThickness : MonoBehaviour, IMemoryFilter<StrokePoint> {
     _lastNormalizedValue = normalizedValue;
   }
 
-  public int GetMemorySize() {
+  public int GetMinimumBufferSize() {
     return 0;
   }
 

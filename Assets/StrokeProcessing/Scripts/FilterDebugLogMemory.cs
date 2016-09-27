@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Text;
 
-public class FilterDebugLogMemory : IMemoryFilter<StrokePoint> {
+public class FilterDebugLogMemory : IBufferFilter<StrokePoint> {
 
-  public int GetMemorySize() {
+  public int GetMinimumBufferSize() {
     return 16;
   }
 

@@ -1,21 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 public class StrokeProcessor {
 
   #region Stroke State
 
   // Stroke processing configuration
-  private List<IMemoryFilter<StrokePoint>> _strokeFilters = null;
+  private List<IBufferFilter<StrokePoint>> _strokeFilters = null;
   private int _maxMemory = 0;
 
   // Stroke state
   private bool _isBufferingStroke = false;
   private bool _isActualizingStroke = false;
+
   private RingBuffer<StrokePoint> _strokeBuffer;
-  private RingBuffer<int> _strokeIdxBuffer;
-  private int _curStrokeIdx = 0;
+  private RingBuffer<int> _actualizedStrokeIdxBuffer;
+  private int _actualizedStrokeIdx = 0;
+
   private List<StrokePoint> _strokeOutput = null;
   private int _outputBufferEndOffset = 0;
 
@@ -29,25 +30,25 @@ public class StrokeProcessor {
   private List<IStrokeBufferRenderer> _strokeBufferRenderers = null;
 
   public StrokeProcessor() {
-    _strokeFilters = new List<IMemoryFilter<StrokePoint>>();
+    _strokeFilters = new List<IBufferFilter<StrokePoint>>();
     _strokeRenderers = new List<IStrokeRenderer>();
     _strokeBufferRenderers = new List<IStrokeBufferRenderer>();
     _strokeOutput = new List<StrokePoint>();
   }
 
-  public void RegisterStrokeFilter(IMemoryFilter<StrokePoint> strokeFilter) {
+  public void RegisterStrokeFilter(IBufferFilter<StrokePoint> strokeFilter) {
     _strokeFilters.Add(strokeFilter);
 
-    int filterMemorySize = strokeFilter.GetMemorySize();
+    int filterMemorySize = strokeFilter.GetMinimumBufferSize();
     if (filterMemorySize + 1 > _maxMemory) {
-      _maxMemory = filterMemorySize + 1;
+      _maxMemory = Mathf.Max(1, filterMemorySize);
     }
 
     if (_isBufferingStroke) {
       Debug.LogWarning("[StrokeProcessor] Registering stroke filters destroys the current stroke processing queue.");
     }
     _strokeBuffer = new RingBuffer<StrokePoint>(_maxMemory);
-    _strokeIdxBuffer = new RingBuffer<int>(_maxMemory);
+    _actualizedStrokeIdxBuffer = new RingBuffer<int>(_maxMemory);
   }
 
   public void RegisterStrokeRenderer(IStrokeRenderer strokeRenderer) {
@@ -72,7 +73,7 @@ public class StrokeProcessor {
     _isBufferingStroke = true;
 
     _strokeBuffer.Clear();
-    _strokeIdxBuffer.Clear();
+    _actualizedStrokeIdxBuffer.Clear();
 
     for (int i = 0; i < _strokeFilters.Count; i++) {
       _strokeFilters[i].Reset();
@@ -92,7 +93,8 @@ public class StrokeProcessor {
       return;
     }
     _isActualizingStroke = true;
-    _strokeOutput = new List<StrokePoint>(); // can't clear -- other objects have references to the old stroke output.
+    _actualizedStrokeIdx = 0;
+     _strokeOutput = new List<StrokePoint>(); // can't clear -- other objects have references to the old stroke output.
     _outputBufferEndOffset = 0;
 
     for (int i = 0; i < _strokeRenderers.Count; i++) {
@@ -109,14 +111,16 @@ public class StrokeProcessor {
   // at the end.
   private void UpdateStroke(StrokePoint strokePoint, bool shouldUpdateRenderers=true) {
     _strokeBuffer.Add(strokePoint);
-    _strokeIdxBuffer.Add(_curStrokeIdx++);
+    _actualizedStrokeIdxBuffer.Add(-1);
 
     // Apply all filters in order on current stroke buffer.
     for (int i = 0; i < _strokeFilters.Count; i++) {
-      _strokeFilters[i].Process(_strokeBuffer, _strokeIdxBuffer);
+      _strokeFilters[i].Process(_strokeBuffer, _actualizedStrokeIdxBuffer);
     }
 
     if (_isActualizingStroke) {
+      _actualizedStrokeIdxBuffer.SetFromEnd(0, _actualizedStrokeIdx++);
+
       // Output points from the buffer to the actualized stroke output.
       int offset = Mathf.Min(_outputBufferEndOffset, _strokeBuffer.Size - 1);
       for (int i = 0; i <= offset; i++) {

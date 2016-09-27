@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class HistoryManager : MonoBehaviour {
 
-  public GameObject redoneObjectParent;
+  public GameObject ribbonObjectParent;
   public GameObject undoneObjectParent;
 
   private List<GameObject> _undoHistory = new List<GameObject>();
@@ -40,7 +40,7 @@ public class HistoryManager : MonoBehaviour {
       _undoHistory.Add(redoneAction);
       _redoHistory.RemoveAt(_redoHistory.Count - 1);
       redoneAction.SetActive(true);
-      redoneAction.transform.parent = redoneObjectParent.transform;
+      redoneAction.transform.parent = ribbonObjectParent.transform;
 
       Stroke redoneStroke = _undoneStrokes[_undoneStrokes.Count - 1];
       _strokes.Add(redoneStroke);

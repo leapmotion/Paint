@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FilterPitchYawRoll : IMemoryFilter<StrokePoint> {
+public class FilterPitchYawRoll : IBufferFilter<StrokePoint> {
 
   private const float RAD_2_DEG = 360F / (2 * Mathf.PI);
 
-  public int GetMemorySize() {
+  public int GetMinimumBufferSize() {
     return 2;
   }
 

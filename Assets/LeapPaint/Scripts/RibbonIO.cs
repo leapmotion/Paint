@@ -27,7 +27,8 @@ public class RibbonIO : MonoBehaviour {
     string fileName = "My Painting " + DateTime.Now.ToString("MM-dd_HH-mm-ss");
     string json = GetHistoryAsJSON();
     _fileManager.Save(fileName + ".json", json);
-    _fileManager.Save(fileName + ".obj", ObjExporter.makeObj(true, "LeapPaintMesh", _replayProcessor._ribbonParentObject).ToString());
+    _fileManager.Save(fileName + ".ply", PlyExporter.MakePly(_replayProcessor._ribbonParentObject));
+    //_fileManager.Save(fileName + ".obj", ObjExporter.makeObj(true, "LeapPaintMesh", _replayProcessor._ribbonParentObject).ToString());
     OnSaveSuccessful.Invoke(fileName);
   }
 
@@ -68,7 +69,8 @@ public class RibbonIO : MonoBehaviour {
     for (int i = 0; i < strokes.strokes.Count; i++) {
       List<StrokePoint> stroke = strokes.strokes[i].strokePoints;
       _replayProcessor.ShortcircuitStrokeToRenderer(stroke);
-      yield return Flow.IfElapsed(2);
+      //yield return Flow.ForFrames(8); // one per 8 frames is a good "splash screen" speed
+      yield return Flow.IfElapsed(2); // this is a good quick-load speed
     }
 
     _isLoading = false;

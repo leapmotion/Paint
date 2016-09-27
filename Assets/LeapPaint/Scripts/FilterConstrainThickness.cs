@@ -2,9 +2,9 @@
 using Leap.Unity.RuntimeGizmos;
 using System;
 
-public class FilterConstrainThickness : IMemoryFilter<StrokePoint> {
+public class FilterConstrainThickness : IBufferFilter<StrokePoint> {
 
-  public int GetMemorySize() {
+  public int GetMinimumBufferSize() {
     return 2;
   }
 
@@ -38,10 +38,10 @@ public class FilterConstrainThickness : IMemoryFilter<StrokePoint> {
   public void Reset() { }
 }
 
-public class FilterSmoothThickness : IMemoryFilter<StrokePoint> {
+public class FilterSmoothThickness : IBufferFilter<StrokePoint> {
   public const int NEIGHBORHOOD = 16;
 
-  public int GetMemorySize() {
+  public int GetMinimumBufferSize() {
     return NEIGHBORHOOD * 2 + 1;
   }
 

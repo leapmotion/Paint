@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-public class zzOldFilterPitchYawTangent : IMemoryFilter<StrokePoint> {
+public class zzOldFilterPitchYawTangent : IBufferFilter<StrokePoint> {
 
-  public int GetMemorySize() {
+  public int GetMinimumBufferSize() {
     return 2;
   }
 

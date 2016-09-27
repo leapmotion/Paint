@@ -5,8 +5,8 @@ using Leap.Unity.Attributes;
 
 public class PinchStrokeProcessor : MonoBehaviour {
 
-  private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.01F; //0.001F;
-  private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.01F; //0.003F;
+  private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
+  private const float MAX_THICKNESS_MIN_SEGMENT_LENGTH = 0.003F;
   private const float MAX_SEGMENT_LENGTH = 0.02F;
   private const float MIN_HAND_DRAWING_LIFETIME = 0.2F;
 
@@ -45,7 +45,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
   private Vector3 rightHandEulerRotation = new Vector3(0F, 180F, 0F);
   private Leap.Hand _hand;
 
-  //private StrokeRibbonRenderer _ribbonRenderer;
+  private IStrokeRenderer _strokeRenderer;
 
   private Vector3 _prevPosition;
   private SmoothedFloat _smoothedSpeed = new SmoothedFloat();
@@ -58,7 +58,7 @@ public class PinchStrokeProcessor : MonoBehaviour {
     _strokeProcessor = new StrokeProcessor();
 
     // Set up and register filters.
-    _strokeProcessor.RegisterStrokeFilter(new FilterPositionMovingAverage());
+    //_strokeProcessor.RegisterStrokeFilter(new FilterPositionMovingAverage());
     _strokeProcessor.RegisterStrokeFilter(new FilterPitchYawRoll());
 
     _strokeProcessor.RegisterStrokeFilter(_colorFilter);
@@ -70,14 +70,17 @@ public class PinchStrokeProcessor : MonoBehaviour {
     // Set up and register renderers.
     //GameObject rendererObj = new GameObject();
     //rendererObj.name = "Stroke Ribbon Renderer";
-    //_ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
-    //_ribbonRenderer.OnMeshStrokeFinalized += DoOnMeshStrokeFinalized;
-    //_strokeProcessor.RegisterStrokeRenderer(_ribbonRenderer);
+    //var ribbonRenderer = rendererObj.AddComponent<StrokeRibbonRenderer>();
+    //ribbonRenderer.OnMeshStrokeFinalized += DoOnMeshStrokeFinalized;
+    //_strokeRenderer = ribbonRenderer;
+    //_strokeProcessor.RegisterStrokeRenderer(ribbonRenderer);
+
     GameObject rendererObj = new GameObject();
     rendererObj.name = "Thick Ribbon Renderer";
     var thickRibbonRenderer = rendererObj.AddComponent<ThickRibbonRenderer>();
     thickRibbonRenderer._finalizedRibbonParent = _ribbonParentObject;
     thickRibbonRenderer._ribbonMaterial = _ribbonMaterial;
+    _strokeRenderer = thickRibbonRenderer;
     _strokeProcessor.RegisterStrokeRenderer(thickRibbonRenderer);
 
     //GameObject previewRendererObj = new GameObject();
@@ -310,10 +313,9 @@ public class PinchStrokeProcessor : MonoBehaviour {
 
   // Used to produce strokes from stroke objects, e.g., when loading scenes.
   public void ShortcircuitStrokeToRenderer(List<StrokePoint> stroke) {
-    // TODO: FIXME, BREAKS LOADING
-    //_ribbonRenderer.InitializeRenderer();
-    //_ribbonRenderer.UpdateRenderer(stroke, stroke.Count - 1);
-    //_ribbonRenderer.FinalizeRenderer();
+    _strokeRenderer.InitializeRenderer();
+    _strokeRenderer.UpdateRenderer(stroke, stroke.Count - 1);
+    _strokeRenderer.FinalizeRenderer();
   }
 
 }
