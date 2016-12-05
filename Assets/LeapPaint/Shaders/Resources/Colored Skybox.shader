@@ -63,7 +63,7 @@ Shader "Skybox/Colored Skybox"
 		half3 c_sun = _SunColor * min(pow(max(0, dot(v, _WorldSpaceLightPos0.xyz)), 550), 1);
 		half3 c_moon = pow(max(0, dot(v, -_WorldSpaceLightPos0.xyz)), 550);
 
-		return half4(c_sky * _SkyIntensity + c_sun * _SunIntensity + c_moon , 0);
+		return half4(c_sky * _SkyIntensity /*+ c_sun * _SunIntensity + c_moon*/ , 0);
 	}
 
 		ENDCG

@@ -279,7 +279,7 @@ public class StrokeMeshGenerator {
 
   public Mesh FinalizeMesh() {
     _mesh.RecalculateBounds();
-    _mesh.Optimize();
+    ;
     _mesh.UploadMeshData(true);
     return _mesh;
   }

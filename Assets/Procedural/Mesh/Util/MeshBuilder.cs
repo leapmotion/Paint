@@ -44,7 +44,7 @@ namespace Procedural.DynamicMesh {
       }
 
       if (optimize) {
-        mesh.Optimize();
+        ;
       }
 
       if (upload) {
