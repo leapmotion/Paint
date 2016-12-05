@@ -390,7 +390,7 @@ public class ThickRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizmo
   }
 
   public void FinalizeRenderer() {
-    _mesh.Optimize();
+    ;
 
     // TODO: Add proper history management / other finalization logic
     GameObject meshObj = new GameObject();

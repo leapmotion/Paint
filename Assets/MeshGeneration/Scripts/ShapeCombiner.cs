@@ -124,7 +124,7 @@ namespace MeshGeneration {
       }
 
       if (_shouldOptimize) {
-        mesh.Optimize();
+        ;
       }
 
       if (_shouldUpload) {
