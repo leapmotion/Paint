@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using Leap.Unity.Animation;
 
 public class WelcomeTip : MonoBehaviour {
 
@@ -15,9 +16,9 @@ public class WelcomeTip : MonoBehaviour {
   private float menuOpenTimer = 0F;
   private float menuOpenSatisfyDuration = 0.75F;
   private float hoverDistance = 1F;
-  TweenHandle disappearTween;
-  TweenHandle transitionTween;
-  TweenHandle handImageDisappearTween;
+  Tween disappearTween;
+  Tween transitionTween;
+  Tween handImageDisappearTween;
   float xLocalRot;
 
   void Start() {
@@ -25,22 +26,19 @@ public class WelcomeTip : MonoBehaviour {
     Anchor.OnAnchorBeginDisappearing += DoOnMenuBeginDisappearing;
     text.gameObject.SetActive(true);
     xLocalRot = transform.rotation.eulerAngles.x;
-    disappearTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f, 0.9f, 0.9f, 0f), SetOpacity)
+    disappearTween = Tween.Persistent().Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f, 0.9f, 0.9f, 0f), SetOpacity)
       .OverTime(0.5f)
-      .Smooth(TweenType.SMOOTH)
-      .OnReachEnd(Hide)
-      .Keep();
+      .Smooth(SmoothType.Smooth)
+      .OnReachEnd(Hide);
 
-    handImageDisappearTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f, 0.9f, 0.9f, 0f), SetHandImageOpacity)
+    handImageDisappearTween = Tween.Persistent().Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f, 0.9f, 0.9f, 0f), SetHandImageOpacity)
       .OverTime(0.5F)
-      .Smooth(TweenType.SMOOTH)
-      .Keep();
+      .Smooth(SmoothType.Smooth);
 
-    transitionTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f,0.9f,0.9f,0f), SetOpacity)
+    transitionTween = Tween.Persistent().Value(new Color(0.9f, 0.9f, 0.9f, 0.9f), new Color(0.9f,0.9f,0.9f,0f), SetOpacity)
       .OverTime(0.5f)
-      .Smooth(TweenType.SMOOTH)
-      .OnReachEnd(TextChange)
-      .Keep();
+      .Smooth(SmoothType.Smooth)
+      .OnReachEnd(TextChange);
   }
 
   void DoOnMenuBeginAppearing() {
@@ -61,7 +59,7 @@ public class WelcomeTip : MonoBehaviour {
   }
 
   void TextChange() {
-    transitionTween.Play(TweenDirection.BACKWARD);
+    transitionTween.Play(Direction.Backward);
     text.text = "Look at your palm for more options.";
   }
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Leap.Unity.Animation;
 
 public class OrbPickingTip : MonoBehaviour {
   //public WearableAnchor Anchor;
@@ -8,7 +9,7 @@ public class OrbPickingTip : MonoBehaviour {
   public WearableUI ColorUI;
   public WearableUI BrushUI;
   public TextMesh text;
-  public TweenHandle disappearTween;
+  public Tween disappearTween;
 
   private bool hasShownOnce = false;
   private Transform parent;
@@ -26,11 +27,10 @@ public class OrbPickingTip : MonoBehaviour {
     MenuUI.OnActivateMarble += DoOnBeginDisappearing;
     ColorUI.OnActivateMarble += DoOnBeginDisappearing;
     BrushUI.OnActivateMarble += DoOnBeginDisappearing;
-    disappearTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 1f), new Color(0.9f, 0.9f, 0.9f, 0f), SetOpacity)
+    disappearTween = Tween.Persistent().Value(new Color(0.9f, 0.9f, 0.9f, 1f), new Color(0.9f, 0.9f, 0.9f, 0f), SetOpacity)
       .OverTime(0.3f)
-      .Smooth(TweenType.SMOOTH)
-      .OnReachEnd(Hide)
-      .Keep();
+      .Smooth(SmoothType.Smooth)
+      .OnReachEnd(Hide);
 
     firstLine = gameObject.AddComponent<LineRenderer>();
     firstLine.useWorldSpace = true;

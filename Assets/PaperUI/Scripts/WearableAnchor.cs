@@ -2,6 +2,7 @@
 using System.Collections;
 using Leap.Unity;
 using System;
+using Leap.Unity.Animation;
 
 public class WearableAnchor : HandedPalmAnchor, IWearable {
 
@@ -108,7 +109,7 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
 
   #region Appear / Vanish
 
-  private TweenHandle _appearTween;
+  private Tween _appearTween;
 
   private bool _appearScheduled = false;
   private bool _vanishScheduled = false;
@@ -122,18 +123,17 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
 
   private void InitAppearVanish() {
     _appearTween = ConstructAppearTween();
-    _appearTween.Progress = 0.001F;
+    _appearTween.progress = 0.001F;
     Vanish();
     _isDisplaying = false;
   }
 
-  private TweenHandle ConstructAppearTween() {
-    return Tween.Value(new Color(1F, 1F, 1F, 0F), Color.white, SetColor)
+  private Tween ConstructAppearTween() {
+    return Tween.Persistent().Value(new Color(1F, 1F, 1F, 0F), Color.white, SetColor)
       .OverTime(0.2F)
-      .Smooth(TweenType.SMOOTH)
+      .Smooth(SmoothType.Smooth)
       .OnReachStart(DoOnFinishedVanishing)
-      .OnLeaveStart(DoOnBeganAppearing)
-      .Keep();
+      .OnLeaveStart(DoOnBeganAppearing);
   }
 
   private void DoOnBeganAppearing() {
@@ -166,13 +166,13 @@ public class WearableAnchor : HandedPalmAnchor, IWearable {
   }
 
   public void Appear() {
-    _appearTween.Play(TweenDirection.FORWARD);
+    _appearTween.Play(Direction.Forward);
     OnAnchorBeginAppearing();
     showEffect.PlayOnTransform(transform);
   }
 
   public void Vanish() {
-    _appearTween.Play(TweenDirection.BACKWARD);
+    _appearTween.Play(Direction.Backward);
     OnAnchorBeginDisappearing();
   }
 

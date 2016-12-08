@@ -1,4 +1,5 @@
-﻿using Leap.Unity.Attributes;
+﻿using Leap.Unity.Animation;
+using Leap.Unity.Attributes;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class Pulsator : MonoBehaviour {
   [SerializeField]
   private float _value;
   [SerializeField]
-  private TweenHandle _valueTween;
+  private Tween _valueTween;
   [SerializeField]
   private bool _pulsing = false;
   [SerializeField]
@@ -33,20 +34,19 @@ public class Pulsator : MonoBehaviour {
   }
 
   private void TweenTo(float to, Action OnReachEnd, float speedMultiplier) {
-    if (_valueTween.IsValid) {
+    if (_valueTween.isValid) {
       _valueTween.Release();
     }
     _valueTween = MakeTween(to, OnReachEnd, speedMultiplier);
-    _valueTween.Progress = 0F;
+    _valueTween.progress = 0F;
     _valueTween.Play();
   }
 
-  private TweenHandle MakeTween(float to, Action OnReachEnd, float speedMultiplier) {
-    return Tween.Value(_value, to, OnTweenValue)
-      .Smooth(TweenType.SMOOTH)
+  private Tween MakeTween(float to, Action OnReachEnd, float speedMultiplier) {
+    return Tween.Persistent().Value(_value, to, OnTweenValue)
+      .Smooth(SmoothType.Smooth)
       .AtRate(_speed * speedMultiplier)
-      .OnReachEnd(OnReachEnd)
-      .Keep();
+      .OnReachEnd(OnReachEnd);
   }
 
   public void Activate() {

@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Leap.Unity.Animation;
 
 public class MoveableBehaviour : MonoBehaviour {
 
   public Transform _A;
   public Transform _B;
 
-  private TweenHandle _movementTween;
+  private Tween _movementTween;
 
   public void MoveToA() {
     MoveTo(_A);

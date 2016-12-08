@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using Leap.Unity;
 using Leap.Unity.RuntimeGizmos;
+using Leap.Unity.Animation;
 
 public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
@@ -176,14 +177,14 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   #region Appear / Vanish
 
-  private TweenHandle _appearTween;
+  private Tween _appearTween;
   private bool _appearScheduled = false;
   private bool _vanishScheduled = false;
 
   private void InitAppearVanish() {
     if (Application.isPlaying) {
       _appearTween = ConstructAppearTween();
-      _appearTween.Progress = 0.001F;
+      _appearTween.progress = 0.001F;
       Vanish();
     }
   }
@@ -208,25 +209,24 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   private void Appear() {
-    _appearTween.Play(TweenDirection.FORWARD);
+    _appearTween.Play(Direction.Forward);
   }
 
   private void Vanish() {
-    _appearTween.Play(TweenDirection.BACKWARD);
+    _appearTween.Play(Direction.Backward);
   }
 
-  private TweenHandle ConstructAppearTween() {
-    return Tween.Target(this.transform)
+  private Tween ConstructAppearTween() {
+    return Tween.Persistent().Target(this.transform)
       .LocalScale(Vector3.one / 1000F, Vector3.one)
       .Target(_appearanceExplosionRenderer.material)
       .Color(Color.white, new Color(1F, 1F, 1F, 0F))
       .OverTime(0.2F)
-      .Smooth(TweenType.SMOOTH)
+      .Smooth(SmoothType.Smooth)
       .OnLeaveStart(DoOnStartAppearing)
       .OnReachEnd(OnExplosionShouldDisappear)
       .OnLeaveEnd(OnExplosionShouldAppear)
-      .OnReachStart(DoOnFinishedVanishing)
-      .Keep();
+      .OnReachStart(DoOnFinishedVanishing);
   }
 
   private void DoOnStartAppearing() {
@@ -248,7 +248,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
   }
 
   public bool IsDisplaying {
-    get { return _appearTween.IsValid && _appearTween.Progress > 0.01F; }
+    get { return _appearTween.isValid && _appearTween.progress > 0.01F; }
   }
 
   #endregion
@@ -539,14 +539,14 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   private Transform _lerpFrom;
   private Transform _lerpTo;
-  private TweenHandle ConstructWorkstationPlacementTween(Transform from, Transform to, float overTime) {
+  private Tween ConstructWorkstationPlacementTween(Transform from, Transform to, float overTime) {
     _lerpFrom = from;
     _lerpTo = to;
-    return Tween.Target(this.transform)
+    return Tween.Single().Target(this.transform)
       .Rotation(from, to)
       .Value(0F, 1F, OnGetWorkstationEmergeTransformLerpAmount)
       .OverTime(overTime)
-      .Smooth(TweenType.SMOOTH)
+      .Smooth(SmoothType.Smooth)
       .OnLeaveStart(DoOnMovementToWorkstationBegan)
       .OnReachEnd(DoOnMovementToWorkstationFinished);
   }

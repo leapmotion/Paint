@@ -2,6 +2,7 @@
 using System;
 using Leap;
 using Leap.Unity;
+using Leap.Unity.Animation;
 
 public class DisconnectionHandler : MonoBehaviour {
 
@@ -11,25 +12,25 @@ public class DisconnectionHandler : MonoBehaviour {
   [SerializeField]
   private LeapServiceProvider _provider;
 
-  private TweenHandle _transition;
+  private Tween _transition;
   private Controller _controller;
   private bool _lastConnectionReport = false;
   private float _startupDelay = 0.5F;
 
   void Awake() {
-    _transition = Tween.Target(_disconnectNotifRenderer.material).Value(0F, 1F, "_Alpha").
-                        OverTime(0.5f).
-                        Smooth(TweenType.SMOOTH).
-                        OnLeaveStart(DoOnLeaveStart).
-                        OnReachStart(DoOnReachStart).
-                        Keep();
+    _transition = Tween.Persistent()
+                       .Target(_disconnectNotifRenderer.material).Alpha(0F, 1F, "_Alpha")
+                       .OverTime(0.5f)
+                       .Smooth(SmoothType.Smooth)
+                       .OnLeaveStart(DoOnLeaveStart)
+                       .OnReachStart(DoOnReachStart);
   }
 
   void Start() {
     _controller = _provider.GetLeapController();
 
-    _transition.Progress = 0.001F;
-    _transition.Play(TweenDirection.BACKWARD);
+    _transition.progress = 0.001F;
+    _transition.Play(Direction.Backward);
   }
 
   void Update() {
@@ -44,7 +45,7 @@ public class DisconnectionHandler : MonoBehaviour {
         }
       }
 
-      _transition.Play(_lastConnectionReport ? TweenDirection.BACKWARD : TweenDirection.FORWARD);
+      _transition.Play(_lastConnectionReport ? Direction.Backward: Direction.Forward);
     }
   }
 

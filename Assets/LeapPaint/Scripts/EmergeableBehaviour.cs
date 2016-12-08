@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using UnityEngine.UI;
 using Leap.Unity.Attributes;
+using Leap.Unity.Animation;
 
 public class EmergeableBehaviour : MonoBehaviour {
 
@@ -33,15 +34,15 @@ public class EmergeableBehaviour : MonoBehaviour {
   public Action OnBegunVanishing = () => { };
   public Action OnFinishedVanishing = () => { };
 
-  private TweenHandle _vanishTween;
+  private Tween _vanishTween;
 
   public bool IsEmergedOrEmerging {
     get {
-      if (!_vanishTween.IsValid) {
+      if (!_vanishTween.isValid) {
         _vanishTween = CreateVanishTween();
       }
-      return (_vanishTween.IsRunning && _vanishTween.Direction == TweenDirection.BACKWARD)
-           || _vanishTween.Progress == 0F;
+      return (_vanishTween.isRunning && _vanishTween.direction == Direction.Backward)
+           || _vanishTween.progress == 0F;
     }
   }
 
@@ -53,7 +54,7 @@ public class EmergeableBehaviour : MonoBehaviour {
 
     _vanishTween = CreateVanishTween();
     if (!_beginEmerged) {
-      _vanishTween.Progress = 1F;
+      _vanishTween.progress = 1F;
       DisableComponents();
     }
   }
@@ -65,7 +66,7 @@ public class EmergeableBehaviour : MonoBehaviour {
       _emergeEffect.PlayAtPosition(transform);
     }
 
-    _vanishTween.Play(TweenDirection.BACKWARD);
+    _vanishTween.Play(Direction.Backward);
   }
 
   public void TryVanish(bool isInWorkstation) {
@@ -75,21 +76,20 @@ public class EmergeableBehaviour : MonoBehaviour {
       _vanishEffect.PlayAtPosition(transform);
     }
 
-    _vanishTween.Play(TweenDirection.FORWARD);
+    _vanishTween.Play(Direction.Forward);
   }
 
-  private TweenHandle CreateVanishTween() {
-    return Tween.Target(this.transform)
+  private Tween CreateVanishTween() {
+    return Tween.Persistent().Target(this.transform)
       .ToLocalScale(this.transform.localScale / 100F)
       //.Target(this.transform)
       //.ToPosition((_vanishingPoint == null? this.transform : _vanishingPoint))
       .OverTime(0.2F)
-      .Smooth(TweenType.SMOOTH)
+      .Smooth(SmoothType.Smooth)
       .OnLeaveEnd(DoOnBegunEmerging)
       .OnReachStart(DoOnFinishedEmerging)
       .OnLeaveStart(DoOnBegunVanishing)
-      .OnReachEnd(DoOnFinishedVanishing)
-      .Keep();
+      .OnReachEnd(DoOnFinishedVanishing);
   }
 
   protected virtual void DoOnBegunEmerging() {

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Leap.Unity.Animation;
 
 public class GrabbingTip : MonoBehaviour {
 
@@ -13,7 +14,7 @@ public class GrabbingTip : MonoBehaviour {
   private Vector3[] line1 = new Vector3[2];
   private float fade = 0f;
 
-  TweenHandle disappearTween;
+  Tween disappearTween;
 
   void Start() {
     text.gameObject.SetActive(false);
@@ -28,11 +29,10 @@ public class GrabbingTip : MonoBehaviour {
     firstLine.SetPositions(line1);
     firstLine.SetWidth(0.002f, 0.002f);
 
-    disappearTween = Tween.Value(new Color(0.9f, 0.9f, 0.9f, 1f), new Color(0.9f, 0.9f, 0.9f, 0f), SetOpacity)
+    disappearTween = Tween.Persistent().Value(new Color(0.9f, 0.9f, 0.9f, 1f), new Color(0.9f, 0.9f, 0.9f, 0f), SetOpacity)
       .OverTime(0.3f)
-      .Smooth(TweenType.SMOOTH)
-      .OnReachEnd(Hide)
-      .Keep();
+      .Smooth(SmoothType.Smooth)
+      .OnReachEnd(Hide);
   }
 
   void Hide() {
