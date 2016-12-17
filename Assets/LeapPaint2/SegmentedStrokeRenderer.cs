@@ -23,14 +23,14 @@ namespace Leap.Paint2 {
           throw new System.NotImplementedException(); // TODO: Support via repeated AddedPoint handling?
         case StrokeModificationType.AddedPoint:
           if (stroke.Count == 0) {
-            //SegmentRenderer.AddPoint(stroke[0]);
-            //SegmentRenderer.AddStartCap(0);
-            //SegmentRenderer.AddEndCap(0);
+            SegmentRenderer.AddPoint(stroke[0]);
+            SegmentRenderer.AddStartCap(0);
+            SegmentRenderer.AddEndCap(0);
           }
           else {
-            //SegmentRenderer.RemoveEndCapAtEnd();
-            //SegmentRenderer.AddPoint(stroke[stroke.Count - 1]);
-            //SegmentRenderer.AddEndCap(stroke.Count - 1);
+            SegmentRenderer.RemoveEndCapAtEnd();
+            SegmentRenderer.AddPoint(stroke[stroke.Count - 1]);
+            SegmentRenderer.AddEndCap(stroke.Count - 1);
           }
           break;
         default:

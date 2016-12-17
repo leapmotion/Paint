@@ -15,7 +15,7 @@ public class SegmentRenderer : MonoBehaviour {
   [Tooltip("Must begin with a cyclical loop of the same length as the cross section mesh.")]
   public Mesh endCapMesh;
 
-  private List<Segment> _segments;
+  private List<SegmentNode> _segmentNodes;
   private Mesh _mesh;
   private MeshFilter _meshFilter;
   private MeshRenderer _meshRenderer;
@@ -26,11 +26,11 @@ public class SegmentRenderer : MonoBehaviour {
   }
 
   /// <summary>
-  /// Initializes or clears the segments if already initialized.
+  /// Initializes, or resets if already initialized.
   /// </summary>
   public void Initialize() {
-    if (_segments == null) _segments = new List<Segment>();
-    else _segments.Clear();
+    if (_segmentNodes == null) _segmentNodes = new List<SegmentNode>();
+    else _segmentNodes.Clear();
     if (_meshFilter == null) _meshFilter = GetComponent<MeshFilter>();
     if (_mesh == null) _mesh = _meshFilter.mesh = new Mesh();
     else _mesh.Clear();
@@ -38,16 +38,60 @@ public class SegmentRenderer : MonoBehaviour {
     _needsInit = false;
   }
 
-  // TODO: This may not be the best way to represent segments.
-  /// <summary>
-  /// Segments consist of two connected cross-sections aligned to outward-facing normals.
-  /// These segments may or may not have startCap and endCap meshes attached.
-  /// </summary>
-  public class Segment {
-    public StrokePoint startPoint;
-    public StrokePoint endPoint;
-    public Segment prevSegment;
-    public Segment nextSegment;
+  public void AddPoint(StrokePoint strokePoint) {
+    SegmentNode node = new SegmentNode(strokePoint);
+    _segmentNodes.Add(node);
+    if (_segmentNodes.Count > 1) {
+      node.prevNode = _segmentNodes[_segmentNodes.Count - 2];
+      node.prevNode.nextNode = node;
+      AddMeshSegment(node.prevNode, node);
+    }
+  }
+
+  public void AddStartCap(int strokePointIndex) {
+    SegmentNode node = _segmentNodes[strokePointIndex];
+    node.hasStartCap = true;
+    AddMeshStartCap(node);
+  }
+
+  public void AddEndCap(int strokePointIndex) {
+    SegmentNode node = _segmentNodes[strokePointIndex];
+    node.hasEndCap = true;
+    AddMeshEndCap(node);
+  }
+
+  public void RemoveEndCapAtEnd() {
+    SegmentNode node = _segmentNodes[_segmentNodes.Count - 1];
+    node.hasEndCap = false;
+    RemoveMeshEndCap(node);
+  }
+
+  private class SegmentNode {
+    public StrokePoint strokePoint;
+    public SegmentNode(StrokePoint point) {
+      strokePoint = point;
+    }
+    public bool hasStartCap = false;
+    public bool hasEndCap = false;
+
+    public SegmentNode prevNode;
+    public SegmentNode nextNode;
+  }
+
+  private void AddMeshSegment(SegmentNode node1, SegmentNode node2) {
+    throw new System.NotImplementedException();
+  }
+
+  private void AddMeshStartCap(SegmentNode node) {
+    throw new System.NotImplementedException();
+  }
+
+  private void AddMeshEndCap(SegmentNode node) {
+    throw new System.NotImplementedException();
+  }
+
+  private void RemoveMeshEndCap(SegmentNode node) {
+    throw new System.NotImplementedException();
   }
 
 }
