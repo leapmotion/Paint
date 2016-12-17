@@ -1,21 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
+using StrokeProcessing;
 
-public class FilterIndexTipColor : MonoBehaviour, IBufferFilter<StrokePoint> {
+namespace Leap.Paint {
 
-  public IndexTipColor _indexTipColor;
+  public class FilterIndexTipColor : MonoBehaviour, IBufferFilter<StrokePoint> {
 
-  public int GetMinimumBufferSize() {
-    return 0;
+    public IndexTipColor _indexTipColor;
+
+    public int GetMinimumBufferSize() {
+      return 0;
+    }
+
+    public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
+      StrokePoint s = data.GetFromEnd(0);
+      s.color = _indexTipColor.GetColor();
+      data.SetFromEnd(0, s);
+    }
+
+    public void Reset() {
+      return;
+    }
   }
 
-  public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
-    StrokePoint s = data.GetFromEnd(0);
-    s.color = _indexTipColor.GetColor();
-    data.SetFromEnd(0, s);
-  }
 
-  public void Reset() {
-    return;
-  }
 }

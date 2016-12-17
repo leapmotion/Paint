@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Leap.Paint;
+using StrokeProcessing;
 
 public class RibbonIO : MonoBehaviour {
 

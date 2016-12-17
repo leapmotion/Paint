@@ -452,9 +452,9 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
     bool shouldActivateWorkstation = false;
 
     if ((_wearableAnchor._chirality == Chirality.Left
-      && _manager.LastGrabbedByLeftHand() == this)
+      && (WearableUI)_manager.LastGrabbedByLeftHand() == this)
      || (_wearableAnchor._chirality == Chirality.Right
-      && _manager.LastGrabbedByRightHand() == this)) {
+      && (WearableUI)_manager.LastGrabbedByRightHand() == this)) {
       return true;
     }
 
@@ -690,7 +690,7 @@ public class WearableUI : AnchoredBehaviour, IWearable, IRuntimeGizmoComponent {
 
   private bool _wearableUIGizmosEnabled = false;
 
-  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+  public override void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
     if (_wearableUIGizmosEnabled) {
       drawer.color = Color.red;
       if (IsWorkstation) {

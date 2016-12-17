@@ -8,6 +8,8 @@ namespace Leap.Unity.Attributes {
   [CustomPropertyDrawer(typeof(CombinablePropertyAttribute), true)]
   public class CombinablePropertyDrawer : PropertyDrawer {
 
+    private bool shouldHide = false;
+
     private List<CombinablePropertyAttribute> attributes = new List<CombinablePropertyAttribute>();
     private void getAtrributes(SerializedProperty property) {
       attributes.Clear();
@@ -67,6 +69,10 @@ namespace Leap.Unity.Attributes {
 
         if (a is IPropertyDisabler) {
           shouldDisable |= (a as IPropertyDisabler).ShouldDisable(property);
+        }
+
+        if (a is IPropertyHider) {
+          shouldHide |= (a as IPropertyHider).ShouldHide(property);
         }
 
         if (a is IFullPropertyDrawer) {
@@ -135,6 +141,13 @@ namespace Leap.Unity.Attributes {
       }
 
       EditorGUIUtility.labelWidth = defaultLabelWidth;
+    }
+
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
+      if (shouldHide) {
+
+      }
+      return base.GetPropertyHeight(property, label);
     }
 
     private void drawAdditive<T>(ref Rect r, SerializedProperty property) where T : class, IAdditiveDrawer {

@@ -1,23 +1,28 @@
-﻿using System;
+﻿using StrokeProcessing;
+using System;
 using UnityEngine;
 
-public class FilterNaiveCanvasAlignment : IBufferFilter<StrokePoint> {
+namespace Leap.Paint {
 
-  public int GetMinimumBufferSize() {
-    return 1;
-  }
+  public class FilterNaiveCanvasAlignment : IBufferFilter<StrokePoint> {
 
-  public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
-    StrokePoint current = data.GetFromEnd(0);
+    public int GetMinimumBufferSize() {
+      return 1;
+    }
 
-    current.rotation = Quaternion.identity;
-    current.normal = current.handOrientation * Vector3.back;
+    public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
+      StrokePoint current = data.GetFromEnd(0);
 
-    data.SetFromEnd(0, current);
-  }
+      current.rotation = Quaternion.identity;
+      current.normal = current.handOrientation * Vector3.back;
 
-  public void Reset() {
-    return;
+      data.SetFromEnd(0, current);
+    }
+
+    public void Reset() {
+      return;
+    }
+
   }
 
 }

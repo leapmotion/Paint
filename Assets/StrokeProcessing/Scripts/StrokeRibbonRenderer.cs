@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using MeshGeneration;
 using Leap.Unity.RuntimeGizmos;
+using StrokeProcessing;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]

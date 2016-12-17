@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using StrokeProcessing;
 
-public interface IStrokeBufferRenderer {
+namespace Leap.Paint {
 
-  void InitializeRenderer();
-  void RefreshRenderer(RingBuffer<StrokePoint> strokeBuffer);
-  void StopRenderer();
+  public interface IStrokeBufferRenderer {
+
+    void InitializeRenderer();
+    void RefreshRenderer(RingBuffer<StrokePoint> strokeBuffer);
+    void StopRenderer();
+
+  }
 
 }

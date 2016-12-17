@@ -14,7 +14,7 @@ public class GrabbingTip : MonoBehaviour {
   private Vector3[] line1 = new Vector3[2];
   private float fade = 0f;
 
-  Tween disappearTween;
+  public Tween disappearTween;
 
   void Start() {
     text.gameObject.SetActive(false);
@@ -25,9 +25,9 @@ public class GrabbingTip : MonoBehaviour {
     firstLine = gameObject.AddComponent<LineRenderer>();
     firstLine.useWorldSpace = true;
     firstLine.material = new Material(Shader.Find("Standard"));
-    firstLine.SetColors(Color.black, Color.black);
+    firstLine.startColor = firstLine.endColor = Color.black;
     firstLine.SetPositions(line1);
-    firstLine.SetWidth(0.002f, 0.002f);
+    firstLine.startWidth = firstLine.endWidth = 0.002F;
 
     disappearTween = Tween.Persistent().Value(new Color(0.9f, 0.9f, 0.9f, 1f), new Color(0.9f, 0.9f, 0.9f, 0f), SetOpacity)
       .OverTime(0.3f)

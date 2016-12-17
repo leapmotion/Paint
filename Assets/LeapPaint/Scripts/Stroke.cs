@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using StrokeProcessing;
 
-[System.Serializable]
-public struct Stroke {
+namespace Leap.Paint {
 
-  public List<StrokePoint> strokePoints;
+  [System.Serializable]
+  public struct Stroke {
+
+    public List<StrokePoint> strokePoints;
+
+  }
+
 
 }

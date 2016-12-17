@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Leap.Paint;
+using StrokeProcessing;
 
 public class HistoryManager : MonoBehaviour {
 

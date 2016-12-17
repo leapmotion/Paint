@@ -233,7 +233,7 @@ public class StrokeMeshGenerator {
   public Mesh Mesh { get { return _mesh; } }
 
   private TwoSidedRibbon _ribbon = new TwoSidedRibbon();
-  private Tube _tube = new Tube(8);
+  public Tube _tube = new Tube(8);
 
   private void InitMeshState() {
     _mesh = new Mesh();

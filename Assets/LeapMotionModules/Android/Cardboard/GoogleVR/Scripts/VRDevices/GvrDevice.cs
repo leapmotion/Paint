@@ -94,10 +94,12 @@ namespace Gvr.Internal {
       ResetHeadTracker();
     }
 
+#pragma warning disable 0618
     public override void PostRender(RenderTexture stereoScreen) {
       SetTextureId((int)stereoScreen.GetNativeTexturePtr());
       GL.IssuePluginEvent(kRenderEvent);
     }
+#pragma warning restore 0618
 
     public override void OnPause(bool pause) {
       if (pause) {

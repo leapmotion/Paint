@@ -1,12 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public struct Strokes {
+namespace Leap.Paint {
 
-  public List<Stroke> strokes;
+  public struct Strokes {
 
-  public Strokes(List<Stroke> strokes) {
-    this.strokes = strokes;
+    public List<Stroke> strokes;
+
+    public Strokes(List<Stroke> strokes) {
+      this.strokes = strokes;
+    }
+
   }
+
 
 }

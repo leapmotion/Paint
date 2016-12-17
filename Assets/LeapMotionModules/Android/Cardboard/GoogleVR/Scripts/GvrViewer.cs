@@ -638,9 +638,9 @@ public class GvrViewer : MonoBehaviour {
     device.OnFocus(focus);
   }
 
-  void OnLevelWasLoaded(int level) {
-    device.OnLevelLoaded(level);
-  }
+  //void OnLevelWasLoaded(int level) {
+  //  device.OnLevelLoaded(level);
+  //}
 
   void OnApplicationQuit() {
     device.OnApplicationQuit();

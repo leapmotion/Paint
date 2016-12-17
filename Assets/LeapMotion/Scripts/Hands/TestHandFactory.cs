@@ -53,12 +53,12 @@ using System.Runtime.InteropServices;
             );
             LeapTransform restPosition = LeapTransform.Identity;
             //restPosition.rotation = RotationFromTo(Vector.Up, Vector.Left).Multiply(RotationFromTo(Vector.Up, Vector.Left));
-            restPosition.rotation = AngleAxis(180 * Constants.DEG_TO_RAD, Vector.Forward);
+            restPosition.rotation = AngleAxis((isLeft ? 20 : -20) * Constants.DEG_TO_RAD, Vector.Forward);
             if(isLeft){
-                restPosition.translation = new Vector(80f, 120f, 0f);
+                restPosition.translation = new Vector(180f, 250f, 0f);
 
             } else {
-                restPosition.translation = new Vector(-80f, 120f, 0f);
+                restPosition.translation = new Vector(-180f, 250f, 0f);
                 restPosition.MirrorX();
             }
             return testHand.TransformedCopy(restPosition);

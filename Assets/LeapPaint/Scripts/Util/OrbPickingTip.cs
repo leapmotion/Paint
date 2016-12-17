@@ -35,9 +35,9 @@ public class OrbPickingTip : MonoBehaviour {
     firstLine = gameObject.AddComponent<LineRenderer>();
     firstLine.useWorldSpace = true;
     firstLine.material = new Material(Shader.Find("Standard"));
-    firstLine.SetColors(Color.black, Color.black);
+    firstLine.startColor = firstLine.endColor = Color.black;
     firstLine.SetPositions(line1);
-    firstLine.SetWidth(0.002f, 0.002f);
+    firstLine.startWidth = firstLine.endWidth = 0.002F;
   }
 
   void DoOnBeginDisappearing() {
@@ -66,7 +66,7 @@ public class OrbPickingTip : MonoBehaviour {
 
     firstLine.SetPosition(0, Vector3.Lerp(transform.position, ColorUI.transform.position, Mathf.Lerp(0.2f, 0.5f, fade)));
     firstLine.SetPosition(1, Vector3.Lerp(transform.position, ColorUI.transform.position, Mathf.Lerp(0.7f, 0.5f, fade)));
-    firstLine.SetWidth(transform.localScale.x * 0.05f, transform.localScale.x * 0.05f);
+    firstLine.startWidth = firstLine.endWidth = transform.localScale.x * 0.05F;
   }
 
   public void SetOpacity(Color color) {

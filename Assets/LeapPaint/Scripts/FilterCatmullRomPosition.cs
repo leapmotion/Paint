@@ -4,7 +4,7 @@ using System;
 
 public class FilterCatmullRomPosition {
 
-  private List<Vector3> _interpolatedPoints = new List<Vector3>();
+  public List<Vector3> _interpolatedPoints = new List<Vector3>();
 
   /// <summary>
   /// Catmull-Rom splines interpolate smoothly between vectors p1 and p2 (by t, 0 to 1) given a sequence

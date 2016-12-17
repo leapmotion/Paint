@@ -199,8 +199,9 @@ namespace Leap.Unity.InputModule {
           PointerLines[index] = pointer.AddComponent<LineRenderer>();
           PointerLines[index].material = Instantiate(PointerMaterial);
           PointerLines[index].material.color = new Color(0f, 0f, 0f, 0f);
-          PointerLines[index].SetVertexCount(2);
-          PointerLines[index].SetWidth(0.001f, 0.001f);
+          PointerLines[index].numPositions = 2;
+          PointerLines[index].startWidth = 0.001f;
+          PointerLines[index].endWidth = 0.001f;
         }
 
         Pointers[index] = pointer.GetComponent<Transform>();
@@ -256,7 +257,7 @@ namespace Leap.Unity.InputModule {
     void Update() {
       curFrame = LeapDataProvider.CurrentFrame;
 
-      if (Camera.main != null && OldCameraRot != null) {
+      if (Camera.main != null) {
         Quaternion HeadYaw = Quaternion.Euler(0f, OldCameraRot.eulerAngles.y, 0f);
         CurrentRotation = Quaternion.Slerp(CurrentRotation, HeadYaw, 0.1f);
       }

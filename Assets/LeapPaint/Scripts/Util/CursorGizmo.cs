@@ -21,7 +21,7 @@ public class CursorGizmo : MonoBehaviour, IRuntimeGizmoComponent {
   }
 
   private bool _alignmentGizmoEnabled = false;
-  private bool _cursorRingEnabled = true;
+  public bool _cursorRingEnabled = true;
 
   private void DrawPinchDetectorAlignmentGizmo(PinchDetector pinchDetector, RuntimeGizmoDrawer drawer) {
     if (_alignmentGizmoEnabled) {
