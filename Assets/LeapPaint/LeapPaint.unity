@@ -757,7 +757,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 22383285}
-  - component: {fileID: 22383287}
   - component: {fileID: 22383286}
   m_Layer: 0
   m_Name: Pinch Paint Controller
@@ -777,7 +776,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &22383286
 MonoBehaviour:
@@ -790,23 +789,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8265254cf53a9c14f823745f8a276667, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brush: {fileID: 22383287}
+  brush: {fileID: 1324401092}
   whichHand: 1
---- !u!114 &22383287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 22383284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 195bdea4dc82c764c91eb16435e6c76c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brushTip: {fileID: 0}
-  outputParent: {fileID: 0}
-  minSegmentDistance: 0.005
-  strokeRendererPrefab: {fileID: 1870383020}
 --- !u!1 &124529932
 GameObject:
   m_ObjectHideFlags: 0
@@ -1623,7 +1607,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 750690119}
-  - component: {fileID: 750690120}
   - component: {fileID: 750690118}
   m_Layer: 0
   m_Name: Left-Pinch-Right-Paint Controller
@@ -1643,7 +1626,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9558d4ef440cba84da8f0db7b7d3be9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brush: {fileID: 750690120}
+  brush: {fileID: 1324401092}
   pinchControlHand: 0
   indexBrushHand: 1
 --- !u!4 &750690119
@@ -1657,23 +1640,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &750690120
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 750690117}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 195bdea4dc82c764c91eb16435e6c76c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brushTip: {fileID: 0}
-  outputParent: {fileID: 0}
-  minSegmentDistance: 0.005
-  strokeRendererPrefab: {fileID: 1870383020}
 --- !u!1 &1091300796
 GameObject:
   m_ObjectHideFlags: 0
@@ -1792,7 +1760,52 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1324401091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1324401093}
+  - component: {fileID: 1324401092}
+  m_Layer: 0
+  m_Name: Paint Brush
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1324401092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1324401091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 195bdea4dc82c764c91eb16435e6c76c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  brushTip: {fileID: 0}
+  scalingVector: {x: 1, y: 0.2, z: 1}
+  outputParent: {fileID: 0}
+  minSegmentDistance: 0.005
+  strokeRendererPrefab: {fileID: 1870383020}
+--- !u!4 &1324401093
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1324401091}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1672977545
 GameObject:
@@ -1816,12 +1829,12 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1672977545}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3152405, y: 0.10567856, z: 0.19176498}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1870383019}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1870383018
 GameObject:

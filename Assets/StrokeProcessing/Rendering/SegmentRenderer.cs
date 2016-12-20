@@ -135,11 +135,11 @@ namespace Leap.StrokeProcessing.Rendering {
         return crossSectionVertsIdx + wrappedIndex;
       }
 
-      /// <summary> Returns the local-space position of the vertex of this segment node at the given index along the cross-section vertex ring.</summary>
+      /// <summary> Returns the local-space (mesh) position of the vertex of this segment node at the given index along the cross-section vertex ring.</summary>
       public Vector3 GetVertAt(int crossSectionRingIndex) {
         return (this.strokePoint.rotation
-                 * (renderer._crossSectionVerts[crossSectionRingIndex % renderer._crossSectionVerts.Length]
-                     .CompMul(this.strokePoint.scale)))
+                 * (renderer._crossSectionVerts[crossSectionRingIndex % renderer._crossSectionVerts.Length])
+                     .CompMul(this.strokePoint.scale))
                + this.strokePoint.position;
       }
     }

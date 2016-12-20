@@ -12,6 +12,8 @@ namespace Leap.Paint {
     [Header("Configuration")]
     [Tooltip("The transform to use to set StrokePoints from this Brush. If no transform is specified, this transform will be used.")]
     public Transform brushTip;
+    [Tooltip("Scale each piece of the output mesh by this value. (Cross sections will only scale by X and Y.)")]
+    public Vector3 scalingVector = Vector3.one;
     [Tooltip("If set to null, new StrokeRenderer objects will have the root of the hierarchy as their parent.")]
     public Transform outputParent;
     [Tooltip("The minimum distance between two StrokePoints.")]
@@ -57,7 +59,7 @@ namespace Leap.Paint {
       StrokePoint strokePoint = new StrokePoint();
       strokePoint.position    = brushTip.position;
       strokePoint.rotation    = brushTip.rotation;
-      strokePoint.scale       = brushTip.lossyScale * 0.01F;
+      strokePoint.scale       = (brushTip.localScale * 0.01F).CompMul(scalingVector);
       strokePoint.deltaTime   = Time.time - _curStroke.timeCreated;
       strokePoint.color       = Color.white;
       strokePoint.pressure    = 1F;
