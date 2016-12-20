@@ -1,6 +1,9 @@
 ﻿Shader "LeapMotion/MagicSphereShader" {
 	Properties {
-		_Color ("Color", Color) = (1,1,1,1)
+		_Tint ("Tint", Color) = (1,1,1,1)
+    _BrightColor ("Bright Color", Color) = (1,1,1,1)
+    _DimColor ("Dim Color", Color) = (0,0,0,0)
+    _RimMultiplier ("Rim Multiplier", Range(-1, 1)) = 1
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque"}
@@ -55,7 +58,10 @@
          return vOut;
         }
 
-		    fixed4 _Color;
+		    fixed4 _Tint;
+        fixed4 _BrightColor;
+        fixed4 _DimColor;
+        fixed _RimMultiplier;
 
         float noiseOctave(float4 xyzt, float phase, float freq, float amp) {
           return noiseSqFunc((xyzt + phase) * freq) * amp;
@@ -63,7 +69,7 @@
 
         fixed4 frag(FragInput fIn) : SV_Target {
           // === Color ===
-          float4 color = _Color;
+          float4 tint = _Tint;
 
           // === Noise ===
           float4 xyzt = makeFour(fIn.vertPos, (100 + _Time.x * 4));
@@ -81,7 +87,7 @@
           float rimValue = rim;
 
           // === Output ===
-          return max(color * 0.1, color * noiseSum) + (color * rimValue);
+          return tint * lerp(_DimColor, _BrightColor, noiseSum + _RimMultiplier * rimValue);
         }
 		  ENDCG
     }

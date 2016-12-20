@@ -3,7 +3,7 @@ using System.Collections;
 using Leap.Unity.RuntimeGizmos;
 using UnityEngine.Events;
 
-namespace Leap.Paint {
+namespace Leap.zzOldPaint {
 
   [System.Serializable]
   public class FloatEvent : UnityEvent<float> { }

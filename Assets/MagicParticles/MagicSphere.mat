@@ -95,6 +95,9 @@ Material:
         name: _Metallic
       second: 0
     - first:
+        name: _MinNoiseValue
+      second: 0
+    - first:
         name: _Mode
       second: 0
     - first:
@@ -103,6 +106,9 @@ Material:
     - first:
         name: _Parallax
       second: 0.02
+    - first:
+        name: _RimMultiplier
+      second: 1
     - first:
         name: _SmoothnessTextureChannel
       second: 0
@@ -120,8 +126,17 @@ Material:
       second: 1
     m_Colors:
     - first:
+        name: _BrightColor
+      second: {r: 1, g: 1, b: 1, a: 1}
+    - first:
         name: _Color
       second: {r: 1, g: 1, b: 1, a: 1}
     - first:
+        name: _DimColor
+      second: {r: 0, g: 0, b: 0, a: 1}
+    - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}
+    - first:
+        name: _Tint
+      second: {r: 1, g: 1, b: 1, a: 1}

@@ -4,7 +4,7 @@ using Leap.Unity.RuntimeGizmos;
 using Leap.Unity;
 using UnityEngine.Events;
 
-namespace Leap.Paint {
+namespace Leap.zzOldPaint {
 
   public class PressableUI : MonoBehaviour, IRuntimeGizmoComponent {
 

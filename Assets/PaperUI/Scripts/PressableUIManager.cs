@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Leap.Paint {
+namespace Leap.zzOldPaint {
 
   public class PressableUIManager : MonoBehaviour {
 
