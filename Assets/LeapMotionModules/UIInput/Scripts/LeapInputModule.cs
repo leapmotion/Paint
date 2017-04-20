@@ -199,7 +199,7 @@ namespace Leap.Unity.InputModule {
           PointerLines[index] = pointer.AddComponent<LineRenderer>();
           PointerLines[index].material = Instantiate(PointerMaterial);
           PointerLines[index].material.color = new Color(0f, 0f, 0f, 0f);
-          PointerLines[index].numPositions = 2;
+          PointerLines[index].positionCount = 2;
           PointerLines[index].startWidth = 0.001f;
           PointerLines[index].endWidth = 0.001f;
         }

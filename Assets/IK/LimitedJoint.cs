@@ -14,13 +14,13 @@ public class LimitedJoint : MonoBehaviour {
     handle.position = target.position;
 
     //Constrain To Plane
-    handle.localPosition = Vector3.ProjectOnPlane(handle.localPosition, Vector3.right);
+    //handle.localPosition = Vector3.ProjectOnPlane(handle.localPosition, Vector3.right);
     //Constrain Distance
     handle.localPosition = handle.localPosition.ConstrainDistance(Vector3.zero, 0.5f);
     //Constrain Angle
     handle.localPosition = handle.localPosition.ConstrainToNormal(Vector3.up, minDotProduct);
 
     //Propagate the leftover displacement down the chain
-    if (!lockBase) { transform.ConstrainToPoint(handle.position, target.position); }
+    //if (!lockBase) { transform.ConstrainToPoint(handle.position, target.position); }
   }
 }
