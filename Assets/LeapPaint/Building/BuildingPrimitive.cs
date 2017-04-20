@@ -29,24 +29,19 @@ namespace Leap.Unity.LeapPaint {
 
     private void InitGraspedControl() {
       // Grabbing from toolbelt, placing, returning to toolbelt
-      _intObj.OnObjectGraspBegin += OnObjectGraspBegin;
-      _intObj.OnObjectGraspEnd   += OnObjectGraspEnd;
+      _intObj.OnObjectGraspBegin += onObjectGraspBegin;
+      _intObj.OnObjectGraspEnd   += onObjectGraspEnd;
 
       // More precise grasped movement at a cost of movement latency
-      _intObj.OnGraspedMovement  += SmoothGraspedMovement;
-
-      // "Scaling" mode when two-handed grasping
-      _intObj.OnMultiGraspBegin += OnMultiGraspBegin;
-      _intObj.OnMultiGraspHold  += OnMultiGraspHold;
-      _intObj.OnMultiGraspEnd   += OnMultiGraspEnd;
+      _intObj.OnGraspedMovement  += smoothGraspedMovement;
     }
 
-    private void OnObjectGraspBegin() {
+    private void onObjectGraspBegin(List<InteractionHand> hands) {
       anchorControl.enabled = false;
       this.transform.parent = null;
     }
 
-    private void OnObjectGraspEnd() {
+    private void onObjectGraspEnd(List<InteractionHand> hands) {
       Anchor anchor;
       if (anchorControl.TryToAnchor(out anchor)) {
         this.transform.parent = anchor.transform;
@@ -62,15 +57,15 @@ namespace Leap.Unity.LeapPaint {
       //}
     }
 
-    private void SmoothGraspedMovement(Vector3 preSolvedPos, Quaternion preSolvedRot, Vector3 solvedPos, Quaternion solvedRot, Hand _) {
+    private void smoothGraspedMovement(Vector3 preSolvedPos, Quaternion preSolvedRot, Vector3 solvedPos, Quaternion solvedRot, List<InteractionHand> _) {
       // This speed-based (s)lerping allows more precise placement of objects
       // when the desired adjustment of the object's position/rotation is small.
 
       float lerpCoeffPerSec = Vector3.Distance(preSolvedPos, solvedPos).Map(0F, 0.2F, 0.01F, 100F);
       float slerpCoeffPerSec = Quaternion.Angle(preSolvedRot, solvedRot).Map(0F, 50F, 0.01F, 100F);
 
-      _intObj.Rigidbody.position = Vector3.Lerp(preSolvedPos, solvedPos, lerpCoeffPerSec * Time.deltaTime);
-      _intObj.Rigidbody.rotation = Quaternion.Slerp(preSolvedRot, solvedRot, slerpCoeffPerSec * Time.deltaTime);
+      _intObj.rigidbody.position = Vector3.Lerp(preSolvedPos, solvedPos, lerpCoeffPerSec * Time.deltaTime);
+      _intObj.rigidbody.rotation = Quaternion.Slerp(preSolvedRot, solvedRot, slerpCoeffPerSec * Time.deltaTime);
     }
 
     #region Two-handed Grasping - Object Scaling
@@ -85,18 +80,18 @@ namespace Leap.Unity.LeapPaint {
     private Vector3[] _objSpaceHandOffsets = new Vector3[2];
     private Vector3[] _objSpacePullVectors = new Vector3[2];
 
-    private Vector3 GetObjectSpaceGrabPoint(Hand hand) {
+    private Vector3 GetObjectSpaceGrabPoint(InteractionHand hand) {
       return this.transform.InverseTransformVector(_intObj.GetGraspPoint(hand) - this.transform.position);
     }
 
-    private void OnMultiGraspBegin(List<Hand> hands) {
+    private void OnMultiGraspBegin(List<InteractionHand> hands) {
       // We'll only pay attention to the first two hands in the list. That's fine, this is a single-player-per-leap game.
       for (int i = 0; i < 2; i++) {
         _objSpaceHandOffsets[i] = GetObjectSpaceGrabPoint(hands[i]);
       }
     }
 
-    private void OnMultiGraspHold(List<Hand> hands) {
+    private void OnMultiGraspHold(List<InteractionHand> hands) {
       for (int i = 0; i < 2; i++) {
         _objSpacePullVectors[i] = GetObjectSpaceGrabPoint(hands[i]);
       }

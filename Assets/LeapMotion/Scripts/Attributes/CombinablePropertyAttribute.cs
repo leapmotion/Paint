@@ -14,12 +14,6 @@ namespace Leap.Unity.Attributes {
 #endif
   }
 
-  public interface IPropertyHider {
-#if UNITY_EDITOR
-    bool ShouldHide(SerializedProperty property);
-#endif
-  }
-
   public interface IPropertyDisabler {
 #if UNITY_EDITOR
     bool ShouldDisable(SerializedProperty property);
@@ -54,6 +48,8 @@ namespace Leap.Unity.Attributes {
         yield break;
       }
     }
+
+    public virtual void OnPropertyChanged(SerializedProperty property) { }
 #endif
   }
 }

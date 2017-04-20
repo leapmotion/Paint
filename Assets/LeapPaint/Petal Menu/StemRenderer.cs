@@ -15,23 +15,23 @@ public class StemRenderer : MonoBehaviour {
 
   void Start() {
     _line = GetComponent<LineRenderer>();
-    _linePoints = new Vector3[_line.numPositions];
-    _lastLinePointsLength = _line.numPositions;
+    _linePoints = new Vector3[_line.positionCount];
+    _lastLinePointsLength = _line.positionCount;
   }
 
   void OnValidate() {
     _line = GetComponent<LineRenderer>();
-    _linePoints = new Vector3[_line.numPositions];
-    _lastLinePointsLength = _line.numPositions;
+    _linePoints = new Vector3[_line.positionCount];
+    _lastLinePointsLength = _line.positionCount;
   }
 
   private static Vector3[] _stemPointsCache = new Vector3[4];
   private static float[]   _timesCache = new float[4];
   void Update() {
     if (stemTip != null && _linePoints.Length > 0) {
-      if (_lastLinePointsLength != _line.numPositions) {
-        _linePoints = new Vector3[_line.numPositions];
-        _lastLinePointsLength = _line.numPositions;
+      if (_lastLinePointsLength != _line.positionCount) {
+        _linePoints = new Vector3[_line.positionCount];
+        _lastLinePointsLength = _line.positionCount;
       }
       float stemDistance = Vector3.Distance(stemTip.transform.position, this.transform.position);
       _stemPointsCache[0] = this.transform.position - this.transform.up * 0.2F * stemDistance;

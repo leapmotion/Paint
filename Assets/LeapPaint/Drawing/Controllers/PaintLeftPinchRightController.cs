@@ -18,7 +18,7 @@ namespace Leap.Paint.Controllers {
       if (brushHand != null) {
         Hand controlHand = Hands.Get(pinchControlHand);
         if (controlHand != null) {
-          brush.transform.position = brushHand.Index().TipPosition.ToVector3();
+          brush.transform.position = brushHand.GetIndex().TipPosition.ToVector3();
 
           if (controlHand.IsPinching() && !brush.IsBrushing()) {
             brush.Begin();

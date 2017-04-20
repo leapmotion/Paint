@@ -20,7 +20,7 @@ namespace Leap.Unity.LeapPaint.LineDrawing {
       foreach (var lineAnchor in GetComponentsInChildren<LineAnchor>()) {
         s_positionCache.Add(lineAnchor.transform.position);
       }
-      _lineRenderer.numPositions = s_positionCache.Count;
+      _lineRenderer.positionCount = s_positionCache.Count;
       _lineRenderer.SetPositions(s_positionCache.ToArray());
     }
 
