@@ -1,4 +1,6 @@
-﻿// http://answers.unity3d.com/answers/924794/view.html
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// http://answers.unity3d.com/answers/924794/view.html
 Shader "Skybox/Colored Skybox"
 {
 	Properties
@@ -59,7 +61,7 @@ Shader "Skybox/Colored Skybox"
 	      v2f vert(appdata v)
 	      {
 		      v2f o;
-		      o.position = mul(UNITY_MATRIX_MVP, v.position);
+		      o.position = UnityObjectToClipPos(v.position);
 		      o.texcoord = v.texcoord;
 		      return o;
 	      }

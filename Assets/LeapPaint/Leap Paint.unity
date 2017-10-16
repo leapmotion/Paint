@@ -42,7 +42,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 11
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -54,7 +54,7 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
-    serializedVersion: 8
+    serializedVersion: 9
     m_Resolution: 2
     m_BakeResolution: 40
     m_TextureWidth: 1024
@@ -88,7 +88,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigma: 1
   m_LightingDataAsset: {fileID: 112000004, guid: 262a66ae2926a0b468b2180ddbfaee30,
     type: 2}
-  m_ShadowMaskMode: 2
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -673,6 +673,7 @@ LineRenderer:
     numCapVertices: 1
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
 --- !u!4 &67588511
@@ -1431,6 +1432,7 @@ LineRenderer:
     numCapVertices: 1
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
 --- !u!4 &297232675
@@ -2399,11 +2401,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 518744724}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8265254cf53a9c14f823745f8a276667, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d2b9b7c064d4ef42ba9014f865d89de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   brush: {fileID: 518744725}
-  whichHand: 1
+  tipHandChirality: 0
+  tipFingerType: 1
+  tipRadius: 0.05
+  tipDistance: 0.06
+  brushHandChirality: 1
 --- !u!4 &518744727
 Transform:
   m_ObjectHideFlags: 0
@@ -2766,7 +2772,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &607062763
 Transform:
   m_ObjectHideFlags: 0
@@ -2774,7 +2780,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 607062762}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.32985306, y: -0.7004769, z: 4.959365}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 518744727}
@@ -5463,6 +5469,7 @@ LineRenderer:
     numCapVertices: 1
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
 --- !u!4 &878130845
@@ -6311,6 +6318,7 @@ LineRenderer:
     numCapVertices: 1
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
 --- !u!4 &983132815
@@ -7128,6 +7136,7 @@ LineRenderer:
     numCapVertices: 1
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
 --- !u!4 &1210802669
@@ -9392,6 +9401,7 @@ LineRenderer:
     numCapVertices: 1
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
 --- !u!4 &1724220936
@@ -9868,6 +9878,7 @@ LineRenderer:
     numCapVertices: 1
     alignment: 0
     textureMode: 0
+    generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
 --- !u!4 &1854859067
