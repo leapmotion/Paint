@@ -289,8 +289,8 @@ namespace Leap.Unity {
         _shouldSetLocalPosition = false;
       }
 
-      if (Input.GetKeyDown(recenter) && VRSettings.enabled && VRDevice.isPresent) {
-        InputTracking.Recenter();
+      if (Input.GetKeyDown(recenter) && UnityEngine.XR.XRSettings.enabled && UnityEngine.XR.XRDevice.isPresent) {
+        UnityEngine.XR.InputTracking.Recenter();
       }
 
       // Manual Time Alignment
@@ -307,24 +307,24 @@ namespace Leap.Unity {
     }
 
     protected void LateUpdate() {
-      if (VRSettings.enabled) {
-        updateTemporalWarping(InputTracking.GetLocalPosition(VRNode.CenterEye),
-                              InputTracking.GetLocalRotation(VRNode.CenterEye));
+      if (UnityEngine.XR.XRSettings.enabled) {
+        updateTemporalWarping(UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.CenterEye),
+                              UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye));
       }
     }
 
     private void onValidCameraParams(LeapVRCameraControl.CameraParams cameraParams) {
       _projectionMatrix = cameraParams.ProjectionMatrix;
 
-      if (VRSettings.enabled) {
+      if (UnityEngine.XR.XRSettings.enabled) {
         if (provider != null) {
-          updateHistory(InputTracking.GetLocalPosition(VRNode.CenterEye),
-                        InputTracking.GetLocalRotation(VRNode.CenterEye));
+          updateHistory(UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.CenterEye),
+                        UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye));
         }
 
         if (syncMode == SyncMode.LOW_LATENCY) {
-          updateTemporalWarping(InputTracking.GetLocalPosition(VRNode.CenterEye),
-                                InputTracking.GetLocalRotation(VRNode.CenterEye));
+          updateTemporalWarping(UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.CenterEye),
+                                UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye));
         }
       }
     }

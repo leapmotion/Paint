@@ -63,7 +63,7 @@ namespace Leap.Unity {
       }
 
       //Allow the user to specify themselves if VR is disabled
-      if (!VRSettings.enabled || !PlayerSettings.virtualRealitySupported) {
+      if (!UnityEngine.XR.XRSettings.enabled || !PlayerSettings.virtualRealitySupported) {
         return;
       }
 

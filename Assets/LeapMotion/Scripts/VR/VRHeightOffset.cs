@@ -24,9 +24,9 @@ public class VRHeightOffset : MonoBehaviour {
   }
 
   void Start() {
-    if (VRDevice.isPresent && VRSettings.enabled && _deviceOffsets != null) {
+    if (UnityEngine.XR.XRDevice.isPresent && UnityEngine.XR.XRSettings.enabled && _deviceOffsets != null) {
 #if UNITY_5_4_OR_NEWER
-      string deviceName = VRSettings.loadedDeviceName;
+      string deviceName = UnityEngine.XR.XRSettings.loadedDeviceName;
 #else
       string deviceName = VRDevice.family;
 #endif
