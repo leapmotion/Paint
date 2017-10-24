@@ -5,6 +5,14 @@ namespace Leap.Unity.Meshing {
   public struct Triangle {
     public int a, b, c;
 
+    public int this[int idx] {
+      get {
+        if (idx == 0) return a;
+        if (idx == 1) return b;
+        return c;
+      }
+    }
+
     public IndexEnumerator GetEnumerator() { return new IndexEnumerator(this); }
 
     public struct IndexEnumerator {
@@ -16,9 +24,7 @@ namespace Leap.Unity.Meshing {
       }
       public int Current {
         get {
-          if (_curIdx == 0) return _tri.a;
-          if (_curIdx == 1) return _tri.b;
-          return _tri.c;
+          return _tri[_curIdx];
         }
       }
       public bool MoveNext() {

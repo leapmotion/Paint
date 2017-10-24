@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Leap.Unity.Meshing {
 
@@ -7,6 +8,21 @@ namespace Leap.Unity.Meshing {
   /// 12 pentagons.
   /// </summary>
   public static class Dodecahedron {
+
+    public static PolyMesh Create() {
+      var polyMesh = new PolyMesh();
+      polyMesh.positions = new List<Vector3>();
+      polyMesh.positions.AddRange(Positions);
+      polyMesh.polygons = new List<Polygon>();
+      polyMesh.polygons.AddRange(Polygons);
+
+      return polyMesh;
+
+      //return new PolyMesh() {
+      //  positions = new List<Vector3>()Positions,
+      //  polygons = Polygons
+      //};
+    }
 
     public static readonly Vector3[] Positions
       = new Vector3[] {

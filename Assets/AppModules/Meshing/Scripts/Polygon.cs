@@ -28,6 +28,22 @@ namespace Leap.Unity.Meshing {
 
     #endregion
 
+    #region Operations
+
+    /// <summary>
+    /// Adds the argument amount to each vertex index in this polygon definition, and
+    /// also returns this polygon for convenience.
+    /// </summary>
+    public Polygon IncrementIndices(int byAmount) {
+      for (int i = 0; i < _verts.Length; i++) {
+        _verts[i] += byAmount;
+      }
+
+      return this;
+    }
+
+    #endregion
+
     #region Triangulation
 
     public TriangleEnumerator tris {
@@ -48,7 +64,7 @@ namespace Leap.Unity.Meshing {
       public Triangle Current {
         get {
           return new Triangle() {
-            a = _polygon[_curIdx],
+            a = _polygon[0],
             b = _polygon[_curIdx + 1],
             c = _polygon[_curIdx + 2]
           };

@@ -11,9 +11,8 @@ namespace Leap.Unity.Meshing.Examples {
       _meshFilter.mesh = new Mesh();
       _meshFilter.mesh.name = "Dodecahedron";
 
-      var polymesh = new PolyMesh(Dodecahedron.Positions,
-                                  Dodecahedron.Polygons);
-      polymesh.FillMesh(_meshFilter.mesh);
+      var dodecahedronMesh = Dodecahedron.Create();
+      dodecahedronMesh.FillUnityMesh(_meshFilter.mesh);
     }
 
   }
