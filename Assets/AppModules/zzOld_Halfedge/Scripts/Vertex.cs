@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Leap.Unity.Halfedge {
+namespace Leap.Unity.zzOld_Halfedge {
 
   public class Vertex {
 

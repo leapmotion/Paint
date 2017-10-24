@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Leap.Unity.Halfedge {
+namespace Leap.Unity.zzOld_Halfedge {
 
   [RequireComponent(typeof(MeshFilter))]
   public class InteractiveMesh : MonoBehaviour {

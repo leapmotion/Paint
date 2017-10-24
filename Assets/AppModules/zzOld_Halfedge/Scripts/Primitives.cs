@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Leap.Unity.Halfedge {
+namespace Leap.Unity.zzOld_Halfedge {
 
   public static class Primitives {
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Leap.Unity.Halfedge {
+namespace Leap.Unity.zzOld_Halfedge {
 
   public class Face {
 
