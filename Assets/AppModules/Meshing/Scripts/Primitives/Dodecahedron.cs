@@ -10,11 +10,7 @@ namespace Leap.Unity.Meshing {
   public static class Dodecahedron {
 
     public static PolyMesh Create() {
-      var polyMesh = new PolyMesh();
-      polyMesh.positions = new List<Vector3>();
-      polyMesh.positions.AddRange(Positions);
-      polyMesh.polygons = new List<Polygon>();
-      polyMesh.polygons.AddRange(Polygons);
+      var polyMesh = new PolyMesh(Positions, Polygons);
 
       return polyMesh;
 

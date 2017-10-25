@@ -34,6 +34,10 @@ namespace Leap.Unity {
       }
     }
 
+    public static Slice<T> FromIndex<T>(this List<T> list, int fromIdx) {
+      return Slice(list, fromIdx);
+    }
+
   }
 
   public struct Slice<T> {
