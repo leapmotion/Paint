@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Leap.Unity.Meshing.Examples {
 
@@ -11,7 +10,7 @@ namespace Leap.Unity.Meshing.Examples {
       _meshFilter.mesh = new Mesh();
       _meshFilter.mesh.name = "Dodecahedron";
 
-      var dodecahedronMesh = Dodecahedron.Create();
+      var dodecahedronMesh = Dodecahedron.CreatePolyMesh();
       dodecahedronMesh.FillUnityMesh(_meshFilter.mesh);
     }
 

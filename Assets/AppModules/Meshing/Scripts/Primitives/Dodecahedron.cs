@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Leap.Unity.Query;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Leap.Unity.Meshing {
@@ -9,15 +10,16 @@ namespace Leap.Unity.Meshing {
   /// </summary>
   public static class Dodecahedron {
 
-    public static PolyMesh Create() {
-      var polyMesh = new PolyMesh(Positions, Polygons);
+    public static PolyMesh CreatePolyMesh() {
+      var mesh = new PolyMesh();
 
-      return polyMesh;
+      FillPolyMesh(mesh);
 
-      //return new PolyMesh() {
-      //  positions = new List<Vector3>()Positions,
-      //  polygons = Polygons
-      //};
+      return mesh;
+    }
+
+    public static void FillPolyMesh(PolyMesh mesh) {
+      mesh.Fill(Positions, Polygons);
     }
 
     public static readonly Vector3[] Positions
@@ -65,7 +67,7 @@ namespace Leap.Unity.Meshing {
     }
 
     private static Polygon N(params int[] verts) {
-      return new Polygon() { verts = verts };
+      return new Polygon() { verts = verts.Query().ToList() };
     }
 
   }

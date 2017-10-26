@@ -74,9 +74,9 @@ namespace Leap.Unity.Meshing {
     /// <summary>
     /// Returns if the point is on the line segment defined by argument Edge of the
     /// argument PolyMesh.
-    public static bool IsInside(this Vector3 point, PolyMesh A, Edge edge) {
-      var a = A.GetPosition(edge.a);
-      var b = A.GetPosition(edge.b);
+    public static bool IsInside(this Vector3 point, Edge edge) {
+      var a = edge.mesh.GetPosition(edge.a);
+      var b = edge.mesh.GetPosition(edge.b);
       return Vector3.Cross((point - a), (b - a)) == Vector3.zero;
     }
 
@@ -86,13 +86,15 @@ namespace Leap.Unity.Meshing {
     /// 
     /// Points right on an edge or a vertex of a polygon are rejected.
     /// </summary>
-    public static bool IsInside(this Vector3 point, PolyMesh A, Polygon aPoly) {
+    public static bool IsInside(this Vector3 point, Polygon aPoly) {
       
       Maybe<Vector3> lastCrossProduct = Maybe.None;
 
+      Vector3 a, b;
       foreach (var edge in aPoly.edges) {
-        var curCrossProduct = Vector3.Cross(A.GetPosition(edge.b) - A.GetPosition(edge.a),
-                                            point - A.GetPosition(edge.a));
+        a = edge.mesh.GetPosition(edge.a);
+        b = edge.mesh.GetPosition(edge.b);
+        var curCrossProduct = Vector3.Cross(b - a, point - a);
 
         if (lastCrossProduct.hasValue) {
           if (Vector3.Dot(lastCrossProduct.valueOrDefault, curCrossProduct) <= 0f) {
