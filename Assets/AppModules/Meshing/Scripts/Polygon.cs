@@ -21,18 +21,17 @@ namespace Leap.Unity.Meshing {
     public List<int> verts {
       get { return _verts; }
       set {
-        if (value.Count < 3) {
-          throw new System.InvalidOperationException(
-            "Polygons must have at least 3 vertices.");
-        }
-
         _verts = value;
       }
     }
     
+    /// <summary>
+    /// Indexing a polygon directly has _slightly_ more overhead than indexing its verts
+    /// directly, but indexes its vertices cyclically.
+    /// </summary>
     public int this[int idx] {
-      get { return verts[idx]; }
-      set { verts[idx] = value; }
+      get { return verts[idx % verts.Count]; }
+      set { verts[idx % verts.Count] = value; }
     }
 
     public int Count { get { return _verts.Count; } }
@@ -43,6 +42,17 @@ namespace Leap.Unity.Meshing {
 
     private Vector3 P(int vertIndex) {
       return mesh.GetPosition(vertIndex);
+    }
+
+    /// <summary>
+    /// Returns the position of the vertex at the argument vertIndex in the _mesh_ of
+    /// this polygon. This method is a shortcut for polygon.mesh.GetPosition(vertIndex);
+    /// the provided index is _not_ the index of a vertex in this polygon, but the index
+    /// of the vertex in the mesh!
+    /// e.g. Don't do polygon.GetPosition(0), do polygon.GetPosition(polygon[0]).
+    /// </summary>
+    public Vector3 GetMeshPosition(int meshVertIndex) {
+      return P(meshVertIndex);
     }
 
     /// <summary>
@@ -67,16 +77,21 @@ namespace Leap.Unity.Meshing {
     /// Warning: This is not guaranteed to result in a valid mesh polygon.
     /// </summary>
     public Polygon InsertEdgeVertex(Edge edge, int newVertIndex) {
-      // handle edge-case where edge is between first and last indices
+
+      // Handle edge-case where the edge is between the first and last indices.
       if ((_verts[0] == edge.b && _verts[_verts.Count - 1] == edge.a)
           || (_verts[0] == edge.a && _verts[_verts.Count - 1] == edge.b)) {
 
         _verts.Add(newVertIndex);
+
+        return this;
       }
       
       for (int i = 0; i < _verts.Count; i++) {
         if (_verts[i] == edge.a || _verts[i] == edge.b) {
           _verts.Insert(i + 1, newVertIndex);
+
+          return this;
         }
       }
 
@@ -90,16 +105,16 @@ namespace Leap.Unity.Meshing {
     /// Obviously if the polygon vertices are non-planar, this won't work! But that's an
     /// assumption we make about all Polygons.
     /// </summary>
-    public Vector3 GetNormal(PolyMesh usingMesh) {
-      return Vector3.Cross(usingMesh.GetPosition(_verts[1])
-                           - usingMesh.GetPosition(_verts[0]),
-                           usingMesh.GetPosition(_verts[2])
-                           - usingMesh.GetPosition(_verts[0])).normalized;
+    public Vector3 GetNormal() {
+      return Vector3.Cross(mesh.GetPosition(_verts[1])
+                           - mesh.GetPosition(_verts[0]),
+                           mesh.GetPosition(_verts[2])
+                           - mesh.GetPosition(_verts[0])).normalized;
     }
 
     /// <summary>
-    /// Calculates and returns whether this polygon is convex. The polygon's verts are
-    /// assumed to be planar.
+    /// Calculates and returns whether this polygon is truly convex. The polygon's verts
+    /// are assumed to be planar. (Not sure if your polygon is planar? Call IsPlanar())
     /// 
     /// Polygons that are added to meshes are always assumed to be convex; adding a
     /// non-convex polygon to a mesh via AddPolygon is an error. However, this method
@@ -144,6 +159,47 @@ namespace Leap.Unity.Meshing {
       }
 
       return false;
+    }
+
+    /// <summary>
+    /// Calculates and returns whether this polygon is truly planar.
+    /// 
+    /// Polygons are always assumed to be planar; this method is useful for a
+    /// develepor for debugging purposes when implementing new polygon or mesh operations.
+    /// </summary>
+    public bool IsPlanar() {
+      if (verts.Count < 2) {
+        throw new System.InvalidOperationException(
+          "Polygon only has one or fewer vertex indices.");
+      }
+
+      if (verts.Count == 2) return true;
+
+      if (verts.Count == 3) return true;
+
+      Maybe<Vector3> lastCrossProduct = Maybe.None;
+      for (int i = 0; i < verts.Count - 3; i++) {
+        var a = P(this[i]);
+        var b = P(this[i + 1]);
+        var c = P(this[i + 2]);
+        var ab = b - a;
+        var ac = c - a;
+
+        var curCrossProduct = Vector3.Cross(ab, ac);
+        if (lastCrossProduct.hasValue) {
+          // We expect every cross product of ab and ac (for a around the polygon)
+          // to point in the same direction; by crossing them together, any deviation
+          // in direction will produce a non-zero 'cross-cross-product.'
+          var productWithLast = Vector3.Cross(curCrossProduct, lastCrossProduct.valueOrDefault);
+          if (productWithLast.x > PolyMath.POSITION_TOLERANCE
+              || productWithLast.y > PolyMath.POSITION_TOLERANCE
+              || productWithLast.z > PolyMath.POSITION_TOLERANCE) {
+            return false;
+          }
+        }
+      }
+
+      return true;
     }
 
     #endregion
@@ -207,7 +263,7 @@ namespace Leap.Unity.Meshing {
       }
       public bool MoveNext() {
         _curIdx += 1;
-        return _curIdx + 1 < _poly.Count;
+        return _curIdx < _poly.Count;
       }
       public EdgeEnumerator GetEnumerator() { return this; }
     }
@@ -226,6 +282,9 @@ namespace Leap.Unity.Meshing {
     public bool Equals(Polygon otherPoly) {
       if (this.mesh != otherPoly.mesh) return false;
       if (this.verts.Count != otherPoly.verts.Count) return false;
+
+      // Utils.AreEqualUnordered(verts, otherPoly.verts); perhaps?
+      // (would also need to sort before hashing)
       for (int i = 0; i < verts.Count; i++) {
         if (verts[i] != otherPoly.verts[i]) return false;
       }
@@ -243,7 +302,7 @@ namespace Leap.Unity.Meshing {
       return thisPoly.Equals(otherPoly);
     }
     public static bool operator !=(Polygon thisPoly, Polygon otherPoly) {
-      return !(thisPoly == otherPoly);
+      return !(thisPoly.Equals(otherPoly));
     }
 
     #endregion

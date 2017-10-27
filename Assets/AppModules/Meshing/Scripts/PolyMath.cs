@@ -11,18 +11,19 @@ namespace Leap.Unity.Meshing {
       get { if (idx == 0) return a; return b; }
     }
 
-    public static Line FromEdge(PolyMesh A, Edge e) {
-      return new Line() { a = A.GetPosition(e.a), b = A.GetPosition(e.b) };
+    public static Line FromEdge(Edge edge) {
+      return new Line() { a = edge.mesh.GetPosition(edge.a),
+                          b = edge.mesh.GetPosition(edge.b) };
     }
   }
 
   public struct Plane {
     public Vector3 point, normal;
 
-    public static Plane FromPoly(PolyMesh mesh, Polygon poly) {
+    public static Plane FromPoly(Polygon poly) {
       return new Plane() {
-        point  = mesh.GetPosition(poly[0]),
-        normal = poly.GetNormal(mesh)
+        point  = poly.mesh.GetPosition(poly[0]),
+        normal = poly.GetNormal()
       };
     }
   }
@@ -30,6 +31,8 @@ namespace Leap.Unity.Meshing {
   #endregion
 
   public static class PolyMath {
+
+    public const float POSITION_TOLERANCE = 1e-05f;
 
     #region Intersection
 
@@ -74,10 +77,26 @@ namespace Leap.Unity.Meshing {
     /// <summary>
     /// Returns if the point is on the line segment defined by argument Edge of the
     /// argument PolyMesh.
+    /// </summary>
     public static bool IsInside(this Vector3 point, Edge edge) {
       var a = edge.mesh.GetPosition(edge.a);
       var b = edge.mesh.GetPosition(edge.b);
-      return Vector3.Cross((point - a), (b - a)) == Vector3.zero;
+      var ap = (point - a);
+      var ab = (b - a);
+
+      // ap must be along the same line as ab. Here this is evaluated as a rough
+      // cross product component tolerance.
+      var apXab = Vector3.Cross(ap, ab);
+      if (apXab.x > POSITION_TOLERANCE
+       || apXab.y > POSITION_TOLERANCE
+       || apXab.z > POSITION_TOLERANCE) return false;
+
+      // ap must be in the same direction as ab (or have no direction).
+      var apDab = Vector3.Dot(ap, ab);
+      if (apDab < 0f) return false;
+
+      // ap's square magnitude should be equal to or less than ab's (0 length is fine).
+      return ap.sqrMagnitude <= ab.sqrMagnitude;
     }
 
     /// <summary>
@@ -115,11 +134,17 @@ namespace Leap.Unity.Meshing {
 
     #region Closest Point
 
-    public static Vector3 ClampedTo(this Vector3 pos, PolyMesh mesh, Polygon poly) {
+    /// <summary>
+    /// Clamps this position to this polygon, but assumes that the input is already on
+    /// the plane of this polygon!
+    /// </summary>
+    public static Vector3 ClampedTo(this Vector3 pos, Polygon poly) {
+      if (pos.IsInside(poly)) return pos;
+
       var closestSqrDist = float.PositiveInfinity;
       var clamped = pos;
       foreach (var edge in poly.edges) {
-        var testClamped = pos.ClampedTo(mesh, edge);
+        var testClamped = pos.ClampedTo(edge);
         if ((pos - testClamped).sqrMagnitude < closestSqrDist) {
           clamped = testClamped;
         }
@@ -127,9 +152,9 @@ namespace Leap.Unity.Meshing {
       return clamped;
     }
 
-    public static Vector3 ClampedTo(this Vector3 pos, PolyMesh mesh, Edge edge) {
-      var a = mesh.GetPosition(edge.a);
-      var b = mesh.GetPosition(edge.b);
+    public static Vector3 ClampedTo(this Vector3 pos, Edge edge) {
+      var a = edge.mesh.GetPosition(edge.a);
+      var b = edge.mesh.GetPosition(edge.b);
       var mag = (b - a).magnitude;
       var lineDir = (b - a) / mag;
       return a + lineDir * Mathf.Clamp(Vector3.Dot((pos - a), lineDir), 0f, mag);

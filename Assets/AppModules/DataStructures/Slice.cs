@@ -76,7 +76,7 @@ namespace Leap.Unity {
 
     public int Count {
       get {
-        return (_beginIdx - _endIdx) * _direction;
+        return (_endIdx - _beginIdx) * _direction;
       }
     }
 

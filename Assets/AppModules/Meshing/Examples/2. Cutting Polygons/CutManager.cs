@@ -13,6 +13,9 @@ namespace Leap.Unity.Meshing.Examples {
     private void Start() {
       polygonToCut.polyMesh = new PolyMesh();
       cuttingPolygon.polyMesh = new PolyMesh();
+
+      polygonToCut.polyMesh.useTransform   = polygonToCut.transform;
+      cuttingPolygon.polyMesh.useTransform = cuttingPolygon.transform;
     }
 
     private List<Vector3> tempList = new List<Vector3>();
@@ -20,15 +23,11 @@ namespace Leap.Unity.Meshing.Examples {
       Polygon.FillPolyMesh(polygonToCut.numVerts,   polygonToCut.polyMesh);
       Polygon.FillPolyMesh(cuttingPolygon.numVerts, cuttingPolygon.polyMesh);
 
-      // Temporarily, we need to manually transform the positions in the cutting triangle.
-      tempList.Clear();
-      foreach (var pos in cuttingPolygon.polyMesh.positions) {
-        tempList.Add(effectivePolygon2Transform.TransformPoint(pos));
-      }
-      cuttingPolygon.polyMesh.FillPositionsOnly(tempList);
-
       // Cut!
       //cuttingPolygon.Cut(polygonToCut);
+      PolyMesh.CutOps.TryCut(polygonToCut.polyMesh,
+                             cuttingPolygon.polyMesh,
+                             cuttingPolygon.polyMesh.polygons[0]);
 
       // Update Unity mesh.
       polygonToCut.UpdateUnityMesh();

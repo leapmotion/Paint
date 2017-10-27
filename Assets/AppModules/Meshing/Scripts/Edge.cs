@@ -13,13 +13,15 @@ namespace Leap.Unity.Meshing {
   /// "soft" data for a mesh; Polygons are not defined by edges but by an ordered
   /// sequence of mesh position indices.
   /// 
-  /// The mesh itself stores and managed the data for face-adjacency with any given Edge,
-  /// and an Edge struct will remain valid over polygon-modification operations to the
-  /// mesh as long s those operations themselves do not destroy the existence of the edge.
+  /// The mesh itself stores and manages the data for face-adjacency with any given Edge,
+  /// and edge-adjacency for any given face (polygon), and an Edge struct will remain
+  /// valid over polygon-modification operations to the mesh as long as those operations
+  /// themselves don't destroy all of the polygons that connect a given pair of mesh
+  /// positions.
   /// 
   /// (The SplitEdgeAddVertex operation is an important example of an Edge-invalidating
-  /// operation. A PokePolygon operation, by contrast, will affect a Polygon but never
-  /// an Edge.)
+  /// operation. A PokePolygon operation, by contrast, will invalidate a Polygon but
+  /// never an Edge.)
   /// </summary>
   public struct Edge {
     public PolyMesh mesh;
@@ -75,6 +77,10 @@ namespace Leap.Unity.Meshing {
         default:
           return pA + dir * amountAlongEdge;
       }
+    }
+
+    public override string ToString() {
+      return "[Edge | a: " + a + ", b: " + b + ", mesh: " + mesh + "]";
     }
 
   }
