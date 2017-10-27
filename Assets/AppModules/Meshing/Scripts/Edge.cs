@@ -79,6 +79,13 @@ namespace Leap.Unity.Meshing {
       }
     }
 
+    /// <summary>
+    /// Returns whether this Edge has the argument vertex index at either A or B.
+    /// </summary>
+    public bool ContainsVertex(int vertIndex) {
+      return a == vertIndex || b == vertIndex;
+    }
+
     public override string ToString() {
       return "[Edge | a: " + a + ", b: " + b + ", mesh: " + mesh + "]";
     }

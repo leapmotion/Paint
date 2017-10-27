@@ -79,24 +79,26 @@ namespace Leap.Unity.Meshing {
     /// argument PolyMesh.
     /// </summary>
     public static bool IsInside(this Vector3 point, Edge edge) {
-      var a = edge.mesh.GetPosition(edge.a);
-      var b = edge.mesh.GetPosition(edge.b);
-      var ap = (point - a);
-      var ab = (b - a);
+      return Vector3.Distance(point.ClampedTo(edge), point) < POSITION_TOLERANCE;
 
-      // ap must be along the same line as ab. Here this is evaluated as a rough
-      // cross product component tolerance.
-      var apXab = Vector3.Cross(ap, ab);
-      if (apXab.x > POSITION_TOLERANCE
-       || apXab.y > POSITION_TOLERANCE
-       || apXab.z > POSITION_TOLERANCE) return false;
+      //var a = edge.mesh.GetPosition(edge.a);
+      //var b = edge.mesh.GetPosition(edge.b);
+      //var ap = (point - a);
+      //var ab = (b - a);
 
-      // ap must be in the same direction as ab (or have no direction).
-      var apDab = Vector3.Dot(ap, ab);
-      if (apDab < 0f) return false;
+      //// ap must be along the same line as ab. Here this is evaluated as a rough
+      //// cross product component tolerance.
+      //var apXab = Vector3.Cross(ap, ab);
+      //if (apXab.x > POSITION_TOLERANCE
+      // || apXab.y > POSITION_TOLERANCE
+      // || apXab.z > POSITION_TOLERANCE) return false;
 
-      // ap's square magnitude should be equal to or less than ab's (0 length is fine).
-      return ap.sqrMagnitude <= ab.sqrMagnitude;
+      //// ap must be in the same direction as ab (or have no direction).
+      //var apDab = Vector3.Dot(ap, ab);
+      //if (apDab < 0f) return false;
+
+      //// ap's square magnitude should be equal to or less than ab's (0 length is fine).
+      //return ap.sqrMagnitude <= ab.sqrMagnitude;
     }
 
     /// <summary>

@@ -414,6 +414,136 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     public static class CutOps {
 
+      public enum PolyCutPointType {
+        Invalid,
+        ExistingPoint,
+        NewPointEdge,
+        NewPointFace
+      }
+
+      public struct PolyCutPoint {
+        public Polygon polygon;
+
+        private PolyCutPointType _type;
+        public PolyCutPointType type { get { return _type; } }
+
+        private Maybe<int>     _maybeExistingPoint;
+        private Maybe<Vector3> _maybeNewPoint;
+        private Maybe<Edge>    _maybeNewPointEdge;
+
+        public bool Equals(PolyCutPoint other) {
+          return this.polygon == other.polygon
+              && this.type == other.type
+              && _maybeExistingPoint == other._maybeExistingPoint
+              && _maybeNewPoint == other._maybeNewPoint
+              && _maybeNewPointEdge == other._maybeNewPointEdge;
+        }
+        public override bool Equals(object obj) {
+          if (obj is PolyCutPoint) {
+            return Equals((PolyCutPoint)obj);
+          }
+          return base.Equals(obj);
+        }
+        public override int GetHashCode() {
+          return new Hash() { polygon, type, _maybeExistingPoint, _maybeNewPoint, _maybeNewPointEdge };
+        }
+        public static bool operator ==(PolyCutPoint one, PolyCutPoint other) {
+          return one.Equals(other);
+        }
+        public static bool operator !=(PolyCutPoint one, PolyCutPoint other) {
+          return !(one.Equals(other));
+        }
+
+        public PolyCutPoint(Vector3 desiredPointOnPoly, Polygon onPoly) {
+          polygon = onPoly;
+
+          _type = PolyCutPointType.Invalid;
+          _maybeExistingPoint = Maybe.None;
+          _maybeNewPoint = Maybe.None;
+          _maybeNewPointEdge = Maybe.None;
+
+          _maybeNewPoint = desiredPointOnPoly;
+
+          for (int i = 0; i < polygon.verts.Count; i++) {
+            var curVertPos = polygon.GetMeshPosition(polygon[i]);
+            if (Vector3.Distance(curVertPos, desiredPointOnPoly) < PolyMath.POSITION_TOLERANCE) {
+              _maybeExistingPoint = polygon[i];
+              _maybeNewPointEdge = Maybe.None;
+              _maybeNewPoint = Maybe.None;
+              break;
+            }
+            else {
+              var edge = new Edge() {
+                mesh = polygon.mesh,
+                a = polygon[i],
+                b = polygon[i + 1]
+              };
+              if (desiredPointOnPoly.IsInside(edge)) {
+                _maybeNewPointEdge = edge;
+              }
+            }
+          }
+
+          if (_maybeExistingPoint.hasValue) {
+            _type = PolyCutPointType.ExistingPoint;
+          }
+          else if (_maybeNewPointEdge.hasValue) {
+            _type = PolyCutPointType.NewPointEdge;
+          }
+          else {
+            _type = PolyCutPointType.NewPointFace;
+          }
+
+          if (this.isMalformed) {
+            throw new System.InvalidOperationException("Cut point malformed.");
+          }
+        }
+
+        // TODO: deleteme..?
+        public bool isMalformed {
+          get {
+            switch (type) {
+              case PolyCutPointType.Invalid:
+                return true;
+              case PolyCutPointType.ExistingPoint:
+                return _maybeNewPoint.hasValue
+                    || _maybeNewPointEdge.hasValue;
+              case PolyCutPointType.NewPointEdge:
+                return _maybeExistingPoint.hasValue
+                   || !_maybeNewPointEdge.hasValue
+                   || !_maybeNewPoint.hasValue;
+              case PolyCutPointType.NewPointFace:
+                return _maybeExistingPoint.hasValue
+                    || _maybeNewPointEdge.hasValue
+                    || !_maybeNewPoint.hasValue;
+              default:
+                return false;
+            }
+          }
+        }
+
+        // Existing Point data.
+        public bool isExistingPoint { get { return _type == PolyCutPointType.ExistingPoint; } }
+        public int existingPoint { get { return _maybeExistingPoint.valueOrDefault; } }
+
+        // New edge point data.
+        public bool isNewEdgePoint { get { return _type == PolyCutPointType.NewPointEdge; } }
+        public Edge edge { get { return _maybeNewPointEdge.valueOrDefault; } }
+
+        // New face point data.
+        public bool isNewFacePoint { get { return _type == PolyCutPointType.NewPointFace; } }
+        public Vector3 newPoint { get { return _maybeNewPoint.valueOrDefault; } }
+
+        public Vector3 GetPosition() {
+          if (isExistingPoint) {
+            return polygon.mesh.GetPosition(existingPoint);
+          }
+          else {
+            return newPoint;
+          }
+        }
+      }
+
       /// <summary>
       /// Cuts into A, using PolyMesh B's polygon b. This operation modifies A, producing
       /// extra positions if necessary, and increasing the number of faces (polygons) if
@@ -584,6 +714,79 @@ namespace Leap.Unity.Meshing {
             existingCutPointCountDict.Clear();
             Pool<Dictionary<int, int>>.Recycle(existingCutPointCountDict);
           }
+          
+          // (11, 15-12, 12 -- there also exists an 11-15.)
+          // If cut points exist both on an edge and a vertex on that edge, pick one.
+          // TODO: ok this is pretty terrible
+          var removeCutPointIndices = Pool<List<int>>.Spawn();
+          removeCutPointIndices.Clear();
+          try {
+            foreach (var edgeCpPair in cutPoints.Query().Where(cp => cp.isNewEdgePoint)
+                                                        .Select(cp => new Pair<Edge, PolyCutPoint>() {
+                                                          a = cp.edge,
+                                                          b = cp
+                                                        })) {
+              var edge         = edgeCpPair.a;
+              var edgeCutPoint = edgeCpPair.b;
+              foreach (var vertex in cutPoints.Query().Where(cp => cp.isExistingPoint)
+                                                      .Select(cp => cp.existingPoint)) {
+                if (edge.ContainsVertex(vertex)) {
+                  var vertPos = cutPoints[0].polygon.GetMeshPosition(vertex);
+                  var edgePos = edgeCutPoint.newPoint;
+                  if (Vector3.Distance(vertPos, edgePos) < PolyMath.POSITION_TOLERANCE) {
+                    // Within distance, remove edge.
+                    removeCutPointIndices.Add(cutPoints.FindIndex(cp => cp == edgeCutPoint));
+                  }
+                  else {
+                    // Beyond distance, remove vertex.
+                    removeCutPointIndices.Add(cutPoints.FindIndex(cp => cp.existingPoint == vertex));
+                  }
+                }
+              }
+            }
+
+            removeCutPointIndices.Sort();
+            cutPoints.RemoveAtMany(removeCutPointIndices);
+          }
+          finally {
+            removeCutPointIndices.Clear();
+            Pool<List<int>>.Recycle(removeCutPointIndices);
+          }
+
+
+          if (cutPoints.Count > 2) {
+            
+            if (cutPoints.Count == 3) {
+              Maybe<int> existingIdx0 = Maybe.None, existingIdx1 = Maybe.None;
+              Maybe<Edge> cutPointEdge = Maybe.None;
+              for (int i = 0; i < cutPoints.Count; i++) {
+                var cutPoint = cutPoints[i];
+                if (cutPoint.isExistingPoint) {
+                  if (!existingIdx0.hasValue) {
+                    existingIdx0 = cutPoint.existingPoint;
+                  }
+                  else {
+                    existingIdx1 = cutPoint.existingPoint;
+                  }
+                }
+                else if (cutPoint.isNewEdgePoint) {
+                  cutPointEdge = cutPoint.edge;
+                }
+              }
+
+              if (existingIdx0.hasValue && existingIdx1.hasValue && cutPointEdge.hasValue) {
+                if (new Edge() {
+                      mesh = cutPointEdge.valueOrDefault.mesh,
+                      a = existingIdx0.valueOrDefault,
+                      b = existingIdx1.valueOrDefault
+                    } == cutPointEdge) {
+                  // Single-edge cut. Remove the edge cut.
+                  cutPoints.RemoveAll(p => p.isNewEdgePoint);
+                }
+              }
+            }
+
+          }
 
           if (cutPoints.Count > 2) {
             throw new System.InvalidOperationException(
@@ -683,102 +886,9 @@ namespace Leap.Unity.Meshing {
         return false;
       }
 
-      public enum PolyCutPointType {
-        Invalid,
-        ExistingPoint,
-        NewPointEdge,
-        NewPointFace
-      }
-
-      public struct PolyCutPoint {
-        public Polygon polygon;
-
-        private PolyCutPointType _type;
-        public PolyCutPointType type { get { return _type; } }
-
-        private Maybe<int>     _maybeExistingPoint;
-        private Maybe<Vector3> _maybeNewPoint;
-        private Maybe<Edge>    _maybeNewPointEdge;
-
-        public PolyCutPoint(Vector3 desiredPointOnPoly, Polygon onPoly) {
-          polygon = onPoly;
-
-          _type               = PolyCutPointType.Invalid;
-          _maybeExistingPoint = Maybe.None;
-          _maybeNewPoint      = Maybe.None;
-          _maybeNewPointEdge  = Maybe.None;
-
-          _maybeNewPoint = desiredPointOnPoly;
-
-          for (int i = 0; i < polygon.verts.Count; i++) {
-            var curVertPos = polygon.GetMeshPosition(polygon[i]);
-            if (Vector3.Distance(curVertPos, desiredPointOnPoly) < PolyMath.POSITION_TOLERANCE) {
-              _maybeExistingPoint = polygon[i];
-              _maybeNewPointEdge = Maybe.None;
-              _maybeNewPoint = Maybe.None;
-              break;
-            }
-            else {
-              var edge = new Edge() {
-                mesh = polygon.mesh,
-                a = polygon[i],
-                b = polygon[i + 1]
-              };
-              if (desiredPointOnPoly.IsInside(edge)) {
-                _maybeNewPointEdge = edge;
-              }
-            }
-          }
-
-          if (_maybeExistingPoint.hasValue) {
-            _type = PolyCutPointType.ExistingPoint;
-          }
-          else if (_maybeNewPointEdge.hasValue) {
-            _type = PolyCutPointType.NewPointEdge;
-          }
-          else {
-            _type = PolyCutPointType.NewPointFace;
-          }
-
-          if (this.isMalformed) {
-            throw new System.InvalidOperationException("Cut point malformed.");
-          }
-        }
-
-        // TODO: deleteme..?
-        public bool isMalformed {
-          get {
-            switch (type) {
-              case PolyCutPointType.Invalid:
-                return true;
-              case PolyCutPointType.ExistingPoint:
-                return _maybeNewPoint.hasValue
-                    || _maybeNewPointEdge.hasValue;
-              case PolyCutPointType.NewPointEdge:
-                return _maybeExistingPoint.hasValue
-                   || !_maybeNewPointEdge.hasValue
-                   || !_maybeNewPoint.hasValue;
-              case PolyCutPointType.NewPointFace:
-                return _maybeExistingPoint.hasValue
-                    || _maybeNewPointEdge.hasValue
-                    || !_maybeNewPoint.hasValue;
-              default:
-                return false;
-            }
-          }
-        }
-
-        // Existing Point data.
-        public bool isExistingPoint { get { return _type == PolyCutPointType.ExistingPoint; } }
-        public int existingPoint { get { return _maybeExistingPoint.valueOrDefault; } }
-
-        // New edge point data.
-        public bool isNewEdgePoint { get { return _type == PolyCutPointType.NewPointEdge; } }
-        public Edge edge { get { return _maybeNewPointEdge.valueOrDefault; } }
-
-        // New face point data.
-        public bool isNewFacePoint { get { return _type == PolyCutPointType.NewPointFace; } }
-        public Vector3 newPoint { get { return _maybeNewPoint.valueOrDefault; } }
+      public struct Pair<T, U> {
+        public T a;
+        public U b;
       }
 
       /// <summary>
@@ -948,7 +1058,7 @@ namespace Leap.Unity.Meshing {
 
       }
 
-      #region Applying Cut Types
+      #region Cut Types
 
       public static void ApplyVertexVertexCut(Polygon polygon, int vert0, int vert1) {
         LowOp.SplitPolygon(polygon, vert0, vert1);
@@ -1055,18 +1165,51 @@ namespace Leap.Unity.Meshing {
                             addedPolys,
                             addedEdges);
 
-          var edgeWithNewPoint = addedEdges.Query().Where(e => facePosition1.IsInside(e))
+          var edgeWithNewPoint = addedEdges.Query().Where(edge => facePosition1.IsInside(edge))
                                                    .FirstOrDefault();
-          if (edgeWithNewPoint == default(Edge)) {
-            // Second point is inside a face, not on an edge.
-            var secondPoly = addedPolys.Query().Where(p => facePosition1.IsInside(p))
-                                               .FirstOrDefault();
+          if (edgeWithNewPoint != default(Edge)) {
             
-            LowOp.PokePolygon(secondPoly, facePosition1, out addedVertId1);
-          }
-          else {
+            // DELETEME
+            RuntimeGizmos.RuntimeGizmoDrawer drawer;
+            if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
+              drawer.color = LeapColor.purple;
+              foreach (var poly in addedPolys) {
+                foreach (var vert in poly.verts) {
+                  drawer.DrawWireCube(poly.GetMeshPosition(vert), Vector3.one * 0.03f);
+                  drawer.DrawWireCube(poly.GetMeshPosition(vert), Vector3.one * 0.04f);
+                  drawer.DrawWireCube(poly.GetMeshPosition(vert), Vector3.one * 0.05f);
+                }
+              }
+
+              drawer.color = LeapColor.olive;
+              drawer.DrawWireCube(edgeWithNewPoint.GetPositionAlongEdge(0.25f, EdgeDistanceMode.Normalized), Vector3.one * 0.03f);
+              drawer.DrawWireCube(edgeWithNewPoint.GetPositionAlongEdge(0.50f, EdgeDistanceMode.Normalized), Vector3.one * 0.04f);
+              drawer.DrawWireCube(edgeWithNewPoint.GetPositionAlongEdge(0.75f, EdgeDistanceMode.Normalized), Vector3.one * 0.05f);
+            }
+
             // Second point is on one of the newly-created edges.
             LowOp.SplitEdgeAddVertex(edgeWithNewPoint, facePosition1, out addedVertId1);
+          }
+          else {
+            // Second point is inside a face, not on an edge.
+
+            // DELETEME
+            RuntimeGizmos.RuntimeGizmoDrawer drawer;
+            if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
+              drawer.color = LeapColor.purple;
+              foreach (var poly in addedPolys) {
+                foreach (var vert in poly.verts) {
+                  drawer.DrawWireSphere(poly.GetMeshPosition(vert), 0.03f);
+                  drawer.DrawWireSphere(poly.GetMeshPosition(vert), 0.04f);
+                  drawer.DrawWireSphere(poly.GetMeshPosition(vert), 0.05f);
+                }
+              }
+            }
+
+            var secondPoly = addedPolys.Query().Where(p => facePosition1.IsInside(p))
+                                               .FirstOrDefault();
+
+            LowOp.PokePolygon(secondPoly, facePosition1, out addedVertId1);
           }
 
         }
