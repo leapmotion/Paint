@@ -560,7 +560,8 @@ namespace Leap.Unity.Meshing {
             foreach (var cutPoint in cutPoints) {
               if (cutPoint.isExistingPoint) {
                 int curCount;
-                if (existingCutPointCountDict.TryGetValue(cutPoint.existingPoint, out curCount)) {
+                if (existingCutPointCountDict.TryGetValue(cutPoint.existingPoint,
+                                                          out curCount)) {
                   existingCutPointCountDict[cutPoint.existingPoint] = curCount + 1;
                 }
                 else {
@@ -620,7 +621,8 @@ namespace Leap.Unity.Meshing {
                 var poly = c0.polygon;
                 var indexOfC1Point = poly.verts.IndexOf(c1.existingPoint);
                 var indexOfC0Point = poly.verts.IndexOf(c0.existingPoint);
-                if (Mathf.Abs(indexOfC1Point - indexOfC0Point) <= 1) {
+                if (Mathf.Abs(indexOfC1Point - indexOfC0Point) <= 1
+                    && isValidCut) {
                   throw new System.InvalidOperationException(
                     "Two adjacent vertices do not represent a valid cut. But this " +
                     "should be detected via the edge-check!");
@@ -706,26 +708,26 @@ namespace Leap.Unity.Meshing {
           _maybeNewPoint      = Maybe.None;
           _maybeNewPointEdge  = Maybe.None;
 
-          int curVertIdx = 0;
-          foreach (var vert in polygon.verts) {
-            var curVertPos = polygon.GetMeshPosition(vert);
+          _maybeNewPoint = desiredPointOnPoly;
+
+          for (int i = 0; i < polygon.verts.Count; i++) {
+            var curVertPos = polygon.GetMeshPosition(polygon[i]);
             if (Vector3.Distance(curVertPos, desiredPointOnPoly) < PolyMath.POSITION_TOLERANCE) {
-              _maybeExistingPoint = curVertIdx;
+              _maybeExistingPoint = polygon[i];
+              _maybeNewPointEdge = Maybe.None;
+              _maybeNewPoint = Maybe.None;
               break;
             }
             else {
-              _maybeNewPoint = desiredPointOnPoly;
-
               var edge = new Edge() {
                 mesh = polygon.mesh,
-                a = polygon[curVertIdx],
-                b = polygon[curVertIdx + 1]
+                a = polygon[i],
+                b = polygon[i + 1]
               };
               if (desiredPointOnPoly.IsInside(edge)) {
                 _maybeNewPointEdge = edge;
               }
             }
-            curVertIdx++;
           }
 
           if (_maybeExistingPoint.hasValue) {
@@ -736,6 +738,33 @@ namespace Leap.Unity.Meshing {
           }
           else {
             _type = PolyCutPointType.NewPointFace;
+          }
+
+          if (this.isMalformed) {
+            throw new System.InvalidOperationException("Cut point malformed.");
+          }
+        }
+
+        // TODO: deleteme..?
+        public bool isMalformed {
+          get {
+            switch (type) {
+              case PolyCutPointType.Invalid:
+                return true;
+              case PolyCutPointType.ExistingPoint:
+                return _maybeNewPoint.hasValue
+                    || _maybeNewPointEdge.hasValue;
+              case PolyCutPointType.NewPointEdge:
+                return _maybeExistingPoint.hasValue
+                   || !_maybeNewPointEdge.hasValue
+                   || !_maybeNewPoint.hasValue;
+              case PolyCutPointType.NewPointFace:
+                return _maybeExistingPoint.hasValue
+                    || _maybeNewPointEdge.hasValue
+                    || !_maybeNewPoint.hasValue;
+              default:
+                return false;
+            }
           }
         }
 
