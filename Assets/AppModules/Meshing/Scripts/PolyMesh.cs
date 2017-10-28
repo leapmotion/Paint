@@ -467,8 +467,12 @@ namespace Leap.Unity.Meshing {
         // more of them.
         var aPolysCopy = Pool<List<Polygon>>.Spawn();
         aPolysCopy.Clear();
+        var bPolysCopy = Pool<List<Polygon>>.Spawn();
+        bPolysCopy.Clear();
         var cutEdgesA = Pool<List<Edge>>.Spawn();
+        cutEdgesA.Clear();
         var cutEdgesB = Pool<List<Edge>>.Spawn();
+        cutEdgesB.Clear();
         try {
           foreach (var polygon in A.polygons) {
             // We don't need to deep-copy the polygons; when they're removed from A
@@ -477,11 +481,21 @@ namespace Leap.Unity.Meshing {
 
             aPolysCopy.Add(polygon);
           }
+          foreach (var polygon in B.polygons) {
+            // We don't need to deep-copy the polygons; when they're removed from A
+            // and replaced, A will receive new polygons rather than re-using its
+            // removed polygons.
+
+            bPolysCopy.Add(polygon);
+          }
 
           // Cut A using B.
           bool anySuccessful = false;
           foreach (var cuttingPoly in B.polygons) {
             anySuccessful |= CutOps.TryCutWithPoly(A, B, cuttingPoly, cutEdgesA);
+          }
+          if (!anySuccessful) {
+            return false;
           }
 
           // TODO: MAJOR OPTIMIZATION:
@@ -489,14 +503,14 @@ namespace Leap.Unity.Meshing {
           // Any valid CutOp on a polygon in A has a dual CutOp on a polygon in B;
           // when any cut on an A polygon is applied, we can ALSO apply a cut on B.
 
-          if (!anySuccessful) {
-            // Early out -- there won't be any cuts the other direction if there weren't
-            // any to begin with.
-            return false;
-          }
           else {
             foreach (var cuttingPoly in aPolysCopy) {
               CutOps.TryCutWithPoly(B, A, cuttingPoly, cutEdgesB);
+            }
+
+            if (cutEdgesA.Count != cutEdgesB.Count) {
+              throw new System.InvalidOperationException(
+                "Cuts from A don't match cuts from B.");
             }
 
             if (outCutEdgesA != null) {
@@ -516,6 +530,8 @@ namespace Leap.Unity.Meshing {
         finally {
           aPolysCopy.Clear();
           Pool<List<Polygon>>.Recycle(aPolysCopy);
+          bPolysCopy.Clear();
+          Pool<List<Polygon>>.Recycle(bPolysCopy);
           cutEdgesA.Clear();
           Pool<List<Edge>>.Recycle(cutEdgesA);
           cutEdgesB.Clear();
@@ -760,6 +776,22 @@ namespace Leap.Unity.Meshing {
         }
       }
 
+      public static bool TryDualCutWithPoly(PolyMesh meshToCut,
+                                            PolyMesh cutWithMesh, Polygon cutMeshWithPoly,
+                                            List<Edge> outCutEdges = null) {
+        var edges = Pool<List<Edge>>.Spawn();
+        edges.Clear();
+        try {
+
+        }
+        finally {
+          edges.Clear();
+          Pool<List<Edge>>.Recycle(edges);
+        }
+
+        return false;
+      }
+
       /// <summary>
       /// Cuts into A, using PolyMesh B's polygon b. This operation modifies A, producing
       /// extra positions if necessary, and increasing the number of faces (polygons) if
@@ -801,7 +833,6 @@ namespace Leap.Unity.Meshing {
             for (; fromPolyIdx < meshToCut.polygons.Count; ) {
 
               if (TryCreateCutOp(meshToCut.polygons[fromPolyIdx],
-                                 fromPolyIdx,
                                  cutWithMeshPoly,
                                  out cutOp)) {
                 break;
@@ -820,7 +851,9 @@ namespace Leap.Unity.Meshing {
 
               Edge cutEdge;
               ApplyCut(cutOp.valueOrDefault, out cutEdge);
-              edges.Add(cutEdge);
+              if (!edges.Contains(cutEdge)) {
+                edges.Add(cutEdge);
+              }
 
               cutOp = Maybe.None;
             }
@@ -855,6 +888,68 @@ namespace Leap.Unity.Meshing {
         public PolyCutPoint c1;
         public bool representsNewCut;
       }
+      public struct DualPolyCutOp {
+        public PolyCutPoint c0A;
+        public PolyCutPoint c1A;
+        public bool representsNewCutA;
+        public PolyCutPoint c0B;
+        public PolyCutPoint c1B;
+        public bool representsNewCutB;
+      }
+
+      /// <summary>
+      /// Given two lists of vectors, returnns the pair of vectors (one from each list)
+      /// that are farthest away from one another.
+      /// </summary>
+      private static Pair<Vector3, Vector3> GetFarthestPair(List<Vector3> v0s,
+                                                            List<Vector3> v1s) {
+        if (v0s.Count == 0 || v1s.Count == 0) {
+          throw new System.InvalidOperationException(
+            "Can't calculate farthest pair given empty list(s).");
+        }
+        Vector3 farV0 = v0s[0];
+        Vector3 farV1 = v1s[0];
+        float farSqrDist = float.NegativeInfinity;
+        foreach (var v0 in v0s) {
+          foreach (var v1 in v1s) {
+            var testSqrDist = (v1 - v0).sqrMagnitude;
+            if (testSqrDist > farSqrDist) {
+              farV0 = v0;
+              farV1 = v1;
+              farSqrDist = testSqrDist;
+            }
+          }
+        }
+        return new Pair<Vector3, Vector3>() { a = farV0, b = farV1 };
+      }
+
+      private static Pair<Vector3, Vector3> GetFarthestPair(List<Vector3> vs) {
+        if (vs.Count == 0) {
+          throw new System.InvalidOperationException(
+            "Can't calculate farthest pair given an empty list.");
+        }
+        if (vs.Count == 1) {
+          throw new System.InvalidOperationException(
+            "Can't calculate farthest pair for a single-element list.");
+        }
+        Vector3 farV0 = vs[0];
+        Vector3 farV1 = vs[1];
+        float farSqrDist = float.NegativeInfinity;
+        for (int i = 0; i < vs.Count; i++) {
+          for (int j = 0; j < vs.Count; j++) {
+            if (i == j) continue;
+            var testVi = vs[i];
+            var testVj = vs[j];
+            var testSqrDist = (testVj - testVi).sqrMagnitude;
+            if (testSqrDist > farSqrDist) {
+              farV0 = testVi;
+              farV1 = testVj;
+              farSqrDist = testSqrDist;
+            }
+          }
+        }
+        return new Pair<Vector3, Vector3>() { a = farV0, b = farV1 };
+      }
 
       /// <summary>
       /// Cuts into A's polygon a using B's polygon b.
@@ -865,7 +960,7 @@ namespace Leap.Unity.Meshing {
       /// This does not modify A, but if "successful," returns a PolyCutOp that can be
       /// applied to A to produce the result of the cut.
       /// </summary>
-      public static bool TryCreateCutOp(Polygon aPoly, int aPolyIdx,
+      public static bool TryCreateCutOp(Polygon aPoly,
                                         Polygon bPoly,
                                         out Maybe<PolyCutOp> maybeCutOp) {
 
@@ -880,6 +975,10 @@ namespace Leap.Unity.Meshing {
         newPolygons.Clear();
         var cutPoints = Pool<List<PolyCutPoint>>.Spawn();
         cutPoints.Clear();
+        var polyACutPointPositions = Pool<List<Vector3>>.Spawn();
+        polyACutPointPositions.Clear();
+        var polyBCutPointPositions = Pool<List<Vector3>>.Spawn();
+        polyBCutPointPositions.Clear();
         try {
 
           // Construct cut points. After removing trivially similar cutpoints, we expect
@@ -890,13 +989,13 @@ namespace Leap.Unity.Meshing {
                                                   bPolyPlane, out intersectionTime);
 
             if (onPolyBPlane.hasValue) {
-              if (intersectionTime >= -0.1f && intersectionTime <= 1.1f) {
+              if (intersectionTime >= 0f && intersectionTime <= 1f) {
                 var bPlanePoint = onPolyBPlane.valueOrDefault;
 
                 if (bPlanePoint.IsInside(bPoly)) {
-                  cutPoints.Add(new PolyCutPoint(
-                                  bPlanePoint,
-                                  aPoly));
+
+                  polyBCutPointPositions.Add(bPlanePoint);
+
                 }
               }
             }
@@ -907,260 +1006,338 @@ namespace Leap.Unity.Meshing {
                                                   aPolyPlane, out intersectionTime);
 
             if (onPolyAPlane.hasValue) {
-              if (intersectionTime >= -0.1f && intersectionTime <= 1.1f) {
+              if (intersectionTime >= 0f && intersectionTime <= 1f) {
                 var aPlanePoint = onPolyAPlane.valueOrDefault;
 
                 if (aPlanePoint.IsInside(aPoly)) {
-                  cutPoints.Add(new PolyCutPoint(
-                                  aPlanePoint,
-                                  aPoly));
+
+                  polyACutPointPositions.Add(aPlanePoint);
+
                 }
               }
             }
+          }
+
+          Vector3 cpos0, cpos1;
+          if (polyBCutPointPositions.Count == 0) {
+            if (polyACutPointPositions.Count < 2) {
+              // No cut possible.
+              return false;
+            }
+            else if (polyACutPointPositions.Count == 2) {
+              cpos0 = polyACutPointPositions[0];
+              cpos1 = polyACutPointPositions[1];
+            }
+            else {
+              // pick the two farthest points from A.
+              var farthestPair = GetFarthestPair(polyACutPointPositions);
+              cpos0 = farthestPair.a;
+              cpos1 = farthestPair.b;
+            }
+          }
+          else if (polyACutPointPositions.Count == 0) {
+            if (polyBCutPointPositions.Count == 1) {
+              // No cut possible.
+              return false;
+            }
+            if (polyBCutPointPositions.Count == 2) {
+              cpos0 = polyBCutPointPositions[0];
+              cpos1 = polyBCutPointPositions[1];
+            }
+            else {
+              // pick the two farthest points from B.
+              var farthestPair = GetFarthestPair(polyBCutPointPositions);
+              cpos0 = farthestPair.a;
+              cpos1 = farthestPair.b;
+            }
+          }
+          else {
+            // Farthest pair on both position sets.
+            var farthestPair = GetFarthestPair(polyBCutPointPositions,
+                                               polyACutPointPositions);
+            cpos0 = farthestPair.a;
+            cpos1 = farthestPair.b;
+          }
+
+          RuntimeGizmos.RuntimeGizmoDrawer drawer;
+          if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
+            drawer.color = LeapColor.turquoise;
+            foreach (var pos in polyACutPointPositions) {
+              drawer.DrawWireCube(pos, Vector3.one * 0.02f);
+              drawer.DrawWireCube(pos, Vector3.one * 0.03f);
+              drawer.DrawWireCube(pos, Vector3.one * 0.04f);
+            }
+            drawer.color = LeapColor.amber;
+            foreach (var pos in polyBCutPointPositions) {
+              drawer.DrawWireCube(pos, Vector3.one * 0.02f);
+              drawer.DrawWireCube(pos, Vector3.one * 0.03f);
+              drawer.DrawWireCube(pos, Vector3.one * 0.04f);
+            }
+          }
+
+          cutPoints.Add(new PolyCutPoint(
+                          cpos0,
+                          aPoly));
+          cutPoints.Add(new PolyCutPoint(
+                          cpos1,
+                          aPoly));
+
+          if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
+            drawer.color = LeapColor.fuschia;
+            drawer.DrawWireCube(cpos0, Vector3.one * 0.05f);
+            drawer.DrawWireCube(cpos0, Vector3.one * 0.06f);
+            drawer.DrawWireCube(cpos1, Vector3.one * 0.05f);
+            drawer.DrawWireCube(cpos1, Vector3.one * 0.06f);
+          }
+
+          if ((cutPoints[0].isExistingPoint && cutPoints[1].isExistingPoint)
+              && cutPoints[0].existingPoint == cutPoints[1].existingPoint) {
+            // also a bad cut.
+            return false;
           }
 
           // Make sure there aren't multiple cut points for a single position index.
-          var existingCutPointCountDict = Pool<Dictionary<int, int>>.Spawn();
-          existingCutPointCountDict.Clear();
-          try {
+          //var existingCutPointCountDict = Pool<Dictionary<int, int>>.Spawn();
+          //existingCutPointCountDict.Clear();
+          //try {
 
-            foreach (var cutPoint in cutPoints) {
-              if (cutPoint.isExistingPoint) {
-                int curCount;
-                if (existingCutPointCountDict.TryGetValue(cutPoint.existingPoint,
-                                                          out curCount)) {
-                  existingCutPointCountDict[cutPoint.existingPoint] = curCount + 1;
-                }
-                else {
-                  existingCutPointCountDict[cutPoint.existingPoint] = 1;
-                }
-              }
-            }
+          //  foreach (var cutPoint in cutPoints) {
+          //    if (cutPoint.isExistingPoint) {
+          //      int curCount;
+          //      if (existingCutPointCountDict.TryGetValue(cutPoint.existingPoint,
+          //                                                out curCount)) {
+          //        existingCutPointCountDict[cutPoint.existingPoint] = curCount + 1;
+          //      }
+          //      else {
+          //        existingCutPointCountDict[cutPoint.existingPoint] = 1;
+          //      }
+          //    }
+          //  }
 
-            cutPoints.RemoveAll(c => {
-              if (!c.isExistingPoint) return false;
-              int existingPoint = c.existingPoint;
-              if (existingCutPointCountDict[existingPoint] > 1) {
-                existingCutPointCountDict[existingPoint] -= 1;
-                return true;
-              }
-              return false;
-            });
-          }
-          finally {
-            existingCutPointCountDict.Clear();
-            Pool<Dictionary<int, int>>.Recycle(existingCutPointCountDict);
-          }
-          
+          //  cutPoints.RemoveAll(c => {
+          //    if (!c.isExistingPoint) return false;
+          //    int existingPoint = c.existingPoint;
+          //    if (existingCutPointCountDict[existingPoint] > 1) {
+          //      existingCutPointCountDict[existingPoint] -= 1;
+          //      return true;
+          //    }
+          //    return false;
+          //  });
+          //}
+          //finally {
+          //  existingCutPointCountDict.Clear();
+          //  Pool<Dictionary<int, int>>.Recycle(existingCutPointCountDict);
+          //}
+
           // If cut points exist both on an edge and a vertex on that edge, pick one.
-          var removeCutPointIndices = Pool<List<int>>.Spawn();
-          removeCutPointIndices.Clear();
-          try {
-            foreach (var edgeCpPair in cutPoints.Query().Where(cp => cp.isNewEdgePoint)
-                                                        .Select(cp => new Pair<Edge, PolyCutPoint>() {
-                                                          a = cp.edge,
-                                                          b = cp
-                                                        })) {
-              var edge         = edgeCpPair.a;
-              var edgeCutPoint = edgeCpPair.b;
-              foreach (var vertex in cutPoints.Query().Where(cp => cp.isExistingPoint)
-                                                      .Select(cp => cp.existingPoint)) {
-                if (edge.ContainsVertex(vertex)) {
-                  var vertPos = cutPoints[0].polygon.GetMeshPosition(vertex);
-                  var edgePos = edgeCutPoint.newPoint;
-                  if (Vector3.Distance(vertPos, edgePos) < PolyMath.POSITION_TOLERANCE) {
-                    // Within distance, remove edge.
-                    var removeIdx = cutPoints.FindIndex(cp => cp == edgeCutPoint);
-                    if (!removeCutPointIndices.Contains(removeIdx)) {
-                      removeCutPointIndices.Add(removeIdx);
-                    }
-                  }
-                  else {
-                    // Beyond distance, remove vertex.
-                    var removeIdx = cutPoints.FindIndex(cp => cp.existingPoint == vertex);
-                    if (!removeCutPointIndices.Contains(removeIdx)) {
-                      removeCutPointIndices.Add(removeIdx);
-                    }
-                  }
-                }
-              }
-            }
-            
-            removeCutPointIndices.Sort();
-            cutPoints.RemoveAtMany(removeCutPointIndices);
-          }
-          finally {
-            removeCutPointIndices.Clear();
-            Pool<List<int>>.Recycle(removeCutPointIndices);
-          }
+          //var removeCutPointIndices = Pool<List<int>>.Spawn();
+          //removeCutPointIndices.Clear();
+          //try {
+          //  foreach (var edgeCpPair in cutPoints.Query().Where(cp => cp.isNewEdgePoint)
+          //                                              .Select(cp => new Pair<Edge, PolyCutPoint>() {
+          //                                                a = cp.edge,
+          //                                                b = cp
+          //                                              })) {
+          //    var edge         = edgeCpPair.a;
+          //    var edgeCutPoint = edgeCpPair.b;
+          //    foreach (var vertex in cutPoints.Query().Where(cp => cp.isExistingPoint)
+          //                                            .Select(cp => cp.existingPoint)) {
+          //      if (edge.ContainsVertex(vertex)) {
+          //        var vertPos = cutPoints[0].polygon.GetMeshPosition(vertex);
+          //        var edgePos = edgeCutPoint.newPoint;
+          //        if (Vector3.Distance(vertPos, edgePos) < PolyMath.POSITION_TOLERANCE) {
+          //          // Within distance, remove edge.
+          //          var removeIdx = cutPoints.FindIndex(cp => cp == edgeCutPoint);
+          //          if (!removeCutPointIndices.Contains(removeIdx)) {
+          //            removeCutPointIndices.Add(removeIdx);
+          //          }
+          //        }
+          //        else {
+          //          // Beyond distance, remove vertex.
+          //          var removeIdx = cutPoints.FindIndex(cp => cp.existingPoint == vertex);
+          //          if (!removeCutPointIndices.Contains(removeIdx)) {
+          //            removeCutPointIndices.Add(removeIdx);
+          //          }
+          //        }
+          //      }
+          //    }
+          //  }
+
+          //  removeCutPointIndices.Sort();
+          //  cutPoints.RemoveAtMany(removeCutPointIndices);
+          //}
+          //finally {
+          //  removeCutPointIndices.Clear();
+          //  Pool<List<int>>.Recycle(removeCutPointIndices);
+          //}
 
 
-          if (cutPoints.Count > 2) {
-            
-            if (cutPoints.Count == 3) {
+          //if (cutPoints.Count > 2) {
 
-              // Edge-case: Three cut points, where one is an edge between a and b,
-              // and the second and third are a and b -- an invalid cut.
-              {
-                Maybe<int> existingIdx0 = Maybe.None, existingIdx1 = Maybe.None;
-                Maybe<Edge> cutPointEdge = Maybe.None;
-                for (int i = 0; i < cutPoints.Count; i++) {
-                  var cutPoint = cutPoints[i];
-                  if (cutPoint.isExistingPoint) {
-                    if (!existingIdx0.hasValue) {
-                      existingIdx0 = cutPoint.existingPoint;
-                    }
-                    else {
-                      existingIdx1 = cutPoint.existingPoint;
-                    }
-                  }
-                  else if (cutPoint.isNewEdgePoint) {
-                    cutPointEdge = cutPoint.edge;
-                  }
-                }
+          //  if (cutPoints.Count == 3) {
 
-                if (existingIdx0.hasValue && existingIdx1.hasValue && cutPointEdge.hasValue) {
-                  if (new Edge() {
-                    mesh = cutPointEdge.valueOrDefault.mesh,
-                    a = existingIdx0.valueOrDefault,
-                    b = existingIdx1.valueOrDefault
-                  } == cutPointEdge) {
-                    // Single-edge cut. Remove the edge cut.
-                    cutPoints.RemoveAll(p => p.isNewEdgePoint);
-                  }
-                }
-              }
+          //    // Edge-case: Three cut points, where one is an edge between a and b,
+          //    // and the second and third are a and b -- an invalid cut.
+          //    {
+          //      Maybe<int> existingIdx0 = Maybe.None, existingIdx1 = Maybe.None;
+          //      Maybe<Edge> cutPointEdge = Maybe.None;
+          //      for (int i = 0; i < cutPoints.Count; i++) {
+          //        var cutPoint = cutPoints[i];
+          //        if (cutPoint.isExistingPoint) {
+          //          if (!existingIdx0.hasValue) {
+          //            existingIdx0 = cutPoint.existingPoint;
+          //          }
+          //          else {
+          //            existingIdx1 = cutPoint.existingPoint;
+          //          }
+          //        }
+          //        else if (cutPoint.isNewEdgePoint) {
+          //          cutPointEdge = cutPoint.edge;
+          //        }
+          //      }
 
-            }
+          //      if (existingIdx0.hasValue && existingIdx1.hasValue && cutPointEdge.hasValue) {
+          //        if (new Edge() {
+          //          mesh = cutPointEdge.valueOrDefault.mesh,
+          //          a = existingIdx0.valueOrDefault,
+          //          b = existingIdx1.valueOrDefault
+          //        } == cutPointEdge) {
+          //          // Single-edge cut. Remove the edge cut.
+          //          cutPoints.RemoveAll(p => p.isNewEdgePoint);
+          //        }
+          //      }
+          //    }
 
-          }
+          //  }
 
-          if (cutPoints.Count > 2) {
-            
-            // Cluster cut points that are very close to one another; if there are two
-            // clusters, we can pick the closest points to the connecting segment between
-            // the segment and we're good; if there's more than two cluster, this cut
-            // is weird and we're gonna panic again.
-            {
-              var clusters = Pool<List<List<int>>>.Spawn();
-              clusters.Clear();
-              var clusterCentroids = Pool<List<Vector3>>.Spawn();
-              clusterCentroids.Clear();
-              try {
-                for (int i = 0; i < cutPoints.Count; i++) {
-                  var cutPoint = cutPoints[i];
-                  var cutPos = cutPoint.GetPosition();
+          //}
 
-                  int indexOfNearbyCluster = -1;
-                  if (clusters.Count != 0) {
+          //if (cutPoints.Count > 2) {
 
-                    for (int c = 0; c < clusters.Count; c++) {
-                      var cluster  = clusters[c];
-                      var centroid = clusterCentroids[c];
+          //  // Cluster cut points that are very close to one another; if there are two
+          //  // clusters, we can pick the closest points to the connecting segment between
+          //  // the segment and we're good; if there's more than two cluster, this cut
+          //  // is weird and we're gonna panic again.
+          //  {
+          //    var clusters = Pool<List<List<int>>>.Spawn();
+          //    clusters.Clear();
+          //    var clusterCentroids = Pool<List<Vector3>>.Spawn();
+          //    clusterCentroids.Clear();
+          //    try {
+          //      for (int i = 0; i < cutPoints.Count; i++) {
+          //        var cutPoint = cutPoints[i];
+          //        var cutPos = cutPoint.GetPosition();
 
-                      if (Vector3.Distance(centroid, cutPos)
-                          < PolyMath.CLUSTER_TOLERANCE) {
-                        indexOfNearbyCluster = c;
-                        break;
-                      }
-                    }
-                  }
+          //        int indexOfNearbyCluster = -1;
+          //        if (clusters.Count != 0) {
 
-                  if (indexOfNearbyCluster == -1) {
-                    // Add the cut point to a new cluster.
-                    var newCluster = Pool<List<int>>.Spawn();
-                    newCluster.Add(i);
-                    clusters.Add(newCluster);
-                    clusterCentroids.Add(cutPoints[i].GetPosition());
-                  }
-                  else {
-                    var origNumClusterPoints = clusters[indexOfNearbyCluster].Count;
-                    clusters[indexOfNearbyCluster].Add(i);
+          //          for (int c = 0; c < clusters.Count; c++) {
+          //            var cluster  = clusters[c];
+          //            var centroid = clusterCentroids[c];
 
-                    // Accumulate position into cluster centroid.
-                    clusterCentroids[indexOfNearbyCluster]
-                      = (cutPos + clusterCentroids[indexOfNearbyCluster]
-                                  * origNumClusterPoints)
-                         / (origNumClusterPoints + 1);
+          //            if (Vector3.Distance(centroid, cutPos)
+          //                < PolyMath.CLUSTER_TOLERANCE) {
+          //              indexOfNearbyCluster = c;
+          //              break;
+          //            }
+          //          }
+          //        }
 
-                  }
-                }
+          //        if (indexOfNearbyCluster == -1) {
+          //          // Add the cut point to a new cluster.
+          //          var newCluster = Pool<List<int>>.Spawn();
+          //          newCluster.Add(i);
+          //          clusters.Add(newCluster);
+          //          clusterCentroids.Add(cutPoints[i].GetPosition());
+          //        }
+          //        else {
+          //          var origNumClusterPoints = clusters[indexOfNearbyCluster].Count;
+          //          clusters[indexOfNearbyCluster].Add(i);
 
-                if (clusters.Count > 2) {
-                  Debug.LogWarning("Found more than 2 clusters. Will only use the first "
-                                 + "2, but this will likely produce unexpected behavior.");
-                }
-                if (clusters.Count > 1) {
-                  // Pick the point from each cluster that is closest to the other cluster's
-                  // centroid.
-                  int keep0 = -1, keep1 = -1;
-                  float keep0SqrDist = float.PositiveInfinity,
-                      keep1SqrDist = float.PositiveInfinity;
-                  foreach (var cpIdx in clusters[0]) {
-                    var pos = cutPoints[cpIdx].GetPosition();
-                    var testSqrDist = (clusterCentroids[1] - pos).sqrMagnitude;
-                    if (keep0 == -1 || keep0SqrDist > testSqrDist) {
-                      keep0 = cpIdx;
-                      keep0SqrDist = testSqrDist;
-                    }
-                  }
-                  foreach (var cpIdx in clusters[1]) {
-                    var pos = cutPoints[cpIdx].GetPosition();
-                    var testSqrDist = (clusterCentroids[0] - pos).sqrMagnitude;
-                    if (keep1 == -1 || keep1SqrDist > testSqrDist) {
-                      keep1 = cpIdx;
-                      keep1SqrDist = testSqrDist;
-                    }
-                  }
+          //          // Accumulate position into cluster centroid.
+          //          clusterCentroids[indexOfNearbyCluster]
+          //            = (cutPos + clusterCentroids[indexOfNearbyCluster]
+          //                        * origNumClusterPoints)
+          //               / (origNumClusterPoints + 1);
 
-                  var cp0 = cutPoints[keep0];
-                  var cp1 = cutPoints[keep1];
-                  cutPoints.Clear();
-                  cutPoints.Add(cp0);
-                  cutPoints.Add(cp1);
-                }
-                //else {
-                //  throw new System.InvalidOperationException(
-                //    "Tried to cluster cut points when more than 2 were found, but there "
-                //    + "were more than 2 clusters (" + clusters.Count + " found.)");
+          //        }
+          //      }
 
-                //}
-              }
-              finally {
-                foreach (var cluster in clusters) {
-                  cluster.Clear();
-                  Pool<List<int>>.Recycle(cluster);
-                }
-                clusters.Clear();
-                Pool<List<List<int>>>.Recycle(clusters);
-                clusterCentroids.Clear();
-                Pool<List<Vector3>>.Recycle(clusterCentroids);
-              }
-            }
-          }
+          //      if (clusters.Count > 2) {
+          //        Debug.LogWarning("Found more than 2 clusters. Will only use the first "
+          //                       + "2, but this will likely produce unexpected behavior.");
+          //      }
+          //      if (clusters.Count > 1) {
+          //        // Pick the point from each cluster that is closest to the other cluster's
+          //        // centroid.
+          //        int keep0 = -1, keep1 = -1;
+          //        float keep0SqrDist = float.PositiveInfinity,
+          //            keep1SqrDist = float.PositiveInfinity;
+          //        foreach (var cpIdx in clusters[0]) {
+          //          var pos = cutPoints[cpIdx].GetPosition();
+          //          var testSqrDist = (clusterCentroids[1] - pos).sqrMagnitude;
+          //          if (keep0 == -1 || keep0SqrDist > testSqrDist) {
+          //            keep0 = cpIdx;
+          //            keep0SqrDist = testSqrDist;
+          //          }
+          //        }
+          //        foreach (var cpIdx in clusters[1]) {
+          //          var pos = cutPoints[cpIdx].GetPosition();
+          //          var testSqrDist = (clusterCentroids[0] - pos).sqrMagnitude;
+          //          if (keep1 == -1 || keep1SqrDist > testSqrDist) {
+          //            keep1 = cpIdx;
+          //            keep1SqrDist = testSqrDist;
+          //          }
+          //        }
 
-          if (cutPoints.Count > 2) {
-            // If we have more than 2 cut points still, and as many cut points as there
-            // are points on the polygon, just ignore 'em! They must be tiny...
-            // (I'm not proud of this.)
-            var polyIndicesHash = Pool<HashSet<int>>.Spawn();
-            polyIndicesHash.Clear();
-            try {
-              foreach (var cp in cutPoints) {
-                if (cp.isExistingPoint) {
-                  polyIndicesHash.Add(cp.existingPoint);
-                }
-              }
+          //        var cp0 = cutPoints[keep0];
+          //        var cp1 = cutPoints[keep1];
+          //        cutPoints.Clear();
+          //        cutPoints.Add(cp0);
+          //        cutPoints.Add(cp1);
+          //      }
+          //      //else {
+          //      //  throw new System.InvalidOperationException(
+          //      //    "Tried to cluster cut points when more than 2 were found, but there "
+          //      //    + "were more than 2 clusters (" + clusters.Count + " found.)");
 
-              if (polyIndicesHash.Count == cutPoints[0].polygon.Count) {
-                cutPoints.Clear();
-              }
-            }
-            finally {
-              polyIndicesHash.Clear();
-              Pool<HashSet<int>>.Recycle(polyIndicesHash);
-            }
-          }
+          //      //}
+          //    }
+          //    finally {
+          //      foreach (var cluster in clusters) {
+          //        cluster.Clear();
+          //        Pool<List<int>>.Recycle(cluster);
+          //      }
+          //      clusters.Clear();
+          //      Pool<List<List<int>>>.Recycle(clusters);
+          //      clusterCentroids.Clear();
+          //      Pool<List<Vector3>>.Recycle(clusterCentroids);
+          //    }
+          //  }
+          //}
+
+          //if (cutPoints.Count > 2) {
+          //  // If we have more than 2 cut points still, and as many cut points as there
+          //  // are points on the polygon, just ignore 'em! They must be tiny...
+          //  // (I'm not proud of this.)
+          //  var polyIndicesHash = Pool<HashSet<int>>.Spawn();
+          //  polyIndicesHash.Clear();
+          //  try {
+          //    foreach (var cp in cutPoints) {
+          //      if (cp.isExistingPoint) {
+          //        polyIndicesHash.Add(cp.existingPoint);
+          //      }
+          //    }
+
+          //    if (polyIndicesHash.Count == cutPoints[0].polygon.Count) {
+          //      cutPoints.Clear();
+          //    }
+          //  }
+          //  finally {
+          //    polyIndicesHash.Clear();
+          //    Pool<HashSet<int>>.Recycle(polyIndicesHash);
+          //  }
+          //}
 
           if (cutPoints.Count > 2) {
             throw new System.InvalidOperationException(
@@ -1268,6 +1445,10 @@ namespace Leap.Unity.Meshing {
           Pool<List<Polygon>>.Recycle(newPolygons);
           cutPoints.Clear();
           Pool<List<PolyCutPoint>>.Recycle(cutPoints);
+          polyACutPointPositions.Clear();
+          Pool<List<Vector3>>.Recycle(polyACutPointPositions);
+          polyBCutPointPositions.Clear();
+          Pool<List<Vector3>>.Recycle(polyBCutPointPositions);
         }
 
         return false;
@@ -1607,9 +1788,12 @@ namespace Leap.Unity.Meshing {
             var secondPoly = addedPolys.Query().Where(p => facePosition1.IsInside(p))
                                                .FirstOrDefault();
 
-            if (secondPoly != default(Polygon)) {
-              LowOps.PokePolygon(secondPoly, facePosition1, out addedVertId1);
+            if (secondPoly == default(Polygon)) {
+              throw new System.InvalidOperationException(
+                "Second face point wasn't inside any post-poke polygon.");
             }
+
+            LowOps.PokePolygon(secondPoly, facePosition1, out addedVertId1);
           }
 
         }

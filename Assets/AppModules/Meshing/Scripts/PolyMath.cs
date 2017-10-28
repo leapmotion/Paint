@@ -108,7 +108,7 @@ namespace Leap.Unity.Meshing {
     /// Returns whether the point, which is assumed to be in the plane of the polygon, is
     /// inside that polygon. (Polygon winding order does not matter.)
     /// 
-    /// Points right on an edge or a vertex of a polygon are rejected.
+    /// Points right on an edge or a vertex of a polygon are accepted.
     /// </summary>
     public static bool IsInside(this Vector3 point, Polygon aPoly) {
       
@@ -121,15 +121,13 @@ namespace Leap.Unity.Meshing {
         var curCrossProduct = Vector3.Cross(b - a, point - a);
 
         if (lastCrossProduct.hasValue) {
-          if (Vector3.Dot(lastCrossProduct.valueOrDefault, curCrossProduct) <= 0f) {
-            // Flipping cross product direction means the point is outside the polygon.
-            // Alternatively, if the dot product of these two cross products ever touches
-            // zero, this implies the point is _right on the edge_ (or a vertex) of the
-            // polygon, which we here interpret as a rejection case.
+          if (Vector3.Dot(lastCrossProduct.valueOrDefault, curCrossProduct) < 0f) {
             return false;
           }
         }
-        lastCrossProduct = curCrossProduct;
+        if (curCrossProduct != Vector3.zero) {
+          lastCrossProduct = curCrossProduct;
+        }
       }
 
       return true;
