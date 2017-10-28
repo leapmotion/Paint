@@ -32,7 +32,10 @@ namespace Leap.Unity.Meshing {
 
   public static class PolyMath {
 
-    public const float POSITION_TOLERANCE = 1e-05f;
+    public const float POSITION_TOLERANCE = 5e-03f;
+    public const float CLUSTER_TOLERANCE = 5e-02f;
+
+    public const int MAX_LOOPS = 10000;
 
     #region Intersection
 

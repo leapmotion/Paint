@@ -63,7 +63,8 @@ namespace Leap.Unity.Meshing {
 
     private Vector3 P(int vertIdx) { return mesh.GetPosition(vertIdx); }
 
-    public Vector3 GetPositionAlongEdge(float amountAlongEdge, EdgeDistanceMode mode) {
+    public Vector3 GetPositionAlongEdge(float amountAlongEdge,
+                                        EdgeDistanceMode mode = EdgeDistanceMode.Normalized) {
       var pA = P(a);
       var pB = P(b);
       var lineVec = (pB - pA);

@@ -106,10 +106,18 @@ namespace Leap.Unity.Meshing {
     /// assumption we make about all Polygons.
     /// </summary>
     public Vector3 GetNormal() {
-      return Vector3.Cross(mesh.GetPosition(_verts[1])
-                           - mesh.GetPosition(_verts[0]),
-                           mesh.GetPosition(_verts[2])
-                           - mesh.GetPosition(_verts[0])).normalized;
+      Vector3 normal = Vector3.zero;
+      Vector3 a, b, c;
+      for (int i = 0; i < _verts.Count; i++) {
+        a = P(this[i]);
+        b = P(this[i + 1]);
+        c = P(this[i + 2]);
+        normal = Vector3.Cross(b - a, c - a);
+        if (normal != Vector3.zero) {
+          return normal.normalized;
+        }
+      }
+      return normal;
     }
 
     /// <summary>
@@ -281,12 +289,18 @@ namespace Leap.Unity.Meshing {
 
     public bool Equals(Polygon otherPoly) {
       if (this.mesh != otherPoly.mesh) return false;
-      if (this.verts.Count != otherPoly.verts.Count) return false;
+      if (this._verts.Count != otherPoly._verts.Count) return false;
 
       // Utils.AreEqualUnordered(verts, otherPoly.verts); perhaps?
       // (would also need to sort before hashing)
-      for (int i = 0; i < verts.Count; i++) {
-        if (verts[i] != otherPoly.verts[i]) return false;
+      for (int i = 0; i < _verts.Count; i++) {
+        if (_verts[i] != otherPoly._verts[i]) return false;
+
+        // TODO DELETEME
+        if (i >= 60) {
+          throw new System.InvalidOperationException(
+            "This polygon has WAY too many verts!");
+        }
       }
       return true;
     }
@@ -330,7 +344,7 @@ namespace Leap.Unity.Meshing {
         }
 
         var indices = Values.From(0).To(numVerts);
-        var polygon = new Polygon() { verts = indices.ToList() };
+        var polygon = new Polygon() { mesh = mesh, verts = indices.ToList() };
         
         mesh.Fill(positions, polygon);
       }
