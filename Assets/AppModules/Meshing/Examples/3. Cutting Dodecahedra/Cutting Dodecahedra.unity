@@ -217,7 +217,7 @@ Camera:
   m_GameObject: {fileID: 854953578}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -269,7 +269,7 @@ GameObject:
   - component: {fileID: 1009227601}
   - component: {fileID: 1009227600}
   m_Layer: 0
-  m_Name: Dodecahedron 2
+  m_Name: Dodecahedron B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -287,6 +287,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshFilter: {fileID: 1009227601}
+  debugVertColor: {r: 1, g: 1, b: 1, a: 1}
+  debugVertRadiusMult: 1
   cutManager: {fileID: 0}
 --- !u!33 &1009227601
 MeshFilter:
@@ -309,7 +311,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 18040321770c3b54387bafcfa737c15e, type: 2}
+  - {fileID: 2100000, guid: bcc2b8b9f934df6438e1374e314325d9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -336,7 +338,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1009227599}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.484, y: 0.832, z: 0.3027}
+  m_LocalPosition: {x: 1.806, y: 0.719, z: 0.31}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -382,8 +384,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6148337387f02e44f890cba48b02042c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  d0: {fileID: 1349996293}
-  d1: {fileID: 1009227600}
+  dA: {fileID: 1349996293}
+  dB: {fileID: 1009227600}
 --- !u!1 &1142851552
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,7 +442,7 @@ GameObject:
   - component: {fileID: 1349996294}
   - component: {fileID: 1349996293}
   m_Layer: 0
-  m_Name: Dodecahedron 1
+  m_Name: Dodecahedron A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -471,6 +473,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshFilter: {fileID: 1349996294}
+  debugVertColor: {r: 1, g: 1, b: 1, a: 1}
+  debugVertRadiusMult: 1
   cutManager: {fileID: 0}
 --- !u!33 &1349996294
 MeshFilter:

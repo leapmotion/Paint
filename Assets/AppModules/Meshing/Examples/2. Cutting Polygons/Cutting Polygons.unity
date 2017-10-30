@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 503807882}
   - component: {fileID: 503807881}
   m_Layer: 0
-  m_Name: Polygon 1
+  m_Name: Polygon A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,7 +155,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshFilter: {fileID: 503807882}
-  numVerts: 5
+  debugVertColor: {r: 1, g: 0.6544118, b: 0.6544118, a: 1}
+  debugVertRadiusMult: 1
+  numVerts: 3
 --- !u!33 &503807882
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -306,7 +308,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _displayInGameView: 1
   _enabledForBuild: 1
-  _sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  _sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 3}
   _gizmoShader: {fileID: 4800000, guid: 309635e4933310a4d98f0e016c806769, type: 3}
 --- !u!4 &1136711860
 Transform:
@@ -398,7 +400,7 @@ GameObject:
   - component: {fileID: 1832373545}
   - component: {fileID: 1832373544}
   m_Layer: 0
-  m_Name: Polygon 2
+  m_Name: Polygon B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -416,7 +418,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshFilter: {fileID: 1832373545}
-  numVerts: 5
+  debugVertColor: {r: 0.7277891, g: 0.6764706, b: 1, a: 1}
+  debugVertRadiusMult: 1.1
+  numVerts: 3
 --- !u!33 &1832373545
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -438,7 +442,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 18040321770c3b54387bafcfa737c15e, type: 2}
+  - {fileID: 2100000, guid: bcc2b8b9f934df6438e1374e314325d9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -464,13 +468,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1832373543}
-  m_LocalRotation: {x: 0.41264665, y: -0, z: -0, w: 0.91089123}
-  m_LocalPosition: {x: -0.414, y: 0.199, z: -0.001}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.6830127, y: -0.18301266, z: 0.18301266, w: 0.6830127}
+  m_LocalPosition: {x: 0.371, y: 0.538, z: -0.104462}
+  m_LocalScale: {x: 0.8183132, y: 0.81831306, z: 0.81831306}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 48.742, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: -30, z: 0}
 --- !u!1 &1877572693
 GameObject:
   m_ObjectHideFlags: 0
@@ -513,4 +517,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   polygonToCut: {fileID: 503807881}
   cuttingPolygon: {fileID: 1832373544}
-  effectivePolygon2Transform: {fileID: 0}

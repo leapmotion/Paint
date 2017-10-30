@@ -6,22 +6,22 @@ namespace Leap.Unity.Meshing.Examples {
 
   public class DodecahedronCutManager : MonoBehaviour {
 
-    public DodecahedronExample d0;
-    public DodecahedronExample d1;
+    public DodecahedronExample dA;
+    public DodecahedronExample dB;
 
     void Awake() {
-      d0.cutManager = this;
-      d1.cutManager = this;
+      dA.cutManager = this;
+      dB.cutManager = this;
     }
 
     void Update() {
-      d0.InitMesh();
-      d1.InitMesh();
+      dA.InitMesh();
+      dB.InitMesh();
 
-      PolyMesh.Ops.Cut(d0.polyMesh, d1.polyMesh);
+      PolyMesh.Ops.DualCut(dA.polyMesh, dB.polyMesh);
 
-      d0.UpdateMesh();
-      d1.UpdateMesh();
+      dA.UpdateMesh();
+      dB.UpdateMesh();
     }
 
   }

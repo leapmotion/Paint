@@ -52,5 +52,9 @@ namespace Leap.Unity {
     public static implicit operator ReadonlyList<T>(List<T> list) {
       return new ReadonlyList<T>(list);
     }
+
+    public int IndexOf(T item) {
+      return _list.IndexOf(item);
+    }
   }
 }

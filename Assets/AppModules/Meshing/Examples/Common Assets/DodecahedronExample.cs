@@ -1,10 +1,15 @@
-﻿using UnityEngine;
+﻿using Leap.Unity.Query;
+using Leap.Unity.RuntimeGizmos;
+using UnityEngine;
 
 namespace Leap.Unity.Meshing.Examples {
 
-  public class DodecahedronExample : MonoBehaviour {
+  public class DodecahedronExample : MonoBehaviour, IRuntimeGizmoComponent {
 
     public MeshFilter _meshFilter;
+
+    public Color debugVertColor = Color.white;
+    public float debugVertRadiusMult = 1.0f;
 
     [HideInInspector]
     public DodecahedronCutManager cutManager;
@@ -30,6 +35,26 @@ namespace Leap.Unity.Meshing.Examples {
 
     public void UpdateMesh() {
       polyMesh.FillUnityMesh(_meshFilter.mesh);
+    }
+
+    public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      var mesh = polyMesh;
+
+      if (mesh == null) return;
+
+      // Verts.
+      foreach (var poly in mesh.polygons) {
+        int vertIdx = 0;
+        foreach (var vertPos in poly.verts.Query().Select(vIdx => poly.GetMeshPosition(vIdx))) {
+          drawer.color = Color.Lerp(debugVertColor, Color.Lerp(debugVertColor, Color.black, 0.2f),
+                                    ((float)vertIdx / poly.verts.Count));
+          drawer.DrawWireSphere(vertPos, PolyMath.POSITION_TOLERANCE * debugVertRadiusMult);
+          drawer.DrawWireCube(vertPos, Vector3.one * PolyMath.POSITION_TOLERANCE * debugVertRadiusMult);
+          drawer.DrawWireSphere(vertPos, PolyMath.CLUSTER_TOLERANCE * debugVertRadiusMult);
+          vertIdx++;
+        }
+      }
+
     }
 
   }

@@ -28,7 +28,12 @@ namespace Leap.Unity.Meshing {
     public int a, b;
 
     public int this[int idx] {
-      get { if (idx == 0) return a; return b; }
+      get {
+        if (idx != 0 && idx != 1) {
+          throw new System.IndexOutOfRangeException("Invalid edge index.");
+        }
+        if (idx == 0) return a;
+        return b; }
     }
 
     #region Equality
@@ -41,8 +46,9 @@ namespace Leap.Unity.Meshing {
     }
 
     public bool Equals(Edge other) {
-      return (a == other.a && b == other.b)
-          || (a == other.b && b == other.a);
+      return this.mesh == other.mesh
+          && ((a == other.a && b == other.b)
+              || (a == other.b && b == other.a));
     }
     public override bool Equals(object obj) {
       if (obj is Edge) {
@@ -80,6 +86,31 @@ namespace Leap.Unity.Meshing {
       }
     }
 
+    public Vector3 GetPositionA() {
+      return mesh.GetPosition(a);
+    }
+
+    public Vector3 GetPositionB() {
+      return mesh.GetPosition(b);
+    }
+
+    /// <summary>
+    /// Given a normalized amount along the edge (from 0 (a) to 1 (b)), returns the
+    /// world distance of that edge point to the edge endpoint to which it is closest.
+    /// </summary>
+    public float GetWorldDistanceFromEdgeEndpoint(float normalizedAmountAlongEdge) {
+      var t = normalizedAmountAlongEdge;
+      var mag = (P(b) - P(a)).magnitude;
+      if (t > 0.5f) {
+        // Distance from edge point b.
+        return mag - (t * mag);
+      }
+      else {
+        // Distance from edge point a.
+        return (t * mag);
+      }
+    }
+
     /// <summary>
     /// Returns whether this Edge has the argument vertex index at either A or B.
     /// </summary>
@@ -87,9 +118,50 @@ namespace Leap.Unity.Meshing {
       return a == vertIndex || b == vertIndex;
     }
 
+    public float GetSqrLength() {
+      return (P(b) - P(a)).sqrMagnitude;
+    }
+
+    /// <summary>
+    /// Assumes the provided position is on the line defined by this Edge and returns
+    /// the amount along the edge in normalized space (0 is A, 1 is B). Doesn't clamp
+    /// the result between 0 and 1.
+    /// 
+    /// If the world position provided is not on this edge, this function doesn't care,
+    /// but don't expect a useable result.
+    /// </summary>
+    public float GetNormalizedAmountAlongEdge(Vector3 worldPosition) {
+      var pA = P(a);
+      var pB = P(b);
+      var mag = (pB - pA).magnitude;
+
+      return (worldPosition - pA).magnitude / mag;
+    }
+
     public override string ToString() {
       return "[Edge | a: " + a + ", b: " + b + ", mesh: " + mesh + "]";
     }
+
+    #region Debug Rendering
+
+    public static void Render(Edge edge, float sizeMult = 1f) {
+      Render(edge, LeapColor.mint, sizeMult);
+    }
+
+    public static void Render(Edge edge, Color color, float sizeMult = 1f) {
+      RenderLiteral(edge.GetPositionA(), edge.GetPositionB(), color, sizeMult);
+    }
+
+    public static void RenderLiteral(Vector3 pA, Vector3 pB, Color color, float sizeMult = 1f) {
+      RuntimeGizmos.RuntimeGizmoDrawer drawer;
+      if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
+        drawer.color = color;
+
+        drawer.DrawWireCapsule(pA, pB, 0.04f * sizeMult);
+      }
+    }
+
+    #endregion
 
   }
 

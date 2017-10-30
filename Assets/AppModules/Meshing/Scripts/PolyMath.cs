@@ -1,4 +1,5 @@
 ﻿using Leap.Unity.Query;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Leap.Unity.Meshing {
@@ -12,8 +13,8 @@ namespace Leap.Unity.Meshing {
     }
 
     public static Line FromEdge(Edge edge) {
-      return new Line() { a = edge.mesh.GetPosition(edge.a),
-                          b = edge.mesh.GetPosition(edge.b) };
+      return new Line() { a = edge.GetPositionA(),
+                          b = edge.GetPositionB() };
     }
   }
 
@@ -71,6 +72,70 @@ namespace Leap.Unity.Meshing {
                          / planeNormalDotLineDir);
 
       return line.a + tOfIntersection * lineDir;
+    }
+
+    public enum EdgeIntersectionType {
+      None,
+      FullyColinear,
+      SemiColinear,
+      FragmentColinear,
+      Crossed
+    }
+
+    public struct EdgeIntersection {
+      public EdgeIntersectionType type;
+      public Edge edgeA, edgeB;
+
+      public Maybe<Vector3> point0;
+      public Maybe<Vector3> point1;
+    }
+
+    /// <summary>
+    /// Returns the point of intersection if the two edges intersect, or None if the
+    /// edges do not intersect one another. (Touching vertices counts as a point of
+    /// intersection.)
+    /// </summary>
+    public static Maybe<Vector3> Intersect(Edge edge0, Edge edge1,
+                                           out bool edgesWereColinear) {
+      edgesWereColinear = false;
+
+      var edge0AOnEdge1 = edge0.GetPositionA().ClampedTo(edge1);
+      var edge0BOnEdge1 = edge0.GetPositionB().ClampedTo(edge1);
+
+      if (edge0AOnEdge1 == edge0BOnEdge1
+          && edge0AOnEdge1.IsInside(edge0)) {
+        return edge0AOnEdge1;
+      }
+      else if (edge0AOnEdge1.IsInside(edge0)
+               && edge0BOnEdge1.IsInside(edge0)) {
+        edgesWereColinear = true;
+      }
+
+      return Maybe.None;
+    }
+
+    /// <summary>
+    /// Produces the correct cut points for an with another edge this is colinear with it
+    /// -- they intersect at infinitely many points. This will produce zero, one, or two
+    /// cut points.
+    /// </summary>
+    public static void ResolveColinearity(Edge colinearEdgeToCut, Edge colinearCuttingEdge,
+                                          List<Vector3> outCutsOnEdge) {
+      var cuttingPointA = colinearCuttingEdge.GetPositionA();
+      var normalizedCuttingAOnETC = colinearEdgeToCut
+                                      .GetNormalizedAmountAlongEdge(cuttingPointA);
+
+      var cuttingPointB = colinearCuttingEdge.GetPositionB();
+      var normalizedCuttingBOnETC = colinearEdgeToCut
+                                      .GetNormalizedAmountAlongEdge(cuttingPointB);
+
+      if (normalizedCuttingAOnETC > 0f && normalizedCuttingAOnETC < 1f) {
+        outCutsOnEdge.Add(cuttingPointA);
+      }
+
+      if (normalizedCuttingBOnETC > 0f && normalizedCuttingBOnETC < 1f) {
+        outCutsOnEdge.Add(cuttingPointB);
+      }
     }
 
     #endregion
@@ -156,11 +221,15 @@ namespace Leap.Unity.Meshing {
     }
 
     public static Vector3 ClampedTo(this Vector3 pos, Edge edge) {
-      var a = edge.mesh.GetPosition(edge.a);
-      var b = edge.mesh.GetPosition(edge.b);
-      var mag = (b - a).magnitude;
-      var lineDir = (b - a) / mag;
-      return a + lineDir * Mathf.Clamp(Vector3.Dot((pos - a), lineDir), 0f, mag);
+      var a = edge.GetPositionA();
+      var b = edge.GetPositionB();
+      var ab = b - a;
+      var mag = ab.magnitude;
+      var lineDir = ab / mag;
+      var progress = Mathf.Clamp(Vector3.Dot((pos - a), lineDir), 0f, mag);
+      if (progress < POSITION_TOLERANCE) progress = 0f;
+      else if (progress > (mag - POSITION_TOLERANCE)) progress = mag;
+      return a + lineDir * progress;
     }
 
     #endregion

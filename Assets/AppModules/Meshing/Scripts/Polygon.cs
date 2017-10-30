@@ -30,8 +30,14 @@ namespace Leap.Unity.Meshing {
     /// directly, but indexes its vertices cyclically.
     /// </summary>
     public int this[int idx] {
-      get { return verts[idx % verts.Count]; }
-      set { verts[idx % verts.Count] = value; }
+      get {
+        while (idx < 0) idx += verts.Count;
+        return verts[idx % verts.Count];
+      }
+      set {
+        while (idx < 0) idx += verts.Count;
+        verts[idx % verts.Count] = value;
+      }
     }
 
     public int Count { get { return _verts.Count; } }
@@ -39,6 +45,15 @@ namespace Leap.Unity.Meshing {
     #endregion
 
     #region Operations
+
+    /// <summary>
+    /// Copies this Polygon, returning a Polygon object with a new underlying vert list.
+    /// </summary>
+    public Polygon Copy() {
+      var list = new List<int>();
+      list.AddRange(_verts);
+      return new Polygon() { mesh = this.mesh, _verts = list };
+    }
 
     private Vector3 P(int vertIndex) {
       return mesh.GetPosition(vertIndex);
@@ -140,10 +155,10 @@ namespace Leap.Unity.Meshing {
       // Compare the cross products of (i -> i + 1) and (i -> i + 2) around the polygon;
       // if the cross products' ever flip direction with respect to one another, the
       // polygon must be non-convex. (Straight lines are OK!)
-      for (int i = 0; i < _verts.Count; i++) {
-        var a = P(_verts[i]);
-        var b = P(_verts[(i + 1) % _verts.Count]);
-        var c = P(_verts[(i + 2) % _verts.Count]);
+      for (int i = 0; i < Count; i++) {
+        var a = P(this[i + 0]);
+        var b = P(this[i + 1]);
+        var c = P(this[i + 2]);
 
         var ab = b - a;
         var ac = c - a;
@@ -166,7 +181,7 @@ namespace Leap.Unity.Meshing {
         }
       }
 
-      return false;
+      return true;
     }
 
     /// <summary>
@@ -208,6 +223,27 @@ namespace Leap.Unity.Meshing {
       }
 
       return true;
+    }
+
+    /// <summary>
+    /// Returns whether the given polygon vertex array indices (NOT mesh position
+    /// indices) are an edge of this polygon.
+    /// </summary>
+    public bool HasPolyIdxEdge(int polyIdx0, int polyIdx1) {
+      return ((polyIdx0 + 1) % _verts.Count) == polyIdx1
+          || ((polyIdx1 + 1) % _verts.Count) == polyIdx0;
+    }
+
+    /// <summary>
+    /// Returns whether this polygon contains an edge between the two mesh vertex indices.
+    /// </summary>
+    public bool HasVertIdxEdge(int vertIdx0, int vertIdx1) {
+      int indexOf0 = _verts.IndexOf(vertIdx0);
+      int indexOf1 = _verts.IndexOf(vertIdx1);
+      if (indexOf0 != -1 && indexOf1 != -1) {
+        return HasPolyIdxEdge(indexOf0, indexOf1);
+      }
+      return false;
     }
 
     #endregion
@@ -289,6 +325,10 @@ namespace Leap.Unity.Meshing {
 
     public bool Equals(Polygon otherPoly) {
       if (this.mesh != otherPoly.mesh) return false;
+      if (_verts != null && otherPoly._verts == null) return false;
+      if (otherPoly._verts != null && _verts == null) return false;
+      if (otherPoly._verts == null && _verts == null) return true;
+
       if (this._verts.Count != otherPoly._verts.Count) return false;
 
       // Utils.AreEqualUnordered(verts, otherPoly.verts); perhaps?
@@ -351,6 +391,40 @@ namespace Leap.Unity.Meshing {
       finally {
         positions.Clear();
         Pool<List<Vector3>>.Recycle(positions);
+      }
+    }
+
+    #endregion
+
+    #region Debug Rendering
+    
+    public static void Render(Polygon p, Color color) {
+      RuntimeGizmos.RuntimeGizmoDrawer drawer;
+      if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
+        drawer.color = color;
+
+        var normal = p.GetNormal();
+
+        for (int i = 0; i < p.Count; i++) {
+          var z = p.GetMeshPosition(p[i - 1]);
+          var a = p.GetMeshPosition(p[i + 0]);
+          var b = p.GetMeshPosition(p[i + 1]);
+          var c = p.GetMeshPosition(p[i + 2]);
+
+          var az = z - a;
+          var ab = b - a;
+          var ba = a - b;
+          var bc = c - b;
+
+          var zabDir = (Quaternion.AngleAxis(Vector3.Angle(az, ab) * 0.5f, normal) * ab).normalized;
+          var abcDir = (Quaternion.AngleAxis(Vector3.Angle(ba, bc) * 0.5f, normal) * bc).normalized;
+
+          var e0 = a + (zabDir * 0.005f);
+          var e1 = b + (abcDir * 0.005f);
+
+          drawer.DrawWireCapsule(e0, e1, 0.001f);
+          drawer.DrawWireCapsule(e0, e1, 0.0015f);
+        }
       }
     }
 
