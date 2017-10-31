@@ -35,7 +35,6 @@ namespace Leap.Unity.Meshing.Examples {
       if (mesh == null) return;
 
       // Verts.
-      int polyIdx = 0;
       foreach (var poly in mesh.polygons) {
         int vertIdx = 0;
         foreach (var vertPos in poly.verts.Query().Select(vIdx => poly.GetMeshPosition(vIdx))) {

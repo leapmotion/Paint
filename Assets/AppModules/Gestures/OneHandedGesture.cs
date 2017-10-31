@@ -11,15 +11,15 @@ namespace Leap.Unity.Gestures {
   /// a tracked hand to be active; if the hand loses tracking mid-gesture, the
   /// gesture will fire its deactivation method as a cancellation.
   /// 
-  /// If either hand can perform the implementing gesture, create a copy for
+  /// If either hand can perform the implementing gesture, create a Gesture instance for
   /// each hand. For gestures that require both hands or interactions between
-  /// hands to perform, see TwoHandedGesture.
+  /// hands to perform, use a TwoHandedGesture.
   /// </summary>
   public abstract class OneHandedGesture : Gesture {
 
     /// <summary>
     /// Which hand does the gesture apply to? If either hand can perform the
-    /// gesture, create a copy for each hand.
+    /// gesture, create an instance for each hand.
     /// </summary>
     [EditTimeOnly]
     public Chirality whichHand;
@@ -139,6 +139,11 @@ namespace Leap.Unity.Gestures {
     private bool _isGestureActive = false;
     private bool _wasHandTracked = false;
 
+    // Whether the gesture was activated this frame.
+    protected bool _wasGestureActivated = false;
+    // Whether the gesture was deactivated this frame.
+    protected bool _wasGestureDeactivated = false;
+
     protected virtual void OnDisable() {
       if (_isGestureActive) {
         var hand = Hands.Get(whichHand);
@@ -148,6 +153,9 @@ namespace Leap.Unity.Gestures {
     }
 
     protected virtual void Update() {
+      _wasGestureActivated = false;
+      _wasGestureDeactivated = false;
+
       var hand = Hands.Get(whichHand);
 
       // Determine the tracked state of hands and fire appropriate methods.
@@ -199,12 +207,14 @@ namespace Leap.Unity.Gestures {
       // Fire gesture state change events.
       if (shouldGestureBeActive != _isGestureActive) {
         if (shouldGestureBeActive) {
+          _wasGestureActivated = true;
           _isGestureActive = true;
           WhenGestureActivated(hand);
           OnGestureActivated();
           OnOneHandedGestureActivated(hand);
         }
         else {
+          _wasGestureDeactivated = true;
           _isGestureActive = false;
           WhenGestureDeactivated(hand, deactivationReason.GetValueOrDefault());
           OnGestureDeactivated();

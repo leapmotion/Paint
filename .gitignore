@@ -26,6 +26,7 @@ Temp/
 Build/
 
 .vscode/
+.leu
 
 *~
 *.swp
