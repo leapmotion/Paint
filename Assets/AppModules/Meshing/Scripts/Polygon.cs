@@ -135,6 +135,14 @@ namespace Leap.Unity.Meshing {
       return normal;
     }
 
+    public Vector3 GetCentroid() {
+      var sum = Vector3.zero;
+      foreach (var vert in verts) {
+        sum += P(vert);
+      }
+      return sum / verts.Count;
+    }
+
     /// <summary>
     /// Calculates and returns whether this polygon is truly convex. The polygon's verts
     /// are assumed to be planar. (Not sure if your polygon is planar? Call IsPlanar())
@@ -144,17 +152,22 @@ namespace Leap.Unity.Meshing {
     /// is useful when constructing new polygons manually.
     /// </summary>
     public bool IsConvex() {
-      Maybe<Vector3> lastNonZeroCrossProduct = Maybe.None;
-
       if (_verts.Count < 3) {
         throw new System.InvalidOperationException("Polygons must have 3 or more vertices.");
       }
 
-      if (_verts.Count == 3) return true;
+      if (_verts.Count == 3) {
+        // Points cannot be colinear.
+        var a = P(this[0]);
+        var b = P(this[1]);
+        var c = P(this[2]);
+        return Vector3.Cross(b - a, c - a) != Vector3.zero;
+      }
 
       // Compare the cross products of (i -> i + 1) and (i -> i + 2) around the polygon;
       // if the cross products' ever flip direction with respect to one another, the
       // polygon must be non-convex. (Straight lines are OK!)
+      Maybe<Vector3> lastNonZeroCrossProduct = Maybe.None;
       for (int i = 0; i < Count; i++) {
         var a = P(this[i + 0]);
         var b = P(this[i + 1]);
@@ -179,6 +192,12 @@ namespace Leap.Unity.Meshing {
             }
           }
         }
+      }
+
+      if (!lastNonZeroCrossProduct.hasValue) {
+        // No non-zero cross product implies that all of the points in the poylgon are
+        // colinear. This is not a valid polygon, so we'll return false for convexity.
+        return false;
       }
 
       return true;
@@ -244,6 +263,136 @@ namespace Leap.Unity.Meshing {
         return HasPolyIdxEdge(indexOf0, indexOf1);
       }
       return false;
+    }
+
+    /// <summary>
+    /// Returns whether the argument verts are on a colinear sequence of edges in this
+    /// polygon, and if so, adds all of the colinear edges in that colinear sequence to
+    /// the outColinearEdges list argument.
+    /// </summary>
+    public bool AreVertsOnColinearSequence(int vertIdx0, int vertIdx1,
+                                           List<Edge> outColinearEdges,
+                                           bool includeWholeColinearSequence) {
+      var testEdgeSequence = Pool<List<Edge>>.Spawn();
+      testEdgeSequence.Clear();
+      try {
+        // Start at vertIdx0. Start going around until we stop getting colinear edges.
+        Maybe<Vector3> edgeDir = Maybe.None;
+        int startIdx = _verts.IndexOf(vertIdx0);
+        if (startIdx == -1) throw new System.Exception("Vert index not in this polygon.");
+        bool hitIdx1 = false;
+        for (int i = startIdx; i < startIdx + _verts.Count; i++) {
+          var a = P(this[i + 0]);
+          var b = P(this[i + 1]);
+          hitIdx1 |= this[i + 1] == vertIdx1;
+          Vector3 testDir = b - a;
+          var thisEdge = new Edge() {
+            mesh = this.mesh,
+            a = this[i],
+            b = this[i + 1]
+          };
+          if (edgeDir.hasValue) {
+            if (Vector3.Cross(testDir, edgeDir.valueOrDefault) == Vector3.zero) {
+              // Colinear, add this edge tentatively and keep going.
+              testEdgeSequence.Add(thisEdge);
+            }
+            else {
+              // Not colinear, stop.
+              break;
+            }
+          }
+          else {
+            // Establish edge direction and add this edge.
+            testEdgeSequence.Add(thisEdge);
+            edgeDir = testDir;
+          }
+        }
+        // After the first loop, if we hit index 1, we're done.
+        if (hitIdx1) {
+          if (testEdgeSequence.Count == 1) {
+            // We didn't find a sequence of colinear edges.
+            return false;
+          }
+          else {
+            // We found a sequence of colinear edges!
+            if (outColinearEdges != null) {
+              if (includeWholeColinearSequence) {
+                outColinearEdges.AddRange(testEdgeSequence);
+              }
+              else {
+                // Just add edges up to the vertIdx1 edge
+                foreach (var edge in testEdgeSequence) {
+                  outColinearEdges.Add(edge);
+                  if (edge.a == vertIdx1 || edge.b == vertIdx1) break;
+                }
+              }
+            }
+            return true;
+          }
+        }
+        else {
+          // Try the same process, but in the other direction around the polygon.
+          hitIdx1 = false;
+          for (int i = startIdx + _verts.Count;
+                   i > startIdx; i--) {
+            var a = P(this[i - 0]);
+            var b = P(this[i - 1]);
+            hitIdx1 |= this[i - 1] == vertIdx1;
+            Vector3 testDir = b - a;
+            var thisEdge = new Edge() {
+              mesh = this.mesh,
+              a = this[i - 0],
+              b = this[i - 1]
+            };
+            if (edgeDir.hasValue) {
+              if (Vector3.Cross(testDir, edgeDir.valueOrDefault) == Vector3.zero) {
+                // Colinear, add this edge tentatively and keep going.
+                testEdgeSequence.Add(thisEdge);
+              }
+              else {
+                // Not colinear, stop.
+                break;
+              }
+            }
+            else {
+              // Establish edge direction and add this edge.
+              testEdgeSequence.Add(thisEdge);
+              edgeDir = testDir;
+            }
+          }
+          // After the second loop, we're definitely done.
+          if (hitIdx1) {
+            if (testEdgeSequence.Count == 1) {
+              // We didn't find a sequence of colinear edges.
+              return false;
+            }
+            else {
+              // We found a sequence of colinear edges!
+              if (outColinearEdges != null) {
+                if (includeWholeColinearSequence) {
+                  outColinearEdges.AddRange(testEdgeSequence);
+                }
+                else {
+                  // Just add edges up to the vertIdx1 edge
+                  foreach (var edge in testEdgeSequence) {
+                    outColinearEdges.Add(edge);
+                    if (edge.a == vertIdx1 || edge.b == vertIdx1) break;
+                  }
+                }
+              }
+              return true;
+            }
+          }
+          else {
+            // No luck, we never found the next index along a colinear edge.
+            return false;
+          }
+        }
+      }
+      finally {
+        testEdgeSequence.Clear();
+        Pool<List<Edge>>.Recycle(testEdgeSequence);
+      }
     }
 
     #endregion

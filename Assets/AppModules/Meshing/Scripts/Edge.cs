@@ -133,9 +133,18 @@ namespace Leap.Unity.Meshing {
     public float GetNormalizedAmountAlongEdge(Vector3 worldPosition) {
       var pA = P(a);
       var pB = P(b);
-      var mag = (pB - pA).magnitude;
+      var edgeMag = (pB - pA).magnitude;
 
-      return (worldPosition - pA).magnitude / mag;
+      var pMag = (worldPosition - pA).magnitude;
+
+      if (pMag < PolyMath.POSITION_TOLERANCE) {
+        return 0f;
+      }
+      else if (edgeMag - pMag < PolyMath.POSITION_TOLERANCE) {
+        return 1f;
+      }
+
+      return pMag / edgeMag;
     }
 
     public override string ToString() {

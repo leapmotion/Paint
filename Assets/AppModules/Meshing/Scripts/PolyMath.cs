@@ -33,7 +33,7 @@ namespace Leap.Unity.Meshing {
 
   public static class PolyMath {
 
-    public const float POSITION_TOLERANCE = 5e-03f;
+    public const float POSITION_TOLERANCE = 1e-03f;
     public const float CLUSTER_TOLERANCE = 5e-02f;
 
     public const int MAX_LOOPS = 10000;
@@ -193,6 +193,17 @@ namespace Leap.Unity.Meshing {
         if (curCrossProduct != Vector3.zero) {
           lastCrossProduct = curCrossProduct;
         }
+      }
+
+      if (!lastCrossProduct.hasValue) {
+        PolyMesh.RenderPoint(point, LeapColor.pink, 5f);
+        PolyMesh.RenderPoint(point, LeapColor.pink, 11f);
+        PolyMesh.RenderPoint(aPoly.GetCentroid(), LeapColor.pink, 1f);
+        PolyMesh.RenderPoint(aPoly.GetCentroid(), LeapColor.pink, 2f);
+        Edge.RenderLiteral(point, aPoly.GetCentroid(), LeapColor.pink, 0.2f);
+
+        Debug.LogError("(See pink renders) IsInside polygon is no good; this polygon "
+                    + "is totally flat!");
       }
 
       return true;
