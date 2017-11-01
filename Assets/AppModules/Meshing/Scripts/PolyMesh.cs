@@ -18,16 +18,37 @@ namespace Leap.Unity.Meshing {
       get { return _polygons; }
     }
 
+    private bool _edgeDataEnabled = true;
+    public bool edgeDataEnabled {
+      get { return _edgeDataEnabled; }
+    }
+
     /// <summary> Updated when AddPolygon or RemovePolygon is called. </summary>
     private Dictionary<Edge, List<Polygon>> _edgeFaces;
     public Dictionary<Edge, List<Polygon>> edgeAdjFaces {
-      get { return _edgeFaces; }
+      get {
+        if (!_edgeDataEnabled) {
+          Debug.LogError("Edge data is not enabled for this PolyMesh. Call EnableEdgeData "
+                         + "before requesting edge data or set the enableEdgeData "
+                         + "property to true when creating the PolyMesh.");
+          return null;
+        }
+        return _edgeFaces;
+      }
     }
 
     /// <summary> Updated when AddPolygon or RemovePolygon is called. </summary>
     private Dictionary<Polygon, List<Edge>> _faceEdges;
     public Dictionary<Polygon, List<Edge>> faceAdjEdges {
-      get { return _faceEdges; }
+      get {
+        if (!_edgeDataEnabled) {
+          Debug.LogError("Edge data is not enabled for this PolyMesh. Call EnableEdgeData "
+                         + "before requesting edge data or set the enableEdgeData "
+                         + "property to true when creating the PolyMesh.");
+          return null;
+        }
+        return _faceEdges;
+      }
     }
 
     #endregion
@@ -55,6 +76,8 @@ namespace Leap.Unity.Meshing {
       _polygons = new List<Polygon>();
       _edgeFaces = new Dictionary<Edge, List<Polygon>>();
       _faceEdges = new Dictionary<Polygon, List<Edge>>();
+
+      _edgeDataEnabled = true;
     }
 
     /// <summary>
@@ -63,8 +86,19 @@ namespace Leap.Unity.Meshing {
     /// to perform operations on this PolyMesh with respect to other PolyMeshes that
     /// correspond to Unity transforms in a scene.
     /// </summary>
-    public PolyMesh(Transform useTransform)
-    : this() {
+    public PolyMesh(bool enableEdgeData = true) 
+      : this() {
+      _edgeDataEnabled = enableEdgeData;
+    }
+
+    /// <summary>
+    /// Creates a new, empty PolyMesh. The PolyMesh will use the provided Transform to
+    /// know where it is in world-space; this is optional, but important if you intend
+    /// to perform operations on this PolyMesh with respect to other PolyMeshes that
+    /// correspond to Unity transforms in a scene.
+    /// </summary>
+    public PolyMesh(Transform useTransform, bool enableEdgeData = true)
+    : this(enableEdgeData) {
       if (useTransform != null) {
         this.useTransform = useTransform;
       }
@@ -73,8 +107,9 @@ namespace Leap.Unity.Meshing {
     /// <summary>
     /// Creates a new PolyMesh using copies of the provided positions and the polygon.
     /// </summary>
-    public PolyMesh(ReadonlyList<Vector3> positions, Polygon polygon)
-      : this() {
+    public PolyMesh(ReadonlyList<Vector3> positions, Polygon polygon,
+                    bool enableEdgeData = true)
+      : this(enableEdgeData) {
       Fill(positions, polygons);
     }
 
@@ -82,8 +117,9 @@ namespace Leap.Unity.Meshing {
     /// Creates a new PolyMesh using copies of the provided positions and polygons
     /// lists.
     /// </summary>
-    public PolyMesh(ReadonlyList<Vector3> positions, ReadonlyList<Polygon> polygons)
-      : this() {
+    public PolyMesh(ReadonlyList<Vector3> positions, ReadonlyList<Polygon> polygons,
+                    bool enableEdgeData = true)
+      : this(enableEdgeData) {
       Fill(positions, polygons);
     }
 
@@ -91,15 +127,16 @@ namespace Leap.Unity.Meshing {
     /// Creates a new PolyMesh by copying the elements of the positions and polygons
     /// enumerables.
     /// </summary>
-    public PolyMesh(IEnumerable<Vector3> positions, IEnumerable<Polygon> polygons) 
-      : this() {
+    public PolyMesh(IEnumerable<Vector3> positions, IEnumerable<Polygon> polygons,
+                    bool enableEdgeData = true)
+      : this(enableEdgeData) {
       Fill(positions, polygons, PositionMode.World);
     }
 
     #endregion
 
     #region Basic Operations
-    
+
     /// <summary>
     /// Clears this PolyMesh, but also recycles all heap-allocated elements into
     /// their relevant Pools. Polygon index lists will be sent to Pool-List-int,
@@ -338,23 +375,31 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     public void AddPolygon(Polygon polygon, out int outAddedPolygonIdx,
                            bool copyPolygonVertList = false) {
-      if (polygon.mesh != this) {
-        // We assume that a polygon passed to a new mesh is supposed to be a part of that
-        // new mesh; this is common if e.g. combining two meshes into one mesh,
-        // or adding just-initialized Polygons (without their mesh set).
-        polygon.mesh = this;
+      using (new ProfilerSample("PolyMesh: AddPolygon")) {
+        if (polygon.mesh != this) {
+          // We assume that a polygon passed to a new mesh is supposed to be a part of that
+          // new mesh; this is common if e.g. combining two meshes into one mesh,
+          // or adding just-initialized Polygons (without their mesh set).
+          polygon.mesh = this;
+        }
+
+        if (copyPolygonVertList) {
+          using (new ProfilerSample("Deep copy polygon verts list")) {
+            var origList = polygon.verts;
+            polygon.verts = new List<int>();
+            polygon.verts.AddRange(origList);
+          }
+        }
+
+        outAddedPolygonIdx = _polygons.Count;
+        _polygons.Add(polygon);
+
+        if (_edgeDataEnabled) {
+          using (new ProfilerSample("Update edges (Poly Added)")) {
+            updateEdges_PolyAdded(polygon);
+          }
+        }
       }
-
-      if (copyPolygonVertList) {
-        var origList = polygon.verts;
-        polygon.verts = new List<int>();
-        polygon.verts.AddRange(origList);
-      }
-
-      outAddedPolygonIdx = _polygons.Count;
-      _polygons.Add(polygon);
-
-      updateEdges_PolyAdded(polygon);
     }
 
     /// <summary>
@@ -376,9 +421,25 @@ namespace Leap.Unity.Meshing {
     /// Also returns the polygon that was replaced, so you can pool its vertex index list.
     /// </summary>
     public void SetPolygon(int polyIdx, Polygon newPolygon, out Polygon replacedPolygon) {
-      replacedPolygon = _polygons[polyIdx];
+      using (new ProfilerSample("PolyMesh: SetPolygon")) {
+        if (newPolygon.mesh != this) {
+          // Polygons created outside the context of this mesh may not have had a reference
+          // to it; simply bind the polygon to this mesh now.
+          newPolygon.mesh = this;
+        }
 
-      _polygons[polyIdx] = newPolygon;
+        replacedPolygon = _polygons[polyIdx];
+
+        if (_edgeDataEnabled) {
+          using (new ProfilerSample("Remove and Re-add Edge Data")) {
+            // Update edge data.
+            updateEdges_PolyRemoved(replacedPolygon);
+            updateEdges_PolyAdded(newPolygon);
+          }
+        }
+
+        _polygons[polyIdx] = newPolygon;
+      }
     }
 
     public void RemovePolygons(IEnumerable<Polygon> toRemove) {
@@ -386,7 +447,9 @@ namespace Leap.Unity.Meshing {
       foreach (var polygon in toRemove) {
         polyPool.Add(polygon);
 
-        updateEdges_PolyRemoved(polygon);
+        if (_edgeDataEnabled) {
+          updateEdges_PolyRemoved(polygon);
+        }
       }
 
       _polygons.RemoveAll(p => polyPool.Contains(p));
@@ -395,12 +458,47 @@ namespace Leap.Unity.Meshing {
     public void RemovePolygon(Polygon polygon) {
       _polygons.Remove(polygon);
 
-      updateEdges_PolyRemoved(polygon);
+      if (_edgeDataEnabled) {
+        updateEdges_PolyRemoved(polygon);
+      }
     }
 
     #endregion
 
     #region Edge Data
+
+    public void EnableEdgeData() {
+      if (!_edgeDataEnabled) {
+        _edgeDataEnabled = true;
+
+        initEdgeData();
+      }
+    }
+
+    public void DisableEdgeData() {
+      if (_edgeDataEnabled) {
+        clearEdgeData();
+
+        _edgeDataEnabled = false;
+      }
+    }
+
+    private void initEdgeData() {
+      if (_edgeFaces.Count != 0
+          || _faceEdges.Count != 0) {
+        clearEdgeData();
+      }
+
+      foreach (var polygon in _polygons) {
+        updateEdges_PolyAdded(polygon);
+      }
+    }
+
+    private void clearEdgeData() {
+      foreach (var polygon in _polygons) {
+        updateEdges_PolyRemoved(polygon);
+      }
+    }
 
     /// <summary>
     /// Adds edge data based on the added polygon.
@@ -409,28 +507,42 @@ namespace Leap.Unity.Meshing {
     /// (Automatically called by the AddPolygon functions.)
     /// </summary>
     private void updateEdges_PolyAdded(Polygon poly) {
-      foreach (var edge in poly.edges) {
-        List<Polygon> adjFaces;
-        if (edgeAdjFaces.TryGetValue(edge, out adjFaces)) {
-          adjFaces.Add(poly);
+      using (new ProfilerSample(
+                   "updateEdges_PolyAdded: Add adjacent faces for each edge")) {
+        if (!_edgeDataEnabled) {
+          throw new System.InvalidOperationException(
+            "updateEdges_PolyAdded called, but edge data is disabled for this PolyMesh.");
         }
-        else {
-          edgeAdjFaces[edge] = new List<Polygon>() { poly };
+
+        foreach (var edge in poly.edges) {
+          List<Polygon> adjFaces;
+          if (edgeAdjFaces.TryGetValue(edge, out adjFaces)) {
+            adjFaces.Add(poly);
+          }
+          else {
+            var newAdjFacesList = Pool<List<Polygon>>.Spawn();
+            newAdjFacesList.Clear();
+            edgeAdjFaces[edge] = newAdjFacesList;
+            newAdjFacesList.Add(poly);
+          }
         }
       }
 
-      List<Edge> adjEdges;
-      if (faceAdjEdges.TryGetValue(poly, out adjEdges)) {
-        throw new System.InvalidOperationException(
-          "Already have edge data for this polygon somehow.");
-      }
-      else {
-        var edgeList = Pool<List<Edge>>.Spawn();
-        edgeList.Clear();
-        foreach (var edge in poly.edges) {
-          edgeList.Add(edge);
+      using (new ProfilerSample(
+                   "updateEdges_PolyAdded: Add adjacent edges for the polygon")) {
+        List<Edge> adjEdges;
+        if (faceAdjEdges.TryGetValue(poly, out adjEdges)) {
+          throw new System.InvalidOperationException(
+            "Already have edge data for this polygon somehow.");
         }
-        faceAdjEdges[poly] = edgeList;
+        else {
+          var edgeList = Pool<List<Edge>>.Spawn();
+          edgeList.Clear();
+          foreach (var edge in poly.edges) {
+            edgeList.Add(edge);
+          }
+          faceAdjEdges[poly] = edgeList;
+        }
       }
     }
 
@@ -441,30 +553,57 @@ namespace Leap.Unity.Meshing {
     /// (Automatically called by the RemovePolygon functions.)
     /// </summary>
     private void updateEdges_PolyRemoved(Polygon poly) {
-      foreach (var edge in poly.edges) {
-        List<Polygon> adjFaces;
-        if (edgeAdjFaces.TryGetValue(edge, out adjFaces)) {
-          adjFaces.Remove(poly);
+      using (new ProfilerSample(
+                   "updateEdges_PolyRemoved: Remove adjacent faces for each edge")) {
+        if (!_edgeDataEnabled) {
+          throw new System.InvalidOperationException(
+            "updateEdges_PolyRemoved called, but edge data is disabled for this PolyMesh.");
+        }
 
-          if (adjFaces.Count == 0) {
-            edgeAdjFaces.Remove(edge);
+        foreach (var edge in poly.edges) {
+          using (new ProfilerSample("Inside poly edges for loop...")) {
+            List<Polygon> adjFaces;
+            using (new ProfilerSample("TryGetValue for adjFaces")) {
+              if (edgeAdjFaces.TryGetValue(edge, out adjFaces)) {
+                using (new ProfilerSample("Remove poly from adjFaces")) {
+                  adjFaces.Remove(poly);
+                }
+
+                if (adjFaces.Count == 0) {
+                  using (new ProfilerSample("Recycle adjFaces Polygon list")) {
+
+                    using (new ProfilerSample("Remove edge from edgeAdjFaces dict")) {
+                      edgeAdjFaces.Remove(edge);
+                    }
+
+                    Pool<List<Polygon>>.Recycle(adjFaces);
+                  }
+                }
+              }
+              else {
+                Debug.LogError("Uhh! No adjacent polygon data for this edge.");
+                //throw new System.InvalidOperationException(
+                //  "Adjacent polygon data for this edge never existed.");
+              }
+            }
           }
         }
-        else {
-          Debug.LogError("Uhh! No adjacent polygon data for this edge.");
-          //throw new System.InvalidOperationException(
-          //  "Adjacent polygon data for this edge never existed.");
-        }
       }
 
-      List<Edge> adjEdges;
-      if (faceAdjEdges.TryGetValue(poly, out adjEdges)) {
-        faceAdjEdges.Remove(poly);
-      }
-      else {
-        Debug.LogError("No adjacent edge data for this polygon, either.");
-        //throw new System.InvalidOperationException(
-        //  "This polygon never had adjacent edge data.");
+      using (new ProfilerSample(
+                   "updateEdges_PolyRemoved: Remove adjacent edges for the polygon")) {
+        List<Edge> adjEdges;
+        if (faceAdjEdges.TryGetValue(poly, out adjEdges)) {
+          faceAdjEdges.Remove(poly);
+
+          adjEdges.Clear();
+          Pool<List<Edge>>.Recycle(adjEdges);
+        }
+        else {
+          Debug.LogError("Uh oh!No adjacent edge data for this polygon.");
+          //throw new System.InvalidOperationException(
+          //  "This polygon never had adjacent edge data.");
+        }
       }
     }
 
@@ -2623,38 +2762,65 @@ namespace Leap.Unity.Meshing {
 
     #region Unity Mesh Conversion
 
-    public void FillUnityMesh(Mesh mesh) {
-      mesh.Clear();
+    /// <summary>
+    /// The faces list for the Unity meshes grows pretty large; instead of spawning
+    /// int lists from the Pool and constantly growing them, we'll use a single list
+    /// with a large capacity.
+    /// </summary>
+    private List<int> _cachedUnityMeshFacesList = new List<int>(4096);
 
-      var verts   = Pool<List<Vector3>>.Spawn();
-      verts.Clear();
-      var faces   = Pool<List<int>>.Spawn();
-      faces.Clear();
-      var normals = Pool<List<Vector3>>.Spawn();
-      normals.Clear();
-      try {
-        foreach (var poly in polygons) {
-          var normal = poly.GetNormal();
-          foreach (var tri in poly.tris) {
-            foreach (var idx in tri) {
-              faces.Add(verts.Count);
-              verts.Add(GetLocalPosition(idx));
-              normals.Add(normal);
+    public void FillUnityMesh(Mesh mesh) {
+      using (new ProfilerSample("PolyMesh: FillUnityMesh")) {
+        mesh.Clear();
+
+        _cachedUnityMeshFacesList.Clear();
+        var verts   = Pool<List<Vector3>>.Spawn();
+        verts.Clear();
+        int vertsCount = 0;
+        var normals = Pool<List<Vector3>>.Spawn();
+        normals.Clear();
+        try {
+          using (new ProfilerSample("Fill faces, verts, normals lists")) {
+            foreach (var poly in polygons) {
+              Vector3 normal;
+              using (new ProfilerSample("Get polygon normal")) {
+                normal = poly.GetNormal();
+                using (new ProfilerSample("Foreach through poly tris...")) {
+                  foreach (var tri in poly.tris) {
+                    using (new ProfilerSample("Add triangle")) {
+                      _cachedUnityMeshFacesList.Add(vertsCount++);
+                      _cachedUnityMeshFacesList.Add(vertsCount++);
+                      _cachedUnityMeshFacesList.Add(vertsCount++);
+                    }
+                    using (new ProfilerSample("Add local positions from tri")) {
+                      verts.Add(GetLocalPosition(tri.a));
+                      verts.Add(GetLocalPosition(tri.b));
+                      verts.Add(GetLocalPosition(tri.c));
+                    }
+                    using (new ProfilerSample("Add normals")) {
+                      normals.Add(normal);
+                      normals.Add(normal);
+                      normals.Add(normal);
+                    }
+                  }
+                }
+              }
             }
           }
-        }
 
-        mesh.SetVertices(verts);
-        mesh.SetTriangles(faces, 0, true);
-        mesh.SetNormals(normals);
-      }
-      finally {
-        verts.Clear();
-        Pool<List<Vector3>>.Recycle(verts);
-        faces.Clear();
-        Pool<List<int>>.Recycle(faces);
-        normals.Clear();
-        Pool<List<Vector3>>.Recycle(normals);
+          using (new ProfilerSample("Upload mesh data")) {
+            mesh.SetVertices(verts);
+            mesh.SetTriangles(_cachedUnityMeshFacesList, 0, true);
+            mesh.SetNormals(normals);
+          }
+        }
+        finally {
+          _cachedUnityMeshFacesList.Clear();
+          verts.Clear();
+          Pool<List<Vector3>>.Recycle(verts);
+          normals.Clear();
+          Pool<List<Vector3>>.Recycle(normals);
+        }
       }
     }
 

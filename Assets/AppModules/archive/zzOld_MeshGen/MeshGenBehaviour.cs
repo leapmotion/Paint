@@ -2,9 +2,7 @@
 using Leap.Unity.UI;
 using System.Collections;
 using System.Collections.Generic;
-#if UNITY_EDITOR
 using UnityEngine;
-#endif
 
 namespace Leap.Unity.zzMeshGen_Old {
 

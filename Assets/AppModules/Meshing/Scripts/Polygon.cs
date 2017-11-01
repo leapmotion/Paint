@@ -10,7 +10,7 @@ namespace Leap.Unity.Meshing {
   /// 
   /// The positions indexed by the face must be planar and convex.
   /// </summary>
-  public struct Polygon {
+  public struct Polygon : System.IEquatable<Polygon> {
 
     public PolyMesh mesh;
 

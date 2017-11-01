@@ -25,17 +25,21 @@ namespace Leap.Unity.Drawing {
     private void addToStroke(Vector3 position, Vector3 normal,
                                  Color color, float size) {
 
-      if (_curStrokeObject.Count > MAX_NUM_STROKE_POINTS) {
-        finalizeStroke();
-        initStroke();
+      using (new ProfilerSample("addToStroke: Restart Stroke")) {
+        if (_curStrokeObject.Count > MAX_NUM_STROKE_POINTS) {
+          finalizeStroke();
+          initStroke();
+        }
       }
 
-      _curStrokeObject.Add(new StrokePoint() {
-        position = position,
-        normal = normal,
-        color = color,
-        size = size
-      });
+      using (new ProfilerSample("addToStroke: Modify Stroke")) {
+        _curStrokeObject.Add(new StrokePoint() {
+          position = position,
+          normal = normal,
+          color = color,
+          size = size
+        });
+      }
     }
 
     private void finalizeStroke() {
@@ -59,7 +63,9 @@ namespace Leap.Unity.Drawing {
         initStroke();
       }
 
-      addToStroke(position, normal, color, size);
+      using (new ProfilerSample("BasicStrokeGenerator addToStroke")) {
+        addToStroke(position, normal, color, size);
+      }
     }
 
     public void Finish() {

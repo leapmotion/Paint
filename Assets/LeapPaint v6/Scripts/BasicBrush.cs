@@ -44,6 +44,8 @@ namespace Leap.Unity.Drawing {
         _maybeLastPose = Maybe.None;
 
         strokeGenerator.Initialize();
+
+        _didBrushingBegin = false;
       }
 
       if (_shouldUpdateBrush) {
@@ -59,6 +61,7 @@ namespace Leap.Unity.Drawing {
                                      effRotation * Vector3.up,
                                      color,
                                      size);
+            _maybeLastPose = pose;
           }
         }
         else {
@@ -66,9 +69,9 @@ namespace Leap.Unity.Drawing {
                                    effRotation * Vector3.up,
                                    color,
                                    size);
+          _maybeLastPose = pose;
         }
 
-        _maybeLastPose = pose;
       }
 
       if (_didBrushingEnd) {
@@ -76,10 +79,10 @@ namespace Leap.Unity.Drawing {
         _maybeLastPose = Maybe.None;
 
         strokeGenerator.Finish();
+
+        _didBrushingEnd = false;
       }
 
-      _didBrushingBegin = false;
-      _didBrushingEnd = false;
     }
 
     #endregion
@@ -89,27 +92,16 @@ namespace Leap.Unity.Drawing {
     private bool _isBrushing = false;
     private bool _didBrushingBegin = false;
     private bool _didBrushingEnd = false;
-    private Pose _currentPose = Pose.identity;
 
     public bool isBrushing {
       get { return _isBrushing; }
     }
 
-    public Pose pose { get { return _currentPose; } }
+    public Pose pose { get { return this.transform.ToWorldPose(); } }
 
     public Color color { get { return _color; } set { _color = value; } }
 
     public float size { get { return _size; } set { _size = value; } }
-
-    public float thickness {
-      get {
-        throw new System.NotImplementedException();
-      }
-
-      set {
-        throw new System.NotImplementedException();
-      }
-    }
 
     public void Begin() {
       _isBrushing = true;

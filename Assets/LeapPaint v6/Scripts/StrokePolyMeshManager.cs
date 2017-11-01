@@ -8,7 +8,9 @@ namespace Leap.Unity.Drawing {
   
   public class StrokePolyMeshManager : MonoBehaviour {
 
-    public int maxPolygonsPerPolyMesh = 256;
+    public int maxPolygonsPerPolyMesh = 64;
+
+    public Material outputMaterial;
 
     private LivePolyMeshObject _curPolyMeshObj;
 
@@ -105,14 +107,14 @@ namespace Leap.Unity.Drawing {
 
           outStrokePositions.Add(aP.position - b * aP.size);
           outStrokePositions.Add(aP.position + b * aP.size);
-          outStrokePositions.Add(bP.position - b * aP.size);
           outStrokePositions.Add(bP.position + b * aP.size);
+          outStrokePositions.Add(bP.position - b * aP.size);
 
           var polyVerts = Pool<List<int>>.Spawn();
-          polyVerts.Add(0);
-          polyVerts.Add(1);
-          polyVerts.Add(2);
-          polyVerts.Add(3);
+          polyVerts.Add((i * 4) + 0);
+          polyVerts.Add((i * 4) + 1);
+          polyVerts.Add((i * 4) + 2);
+          polyVerts.Add((i * 4) + 3);
           outStrokePolygons.Add(new Polygon() {
             mesh = null,      // meshless Polygon
             verts = polyVerts
@@ -124,6 +126,7 @@ namespace Leap.Unity.Drawing {
     private LivePolyMeshObject createNewPolyMeshObj() {
       var gameObj = new GameObject("Live PolyMesh Object");
       var polyMeshObj = gameObj.AddComponent<LivePolyMeshObject>();
+      polyMeshObj.meshRenderer.material = outputMaterial;
       gameObj.transform.parent = this.transform;
       return polyMeshObj;
     }
@@ -146,101 +149,132 @@ namespace Leap.Unity.Drawing {
     /// modified stroke.
     /// </summary>
     private void onStrokeModified(StrokeObject strokeObj) {
-      LivePolyMeshObject polyMeshObj;
-      if (!_strokeMeshes.TryGetValue(strokeObj, out polyMeshObj)) {
-        throw new System.InvalidOperationException(
-          "No LivePolyMeshObject found for stroke: " + strokeObj);
-      }
+      using (new ProfilerSample("StrokePolyMeshManager: onStrokeModified")) {
+        LivePolyMeshObject polyMeshObj;
+        if (!_strokeMeshes.TryGetValue(strokeObj, out polyMeshObj)) {
+          throw new System.InvalidOperationException(
+            "No LivePolyMeshObject found for stroke: " + strokeObj);
+        }
 
-      PolyMesh polyMesh;
-      var curStrokePosIndices = Pool<List<int>>.Spawn();
-      curStrokePosIndices.Clear();
-      var curStrokePolyIndices = Pool<List<int>>.Spawn();
-      curStrokePolyIndices.Clear();
-      Action<object, List<int>, List<int>> modificationsFinishedCallback;
-      try {
-        // Begin our modification of the data in the PolyMesh for this Stroke.
-        polyMeshObj.ModifyDataFor(strokeObj,
-                                  out polyMesh,
-                                  curStrokePosIndices,
-                                  curStrokePolyIndices,
-                                  out modificationsFinishedCallback);
-        
-        var newStrokeMeshPolygons  = Pool<List<Polygon>>.Spawn();
-        newStrokeMeshPolygons.Clear();
-        var newStrokeMeshPositions = Pool<List<Vector3>>.Spawn();
-        newStrokeMeshPositions.Clear();
-        var addedStrokeMeshPositionIndices = Pool<List<int>>.Spawn();
-        addedStrokeMeshPositionIndices.Clear();
-        var addedStrokeMeshPolygonIndices = Pool<List<int>>.Spawn();
-        addedStrokeMeshPolygonIndices.Clear();
+        PolyMesh polyMesh;
+        var curStrokePosIndices = Pool<List<int>>.Spawn();
+        curStrokePosIndices.Clear();
+        var curStrokePolyIndices = Pool<List<int>>.Spawn();
+        curStrokePolyIndices.Clear();
+        Action<object, List<int>, List<int>> modificationsFinishedCallback;
         try {
+          // Begin our modification of the data in the PolyMesh for this Stroke.
+          polyMeshObj.ModifyDataFor(strokeObj,
+                                    out polyMesh,
+                                    curStrokePosIndices,
+                                    curStrokePolyIndices,
+                                    out modificationsFinishedCallback);
 
-          // Get polygon data for the entirety of the stroke.
-          getStrokePolygons(strokeObj, newStrokeMeshPositions, newStrokeMeshPolygons);
- 
-          // Re-use existing position indices or add new ones to fit the modified stroke.
-          for (int i = 0; i < newStrokeMeshPositions.Count; i++) {
-            int existingPositionIdx = -1;
-            if (i < curStrokePosIndices.Count) {
-              existingPositionIdx = curStrokePosIndices[i];
+          var newStrokeMeshPolygons  = Pool<List<Polygon>>.Spawn();
+          newStrokeMeshPolygons.Clear();
+          var newStrokeMeshPositions = Pool<List<Vector3>>.Spawn();
+          newStrokeMeshPositions.Clear();
+          var addedStrokeMeshPositionIndices = Pool<List<int>>.Spawn();
+          addedStrokeMeshPositionIndices.Clear();
+          var addedStrokeMeshPolygonIndices = Pool<List<int>>.Spawn();
+          addedStrokeMeshPolygonIndices.Clear();
+          var finalPositionIndices = Pool<List<int>>.Spawn();
+          finalPositionIndices.Clear();
+          try {
+
+            using (new ProfilerSample("getStrokePolygons")) {
+              // Get polygon data for the entirety of the stroke.
+              getStrokePolygons(strokeObj, newStrokeMeshPositions, newStrokeMeshPolygons);
             }
-            if (existingPositionIdx != -1) {
-              // Modify the position at the existing position index.
-              polyMesh.SetPosition(existingPositionIdx, newStrokeMeshPositions[i]);
+
+            using (new ProfilerSample("Add/modify PolyMesh stroke positions")) {
+
+              // Re-use existing position indices or add new ones to fit the modified stroke.
+              for (int i = 0; i < newStrokeMeshPositions.Count; i++) {
+                int existingPositionIdx = -1;
+                if (i < curStrokePosIndices.Count) {
+                  existingPositionIdx = curStrokePosIndices[i];
+                }
+                if (existingPositionIdx != -1) {
+                  // Modify the position at the existing position index.
+                  polyMesh.SetPosition(existingPositionIdx, newStrokeMeshPositions[i]);
+
+                  // Remember what this position index wound up being; the polygons of the
+                  // stroke need to re-index into the final position index list.
+                  finalPositionIndices.Add(existingPositionIdx);
+                }
+                else {
+                  // Add the position and remember the added position index.
+                  int addedPositionIdx;
+                  polyMesh.AddPosition(newStrokeMeshPositions[i], out addedPositionIdx);
+                  addedStrokeMeshPositionIndices.Add(addedPositionIdx);
+
+                  // Remember what this position index wound up being.
+                  finalPositionIndices.Add(addedPositionIdx);
+                }
+              }
             }
-            else {
-              // Add the position and remember the added position index.
-              int addedPositionIdx;
-              polyMesh.AddPosition(newStrokeMeshPositions[i], out addedPositionIdx);
-              addedStrokeMeshPositionIndices.Add(addedPositionIdx);
+
+            using (new ProfilerSample("Add/modify PolyMesh stroke polygons")) {
+              // Re-use existing polygon indices or add new ones to fit the modified stroke.
+              for (int i = 0; i < newStrokeMeshPolygons.Count; i++) {
+
+                // First, re-index the polygon to refer to the final position indices of the
+                // mesh. We constructed this list during the Add Positions step above.
+                var newStrokeMeshPolygon = newStrokeMeshPolygons[i];
+                for (int v = 0; v < newStrokeMeshPolygon.verts.Count; v++) {
+                  newStrokeMeshPolygon.verts[v]
+                    = finalPositionIndices[newStrokeMeshPolygon.verts[v]];
+                }
+
+                int existingPolygonIdx = -1;
+                if (i < curStrokePolyIndices.Count) {
+                  existingPolygonIdx = curStrokePolyIndices[i];
+                }
+                if (existingPolygonIdx != -1) {
+                  // Modify the polygon at the existing position index.
+                  Polygon replacedPolygon;
+                  polyMesh.SetPolygon(existingPolygonIdx, newStrokeMeshPolygon,
+                                      out replacedPolygon);
+                  // (Add the vertex index list of the replaced polygon back to its pool.)
+                  replacedPolygon.RecycleVerts();
+                }
+                else {
+                  // Add the polygon and remember the added polygon index.
+                  int addedPolygonIdx;
+                  polyMesh.AddPolygon(newStrokeMeshPolygon, out addedPolygonIdx);
+                  addedStrokeMeshPolygonIndices.Add(addedPolygonIdx);
+                }
+              }
+            }
+
+            using (new ProfilerSample("Call modifications-finished callback")) {
+              // Notify that we've finished modifying the keyed object (the stroke object),
+              // and include any new positions or polygons we may have added to do so.
+              modificationsFinishedCallback(strokeObj,
+                addedStrokeMeshPositionIndices,
+                addedStrokeMeshPolygonIndices);
             }
           }
-
-          // Re-use existing polygon indices or add new ones to fit the modified stroke.
-          for (int i = 0; i < newStrokeMeshPolygons.Count; i++) {
-            int existingPolygonIdx = -1;
-            if (i < curStrokePolyIndices.Count) {
-              existingPolygonIdx = curStrokePolyIndices[i];
-            }
-            if (existingPolygonIdx != -1) {
-              // Modify the polygon at the existing position index.
-              Polygon replacedPolygon;
-              polyMesh.SetPolygon(existingPolygonIdx, newStrokeMeshPolygons[i],
-                                  out replacedPolygon);
-              // (Add the vertex index list of the replaced polygon back to its pool.)
-              replacedPolygon.RecycleVerts();
-            }
-            else {
-              // Add the polygon and remember the added polygon index.
-              int addedPolygonIdx;
-              polyMesh.AddPolygon(newStrokeMeshPolygons[i], out addedPolygonIdx);
-              addedStrokeMeshPolygonIndices.Add(addedPolygonIdx);
-            }
+          finally {
+            newStrokeMeshPolygons.Clear();
+            Pool<List<Polygon>>.Recycle(newStrokeMeshPolygons);
+            newStrokeMeshPolygons.Clear();
+            Pool<List<Vector3>>.Recycle(newStrokeMeshPositions);
+            addedStrokeMeshPositionIndices.Clear();
+            Pool<List<int>>.Recycle(addedStrokeMeshPositionIndices);
+            addedStrokeMeshPolygonIndices.Clear();
+            Pool<List<int>>.Recycle(addedStrokeMeshPolygonIndices);
+            finalPositionIndices.Clear();
+            Pool<List<int>>.Recycle(finalPositionIndices);
           }
-
-          // Notify that we've finished modifying the keyed object (the stroke object),
-          // and include any new positions or polygons we may have added to do so.
-          modificationsFinishedCallback(strokeObj,
-            addedStrokeMeshPositionIndices,
-            addedStrokeMeshPolygonIndices);
         }
         finally {
-          newStrokeMeshPolygons.Clear();
-          Pool<List<Polygon>>.Recycle(newStrokeMeshPolygons);
-          newStrokeMeshPolygons.Clear();
-          Pool<List<Vector3>>.Recycle(newStrokeMeshPositions);
-          addedStrokeMeshPositionIndices.Clear();
-          Pool<List<int>>.Recycle(addedStrokeMeshPositionIndices);
-          addedStrokeMeshPolygonIndices.Clear();
-          Pool<List<int>>.Recycle(addedStrokeMeshPolygonIndices);
+          curStrokePolyIndices.Clear();
+          Pool<List<int>>.Recycle(curStrokePolyIndices);
+          curStrokePosIndices.Clear();
+          Pool<List<int>>.Recycle(curStrokePosIndices);
         }
-      }
-      finally {
-        curStrokePolyIndices.Clear();
-        Pool<List<int>>.Recycle(curStrokePolyIndices);
-        curStrokePosIndices.Clear();
-        Pool<List<int>>.Recycle(curStrokePosIndices);
       }
     }
 

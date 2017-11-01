@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 
 namespace Leap.Unity.Meshing {
@@ -23,7 +23,7 @@ namespace Leap.Unity.Meshing {
   /// operation. A PokePolygon operation, by contrast, will invalidate a Polygon but
   /// never an Edge.)
   /// </summary>
-  public struct Edge {
+  public struct Edge : IEquatable<Edge> {
     public PolyMesh mesh;
     public int a, b;
 

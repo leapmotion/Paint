@@ -30,6 +30,21 @@ namespace Leap.Unity.Meshing {
       }
     }
 
+    [SerializeField]
+    private MeshRenderer _meshRenderer;
+    public MeshRenderer meshRenderer {
+      get {
+        if (_meshRenderer == null) {
+          _meshRenderer = this.gameObject.GetComponent<MeshRenderer>();
+          if (_meshRenderer == null) {
+            _meshRenderer = this.gameObject.AddComponent<MeshRenderer>();
+          }
+        }
+
+        return _meshRenderer;
+      }
+    }
+
     #endregion
 
     private PolyMesh _polyMesh;
@@ -43,12 +58,15 @@ namespace Leap.Unity.Meshing {
       _meshFilter = GetComponent<MeshFilter>();
 
       _polyMesh = Pool<PolyMesh>.Spawn();
+      _polyMesh.DisableEdgeData();
       _polyMesh.Clear();
 
       _unityMeshA = Pool<Mesh>.Spawn();
       _unityMeshA.Clear();
+      _unityMeshA.MarkDynamic();
       _unityMeshB = Pool<Mesh>.Spawn();
       _unityMeshB.Clear();
+      _unityMeshB.MarkDynamic();
 
       _notifyPolyMeshModifiedAction = notifyPolyMeshModified;
     }
@@ -88,11 +106,13 @@ namespace Leap.Unity.Meshing {
 
     private bool bufferState = false;
     private void RefreshUnityMesh() {
-      var bufferMesh = bufferState ? _unityMeshA : _unityMeshB;
-      bufferState = !bufferState;
+      using (new ProfilerSample("LivePolyMeshObject: Refresh Unity Mesh")) {
+        var bufferMesh = bufferState ? _unityMeshA : _unityMeshB;
+        bufferState = !bufferState;
 
-      _polyMesh.FillUnityMesh(bufferMesh);
-      meshFilter.sharedMesh = bufferMesh;
+        _polyMesh.FillUnityMesh(bufferMesh);
+        meshFilter.sharedMesh = bufferMesh;
+      }
     }
 
     private Dictionary<object, PolygonData> objectPolygonData

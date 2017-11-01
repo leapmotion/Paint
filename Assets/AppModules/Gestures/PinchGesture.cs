@@ -27,8 +27,8 @@ namespace Leap.Unity.Gestures {
     #region OneHandedGesture
 
     [Header("Debug")]
-    public Transform renderPinchVelocityBar;
     public bool _drawDebug = false;
+    public bool _drawDebugPath = false;
 
     private DeltaFloatBuffer pinchStrengthBuffer = new DeltaFloatBuffer(10);
 
@@ -53,22 +53,23 @@ namespace Leap.Unity.Gestures {
           if (pinchStrengthBuffer.IsFull) {
             var pinchStrengthVelocity = pinchStrengthBuffer.Delta();
 
-            if (Input.GetKeyDown("v")) {
-              Debug.Log(pinchStrengthVelocity);
-            }
-
             var handFOVAngle = Vector3.Angle(Camera.main.transform.forward,
             hand.PalmPosition.ToVector3() - Camera.main.transform.position);
             var handWithinFOV = handFOVAngle < Camera.main.fieldOfView / 2.2f;
 
-            RuntimeGizmos.BarGizmo.Render(pinchStrengthVelocity, renderPinchVelocityBar, Color.red, 0.02f);
+            if (_drawDebug) {
+              RuntimeGizmos.BarGizmo.Render(pinchStrengthVelocity,
+                Camera.main.transform.position
+                + Camera.main.transform.forward * 1f, Vector3.up, Color.red, 0.02f);
+            }
 
             if (pinchStrengthVelocity > 6f
                 && latestPinchStrength > 1.0f
                 && handWithinFOV) {
               shouldActivate = true;
-              DebugPing.Ping(hand.GetPredictedPinchPosition(), Color.red, 0.20f);
-              DebugPing.Ping(renderPinchVelocityBar.position, Color.white, 2.00f);
+              if (_drawDebug) {
+                DebugPing.Ping(hand.GetPredictedPinchPosition(), Color.red, 0.20f);
+              }
             }
           }
         }
@@ -104,7 +105,9 @@ namespace Leap.Unity.Gestures {
         if (pinchStrength < 0.4f) {
           shouldDeactivate = true;
 
-          DebugPing.Ping(hand.GetPredictedPinchPosition(), Color.black, 0.20f);
+          if (_drawDebug) {
+            DebugPing.Ping(hand.GetPredictedPinchPosition(), Color.black, 0.20f);
+          }
         }
       }
       else {
@@ -119,7 +122,7 @@ namespace Leap.Unity.Gestures {
     }
 
     protected override void WhileGestureActive(Hand hand) {
-      if (_drawDebug) {
+      if (_drawDebugPath) {
         DebugPing.Ping(hand.GetPredictedPinchPosition(), LeapColor.amber, 0.05f);
       }
     }
@@ -138,7 +141,9 @@ namespace Leap.Unity.Gestures {
       var lookingDownWrist = Vector3.Angle(hand.DistalAxis(),
          hand.PalmPosition.ToVector3() - Camera.main.transform.position) < 25f;
       if (lookingDownWrist) {
-        DebugPing.Ping(hand.WristPosition.ToVector3(), Color.black, 0.10f);
+        if (_drawDebug) {
+          DebugPing.Ping(hand.WristPosition.ToVector3(), Color.black, 0.10f);
+        }
         minReactivateSinceDegenerateConditionsTimer = 0;
       }
     }
