@@ -4,9 +4,10 @@ namespace Leap.Unity.Gestures {
 
   public class PinchGesture : OneHandedGesture, IPoseGesture {
 
-    [Header("Intention System")]
-    [SerializeField]
-    private bool _requireIntent = true;
+    // TODO: Incorporate intention system for exclusivity
+    //[Header("Intention System")]
+    //[SerializeField]
+    //private bool _requireIntent = true;
     
     private Pose _lastPinchPose = Pose.identity;
 

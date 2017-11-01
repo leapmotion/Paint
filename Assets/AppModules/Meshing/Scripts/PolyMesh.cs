@@ -99,14 +99,38 @@ namespace Leap.Unity.Meshing {
     #endregion
 
     #region Basic Operations
-
+    
     /// <summary>
-    /// Clears the PolyMesh.
+    /// Clears this PolyMesh, but also recycles all heap-allocated elements into
+    /// their relevant Pools. Polygon index lists will be sent to Pool-List-int,
+    /// edge-adjacent Polygon lists sent to Pool-List-Polygon, and Polygon-adjacent
+    /// edge lists will be sent to Pool-List-Edge.
+    /// 
+    /// Newly-constructed PolyMesh objects always spawn their lists from the relevant
+    /// Pool. Warning: PolyMeshes don't construct their own Polygons, so be sure to use
+    /// a Pool-List-int when creating your own Polygons. It's also consequently very
+    /// dangerous to hold onto a reference to any Polygon vertex index List!
     /// </summary>
     public void Clear(bool clearTransform = true) {
-      _positions.Clear();
+      _positions.Clear(); // We simply hold onto this List, there's nothing to pool.
+
+      foreach (var polygon in _polygons) {
+        polygon.RecycleVerts();
+      }
       _polygons.Clear();
+
+      foreach (var edgeFaceListPair in _edgeFaces) {
+        var faces = edgeFaceListPair.Value;
+        faces.Clear();
+        Pool<List<Polygon>>.Recycle(faces);
+      }
       _edgeFaces.Clear();
+
+      foreach (var faceEdgesListPair in _faceEdges) {
+        var edges = faceEdgesListPair.Value;
+        edges.Clear();
+        Pool<List<Edge>>.Recycle(edges);
+      }
       _faceEdges.Clear();
 
       if (clearTransform) {
@@ -117,10 +141,31 @@ namespace Leap.Unity.Meshing {
     public enum PositionMode { Local, World }
 
     /// <summary>
+    /// Appends the provided positions and polygons to this PolyMesh.
+    /// 
+    /// The polygons are modified before they are added to this PolyMesh; each Polygon
+    /// vertex index is assumed to index the newPositions list, not this PolyMesh's
+    /// positions directly. The polygons have their vertex indices incremented by the
+    /// the current position count of the PolyMesh before being added to this PolyMesh.
+    /// The vertex index list of each Polygon is also modified by this method.
+    /// </summary>
+    public void Append(List<Vector3> newPositions, List<Polygon> newPolygons,
+                       List<int> outNewPositionIndices,
+                       List<int> outNewPolygonIndices) {
+      int origPositionCount = _positions.Count;
+
+      AddPositions(newPositions, outNewPositionIndices);
+
+      int newPolyIdx;
+      foreach (var polygon in newPolygons) {
+        AddPolygon(polygon.IncrementIndices(origPositionCount), out newPolyIdx);
+        outNewPolygonIndices.Add(newPolyIdx);
+      }
+    }
+
+    /// <summary>
     /// Fills this PolyMesh with data from the other PolyMesh (via deep copy). The result
     /// is an identical but independent mesh.
-    /// 
-    /// This mesh is cleared first if it's not empty.
     /// </summary>
     public void Fill(PolyMesh otherPolyMesh) {
       if (_positions.Count != 0) { Clear(clearTransform: true); }
@@ -182,7 +227,7 @@ namespace Leap.Unity.Meshing {
     public void FillPositionsOnly(List<Vector3> positions) {
       if (positions.Count != _positions.Count) {
         throw new System.InvalidOperationException("Cannot change the number of positions "
-          + "using SetPositions.");
+          + "using FillPositionsOnly.");
       }
 
       _positions.Clear();
@@ -197,6 +242,18 @@ namespace Leap.Unity.Meshing {
         return useTransform.TransformPoint(GetLocalPosition(vertIdx));
       }
       return GetLocalPosition(vertIdx);
+    }
+
+    /// <summary>
+    /// Sets the position at the argument vertex index to the provided position.
+    /// </summary>
+    public void SetPosition(int vertIdx, Vector3 position) {
+      if (useTransform != null) {
+        _positions[vertIdx] = useTransform.InverseTransformPoint(position);
+      }
+      else {
+        _positions[vertIdx] = position;
+      }
     }
 
     /// <summary>
@@ -279,7 +336,8 @@ namespace Leap.Unity.Meshing {
     /// another, otherwise you may have two Polygons that share pointers to the same
     /// vertex index list.
     /// </summary>
-    public void AddPolygon(Polygon polygon, bool copyPolygonVertList = false) {
+    public void AddPolygon(Polygon polygon, out int outAddedPolygonIdx,
+                           bool copyPolygonVertList = false) {
       if (polygon.mesh != this) {
         // We assume that a polygon passed to a new mesh is supposed to be a part of that
         // new mesh; this is common if e.g. combining two meshes into one mesh,
@@ -293,9 +351,34 @@ namespace Leap.Unity.Meshing {
         polygon.verts.AddRange(origList);
       }
 
+      outAddedPolygonIdx = _polygons.Count;
       _polygons.Add(polygon);
 
       updateEdges_PolyAdded(polygon);
+    }
+
+    /// <summary>
+    /// Adds a polygon to this PolyMesh.
+    /// 
+    /// If copyPolygonVertList is set to true, the verts from the polygon will be copied
+    /// into a new List. Use this when performing a deep copy from one PolyMesh to
+    /// another, otherwise you may have two Polygons that share pointers to the same
+    /// vertex index list.
+    /// </summary>
+    public void AddPolygon(Polygon polygon, bool copyPolygonVertList = false) {
+      int addedPolyIdx;
+      AddPolygon(polygon, out addedPolyIdx, copyPolygonVertList);
+    }
+
+    /// <summary>
+    /// Sets the polygon at the argument polygon index to the provided Polygon.
+    /// 
+    /// Also returns the polygon that was replaced, so you can pool its vertex index list.
+    /// </summary>
+    public void SetPolygon(int polyIdx, Polygon newPolygon, out Polygon replacedPolygon) {
+      replacedPolygon = _polygons[polyIdx];
+
+      _polygons[polyIdx] = newPolygon;
     }
 
     public void RemovePolygons(IEnumerable<Polygon> toRemove) {

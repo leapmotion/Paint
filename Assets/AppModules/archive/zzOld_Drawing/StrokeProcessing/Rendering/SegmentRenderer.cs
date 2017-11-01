@@ -128,13 +128,19 @@ namespace Leap.Unity.zzOldDrawing {
         }
       }
 
-      /// <summary>Returns the vertex index around the cross section vertex ring (automatically wraps around based on cross-section vert count).</summary>
+      /// <summary>
+      /// Returns the vertex index around the cross section vertex ring (automatically
+      /// wraps around based on cross-section vert count).
+      /// </summary>
       public int GetCrossSectionVertIdx(int wrappingIndex) {
         int wrappedIndex = wrappingIndex % renderer._crossSectionVerts.Length;
         return crossSectionVertsIdx + wrappedIndex;
       }
 
-      /// <summary> Returns the local-space (mesh) position of the vertex of this segment node at the given index along the cross-section vertex ring.</summary>
+      /// <summary>
+      /// Returns the local-space (mesh) position of the vertex of this segment
+      /// node at the given index along the cross-section vertex ring.
+      /// </summary>
       public Vector3 GetVertAt(int crossSectionRingIndex) {
         return (this.strokePoint.rotation
                 * Vector3.Scale(renderer._crossSectionVerts[crossSectionRingIndex % renderer._crossSectionVerts.Length],

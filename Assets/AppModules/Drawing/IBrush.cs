@@ -8,12 +8,12 @@ namespace Leap.Unity.Drawing {
 
     bool isBrushing { get; }
     
-    Pose currentPose { get; }
+    Pose  pose { get; }
+    float size { get; set; }
+    Color color { get; set; }
 
     void Move(Pose newPose);
-
     void Begin();
-
     void End();
 
   }

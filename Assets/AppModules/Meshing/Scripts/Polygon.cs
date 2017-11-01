@@ -47,6 +47,17 @@ namespace Leap.Unity.Meshing {
     #region Operations
 
     /// <summary>
+    /// Clears the List-int _verts tracked by this Polygon and returns it to the List-int
+    /// Pool.
+    /// 
+    /// USE WITH CAUTION. After calling this method, this Polygon is no longer useable.
+    /// </summary>
+    public void RecycleVerts() {
+      _verts.Clear();
+      Pool<List<int>>.Recycle(_verts);
+    }
+
+    /// <summary>
     /// Copies this Polygon, returning a Polygon object with a new underlying vert list.
     /// </summary>
     public Polygon Copy() {

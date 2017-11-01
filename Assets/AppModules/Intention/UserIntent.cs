@@ -33,9 +33,6 @@ namespace Leap.Unity.Intention {
       private set { _def = value; }
     }
 
-    private bool _isActive = false;
-    public bool isActive { get { return _isActive; } }
-
     #endregion
 
     #region Construction
@@ -65,41 +62,10 @@ namespace Leap.Unity.Intention {
 
     #endregion
 
-    #region Events
-
-    public event Action OnIntentGained = () => { };
-    public event Action OnIntentLost = () => { };
-
-    #endregion
-
     #region Methods
 
     /// <summary>
-    /// Tries to receive the user's intention for this intention type. Returns false if
-    /// the user already has an active intention that is mutually exclusive with this
-    /// intention type, or if this intent is already active.
-    /// </summary>
-    public bool TryReceive() {
-      if (_isActive) return false;
-
-      _isActive = manager_TryReceive(this);
-      return _isActive;
-    }
-
-    /// <summary>
-    /// Drops this intent from the user's active intention(s). Return false if this
-    /// intent wasn't active in the first place.
-    /// </summary>
-    public bool Drop() {
-      if (!_isActive) return false;
-
-      manager_Drop(this);
-      return true;
-    }
-
-    /// <summary>
-    /// Returns whether this intent is a SingleHand intent. If so, it's valid to call
-    /// ChangeHandedness on this intent.
+    /// Returns whether this intent is a SingleHand intent.
     /// </summary>
     public bool IsSingleHandIntent() {
       return definition.type == IntentionType.SingleHand;
@@ -113,73 +79,43 @@ namespace Leap.Unity.Intention {
       return definition.handedness;
     }
 
-    /// <summary>
-    /// If this intent is a SingleHand intent, this method will safely switch the
-    /// handedness of the intent definition. If the intent is active, e.g., for the right
-    /// hand when this method is called, the intent will be dropped first, then it
-    /// will attempt to re-gain the intent on the other hand.
-    /// 
-    /// This method will return true if this intent was a SingleHand intent and the
-    /// intent was re-gained on the other hand. It does not that the intent will be
-    /// re-gained on the other hand, which could be pre-occupied.
-    /// 
-    /// The method will also return false if the chirality of the intent definition is
-    /// already the specified chirality.
-    /// </summary>
-    public bool ChangeHandedness(Chirality toWhichHand) {
-      if (!definition.isSingleHand) return false;
-      
-      if (definition.handedness == toWhichHand) return false;
-
-      if (_isActive) {
-        manager_Drop(this);
-      }
-
-      definition = new IntentDefinition() {
-        type = IntentionType.SingleHand,
-        handedness = otherChirality(toWhichHand)
-      };
-
-      manager_TryReceive(this);
-
-      return true;
-    }
-
-    #endregion
+    #endregion;
 
     #endregion
 
     #region Static Intention System
 
-    private static UserIntent _activeLeftHandIntention = null;
-    private static UserIntent _activeRightHandIntention = null;
-    //private static List<UserIntent> _freeIntents;
+    private static UserIntent _leftHandIntention  = intentForSingleHand(Chirality.Left);
+    private static UserIntent _rightHandIntention = intentForSingleHand(Chirality.Right);
+    private static UserIntent _bothHandIntention  = intentForBothHands();
 
-    private UserIntent _freeLeftHandIntention  = intentForSingleHand(Chirality.Left);
-    private UserIntent _freeRightHandIntention = intentForSingleHand(Chirality.Right);
-    private UserIntent _freeBothHandIntention  = intentForBothHands();
+    public static bool TryReceive(IntentDefinition intent, out UserIntent intentObject) {
+      intentObject = null;
 
-    public static bool manager_TryReceive(UserIntent intent) {
-      switch (intent.definition.type) {
+      switch (intent.type) {
         case IntentionType.SingleHand:
-          if (intent.definition.handedness == Chirality.Left) {
-            if (_activeLeftHandIntention == null) {
-              _activeLeftHandIntention = intent;
+          if (intent.handedness == Chirality.Left) {
+            if (_leftHandIntention != null && _bothHandIntention != null) {
+              intentObject = _leftHandIntention;
+              _leftHandIntention = null;
               return true;
             }
             else return false;
           }
           else {
-            if (_activeRightHandIntention == null) {
-              _activeRightHandIntention = intent;
+            if (_rightHandIntention != null && _bothHandIntention != null) {
+              intentObject = _rightHandIntention;
+              _rightHandIntention = null;
               return true;
             }
             else return false;
           }
         case IntentionType.BothHands:
-          if (_activeLeftHandIntention == null && _activeRightHandIntention == null) {
-            _activeLeftHandIntention = intent;
-            _activeRightHandIntention = intent;
+          if (_leftHandIntention != null
+              && _rightHandIntention != null
+              && _bothHandIntention != null) {
+            intentObject = _bothHandIntention;
+            _bothHandIntention = null;
             return true;
           }
           else return false;
@@ -188,11 +124,30 @@ namespace Leap.Unity.Intention {
       }
     }
 
-    public static void manager_Drop(UserIntent intent) {
-      if (intent == _activeLeftHandIntention)
-        _activeLeftHandIntention = null;
-      if (intent == _activeRightHandIntention)
-        _activeRightHandIntention = null;
+    /// <summary>
+    /// Drops the provided intent object, returning it to the intention system. You must
+    /// pass a valid intention object in by reference; upon calling this method, your
+    /// reference to the object will be nullified.
+    /// </summary>
+    public static void Drop(ref UserIntent intent) {
+      if (intent == null) return;
+
+      switch (intent.definition.type) {
+        case IntentionType.BothHands:
+          _bothHandIntention = intent;
+          intent = null;
+          break;
+        case IntentionType.SingleHand:
+          if (intent.GetHandedness() == Chirality.Left) {
+            _leftHandIntention = intent;
+            intent = null;
+          }
+          else {
+            _rightHandIntention = intent;
+            intent = null;
+          }
+          break;
+      }
     }
 
     #endregion
