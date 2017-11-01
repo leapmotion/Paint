@@ -1843,6 +1843,34 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 748b35d5de706f142adad7d20d628d54, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &926240918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 926240919}
+  m_Layer: 0
+  m_Name: Stroke PolyMesh Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &926240919
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 926240918}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.052, y: -0.22, z: -0.44}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &998816558
 GameObject:
   m_ObjectHideFlags: 0
@@ -3229,7 +3257,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whichHand: 1
-  _requireIntent: 1
   renderPinchVelocityBar: {fileID: 649815344}
   _drawDebug: 1
 --- !u!4 &1781620561
