@@ -12,6 +12,9 @@ namespace Leap.Unity.Drawing {
 
     public Material outputMaterial;
 
+    public int addedTriangleCount = 0;
+    public int addedMeshCount = 0;
+
     private LivePolyMeshObject _curPolyMeshObj;
 
     private List<LivePolyMeshObject> _livePolyMeshObjs = new List<LivePolyMeshObject>();
@@ -89,6 +92,8 @@ namespace Leap.Unity.Drawing {
       }
     }
 
+    // TODO: Actually refactor this into some static generator method, and figure out how
+    // to get it some actual customizability.
     private void getStrokePolygons(StrokeObject stroke,
                                    List<Vector3> outStrokePositions,
                                    List<Polygon> outStrokePolygons) {
@@ -96,6 +101,7 @@ namespace Leap.Unity.Drawing {
         // nothing for now.
       }
       else {
+        Maybe<Vector3> prevBinormal = Maybe.None;
         for (int i = 0; i + 1 < stroke.Count; i++) {
           var aP = stroke[i + 0];
           var bP = stroke[i + 1];
@@ -105,8 +111,33 @@ namespace Leap.Unity.Drawing {
           var b = Vector3.Cross(t, n).normalized;         // binormal
           n = Vector3.Cross(b, t).normalized;
 
-          outStrokePositions.Add(aP.position - b * aP.size);
-          outStrokePositions.Add(aP.position + b * aP.size);
+          // Modulate birnormal thickness based on stroke curvature.
+          // This is a look-backward modification.
+          var bMult = 1f;
+          if (i > 0) {
+            var zP = stroke[i - 1];
+
+            var zaDir = (aP.position - zP.position).normalized;
+            var abDir = (bP.position - aP.position).normalized;
+
+            bMult = Vector3.Dot(abDir, zaDir).Map(0.5f, 1f, 0f, 1f);
+
+            outStrokePositions[outStrokePositions.Count - 2]
+              = aP.position + prevBinormal.valueOrDefault * zP.size * bMult;
+            outStrokePositions[outStrokePositions.Count - 1]
+              = aP.position - prevBinormal.valueOrDefault * zP.size * bMult;
+          }
+
+          // Line up the corners of each quad in the stroke.
+          var prevB = b;
+          if (prevBinormal.hasValue) {
+            prevB = prevBinormal.valueOrDefault;
+          }
+          prevBinormal = b;
+
+
+          outStrokePositions.Add(aP.position - prevB * aP.size * bMult);
+          outStrokePositions.Add(aP.position + prevB * aP.size * bMult);
           outStrokePositions.Add(bP.position + b * aP.size);
           outStrokePositions.Add(bP.position - b * aP.size);
 
@@ -128,6 +159,7 @@ namespace Leap.Unity.Drawing {
       var polyMeshObj = gameObj.AddComponent<LivePolyMeshObject>();
       polyMeshObj.meshRenderer.material = outputMaterial;
       gameObj.transform.parent = this.transform;
+      addedMeshCount += 1;
       return polyMeshObj;
     }
     
@@ -141,6 +173,10 @@ namespace Leap.Unity.Drawing {
                                       List<Vector3> strokeMeshPositions,
                                       List<Polygon> strokeMeshPolygons) {
       polyMeshObj.AddDataFor(strokeObj, strokeMeshPositions, strokeMeshPolygons);
+
+      foreach (var polygon in strokeMeshPolygons) {
+        addedTriangleCount += polygon.Count - 2;
+      }
     }
 
     /// <summary>
@@ -243,6 +279,9 @@ namespace Leap.Unity.Drawing {
                   // Add the polygon and remember the added polygon index.
                   int addedPolygonIdx;
                   polyMesh.AddPolygon(newStrokeMeshPolygon, out addedPolygonIdx);
+
+                  addedTriangleCount += newStrokeMeshPolygon.Count - 2;
+
                   addedStrokeMeshPolygonIndices.Add(addedPolygonIdx);
                 }
               }
