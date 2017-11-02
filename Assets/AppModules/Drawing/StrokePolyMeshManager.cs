@@ -156,9 +156,12 @@ namespace Leap.Unity.Drawing {
 
     private LivePolyMeshObject createNewPolyMeshObj() {
       var gameObj = new GameObject("Live PolyMesh Object");
+      gameObj.transform.parent = this.transform;
+
       var polyMeshObj = gameObj.AddComponent<LivePolyMeshObject>();
       polyMeshObj.meshRenderer.material = outputMaterial;
-      gameObj.transform.parent = this.transform;
+      polyMeshObj.generateDoubleSidedTris = true;
+
       addedMeshCount += 1;
       return polyMeshObj;
     }
@@ -174,8 +177,9 @@ namespace Leap.Unity.Drawing {
                                       List<Polygon> strokeMeshPolygons) {
       polyMeshObj.AddDataFor(strokeObj, strokeMeshPositions, strokeMeshPolygons);
 
+      // TODO: This counting is hacky and not-robust :(
       foreach (var polygon in strokeMeshPolygons) {
-        addedTriangleCount += polygon.Count - 2;
+        addedTriangleCount += (polygon.Count - 2) * 2; // double-sided means twice as many triangles.
       }
     }
 
@@ -280,7 +284,8 @@ namespace Leap.Unity.Drawing {
                   int addedPolygonIdx;
                   polyMesh.AddPolygon(newStrokeMeshPolygon, out addedPolygonIdx);
 
-                  addedTriangleCount += newStrokeMeshPolygon.Count - 2;
+                  addedTriangleCount += (newStrokeMeshPolygon.Count - 2) * 2;
+                  // (double-sided tris, also TODO: this is SUPER HACKY :( )
 
                   addedStrokeMeshPolygonIndices.Add(addedPolygonIdx);
                 }

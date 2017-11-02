@@ -45,6 +45,13 @@ namespace Leap.Unity.Meshing {
       }
     }
 
+    [SerializeField]
+    private bool _generateDoubleSidedTris = false;
+    public bool generateDoubleSidedTris {
+      get { return _generateDoubleSidedTris; }
+      set { _generateDoubleSidedTris = value; }
+    }
+
     #endregion
 
     private PolyMesh _polyMesh;
@@ -110,7 +117,7 @@ namespace Leap.Unity.Meshing {
         var bufferMesh = bufferState ? _unityMeshA : _unityMeshB;
         bufferState = !bufferState;
 
-        _polyMesh.FillUnityMesh(bufferMesh);
+        _polyMesh.FillUnityMesh(bufferMesh, generateDoubleSidedTris);
         meshFilter.sharedMesh = bufferMesh;
       }
     }

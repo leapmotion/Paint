@@ -2769,7 +2769,13 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     private List<int> _cachedUnityMeshFacesList = new List<int>(4096);
 
-    public void FillUnityMesh(Mesh mesh) {
+    /// <summary>
+    /// Clears and fills the provided Unity mesh object with data from this PolyMesh.
+    /// 
+    /// By default, the mesh is filled with one-sided triangles. Pass doubleSided as
+    /// true to duplicate each triangle with opposite facing.
+    /// </summary>
+    public void FillUnityMesh(Mesh mesh, bool doubleSided = false) {
       using (new ProfilerSample("PolyMesh: FillUnityMesh")) {
         mesh.Clear();
 
@@ -2788,14 +2794,21 @@ namespace Leap.Unity.Meshing {
                 using (new ProfilerSample("Foreach through poly tris...")) {
                   foreach (var tri in poly.tris) {
                     using (new ProfilerSample("Add triangle")) {
-                      _cachedUnityMeshFacesList.Add(vertsCount++);
-                      _cachedUnityMeshFacesList.Add(vertsCount++);
-                      _cachedUnityMeshFacesList.Add(vertsCount++);
+                      int triBeginIdx = vertsCount;
+                      _cachedUnityMeshFacesList.Add(triBeginIdx + 0);
+                      _cachedUnityMeshFacesList.Add(triBeginIdx + 1);
+                      _cachedUnityMeshFacesList.Add(triBeginIdx + 2);
+                      if (doubleSided) {
+                        _cachedUnityMeshFacesList.Add(triBeginIdx + 0);
+                        _cachedUnityMeshFacesList.Add(triBeginIdx + 2);
+                        _cachedUnityMeshFacesList.Add(triBeginIdx + 1);
+                      }
                     }
                     using (new ProfilerSample("Add local positions from tri")) {
                       verts.Add(GetLocalPosition(tri.a));
                       verts.Add(GetLocalPosition(tri.b));
                       verts.Add(GetLocalPosition(tri.c));
+                      vertsCount += 3;
                     }
                     using (new ProfilerSample("Add normals")) {
                       normals.Add(normal);
