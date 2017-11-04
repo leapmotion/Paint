@@ -162,7 +162,7 @@ namespace Leap.Unity.Meshing {
     /// non-convex polygon to a mesh via AddPolygon is an error. However, this method
     /// is useful when constructing new polygons manually.
     /// </summary>
-    public bool IsConvex() {
+    public bool CheckConvex() {
       if (_verts.Count < 3) {
         throw new System.InvalidOperationException("Polygons must have 3 or more vertices.");
       }
@@ -220,7 +220,7 @@ namespace Leap.Unity.Meshing {
     /// Polygons are always assumed to be planar; this method is useful for a
     /// develepor for debugging purposes when implementing new polygon or mesh operations.
     /// </summary>
-    public bool IsPlanar() {
+    public bool CheckPlanar() {
       if (verts.Count < 2) {
         throw new System.InvalidOperationException(
           "Polygon only has one or fewer vertex indices.");

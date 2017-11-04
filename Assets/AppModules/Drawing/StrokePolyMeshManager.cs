@@ -15,17 +15,17 @@ namespace Leap.Unity.Drawing {
     public int addedTriangleCount = 0;
     public int addedMeshCount = 0;
 
-    private LivePolyMeshObject _curPolyMeshObj;
+    private KeyedPolyMeshObject _curPolyMeshObj;
 
-    private List<LivePolyMeshObject> _livePolyMeshObjs = new List<LivePolyMeshObject>();
-    private List<LivePolyMeshObject> _pendingPolyMeshObjs = new List<LivePolyMeshObject>();
+    private List<KeyedPolyMeshObject> _livePolyMeshObjs = new List<KeyedPolyMeshObject>();
+    private List<KeyedPolyMeshObject> _pendingPolyMeshObjs = new List<KeyedPolyMeshObject>();
 
     // The manager places one or more strokes into each LivePolyMeshObject.
 
-    private Dictionary<StrokeObject, LivePolyMeshObject> _strokeMeshes
-      = new Dictionary<StrokeObject, LivePolyMeshObject>();
-    private Dictionary<LivePolyMeshObject, List<StrokeObject>> _meshStrokes
-      = new Dictionary<LivePolyMeshObject, List<StrokeObject>>();
+    private Dictionary<StrokeObject, KeyedPolyMeshObject> _strokeMeshes
+      = new Dictionary<StrokeObject, KeyedPolyMeshObject>();
+    private Dictionary<KeyedPolyMeshObject, List<StrokeObject>> _meshStrokes
+      = new Dictionary<KeyedPolyMeshObject, List<StrokeObject>>();
 
     void LateUpdate() {
       var strokesToAdd = Pool<List<StrokeObject>>.Spawn();
@@ -154,11 +154,11 @@ namespace Leap.Unity.Drawing {
       }
     }
 
-    private LivePolyMeshObject createNewPolyMeshObj() {
+    private KeyedPolyMeshObject createNewPolyMeshObj() {
       var gameObj = new GameObject("Live PolyMesh Object");
       gameObj.transform.parent = this.transform;
 
-      var polyMeshObj = gameObj.AddComponent<LivePolyMeshObject>();
+      var polyMeshObj = gameObj.AddComponent<KeyedPolyMeshObject>();
       polyMeshObj.meshRenderer.material = outputMaterial;
       polyMeshObj.generateDoubleSidedTris = true;
 
@@ -171,7 +171,7 @@ namespace Leap.Unity.Drawing {
     /// is modified, we'll use its modified callback to update the stroke data keyed by
     /// this stroke - see onStrokeModified.
     /// </summary>
-    private void addStrokePolygonData(LivePolyMeshObject polyMeshObj,
+    private void addStrokePolygonData(KeyedPolyMeshObject polyMeshObj,
                                       StrokeObject strokeObj,
                                       List<Vector3> strokeMeshPositions,
                                       List<Polygon> strokeMeshPolygons) {
@@ -179,7 +179,8 @@ namespace Leap.Unity.Drawing {
 
       // TODO: This counting is hacky and not-robust :(
       foreach (var polygon in strokeMeshPolygons) {
-        addedTriangleCount += (polygon.Count - 2) * 2; // double-sided means twice as many triangles.
+        addedTriangleCount += (polygon.Count - 2) * 2; // double-sided means twice as
+                                                       // many triangles.
       }
     }
 
@@ -190,7 +191,7 @@ namespace Leap.Unity.Drawing {
     /// </summary>
     private void onStrokeModified(StrokeObject strokeObj) {
       using (new ProfilerSample("StrokePolyMeshManager: onStrokeModified")) {
-        LivePolyMeshObject polyMeshObj;
+        KeyedPolyMeshObject polyMeshObj;
         if (!_strokeMeshes.TryGetValue(strokeObj, out polyMeshObj)) {
           throw new System.InvalidOperationException(
             "No LivePolyMeshObject found for stroke: " + strokeObj);
@@ -201,7 +202,7 @@ namespace Leap.Unity.Drawing {
         curStrokePosIndices.Clear();
         var curStrokePolyIndices = Pool<List<int>>.Spawn();
         curStrokePolyIndices.Clear();
-        Action<object, List<int>, List<int>> modificationsFinishedCallback;
+        KeyedPolyMeshObject.NotifyPolyMeshModifiedAction modificationsFinishedCallback;
         try {
           // Begin our modification of the data in the PolyMesh for this Stroke.
           polyMeshObj.ModifyDataFor(strokeObj,
@@ -229,7 +230,8 @@ namespace Leap.Unity.Drawing {
 
             using (new ProfilerSample("Add/modify PolyMesh stroke positions")) {
 
-              // Re-use existing position indices or add new ones to fit the modified stroke.
+              // Re-use existing position indices or add new ones to fit the modified
+              // stroke.
               for (int i = 0; i < newStrokeMeshPositions.Count; i++) {
                 int existingPositionIdx = -1;
                 if (i < curStrokePosIndices.Count) {
@@ -239,8 +241,8 @@ namespace Leap.Unity.Drawing {
                   // Modify the position at the existing position index.
                   polyMesh.SetPosition(existingPositionIdx, newStrokeMeshPositions[i]);
 
-                  // Remember what this position index wound up being; the polygons of the
-                  // stroke need to re-index into the final position index list.
+                  // Remember what this position index wound up being; the polygons of
+                  // the stroke need to re-index into the final position index list.
                   finalPositionIndices.Add(existingPositionIdx);
                 }
                 else {
@@ -256,11 +258,12 @@ namespace Leap.Unity.Drawing {
             }
 
             using (new ProfilerSample("Add/modify PolyMesh stroke polygons")) {
-              // Re-use existing polygon indices or add new ones to fit the modified stroke.
+              // Re-use existing polygon indices or add new ones to fit the modified
+              // stroke.
               for (int i = 0; i < newStrokeMeshPolygons.Count; i++) {
 
-                // First, re-index the polygon to refer to the final position indices of the
-                // mesh. We constructed this list during the Add Positions step above.
+                // First, re-index the polygon to refer to the final position indices of
+                // the mesh. We constructed this list during the Add Positions step above.
                 var newStrokeMeshPolygon = newStrokeMeshPolygons[i];
                 for (int v = 0; v < newStrokeMeshPolygon.verts.Count; v++) {
                   newStrokeMeshPolygon.verts[v]

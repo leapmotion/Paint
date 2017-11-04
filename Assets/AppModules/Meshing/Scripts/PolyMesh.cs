@@ -19,7 +19,7 @@ namespace Leap.Unity.Meshing {
     }
 
     private bool _edgeDataEnabled = true;
-    public bool edgeDataEnabled {
+    public bool isEdgeDataEnabled {
       get { return _edgeDataEnabled; }
     }
 
@@ -660,7 +660,142 @@ namespace Leap.Unity.Meshing {
 
       #endregion
 
-      #region Cut
+      #region Dual Cut
+
+      public static int analyzePolygonAIdx = -1;
+      public static int analyzePolygonBIdx = -1;
+
+      public static void DualCut(PolyMesh meshA, PolyMesh meshB,
+                                 List<DualEdge> cutEdges) {
+        
+        for (int b = 0; b < meshB.polygons.Count; b++) {
+          var polyB = meshB.polygons[b];
+
+          for (int a = 0; a < meshA.polygons.Count; a++) {
+            var polyA = meshA.polygons[a];
+
+            bool useDebugVisuals = false;
+            if (b == analyzePolygonBIdx && a == analyzePolygonAIdx) {
+              useDebugVisuals = true;
+            }
+
+            DualCutPolygons(polyA, polyB, useDebugVisuals: useDebugVisuals);
+          }
+        }
+        
+        return;
+      }
+
+      public struct DualEdge {
+        public Edge edgeOnA, edgeOnB;
+      }
+
+      public static void DualCutPolygons(Polygon polyA, Polygon polyB,
+                                         bool useDebugVisuals = false) {
+
+        // The polygons are coplanar.
+        // The polygons are VERY CLOSE to being coplanar, but are sliiiightly off.
+        // The polygons are non-coplanar.
+
+
+        // The polygons are fully edge colinear -- also meaning they are 
+        //   fully vertex colocated.
+        // The polygons share some edge colinearities.
+        // The polygons share some vertex positions.
+
+
+        // Find any colocated vertices and render them.
+        {
+          var colocatedVertexPositions = Pool<List<Vector3>>.Spawn();
+          colocatedVertexPositions.Clear();
+          var colocatedVertexPairs = Pool<List<Pair<int, int>>>.Spawn();
+          colocatedVertexPairs.Clear();
+          try {
+            foreach (var vertA in polyA.verts) {
+              foreach (var vertB in polyB.verts) {
+                var pA = polyA.GetMeshPosition(vertA);
+                var pB = polyB.GetMeshPosition(vertB);
+
+                if (Vector3.Distance(pA, pB) < PolyMath.POSITION_TOLERANCE) {
+                  colocatedVertexPositions.Add(pA);
+                  colocatedVertexPairs.Add(new Pair<int, int>() { a = vertA, b = vertB });
+                }
+              }
+            }
+
+            // Render step.
+            {
+              foreach (var colocatedVertexPosition in colocatedVertexPositions) {
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.0f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.1f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.2f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.3f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.4f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 10f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 11f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 12f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 13f);
+                RenderPoint(colocatedVertexPosition, LeapColor.violet, 14f);
+              }
+            }
+          }
+          finally {
+            colocatedVertexPositions.Clear();
+            Pool<List<Vector3>>.Recycle(colocatedVertexPositions);
+            colocatedVertexPairs.Clear();
+            Pool<List<Pair<int, int>>>.Recycle(colocatedVertexPairs);
+          }
+        }
+
+        // Find edge colinearities and render them.
+        {
+          var newPointsOnEdgeA = Pool<List<Vector3>>.Spawn();
+          newPointsOnEdgeA.Clear();
+          var newPointsOnEdgeB = Pool<List<Vector3>>.Spawn();
+          newPointsOnEdgeB.Clear();
+          try {
+            foreach (var edgeB in polyB.edges) {
+              foreach (var edgeA in polyA.edges) {
+
+                if (PolyMath.FindEdgeCutPositions(edgeA, edgeB,
+                                                  newPointsOnEdgeA, newPointsOnEdgeB,
+                                                  includeEdgeVertexPoints: true)) {
+                  
+                  foreach (var newPointOnEdgeA in newPointsOnEdgeA) {
+                    var aColor = Color.Lerp(Color.red, Color.green, 0.5f);
+                    PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.0f);
+                    PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.2f);
+                    PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.4f);
+                  }
+                  foreach (var newPointOnEdgeB in newPointsOnEdgeB) {
+                    var bColor = Color.Lerp(Color.blue, Color.green, 0.5f);
+                    PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.1f);
+                    PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.3f);
+                    PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.5f);
+                  }
+
+                }
+
+                newPointsOnEdgeA.Clear();
+                newPointsOnEdgeB.Clear();
+              }
+            }
+          }
+          finally {
+            newPointsOnEdgeA.Clear();
+            Pool<List<Vector3>>.Recycle(newPointsOnEdgeA);
+            newPointsOnEdgeB.Clear();
+            Pool<List<Vector3>>.Recycle(newPointsOnEdgeB);
+          }
+        }
+
+      }
+
+      #endregion
+
+      #region zzOld Ops
+
+      #region zzOld Cut
 
       /// <summary>
       /// Cuts A using B, modifying A. B is neither cut nor modified. The cut operation
@@ -677,11 +812,11 @@ namespace Leap.Unity.Meshing {
       /// If a non-null List is provided as outCutEdges, it will be appended with edges
       /// on A that form the cut.
       /// </summary>
-      public static bool Cut(PolyMesh A, PolyMesh B,
+      public static bool zzOldCut(PolyMesh A, PolyMesh B,
                              List<Edge> outCutEdges = null) {
         bool anySuccessful = false;
         foreach (var cuttingPoly in B.polygons) {
-          anySuccessful |= CutOps.TryCutWithPoly(A, B, cuttingPoly, outCutEdges);
+          anySuccessful |= zzOldCutOps.TryCutWithPoly(A, B, cuttingPoly, outCutEdges);
         }
 
         return anySuccessful;
@@ -698,7 +833,7 @@ namespace Leap.Unity.Meshing {
       /// If outCutEdgesA or outCutEdgesB are provided and non-null, they will
       /// be appended with the edges that form the cut on their respective mesh.
       /// </summary>
-      public static bool DualCut(PolyMesh A, PolyMesh B,
+      public static bool zzOldDualCut(PolyMesh A, PolyMesh B,
                                  List<Edge> outCutEdgesA = null,
                                  List<Edge> outCutEdgesB = null) {
 
@@ -719,7 +854,7 @@ namespace Leap.Unity.Meshing {
           // Cut A using B.
           bool anySuccessful = false;
           foreach (var cuttingPoly in B.polygons) {
-            anySuccessful |= CutOps.TryCutWithPoly(A, B, cuttingPoly, cutEdgesA);
+            anySuccessful |= zzOldCutOps.TryCutWithPoly(A, B, cuttingPoly, cutEdgesA);
           }
           if (!anySuccessful) {
             return false;
@@ -793,7 +928,7 @@ namespace Leap.Unity.Meshing {
 
       #endregion
 
-      #region Subtract (not yet implemented)
+      #region zzOld Subtract
 
       public static void Subtract(PolyMesh A, PolyMesh B, PolyMesh intoPolyMesh) {
 
@@ -811,7 +946,7 @@ namespace Leap.Unity.Meshing {
           tempAMesh.Fill(A);
           tempBMesh.Fill(B);
 
-          if (!DualCut(A, B, aEdges, bEdges)) {
+          if (!zzOldDualCut(A, B, aEdges, bEdges)) {
             Debug.LogError("No cut occurred.");
           }
 
@@ -876,12 +1011,437 @@ namespace Leap.Unity.Meshing {
 
       #endregion
 
+      #endregion
+
+    }
+
+    /// <summary>
+    /// Low-level PolyMesh operations.
+    /// </summary>
+    public static class LowOps {
+
+      #region SplitEdgeAddVertex
+
+      /// <summary>
+      /// Splits an edge, adding a new position to the edge's polygon to do so. This
+      /// version of the function assumes that you've already calculated the target
+      /// vertex position -- this MUST be on the edge! (It will be projected onto the
+      /// edge in case it's slightly off the edge.)
+      /// 
+      /// This operation invalidates the argument Edge and any polygons it is attached to!
+      /// However, you can provide a Polygon as an additional argument and receive back
+      /// the equivalent Polygon after the operation is completed.
+      /// </summary>
+      public static void SplitEdgeAddVertex(Edge edge,
+                                            Vector3 newEdgePosition,
+                                            out int addedVertId,
+                                            out Edge addedEdge0,
+                                            out Edge addedEdge1,
+                                            Polygon? receiveEquivalentPolygon,
+                                            out Polygon equivalentPolygon) {
+
+        newEdgePosition = newEdgePosition.ClampedTo(edge);
+
+        var mesh = edge.mesh;
+        mesh.AddPosition(newEdgePosition, out addedVertId);
+        addedEdge0 = new Edge() { mesh = mesh, a = edge.a, b = addedVertId };
+        addedEdge1 = new Edge() { mesh = mesh, a = addedVertId, b = edge.b };
+
+        equivalentPolygon = default(Polygon);
+        bool tryReceiveEquivalentPolygon = receiveEquivalentPolygon.HasValue;
+
+        var edgePolys = Pool<List<Polygon>>.Spawn();
+        edgePolys.Clear();
+        try {
+          var origPolys = mesh.edgeAdjFaces[edge];
+
+          edgePolys.AddRange(origPolys);
+
+          // Each of these polygons needs to be reconstructed to incorporate the new
+          // vertex.
+          mesh.RemovePolygons(edgePolys);
+          bool foundEquivalentPolygon = false;
+          bool equivalentPolygonAssigned = false;
+          foreach (var polygon in edgePolys) {
+            if (!foundEquivalentPolygon && tryReceiveEquivalentPolygon) {
+              if (polygon == receiveEquivalentPolygon.Value) {
+                foundEquivalentPolygon = true;
+              }
+            }
+
+            polygon.InsertEdgeVertex(edge, addedVertId);
+
+            if (!polygon.CheckPlanar()) {
+              throw new System.InvalidOperationException(
+                "SplitEdgeAddVertex operation resulted in a non-planar polygon.");
+            }
+
+            mesh.AddPolygon(polygon);
+
+            if (!equivalentPolygonAssigned && foundEquivalentPolygon) {
+              equivalentPolygonAssigned = true;
+              equivalentPolygon = polygon;
+            }
+          }
+
+          if (!foundEquivalentPolygon && tryReceiveEquivalentPolygon) {
+            throw new System.InvalidOperationException(
+              "receiveEquivalentPolygon was specified, but no corresponding polygon was "
+            + "found attached to the argument edge being split.");
+          }
+        }
+        finally {
+          edgePolys.Clear();
+          Pool<List<Polygon>>.Recycle(edgePolys);
+        }
+
+      }
+
+      /// <summary>
+      /// Splits an edge, adding a new position to the edge's polygon to do so. This
+      /// version of the function assumes that you've already calculated the target
+      /// vertex position -- this MUST be on the edge!
+      /// 
+      /// This operation invalidates the argument Edge and any polygons it is attached to!
+      /// However, you can provide a Polygon as an additional argument and receive back
+      /// the equivalent Polygon after the operation is completed.
+      /// </summary>
+      public static void SplitEdgeAddVertex(Edge edge, Vector3 newEdgePosition,
+                                            out int addedVertId,
+                                            out Edge addedEdge0,
+                                            out Edge addedEdge1) {
+        Polygon unusedEquivalentPolygon;
+        SplitEdgeAddVertex(edge, newEdgePosition,
+                           out addedVertId, out addedEdge0, out addedEdge1,
+                           null, out unusedEquivalentPolygon);
+      }
+
+      /// <summary>
+      /// Splits an edge, adding a new position to the edge's polygon to do so. This
+      /// version of the function assumes that you've already calculated the target
+      /// vertex position -- this MUST be on the edge!
+      /// 
+      /// This operation invalidates the argument Edge and any polygons it is attached to!
+      /// However, you can provide a Polygon as an additional argument and receive back
+      /// the equivalent Polygon after the operation is completed.
+      /// </summary>
+      public static void SplitEdgeAddVertex(Edge edge, Vector3 newEdgePosition,
+                                            out int addedVertId) {
+        Edge    addedEdge0, addedEdge1;
+        Polygon unusedEquivalentPolygon;
+        SplitEdgeAddVertex(edge, newEdgePosition,
+                           out addedVertId, out addedEdge0, out addedEdge1,
+                           null, out unusedEquivalentPolygon);
+      }
+
+      /// <summary>
+      /// Splits an edge, adding a new position to the edge's polygon to do so. This
+      /// version of the function assumes that you've already calculated the target
+      /// vertex position -- this MUST be on the edge!
+      /// 
+      /// This operation invalidates the argument Edge and any polygons it is attached to!
+      /// However, you can provide a Polygon as an additional argument and receive back
+      /// the equivalent Polygon after the operation is completed.
+      /// </summary>
+      public static void SplitEdgeAddVertex(Edge edge, Vector3 newEdgePosition) {
+        int addedVertId;
+        Edge addedEdge0, addedEdge1;
+        SplitEdgeAddVertex(edge, newEdgePosition,
+                           out addedVertId,
+                           out addedEdge0, out addedEdge1);
+      }
+
+      /// <summary>
+      /// Splits an edge, adding a new position to the edge's polygon to do so.
+      /// 
+      /// This operation invalidates the argument Edge and any polygons it is attached to!
+      /// However, you can provide a Polygon as an additional argument and receive back
+      /// the equivalent Polygon after the operation is completed.
+      /// </summary>
+      public static void SplitEdgeAddVertex(Edge edge, float amountAlongEdge,
+                                            EdgeDistanceMode edgeDistanceMode,
+                                            out int     addedVertId,
+                                            out Edge    addedEdge0,
+                                            out Edge    addedEdge1,
+                                            Polygon?    receiveEquivalentPolygon,
+                                            out Polygon equivalentPolygon) {
+
+        var newEdgePosition = edge.GetPositionAlongEdge(amountAlongEdge, edgeDistanceMode);
+
+        SplitEdgeAddVertex(edge, newEdgePosition,
+                           out addedVertId, out addedEdge0, out addedEdge1,
+                           receiveEquivalentPolygon, out equivalentPolygon);
+      }
+
+      /// <summary>
+      /// Splits an edge, adding a new position to the edge's polygon to do so.
+      /// 
+      /// This operation invalidates the argument Edge and any polygons it is attached to!
+      /// However, you can provide a Polygon as an additional argument and receive back
+      /// the equivalent Polygon after the operation is completed.
+      /// </summary>
+      public static void SplitEdgeAddVertex(Edge edge, float amountAlongEdge,
+                                            EdgeDistanceMode edgeDistanceMode,
+                                            out int addedVertId,
+                                            out Edge addedEdge0,
+                                            out Edge addedEdge1) {
+        Polygon unusedEquivalentPolygon;
+        SplitEdgeAddVertex(edge, amountAlongEdge, edgeDistanceMode,
+                           out addedVertId, out addedEdge0, out addedEdge1,
+                           null, out unusedEquivalentPolygon);
+      }
+
+      #endregion
+
+      #region SplitPolygon
+
+      /// <summary>
+      /// Splits a polygon by removing it from the mesh and adding two new polygons with
+      /// an edge defined between vertIdx0 and vertIdx1.
+      /// 
+      /// Optionally provides the resulting new edge and the two new polygons back as
+      /// out parameters.
+      /// </summary>
+      public static void SplitPolygon(Polygon poly,
+                                      int vertIdx0, int vertIdx1,
+                                      out Edge    addedEdge,
+                                      out Polygon addedPoly0,
+                                      out Polygon addedPoly1) {
+
+        var mesh = poly.mesh;
+
+        // In a single cycle through all vertices, tag them as A, B, or both:
+        // Verts on the split boundary are added to BOTH polygons, so should have A and B
+        // Verts on either side of the boundary merely need to be A or B
+        bool useBufferA = true;
+        var vertsBufferA = Pool<List<int>>.Spawn();
+        vertsBufferA.Clear();
+        var vertsBufferB = Pool<List<int>>.Spawn();
+        vertsBufferB.Clear();
+        try {
+          foreach (var vertIndex in poly.verts) {
+            if (vertIndex == vertIdx0 || vertIndex == vertIdx1) {
+              // Split boundary detected.
+              vertsBufferA.Add(vertIndex);
+              vertsBufferB.Add(vertIndex);
+              useBufferA = !useBufferA;
+            }
+            else if (useBufferA) {
+              vertsBufferA.Add(vertIndex);
+            }
+            else {
+              vertsBufferB.Add(vertIndex);
+            }
+          }
+
+          addedPoly0 = new Polygon() {
+            mesh = mesh,
+            verts = vertsBufferA.Query().ToList()
+          };
+
+          if (!addedPoly0.CheckConvex()) {
+            throw new System.InvalidOperationException(
+              "SplitPolygon produced a non-convex polygon. (Or a colinear polygon.)");
+          }
+
+          if (addedPoly0.verts.Count < 3) {
+            throw new System.InvalidOperationException(
+              "SplitPolygon produced a polygon with fewer than 3 vertices.");
+          }
+
+          if (!addedPoly0.CheckPlanar()) {
+            throw new System.InvalidOperationException(
+              "SplitPolygon operation resulted in a non-planar polygon 0.");
+          }
+
+          addedPoly1 = new Polygon() {
+            mesh = mesh,
+            verts = vertsBufferB.Query().ToList()
+          };
+
+          if (!addedPoly1.CheckConvex()) {
+            throw new System.InvalidOperationException(
+              "SplitPolygon produced a non-convex polygon. (Or a colinear polygon.)");
+          }
+
+          if (addedPoly1.verts.Count < 3) {
+            throw new System.InvalidOperationException(
+              "SplitPolygon produced a polygon with fewer than 3 vertices.");
+          }
+
+          if (!addedPoly1.CheckPlanar()) {
+            throw new System.InvalidOperationException(
+              "SplitPolygon operation resulted in a non-planar polygon 1.");
+          }
+        }
+        finally {
+          vertsBufferA.Clear();
+          Pool<List<int>>.Recycle(vertsBufferA);
+          vertsBufferB.Clear();
+          Pool<List<int>>.Recycle(vertsBufferB);
+        }
+
+        addedEdge = new Edge() { mesh = mesh, a = vertIdx0, b = vertIdx1 };
+
+        mesh.RemovePolygon(poly);
+        mesh.AddPolygon(addedPoly0);
+        mesh.AddPolygon(addedPoly1);
+      }
+      
+      /// <summary>
+      /// Splits a polygon by removing it from the mesh and adding two new polygons with
+      /// an edge defined between vertIdx0 and vertIdx1.
+      /// 
+      /// Optionally provides the resulting new edge and the two new polygons back as
+      /// out parameters.
+      /// </summary>
+      public static void SplitPolygon(Polygon poly,
+                                      int vertIdx0, int vertIdx1,
+                                      out Edge addedEdge) {
+        Polygon addedPoly0, addedPoly1;
+        SplitPolygon(poly, vertIdx0, vertIdx1,
+                      out addedEdge,
+                      out addedPoly0, out addedPoly1);
+      }
+
+      /// <summary>
+      /// Splits a polygon by removing it from the mesh and adding two new polygons with
+      /// an edge defined between vertIdx0 and vertIdx1.
+      /// 
+      /// Optionally provides the resulting new edge and the two new polygons back as
+      /// out parameters.
+      /// </summary>
+      public static void SplitPolygon(Polygon poly, int vertIdx0, int vertIdx1) {
+      Edge    addedEdge;
+      Polygon addedPoly0, addedPoly1;
+      SplitPolygon(poly, vertIdx0, vertIdx1,
+                    out addedEdge,
+                    out addedPoly0, out addedPoly1);
+      }
+
+      #endregion
+
+      #region PokePolygon
+
+      /// <summary>
+      /// Shatters a polygon into smaller pieces by adding a new position to the mesh at
+      /// the specified position -- which must be IN the argument polygon.
+      /// 
+      /// This operation does NOT guarantee that a new edge will exist from the argument
+      /// position to any specific vertex index in the shattered polygon, because the
+      /// poke does not necessarily break the polygon into triangles.
+      /// 
+      /// Instead, the operation attempts to produce fewer polygons by
+      /// combining triangles into larger polygons as long as they remain convex.
+      /// (This behavior is not guaranteed to be optimal.)
+      /// 
+      /// You can provide a non-null index to "ensureEdgeToVertex" to guarantee that a
+      /// new edge will be created from that index to the poked vertex.
+      /// </summary>
+      public static void PokePolygon(Polygon pokedPolygon, Vector3 position,
+                                     out int addedVertId,
+                                     List<Polygon> outAddedPolygonsList = null,
+                                     List<Edge> outAddedEdgesList = null,
+                                     int? ensureEdgeToVertex = null) {
+
+        var mesh = pokedPolygon.mesh;
+        
+        if (mesh == null) {
+          throw new System.InvalidOperationException("Mesh is null?");
+        }
+        mesh.AddPosition(position, out addedVertId);
+
+        var addedPolygons = Pool<List<Polygon>>.Spawn();
+        addedPolygons.Clear();
+        var addedEdgesSet = Pool<HashSet<Edge>>.Spawn();
+        addedEdgesSet.Clear();
+        try {
+          int fromIdx = 0;
+          int startingOffset = ensureEdgeToVertex.HasValue ?
+                                 pokedPolygon.verts.IndexOf(ensureEdgeToVertex.Value)
+                               : 0;
+          while (fromIdx < pokedPolygon.verts.Count) {
+            var fragmentPoly = new Polygon() {
+              mesh = mesh,
+              verts = new List<int>() { addedVertId }
+            };
+
+            // (Polygons have cyclic indexers.)
+            for (int i = fromIdx + startingOffset;
+                     i <= startingOffset + pokedPolygon.verts.Count;
+                     i++) {
+              var vertIdx = pokedPolygon[i];
+
+              if (fragmentPoly.Count < 2) {
+                fragmentPoly.verts.Add(vertIdx);
+              }
+              else if (fragmentPoly.Count == 2) {
+                fragmentPoly.verts.Add(vertIdx);
+                fromIdx++;
+              }
+              else {
+                fragmentPoly.verts.Add(vertIdx);
+                if (!fragmentPoly.CheckConvex()) {
+                  fragmentPoly.verts.RemoveAt(fragmentPoly.verts.Count - 1);
+                  break;
+                }
+                else {
+                  fromIdx++;
+                }
+              }
+            }
+
+            if (fragmentPoly.Count < 3) {
+              throw new System.InvalidOperationException(
+                "PokePolygon exception; produced a fragment polygon with < 3 verts.");
+            }
+
+            if (!fragmentPoly.CheckPlanar()) {
+              throw new System.InvalidOperationException(
+                "PokePolygon fragment was non-planar.");
+            }
+
+            addedPolygons.Add(fragmentPoly);
+            if (outAddedEdgesList != null) {
+              foreach (var edge in fragmentPoly.edges) {
+                addedEdgesSet.Add(edge);
+              }
+            }
+          }
+
+          if (outAddedPolygonsList != null) {
+            outAddedPolygonsList.Clear();
+            outAddedPolygonsList.AddRange(addedPolygons);
+          }
+
+          if (outAddedEdgesList != null) {
+            outAddedEdgesList.Clear();
+            foreach (var edge in addedEdgesSet) {
+              outAddedEdgesList.Add(edge);
+            }
+          }
+
+          mesh.RemovePolygon(pokedPolygon);
+          mesh.AddPolygons(addedPolygons);
+
+        }
+        finally {
+          addedPolygons.Clear();
+          Pool<List<Polygon>>.Recycle(addedPolygons);
+          addedEdgesSet.Clear();
+          Pool<HashSet<Edge>>.Recycle(addedEdgesSet);
+        }
+
+      }
+
+      #endregion
+
     }
 
     /// <summary>
     /// PolyMesh Cut operation support.
     /// </summary>
-    protected static class CutOps {
+    protected static class zzOldCutOps {
 
       public enum PolyCutPointType {
         Invalid,
@@ -1041,7 +1601,7 @@ namespace Leap.Unity.Meshing {
           while (fromPolyIdx < meshToCut.polygons.Count
                  && loopCount < PolyMath.MAX_LOOPS) {
 
-            for (; fromPolyIdx < meshToCut.polygons.Count; ) {
+            for (; fromPolyIdx < meshToCut.polygons.Count;) {
 
               if (ignorePolyIndices.Contains(fromPolyIdx)) {
                 fromPolyIdx += 1;
@@ -1223,7 +1783,7 @@ namespace Leap.Unity.Meshing {
           // Construct cut points. After removing trivially similar cutpoints, we expect
           // a maximum of two.
           foreach (var aEdge in aPoly.edges) {
-            
+
             // First, check if the edge intersects any edges on B.
             bool anyEdgeIntersection = false;
             foreach (var bEdge in bPoly.edges) {
@@ -1419,8 +1979,8 @@ namespace Leap.Unity.Meshing {
             }
           }
 
-            if ((cutPoints[0].isExistingPoint && cutPoints[1].isExistingPoint)
-              && cutPoints[0].existingPoint == cutPoints[1].existingPoint) {
+          if ((cutPoints[0].isExistingPoint && cutPoints[1].isExistingPoint)
+            && cutPoints[0].existingPoint == cutPoints[1].existingPoint) {
             // also a bad cut.
             return false;
           }
@@ -1674,7 +2234,7 @@ namespace Leap.Unity.Meshing {
             throw new System.InvalidOperationException(
               "Logic error somewhere during cut. Cut points length is " + cutPoints.Count);
           }
-          
+
           // There must be two cut points to define a successful cut, but some two-point
           // cut configurations still won't produce an actual cut.
           if (cutPoints.Count == 2) {
@@ -2163,7 +2723,7 @@ namespace Leap.Unity.Meshing {
             edge1 = addedEdge01;
           }
         }
-        
+
         Edge addedEdge10, addedEdge11;
         LowOps.SplitEdgeAddVertex(edge1, pointOnEdge1,
                                  out addedVertId1,
@@ -2200,7 +2760,7 @@ namespace Leap.Unity.Meshing {
       public static void ApplyVertexFaceCut(Polygon polygon, int vert,
                                             Vector3 facePosition,
                                             out int addedVertId) {
-        
+
         LowOps.PokePolygon(polygon, facePosition, out addedVertId, null, null, vert);
 
       }
@@ -2255,7 +2815,7 @@ namespace Leap.Unity.Meshing {
           var edgeWithNewPoint = addedEdges.Query().Where(edge => facePosition1.IsInside(edge))
                                                    .FirstOrDefault();
           if (edgeWithNewPoint != default(Edge)) {
-            
+
             // DELETEME
             //RuntimeGizmos.RuntimeGizmoDrawer drawer;
             //if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
@@ -2327,429 +2887,6 @@ namespace Leap.Unity.Meshing {
         finally {
           addedPolys.Clear();
           Pool<List<Polygon>>.Recycle(addedPolys);
-        }
-
-      }
-
-      #endregion
-
-    }
-
-    /// <summary>
-    /// Low-level PolyMesh operations.
-    /// </summary>
-    public static class LowOps {
-
-      #region SplitEdgeAddVertex
-
-      /// <summary>
-      /// Splits an edge, adding a new position to the edge's polygon to do so. This
-      /// version of the function assumes that you've already calculated the target
-      /// vertex position -- this MUST be on the edge! (It will be projected onto the
-      /// edge in case it's slightly off the edge.)
-      /// 
-      /// This operation invalidates the argument Edge and any polygons it is attached to!
-      /// However, you can provide a Polygon as an additional argument and receive back
-      /// the equivalent Polygon after the operation is completed.
-      /// </summary>
-      public static void SplitEdgeAddVertex(Edge edge,
-                                            Vector3 newEdgePosition,
-                                            out int addedVertId,
-                                            out Edge addedEdge0,
-                                            out Edge addedEdge1,
-                                            Polygon? receiveEquivalentPolygon,
-                                            out Polygon equivalentPolygon) {
-
-        newEdgePosition = newEdgePosition.ClampedTo(edge);
-
-        var mesh = edge.mesh;
-        mesh.AddPosition(newEdgePosition, out addedVertId);
-        addedEdge0 = new Edge() { mesh = mesh, a = edge.a, b = addedVertId };
-        addedEdge1 = new Edge() { mesh = mesh, a = addedVertId, b = edge.b };
-
-        equivalentPolygon = default(Polygon);
-        bool tryReceiveEquivalentPolygon = receiveEquivalentPolygon.HasValue;
-
-        var edgePolys = Pool<List<Polygon>>.Spawn();
-        edgePolys.Clear();
-        try {
-          var origPolys = mesh.edgeAdjFaces[edge];
-
-          edgePolys.AddRange(origPolys);
-
-          // Each of these polygons needs to be reconstructed to incorporate the new
-          // vertex.
-          mesh.RemovePolygons(edgePolys);
-          bool foundEquivalentPolygon = false;
-          bool equivalentPolygonAssigned = false;
-          foreach (var polygon in edgePolys) {
-            if (!foundEquivalentPolygon && tryReceiveEquivalentPolygon) {
-              if (polygon == receiveEquivalentPolygon.Value) {
-                foundEquivalentPolygon = true;
-              }
-            }
-
-            polygon.InsertEdgeVertex(edge, addedVertId);
-
-            if (!polygon.IsPlanar()) {
-              throw new System.InvalidOperationException(
-                "SplitEdgeAddVertex operation resulted in a non-planar polygon.");
-            }
-
-            mesh.AddPolygon(polygon);
-
-            if (!equivalentPolygonAssigned && foundEquivalentPolygon) {
-              equivalentPolygonAssigned = true;
-              equivalentPolygon = polygon;
-            }
-          }
-
-          if (!foundEquivalentPolygon && tryReceiveEquivalentPolygon) {
-            throw new System.InvalidOperationException(
-              "receiveEquivalentPolygon was specified, but no corresponding polygon was "
-            + "found attached to the argument edge being split.");
-          }
-        }
-        finally {
-          edgePolys.Clear();
-          Pool<List<Polygon>>.Recycle(edgePolys);
-        }
-
-      }
-
-      /// <summary>
-      /// Splits an edge, adding a new position to the edge's polygon to do so. This
-      /// version of the function assumes that you've already calculated the target
-      /// vertex position -- this MUST be on the edge!
-      /// 
-      /// This operation invalidates the argument Edge and any polygons it is attached to!
-      /// However, you can provide a Polygon as an additional argument and receive back
-      /// the equivalent Polygon after the operation is completed.
-      /// </summary>
-      public static void SplitEdgeAddVertex(Edge edge, Vector3 newEdgePosition,
-                                            out int addedVertId,
-                                            out Edge addedEdge0,
-                                            out Edge addedEdge1) {
-        Polygon unusedEquivalentPolygon;
-        SplitEdgeAddVertex(edge, newEdgePosition,
-                           out addedVertId, out addedEdge0, out addedEdge1,
-                           null, out unusedEquivalentPolygon);
-      }
-
-      /// <summary>
-      /// Splits an edge, adding a new position to the edge's polygon to do so. This
-      /// version of the function assumes that you've already calculated the target
-      /// vertex position -- this MUST be on the edge!
-      /// 
-      /// This operation invalidates the argument Edge and any polygons it is attached to!
-      /// However, you can provide a Polygon as an additional argument and receive back
-      /// the equivalent Polygon after the operation is completed.
-      /// </summary>
-      public static void SplitEdgeAddVertex(Edge edge, Vector3 newEdgePosition,
-                                            out int addedVertId) {
-        Edge    addedEdge0, addedEdge1;
-        Polygon unusedEquivalentPolygon;
-        SplitEdgeAddVertex(edge, newEdgePosition,
-                           out addedVertId, out addedEdge0, out addedEdge1,
-                           null, out unusedEquivalentPolygon);
-      }
-
-      /// <summary>
-      /// Splits an edge, adding a new position to the edge's polygon to do so. This
-      /// version of the function assumes that you've already calculated the target
-      /// vertex position -- this MUST be on the edge!
-      /// 
-      /// This operation invalidates the argument Edge and any polygons it is attached to!
-      /// However, you can provide a Polygon as an additional argument and receive back
-      /// the equivalent Polygon after the operation is completed.
-      /// </summary>
-      public static void SplitEdgeAddVertex(Edge edge, Vector3 newEdgePosition) {
-        int addedVertId;
-        Edge addedEdge0, addedEdge1;
-        SplitEdgeAddVertex(edge, newEdgePosition,
-                           out addedVertId,
-                           out addedEdge0, out addedEdge1);
-      }
-
-      /// <summary>
-      /// Splits an edge, adding a new position to the edge's polygon to do so.
-      /// 
-      /// This operation invalidates the argument Edge and any polygons it is attached to!
-      /// However, you can provide a Polygon as an additional argument and receive back
-      /// the equivalent Polygon after the operation is completed.
-      /// </summary>
-      public static void SplitEdgeAddVertex(Edge edge, float amountAlongEdge,
-                                            EdgeDistanceMode edgeDistanceMode,
-                                            out int     addedVertId,
-                                            out Edge    addedEdge0,
-                                            out Edge    addedEdge1,
-                                            Polygon?    receiveEquivalentPolygon,
-                                            out Polygon equivalentPolygon) {
-
-        var newEdgePosition = edge.GetPositionAlongEdge(amountAlongEdge, edgeDistanceMode);
-
-        SplitEdgeAddVertex(edge, newEdgePosition,
-                           out addedVertId, out addedEdge0, out addedEdge1,
-                           receiveEquivalentPolygon, out equivalentPolygon);
-      }
-
-      /// <summary>
-      /// Splits an edge, adding a new position to the edge's polygon to do so.
-      /// 
-      /// This operation invalidates the argument Edge and any polygons it is attached to!
-      /// However, you can provide a Polygon as an additional argument and receive back
-      /// the equivalent Polygon after the operation is completed.
-      /// </summary>
-      public static void SplitEdgeAddVertex(Edge edge, float amountAlongEdge,
-                                            EdgeDistanceMode edgeDistanceMode,
-                                            out int addedVertId,
-                                            out Edge addedEdge0,
-                                            out Edge addedEdge1) {
-        Polygon unusedEquivalentPolygon;
-        SplitEdgeAddVertex(edge, amountAlongEdge, edgeDistanceMode,
-                           out addedVertId, out addedEdge0, out addedEdge1,
-                           null, out unusedEquivalentPolygon);
-      }
-
-      #endregion
-
-      #region SplitPolygon
-
-      /// <summary>
-      /// Splits a polygon by removing it from the mesh and adding two new polygons with
-      /// an edge defined between vertIdx0 and vertIdx1.
-      /// 
-      /// Optionally provides the resulting new edge and the two new polygons back as
-      /// out parameters.
-      /// </summary>
-      public static void SplitPolygon(Polygon poly,
-                                      int vertIdx0, int vertIdx1,
-                                      out Edge    addedEdge,
-                                      out Polygon addedPoly0,
-                                      out Polygon addedPoly1) {
-
-        var mesh = poly.mesh;
-
-        // In a single cycle through all vertices, tag them as A, B, or both:
-        // Verts on the split boundary are added to BOTH polygons, so should have A and B
-        // Verts on either side of the boundary merely need to be A or B
-        bool useBufferA = true;
-        var vertsBufferA = Pool<List<int>>.Spawn();
-        vertsBufferA.Clear();
-        var vertsBufferB = Pool<List<int>>.Spawn();
-        vertsBufferB.Clear();
-        try {
-          foreach (var vertIndex in poly.verts) {
-            if (vertIndex == vertIdx0 || vertIndex == vertIdx1) {
-              // Split boundary detected.
-              vertsBufferA.Add(vertIndex);
-              vertsBufferB.Add(vertIndex);
-              useBufferA = !useBufferA;
-            }
-            else if (useBufferA) {
-              vertsBufferA.Add(vertIndex);
-            }
-            else {
-              vertsBufferB.Add(vertIndex);
-            }
-          }
-
-          addedPoly0 = new Polygon() {
-            mesh = mesh,
-            verts = vertsBufferA.Query().ToList()
-          };
-
-          if (!addedPoly0.IsConvex()) {
-            throw new System.InvalidOperationException(
-              "SplitPolygon produced a non-convex polygon. (Or a colinear polygon.)");
-          }
-
-          if (addedPoly0.verts.Count < 3) {
-            throw new System.InvalidOperationException(
-              "SplitPolygon produced a polygon with fewer than 3 vertices.");
-          }
-
-          if (!addedPoly0.IsPlanar()) {
-            throw new System.InvalidOperationException(
-              "SplitPolygon operation resulted in a non-planar polygon 0.");
-          }
-
-          addedPoly1 = new Polygon() {
-            mesh = mesh,
-            verts = vertsBufferB.Query().ToList()
-          };
-
-          if (!addedPoly1.IsConvex()) {
-            throw new System.InvalidOperationException(
-              "SplitPolygon produced a non-convex polygon. (Or a colinear polygon.)");
-          }
-
-          if (addedPoly1.verts.Count < 3) {
-            throw new System.InvalidOperationException(
-              "SplitPolygon produced a polygon with fewer than 3 vertices.");
-          }
-
-          if (!addedPoly1.IsPlanar()) {
-            throw new System.InvalidOperationException(
-              "SplitPolygon operation resulted in a non-planar polygon 1.");
-          }
-        }
-        finally {
-          vertsBufferA.Clear();
-          Pool<List<int>>.Recycle(vertsBufferA);
-          vertsBufferB.Clear();
-          Pool<List<int>>.Recycle(vertsBufferB);
-        }
-
-        addedEdge = new Edge() { mesh = mesh, a = vertIdx0, b = vertIdx1 };
-
-        mesh.RemovePolygon(poly);
-        mesh.AddPolygon(addedPoly0);
-        mesh.AddPolygon(addedPoly1);
-      }
-      
-      /// <summary>
-      /// Splits a polygon by removing it from the mesh and adding two new polygons with
-      /// an edge defined between vertIdx0 and vertIdx1.
-      /// 
-      /// Optionally provides the resulting new edge and the two new polygons back as
-      /// out parameters.
-      /// </summary>
-      public static void SplitPolygon(Polygon poly,
-                                      int vertIdx0, int vertIdx1,
-                                      out Edge addedEdge) {
-        Polygon addedPoly0, addedPoly1;
-        SplitPolygon(poly, vertIdx0, vertIdx1,
-                      out addedEdge,
-                      out addedPoly0, out addedPoly1);
-      }
-
-      /// <summary>
-      /// Splits a polygon by removing it from the mesh and adding two new polygons with
-      /// an edge defined between vertIdx0 and vertIdx1.
-      /// 
-      /// Optionally provides the resulting new edge and the two new polygons back as
-      /// out parameters.
-      /// </summary>
-      public static void SplitPolygon(Polygon poly, int vertIdx0, int vertIdx1) {
-      Edge    addedEdge;
-      Polygon addedPoly0, addedPoly1;
-      SplitPolygon(poly, vertIdx0, vertIdx1,
-                    out addedEdge,
-                    out addedPoly0, out addedPoly1);
-      }
-
-      #endregion
-
-      #region PokePolygon
-
-      /// <summary>
-      /// Shatters a polygon into smaller pieces by adding a new position to the mesh at
-      /// the specified position -- which must be IN the argument polygon.
-      /// 
-      /// This operation does NOT guarantee that a new edge will exist from the argument
-      /// position to any specific vertex index in the shattered polygon, because the
-      /// poke does not necessarily break the polygon into triangles.
-      /// 
-      /// Instead, the operation attempts to produce fewer polygons by
-      /// combining triangles into larger polygons as long as they remain convex.
-      /// (This behavior is not guaranteed to be optimal.)
-      /// 
-      /// You can provide a non-null index to "ensureEdgeToVertex" to guarantee that a
-      /// new edge will be created from that index to the poked vertex.
-      /// </summary>
-      public static void PokePolygon(Polygon pokedPolygon, Vector3 position,
-                                     out int addedVertId,
-                                     List<Polygon> outAddedPolygonsList = null,
-                                     List<Edge> outAddedEdgesList = null,
-                                     int? ensureEdgeToVertex = null) {
-
-        var mesh = pokedPolygon.mesh;
-        
-        if (mesh == null) {
-          throw new System.InvalidOperationException("Mesh is null?");
-        }
-        mesh.AddPosition(position, out addedVertId);
-
-        var addedPolygons = Pool<List<Polygon>>.Spawn();
-        addedPolygons.Clear();
-        var addedEdgesSet = Pool<HashSet<Edge>>.Spawn();
-        addedEdgesSet.Clear();
-        try {
-          int fromIdx = 0;
-          int startingOffset = ensureEdgeToVertex.HasValue ?
-                                 pokedPolygon.verts.IndexOf(ensureEdgeToVertex.Value)
-                               : 0;
-          while (fromIdx < pokedPolygon.verts.Count) {
-            var fragmentPoly = new Polygon() {
-              mesh = mesh,
-              verts = new List<int>() { addedVertId }
-            };
-
-            // (Polygons have cyclic indexers.)
-            for (int i = fromIdx + startingOffset;
-                     i <= startingOffset + pokedPolygon.verts.Count;
-                     i++) {
-              var vertIdx = pokedPolygon[i];
-
-              if (fragmentPoly.Count < 2) {
-                fragmentPoly.verts.Add(vertIdx);
-              }
-              else if (fragmentPoly.Count == 2) {
-                fragmentPoly.verts.Add(vertIdx);
-                fromIdx++;
-              }
-              else {
-                fragmentPoly.verts.Add(vertIdx);
-                if (!fragmentPoly.IsConvex()) {
-                  fragmentPoly.verts.RemoveAt(fragmentPoly.verts.Count - 1);
-                  break;
-                }
-                else {
-                  fromIdx++;
-                }
-              }
-            }
-
-            if (fragmentPoly.Count < 3) {
-              throw new System.InvalidOperationException(
-                "PokePolygon exception; produced a fragment polygon with < 3 verts.");
-            }
-
-            if (!fragmentPoly.IsPlanar()) {
-              throw new System.InvalidOperationException(
-                "PokePolygon fragment was non-planar.");
-            }
-
-            addedPolygons.Add(fragmentPoly);
-            if (outAddedEdgesList != null) {
-              foreach (var edge in fragmentPoly.edges) {
-                addedEdgesSet.Add(edge);
-              }
-            }
-          }
-
-          if (outAddedPolygonsList != null) {
-            outAddedPolygonsList.Clear();
-            outAddedPolygonsList.AddRange(addedPolygons);
-          }
-
-          if (outAddedEdgesList != null) {
-            outAddedEdgesList.Clear();
-            foreach (var edge in addedEdgesSet) {
-              outAddedEdgesList.Add(edge);
-            }
-          }
-
-          mesh.RemovePolygon(pokedPolygon);
-          mesh.AddPolygons(addedPolygons);
-
-        }
-        finally {
-          addedPolygons.Clear();
-          Pool<List<Polygon>>.Recycle(addedPolygons);
-          addedEdgesSet.Clear();
-          Pool<HashSet<Edge>>.Recycle(addedEdgesSet);
         }
 
       }

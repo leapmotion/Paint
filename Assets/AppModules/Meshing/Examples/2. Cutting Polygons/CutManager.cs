@@ -21,7 +21,7 @@ namespace Leap.Unity.Meshing.Examples {
       Polygon.FillPolyMesh(cuttingPolygon.numVerts, cuttingPolygon.polyMesh);
 
       // Cut!
-      PolyMesh.Ops.DualCut(polygonToCut.polyMesh, cuttingPolygon.polyMesh);
+      PolyMesh.Ops.zzOldDualCut(polygonToCut.polyMesh, cuttingPolygon.polyMesh);
 
       // Update Unity mesh.
       polygonToCut.UpdateUnityMesh();

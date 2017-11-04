@@ -12,83 +12,24 @@ namespace Leap.Unity.Meshing {
   //       polygons in the PolyMesh
   using PolygonData = Pair<List<int>, List<int>>;
 
-  public class LivePolyMeshObject : MonoBehaviour {
+  /// <summary>
+  /// A PolyMeshObject that provides data support for adding and modifying specific
+  /// submesh data to its mesh, where polygon and position indices in the underlying
+  /// PolyMesh are "keyed" by an arbitrary object. These indices can later be queried
+  /// and further modified or amended.
+  /// </summary>
+  public class KeyedPolyMeshObject : PolyMeshObject {
 
-    #region Inspector
+    #region Unity Events
 
-    [SerializeField]
-    private MeshFilter _meshFilter;
-    public MeshFilter meshFilter {
-      get {
-        if (_meshFilter == null) {
-          _meshFilter = this.gameObject.GetComponent<MeshFilter>();
-          if (_meshFilter == null) {
-            _meshFilter = this.gameObject.AddComponent<MeshFilter>();
-          }
-        }
-        return _meshFilter;
-      }
-    }
-
-    [SerializeField]
-    private MeshRenderer _meshRenderer;
-    public MeshRenderer meshRenderer {
-      get {
-        if (_meshRenderer == null) {
-          _meshRenderer = this.gameObject.GetComponent<MeshRenderer>();
-          if (_meshRenderer == null) {
-            _meshRenderer = this.gameObject.AddComponent<MeshRenderer>();
-          }
-        }
-
-        return _meshRenderer;
-      }
-    }
-
-    [SerializeField]
-    private bool _generateDoubleSidedTris = false;
-    public bool generateDoubleSidedTris {
-      get { return _generateDoubleSidedTris; }
-      set { _generateDoubleSidedTris = value; }
-    }
-
-    #endregion
-
-    private PolyMesh _polyMesh;
-
-    // Two meshes that are swapped when a given mesh is updated, better when modifying
-    // a mesh every frame.
-    private Mesh _unityMeshA;
-    private Mesh _unityMeshB;
-
-    void Awake() {
-      _meshFilter = GetComponent<MeshFilter>();
-
-      _polyMesh = Pool<PolyMesh>.Spawn();
-      _polyMesh.DisableEdgeData();
-      _polyMesh.Clear();
-
-      _unityMeshA = Pool<Mesh>.Spawn();
-      _unityMeshA.Clear();
-      _unityMeshA.MarkDynamic();
-      _unityMeshB = Pool<Mesh>.Spawn();
-      _unityMeshB.Clear();
-      _unityMeshB.MarkDynamic();
+    protected override void Awake() {
+      base.Awake();
 
       _notifyPolyMeshModifiedAction = notifyPolyMeshModified;
     }
 
-    void OnDestroy() {
-      // In clearing the PolyMesh, its data is pooled. Polygon data in objectPolygonData
-      // would also have been pooled and thus will no longer be valid.
-      _polyMesh.Clear();
-      Pool<PolyMesh>.Recycle(_polyMesh);
-
-      _unityMeshA.Clear();
-      Pool<Mesh>.Recycle(_unityMeshA);
-
-      _unityMeshB.Clear();
-      Pool<Mesh>.Recycle(_unityMeshB);
+    protected override void OnDestroy() {
+      base.OnDestroy();
 
       // Pool the polygon data lists we allocated for objectPolygonData.
       foreach (var objPolyDataPair in objectPolygonData) {
@@ -107,20 +48,9 @@ namespace Leap.Unity.Meshing {
       }
     }
 
-    public int PolygonCount {
-      get { return _polyMesh.polygons.Count; }
-    }
+    #endregion
 
-    private bool bufferState = false;
-    private void RefreshUnityMesh() {
-      using (new ProfilerSample("LivePolyMeshObject: Refresh Unity Mesh")) {
-        var bufferMesh = bufferState ? _unityMeshA : _unityMeshB;
-        bufferState = !bufferState;
-
-        _polyMesh.FillUnityMesh(bufferMesh, generateDoubleSidedTris);
-        meshFilter.sharedMesh = bufferMesh;
-      }
-    }
+    #region Object Submesh Keying
 
     private Dictionary<object, PolygonData> objectPolygonData
       = new Dictionary<object, PolygonData>();
@@ -154,10 +84,10 @@ namespace Leap.Unity.Meshing {
       newPositionIndices.Clear();
       var newPolygonIndices = Pool<List<int>>.Spawn();
       newPolygonIndices.Clear();
-      _polyMesh.Append(newPositions,
-                       newPolygons,
-                       newPositionIndices,
-                       newPolygonIndices);
+      polyMesh.Append(newPositions,
+                      newPolygons,
+                      newPositionIndices,
+                      newPolygonIndices);
       
       objectPolygonData[key] = new PolygonData() {
         a = newPositionIndices,
@@ -174,7 +104,7 @@ namespace Leap.Unity.Meshing {
     /// indices into that PolyMesh; these indices are the polygon mesh data associated
     /// with the keyed object.
     /// 
-    /// Valid modifications currently only _ADD_ position or polygons to the PolyMesh.
+    /// Valid modifications currently only _ADD_ positions or polygons to the PolyMesh.
     /// You must at least re-use all of the existing positions and polygons for the
     /// keyed object (you can modify the values at the existing indices), but you can
     /// also add new positions and new polygons as long as you report them in using the
@@ -182,15 +112,16 @@ namespace Leap.Unity.Meshing {
     /// 
     /// When you are finished modifying the PolyMesh, call the provided Action, which
     /// will update the Unity mesh representation of the PolyMesh, and allow future
-    /// modifications. You must provide the indices of any additional positions or
-    /// polygons you added to the PolyMesh. (PolyMesh addition methods include variants
-    /// that pass back the added indices of any new positions and polygons.)
+    /// modifications. You must also provide the indices of any additional positions or
+    /// polygons you added to the PolyMesh as keyed by the key object.
+    /// (Hint: PolyMesh modification methods can pass back the added indices of any new
+    /// positions or polygons.)
     /// </summary>
     public void ModifyDataFor(object key,
                               out PolyMesh polyMesh,
                               List<int> keyedPositionIndices,
                               List<int> keyedPolygonIndices,
-                              out Action<object, List<int>, List<int>> 
+                              out NotifyPolyMeshModifiedAction
                                 callWhenDoneModifyingPolyMesh) {
 
       if (_modificationPending) {
@@ -200,7 +131,7 @@ namespace Leap.Unity.Meshing {
       }
 
       callWhenDoneModifyingPolyMesh = _notifyPolyMeshModifiedAction;
-      polyMesh = _polyMesh;
+      polyMesh = this.polyMesh;
 
       PolygonData polyData;
       if (!objectPolygonData.TryGetValue(key, out polyData)) {
@@ -213,16 +144,21 @@ namespace Leap.Unity.Meshing {
       keyedPolygonIndices.AddRange(polyData.b);
     }
 
+
     /// <summary>
-    /// This Action is passed to objects that request to be able to directly modify a
-    /// the PolyMesh of a LivePolyMeshObject. They call it when they are done modifying
-    /// the PolyMesh of this PolyMeshObject; they must remember and provide the indices
-    /// of any positions or polygons that they added to the PolyMesh.
+    /// This Action is passed to objects that request to be able to directly modify
+    /// the PolyMesh of a KeyedPolyMeshObject. You must call it when you are done
+    /// modifying the PolyMesh of this PolyMeshObject. You must also provide the indices
+    /// of any positions or polygons that were added to the PolyMesh.
     /// 
     /// You can provide null for the newPositionIndices or newPolygonIndices if no new
     /// positions or polygons were added.
     /// </summary>
-    private Action<object, List<int>, List<int>> _notifyPolyMeshModifiedAction;
+    public delegate void NotifyPolyMeshModifiedAction(object key,
+                                                      List<int> addedPositionIndices,
+                                                      List<int> addedPolygonIndices);
+    private NotifyPolyMeshModifiedAction _notifyPolyMeshModifiedAction;
+
     private void notifyPolyMeshModified(object key,
                                         List<int> newPositionIndices,
                                         List<int> newPolygonIndices) {
@@ -242,6 +178,8 @@ namespace Leap.Unity.Meshing {
 
       RefreshUnityMesh();
     }
+
+    #endregion
 
   }
   

@@ -18,7 +18,11 @@ namespace Leap.Unity.Meshing.Examples {
       dA.InitMesh();
       dB.InitMesh();
 
-      PolyMesh.Ops.DualCut(dA.polyMesh, dB.polyMesh);
+      var cutEdges = Pool<List<PolyMesh.Ops.DualEdge>>.Spawn();
+      cutEdges.Clear();
+      PolyMesh.Ops.DualCut(dA.polyMesh, dB.polyMesh, cutEdges);
+      cutEdges.Clear();
+      Pool<List<PolyMesh.Ops.DualEdge>>.Recycle(cutEdges);
 
       dA.UpdateMesh();
       dB.UpdateMesh();

@@ -34,6 +34,8 @@ namespace Leap.Unity.Meshing {
   public static class PolyMath {
 
     public const float POSITION_TOLERANCE = 1e-03f;
+    public const float POSITION_TOLERANCE_MID = 5e-04f;
+    public const float POSITION_TOLERANCE_SQR = 1e-03f * 1e-03f;
     public const float CLUSTER_TOLERANCE = 5e-02f;
 
     public const int MAX_LOOPS = 10000;
@@ -73,6 +75,99 @@ namespace Leap.Unity.Meshing {
 
       return line.a + tOfIntersection * lineDir;
     }
+
+    public static bool FindEdgeCutPositions(Edge edgeA, Edge edgeB,
+                                List<Vector3> newPointsOnEdgeA,
+                                List<Vector3> newPointsOnEdgeB,
+                                bool includeEdgeVertexPoints = true) {
+      var eA_a = edgeA.GetPositionA();
+      var eA_b = edgeA.GetPositionB();
+      var eB_a = edgeB.GetPositionA();
+      var eB_b = edgeB.GetPositionB();
+
+      var eA_a_onEdgeB = eA_a.ClampedTo(eB_a, eB_b);
+      var eA_a_isOnEdgeB = (eA_a_onEdgeB - eA_a).sqrMagnitude < POSITION_TOLERANCE_SQR;
+      if (eA_a_isOnEdgeB
+          && (includeEdgeVertexPoints
+              || (   (eA_a_onEdgeB - eB_a).sqrMagnitude > POSITION_TOLERANCE_SQR
+                  && (eA_a_onEdgeB - eB_b).sqrMagnitude > POSITION_TOLERANCE_SQR))) {
+
+        newPointsOnEdgeB.Add(eA_a_onEdgeB);
+      }
+
+      var eA_b_onEdgeB = eA_b.ClampedTo(eB_a, eB_b);
+      var eA_b_isOnEdgeB = (eA_b_onEdgeB - eA_b).sqrMagnitude < POSITION_TOLERANCE_SQR;
+      if (eA_b_isOnEdgeB
+          && (includeEdgeVertexPoints
+              || (   (eA_b_onEdgeB - eB_a).sqrMagnitude > POSITION_TOLERANCE_SQR
+                  && (eA_b_onEdgeB - eB_b).sqrMagnitude > POSITION_TOLERANCE_SQR))) {
+
+        newPointsOnEdgeB.Add(eA_b_onEdgeB);
+      }
+
+      var eB_a_onEdgeA = eB_a.ClampedTo(eA_a, eA_b);
+      var eB_a_isOnEdgeA = (eB_a_onEdgeA - eB_a).sqrMagnitude < POSITION_TOLERANCE_SQR;
+      if (eB_a_isOnEdgeA
+          && (includeEdgeVertexPoints
+              || (   (eB_a_onEdgeA - eA_a).sqrMagnitude > POSITION_TOLERANCE_SQR
+                  && (eB_a_onEdgeA - eA_b).sqrMagnitude > POSITION_TOLERANCE_SQR))) {
+
+        newPointsOnEdgeA.Add(eB_a_onEdgeA);
+      }
+
+      var eB_b_onEdgeA = eB_b.ClampedTo(eA_a, eA_b);
+      var eB_b_isOnEdgeA = (eB_b_onEdgeA - eB_b).sqrMagnitude < POSITION_TOLERANCE_SQR;
+      if (eB_b_isOnEdgeA
+          && (includeEdgeVertexPoints
+              || (   (eB_b_onEdgeA - eA_a).sqrMagnitude > POSITION_TOLERANCE_SQR
+                  && (eB_b_onEdgeA - eA_b).sqrMagnitude > POSITION_TOLERANCE_SQR))) {
+
+        newPointsOnEdgeA.Add(eB_b_onEdgeA);
+      }
+
+      // Look for a crossing.
+      if (!eA_a_isOnEdgeB && !eA_b_isOnEdgeB
+          && !eB_a_isOnEdgeA && !eB_b_isOnEdgeA) {
+
+        // If the edges are not coplanar, there is no crossing.
+        if (CheckCoplanar(eA_a, eA_b, eB_a, eB_b)) {
+
+          // http://mathworld.wolfram.com/Line-LineIntersection.html
+          {
+            var a = eA_b - eA_a;
+            var b = eB_b - eB_a;
+            var c = eB_a - eA_a;
+
+            var aXb = Vector3.Cross(a, b);
+            var cXb = Vector3.Cross(c, b);
+            var intersection = eA_a + a * (Vector3.Dot(cXb, aXb) / aXb.sqrMagnitude);
+
+            // Validate that the intersection is actually on the edges themselves.
+            if ((intersection.ClampedTo(eA_a, eA_b) - intersection).sqrMagnitude
+                   < POSITION_TOLERANCE_SQR
+                 && (intersection.ClampedTo(eB_a, eB_b) - intersection).sqrMagnitude
+                       < POSITION_TOLERANCE_SQR) {
+
+              // TODO: Continue investigating the edge intersection behavior.
+              // It's definitely not right.
+
+              // Render this intersection.
+              //PolyMesh.RenderPoint(intersection, LeapColor.jade, 10f);
+              //PolyMesh.RenderPoint(intersection, LeapColor.jade, 11f);
+              //PolyMesh.RenderPoint(intersection, LeapColor.jade, 12f);
+              //PolyMesh.RenderPoint(intersection, LeapColor.jade, 13f);
+
+              //newPointsOnEdgeA.Add(intersection.ClampedTo(eA_a, eA_b));
+              //newPointsOnEdgeB.Add(intersection.ClampedTo(eB_a, eB_b));
+            }
+          }
+        }
+      }
+
+      return newPointsOnEdgeA.Count != 0 && newPointsOnEdgeB.Count != 0;
+    }
+
+    #region zzOld Edge Intersection
 
     public enum EdgeIntersectionType {
       None,
@@ -137,6 +232,8 @@ namespace Leap.Unity.Meshing {
         outCutsOnEdge.Add(cuttingPointB);
       }
     }
+
+    #endregion
 
     #endregion
 
@@ -231,9 +328,22 @@ namespace Leap.Unity.Meshing {
       return clamped;
     }
 
+    /// <summary>
+    /// Returns this Vector3 clamped to the argument edge. The edge must have a non-null
+    /// mesh property, since this method needs to know where the edge vertex indices are
+    /// located.
+    /// </summary>
     public static Vector3 ClampedTo(this Vector3 pos, Edge edge) {
-      var a = edge.GetPositionA();
-      var b = edge.GetPositionB();
+      return pos.ClampedTo(edge.GetPositionA(), edge.GetPositionB());
+    }
+
+    /// <summary>
+    /// Returns this Vector3 clamped to the implicit edge between positions edgeA and
+    /// edgeB.
+    /// </summary>
+    public static Vector3 ClampedTo(this Vector3 pos, Vector3 edgeA, Vector3 edgeB) {
+      var a = edgeA;
+      var b = edgeB;
       var ab = b - a;
       var mag = ab.magnitude;
       var lineDir = ab / mag;
@@ -241,6 +351,38 @@ namespace Leap.Unity.Meshing {
       if (progress < POSITION_TOLERANCE) progress = 0f;
       else if (progress > (mag - POSITION_TOLERANCE)) progress = mag;
       return a + lineDir * progress;
+    }
+
+    #endregion
+
+    #region Geometric Properties
+
+    public static bool CheckCoplanar(Vector3 a, Vector3 b, Vector3 c, Vector3 d) {
+      var ab = b - a;
+      var bc = c - b;
+      var cd = d - c;
+      var da = a - d;
+
+      var abXbc = Vector3.Cross(ab, bc);
+      var bcXcd = Vector3.Cross(bc, cd);
+
+      if (!Vector3.Cross(abXbc, bcXcd).ApproxZero()) return false;
+
+      var cdXda = Vector3.Cross(cd, da);
+
+      if (!Vector3.Cross(bcXcd, cdXda).ApproxZero()) return false;
+
+      var daXab = Vector3.Cross(da, ab);
+
+      if (!Vector3.Cross(cdXda, daXab).ApproxZero()) return false;
+
+      return true;
+    }
+
+    public static bool ApproxZero(this Vector3 v) {
+      return v.x <= POSITION_TOLERANCE_MID
+          && v.y <= POSITION_TOLERANCE_MID
+          && v.z <= POSITION_TOLERANCE_MID;
     }
 
     #endregion
