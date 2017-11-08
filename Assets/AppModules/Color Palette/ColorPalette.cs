@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewColorTheme", menuName = "Color Theme", order = 310)]
+[CreateAssetMenu(fileName = "NewColorPalette", menuName = "Color Palette", order = 310)]
 public class ColorPalette : ScriptableObject {
 
   [SerializeField]

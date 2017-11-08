@@ -71,7 +71,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     private void fireOnPickedUp() {
-      if (anchObj.isAttached) {
+      if (anchObj != null && anchObj.isAttached) {
         OnPlaced();
       }
 
