@@ -37,7 +37,7 @@ namespace Leap.Unity.Examples.Lines {
     private Vector3 _rightHandPinchPos;
 
     protected override bool ShouldGestureActivate(Hand leftHand, Hand rightHand) {
-      if (pullSplineGesture != null && pullSplineGesture.isGestureActive) return false;
+      if (pullSplineGesture != null && pullSplineGesture.isActive) return false;
 
       return !GetIsOutOfBounds(leftHand) && !GetIsOutOfBounds(rightHand)
              && leftHand.PinchStrength > ACTIVATION_PINCH_STRENGTH

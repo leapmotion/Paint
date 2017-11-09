@@ -42,7 +42,7 @@ namespace Leap.Unity.Examples.Lines {
 
     protected override bool ShouldGestureActivate(Hand hand) {
 
-      if (createLineGesture.isGestureActive) {
+      if (createLineGesture.isActive) {
         return false;
       }
 
@@ -155,7 +155,7 @@ namespace Leap.Unity.Examples.Lines {
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
 
-      if (!isGestureActive) {
+      if (!isActive) {
         drawer.color = Color.white;
 
         Vector3 pos = _pinchPos;

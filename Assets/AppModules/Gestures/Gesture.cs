@@ -6,20 +6,31 @@ using UnityEngine;
 namespace Leap.Unity.Gestures {
   
   /// <summary>
-  /// A (very thin!) layer of general abstraction for one-handed and two-handed
-  /// gestures.
+  /// A thin layer of general abstraction for one-handed and two-handed gestures.
   /// </summary>
-  public abstract class Gesture : MonoBehaviour {
+  public abstract class Gesture : MonoBehaviour, IGesture {
 
-    public abstract bool isGestureActive { get; }
+    public abstract bool wasActivated { get; }
 
-    public Action OnGestureActivated = () => { };
-    public Action OnGestureDeactivated = () => { };
+    public abstract bool isActive { get; }
+
+    public abstract bool wasDeactivated { get; }
+
+    public abstract bool wasFinished { get; }
+
+    public abstract bool wasCancelled { get; }
 
     protected enum DeactivationReason {
       FinishedGesture,
       CancelledGesture,
     }
+
+    #region TODO: Seriously consider removing Actions from the system.
+
+    public Action OnGestureActivated = () => { };
+    public Action OnGestureDeactivated = () => { };
+
+    #endregion
 
   }
 

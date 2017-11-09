@@ -158,24 +158,6 @@ namespace Leap.Unity.Gestures {
       }
     }
 
-    public bool wasActivated {
-      get {
-        return _wasGestureActivated;
-      }
-    }
-
-    public bool isActive {
-      get {
-        return isGestureActive;
-      }
-    }
-
-    public bool wasDeactivated {
-      get {
-        return _wasGestureDeactivated;
-      }
-    }
-
     #endregion
 
   }

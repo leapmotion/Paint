@@ -2,9 +2,15 @@
 
   public interface IGesture {
 
-    bool wasActivated { get; }
     bool isActive { get; }
+
+    bool wasActivated { get; }
+
     bool wasDeactivated { get; }
+
+    bool wasFinished { get; }
+
+    bool wasCancelled { get; }
 
   }
 

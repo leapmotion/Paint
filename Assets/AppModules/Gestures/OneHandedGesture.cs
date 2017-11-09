@@ -26,13 +26,51 @@ namespace Leap.Unity.Gestures {
 
     #region Public API
 
-    public override bool isGestureActive { get { return _isGestureActive; } }
+    /// <summary>
+    /// Whether this gesture is currently active.
+    /// </summary>
+    public override bool isActive { get { return _isActive; } }
+
+    /// <summary>
+    /// Whether this gesture was activated this frame.
+    /// </summary>
+    public override bool wasActivated { get { return _wasActivated; } }
+
+    /// <summary>
+    /// Whether this gesture was deactivated this frame. For some gestures, it may be
+    /// necessary to differentiate between a successfully completed gesture and a
+    /// cancelled gesture -- for this distinction, refer to wasCancelled and wasFinished.
+    /// </summary>
+    public override bool wasDeactivated { get { return _wasDeactivated; } }
+
+    /// <summary>
+    /// Whether this gesture was deactivated via cancellation this frame.
+    /// 
+    /// 'Cancelled' implies the gesture was not finished successfully, or was
+    /// deliberately halted so as to not enact the result of the gesture. For example,
+    /// a currently active gesture is cancelled when a hand performing the gesture
+    /// loses tracking. This distinction is important when a gesture is a trigger of some
+    /// kind.
+    /// </summary>
+    public override bool wasCancelled { get { return _wasCancelled; } }
+
+    /// <summary>
+    /// Whether this gesture was deactivated by being successfully completed this frame.
+    /// 
+    /// 'Finished' implies the gesture was successful, as opposed to cancellation. This
+    /// distinction is important when a gesture is a trigger for some behavior.
+    /// </summary>
+    public override bool wasFinished { get { return _wasFinished; } }
+
+    #region TODO: Really consider removing Actions from the system.
 
     public Action<Hand> OnOneHandedGestureActivated
                               = (hand) => { };
 
     public Action<Hand> OnOneHandedGestureDeactivated
                               = (maybeNullHand) => { };
+
+    #endregion
 
     #endregion
 
@@ -136,25 +174,27 @@ namespace Leap.Unity.Gestures {
 
     #region Base Implementation (Unity Callbacks)
 
-    private bool _isGestureActive = false;
+    private bool _isActive = false;
     private bool _wasHandTracked = false;
-
-    // Whether the gesture was activated this frame.
-    protected bool _wasGestureActivated = false;
-    // Whether the gesture was deactivated this frame.
-    protected bool _wasGestureDeactivated = false;
+    
+    protected bool _wasActivated = false;
+    protected bool _wasDeactivated = false;
+    protected bool _wasCancelled = false;
+    protected bool _wasFinished = false;
 
     protected virtual void OnDisable() {
-      if (_isGestureActive) {
+      if (_isActive) {
         var hand = Hands.Get(whichHand);
         WhenGestureDeactivated(hand, DeactivationReason.CancelledGesture);
-        _isGestureActive = false;
+        _isActive = false;
       }
     }
 
     protected virtual void Update() {
-      _wasGestureActivated = false;
-      _wasGestureDeactivated = false;
+      _wasActivated = false;
+      _wasDeactivated = false;
+      _wasCancelled = false;
+      _wasFinished = false;
 
       var hand = Hands.Get(whichHand);
 
@@ -186,7 +226,7 @@ namespace Leap.Unity.Gestures {
         shouldGestureBeActive = false;
       }
       else {
-        if (!_isGestureActive) {
+        if (!_isActive) {
           if (ShouldGestureActivate(hand)) {
             shouldGestureBeActive = true;
           }
@@ -204,18 +244,31 @@ namespace Leap.Unity.Gestures {
         }
       }
 
+      // If the deactivation reason is not set, we assume the gesture completed
+      // successfully.
+      bool wasGestureSuccessful = deactivationReason.GetValueOrDefault()
+                                  == DeactivationReason.FinishedGesture;
+
       // Fire gesture state change events.
-      if (shouldGestureBeActive != _isGestureActive) {
+      if (shouldGestureBeActive != _isActive) {
         if (shouldGestureBeActive) {
-          _wasGestureActivated = true;
-          _isGestureActive = true;
+          _wasActivated = true;
+          _isActive = true;
+
           WhenGestureActivated(hand);
           OnGestureActivated();
           OnOneHandedGestureActivated(hand);
         }
         else {
-          _wasGestureDeactivated = true;
-          _isGestureActive = false;
+          _wasDeactivated = true;
+          if (wasGestureSuccessful) {
+            _wasFinished = true;
+          }
+          else {
+            _wasCancelled = true;
+          }
+          _isActive = false;
+
           WhenGestureDeactivated(hand, deactivationReason.GetValueOrDefault());
           OnGestureDeactivated();
           OnOneHandedGestureDeactivated(hand);
@@ -223,7 +276,7 @@ namespace Leap.Unity.Gestures {
       }
 
       // Fire per-update events.
-      if (_isGestureActive) {
+      if (_isActive) {
         WhileGestureActive(hand);
       }
       else {
