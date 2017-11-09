@@ -705,6 +705,7 @@ namespace Leap.Unity.Meshing {
 
 
         // Find any colocated vertices and render them.
+        // (Violet)
         {
           var colocatedVertexPositions = Pool<List<Vector3>>.Spawn();
           colocatedVertexPositions.Clear();
@@ -747,28 +748,44 @@ namespace Leap.Unity.Meshing {
           }
         }
 
-        // Find edge colinearities and render them.
+        // Find edge intersections and colinearities and render them.
+        // (Green for colinearities; Gold for crossings.)
         {
-          var newPointsOnEdgeA = Pool<List<Vector3>>.Spawn();
-          newPointsOnEdgeA.Clear();
-          var newPointsOnEdgeB = Pool<List<Vector3>>.Spawn();
-          newPointsOnEdgeB.Clear();
+          var cutPointsOnEdgeA = Pool<List<Vector3>>.Spawn();
+          cutPointsOnEdgeA.Clear();
+          var cutPointsOnEdgeB = Pool<List<Vector3>>.Spawn();
+          cutPointsOnEdgeB.Clear();
           try {
             foreach (var edgeB in polyB.edges) {
               foreach (var edgeA in polyA.edges) {
 
                 if (PolyMath.FindEdgeCutPositions(edgeA, edgeB,
-                                                  newPointsOnEdgeA, newPointsOnEdgeB,
-                                                  includeEdgeVertexPoints: true)) {
-                  
-                  foreach (var newPointOnEdgeA in newPointsOnEdgeA) {
-                    var aColor = Color.Lerp(Color.red, Color.green, 0.5f);
+                                                  cutPointsOnEdgeA, cutPointsOnEdgeB)) {
+
+                  for (int i = 0; i < cutPointsOnEdgeA.Count - 1; i++) {
+                    var edgeCutPointAA = cutPointsOnEdgeA[i];
+                    var edgeCutPointAB = cutPointsOnEdgeA[i + 1];
+                    var edgeCutPointBA = cutPointsOnEdgeA[i];
+                    var edgeCutPointBB = cutPointsOnEdgeA[i + 1];
+
+                    var aColor = Color.Lerp(Color.red, Color.green, 0.55f);
+                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.50f);
+                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.52f);
+                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.54f);
+                    var bColor = Color.Lerp(Color.blue, Color.green, 0.55f);
+                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.51f);
+                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.53f);
+                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.55f);
+                  }
+
+                  foreach (var newPointOnEdgeA in cutPointsOnEdgeA) {
+                    var aColor = Color.Lerp(Color.red, Color.green, 0.55f);
                     PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.0f);
                     PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.2f);
                     PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.4f);
                   }
-                  foreach (var newPointOnEdgeB in newPointsOnEdgeB) {
-                    var bColor = Color.Lerp(Color.blue, Color.green, 0.5f);
+                  foreach (var newPointOnEdgeB in cutPointsOnEdgeB) {
+                    var bColor = Color.Lerp(Color.blue, Color.green, 0.55f);
                     PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.1f);
                     PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.3f);
                     PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.5f);
@@ -776,16 +793,89 @@ namespace Leap.Unity.Meshing {
 
                 }
 
-                newPointsOnEdgeA.Clear();
-                newPointsOnEdgeB.Clear();
+                cutPointsOnEdgeA.Clear();
+                cutPointsOnEdgeB.Clear();
               }
             }
           }
           finally {
-            newPointsOnEdgeA.Clear();
-            Pool<List<Vector3>>.Recycle(newPointsOnEdgeA);
-            newPointsOnEdgeB.Clear();
-            Pool<List<Vector3>>.Recycle(newPointsOnEdgeB);
+            cutPointsOnEdgeA.Clear();
+            Pool<List<Vector3>>.Recycle(cutPointsOnEdgeA);
+            cutPointsOnEdgeB.Clear();
+            Pool<List<Vector3>>.Recycle(cutPointsOnEdgeB);
+          }
+        }
+
+        // Find face intersection points and render them.
+        {
+          var cutPointsOnA = Pool<List<Vector3>>.Spawn();
+          cutPointsOnA.Clear();
+          var cutPointsOnB = Pool<List<Vector3>>.Spawn();
+          cutPointsOnB.Clear();
+          try {
+            // Edges from A onto Polygon B.
+            {
+              var polyBPlane = Plane.FromPoly(polyB);
+              foreach (var edgeA in polyA.edges) {
+                var edgeALine = Line.FromEdge(edgeA);
+                float tOfIntersection;
+                var maybeIntersection = PolyMath.Intersect(edgeALine, polyBPlane,
+                                                         out tOfIntersection);
+
+                if (maybeIntersection.hasValue) {
+                  var intersection = maybeIntersection.valueOrDefault;
+
+                  if (tOfIntersection > 0f && tOfIntersection < 1f) {
+                    if (intersection.IsInside(polyB)) {
+                      cutPointsOnA.Add(intersection);
+                      cutPointsOnB.Add(intersection);
+                    }
+                  }
+                }
+              }
+            }
+
+            // Edges from B onto Polygon A.
+            {
+              var polyAPlane = Plane.FromPoly(polyA);
+              foreach (var edgeB in polyB.edges) {
+                var edgeBLine = Line.FromEdge(edgeB);
+                float tOfIntersection;
+                var maybeIntersection = PolyMath.Intersect(edgeBLine, polyAPlane,
+                                                         out tOfIntersection);
+
+                if (maybeIntersection.hasValue) {
+                  var intersection = maybeIntersection.valueOrDefault;
+
+                  if (tOfIntersection > 0f && tOfIntersection < 1f) {
+                    if (intersection.IsInside(polyA)) {
+                      cutPointsOnA.Add(intersection);
+                      cutPointsOnB.Add(intersection);
+                    }
+                  }
+                }
+              }
+            }
+
+            for (int i = 0; i < cutPointsOnA.Count; i++) {
+              var cutPointOnA = cutPointsOnA[i];
+              var cutPointOnB = cutPointsOnB[i];
+
+              var aColor = Color.Lerp(Color.cyan, Color.red, 0.45f);
+              RenderPoint(cutPointOnA, aColor, 5.0f);
+              RenderPoint(cutPointOnA, aColor, 5.2f);
+              RenderPoint(cutPointOnA, aColor, 5.4f);
+              var bColor = Color.Lerp(Color.cyan, Color.blue, 0.45f);
+              RenderPoint(cutPointOnB, bColor, 5.1f);
+              RenderPoint(cutPointOnB, bColor, 5.3f);
+              RenderPoint(cutPointOnB, bColor, 5.5f);
+            }
+          }
+          finally {
+            cutPointsOnA.Clear();
+            Pool<List<Vector3>>.Recycle(cutPointsOnA);
+            cutPointsOnB.Clear();
+            Pool<List<Vector3>>.Recycle(cutPointsOnB);
           }
         }
 
@@ -1044,8 +1134,8 @@ namespace Leap.Unity.Meshing {
 
         var mesh = edge.mesh;
         mesh.AddPosition(newEdgePosition, out addedVertId);
-        addedEdge0 = new Edge() { mesh = mesh, a = edge.a, b = addedVertId };
-        addedEdge1 = new Edge() { mesh = mesh, a = addedVertId, b = edge.b };
+        addedEdge0 = new Edge(mesh: mesh, a: edge.a, b: addedVertId);
+        addedEdge1 = new Edge(mesh: mesh, a: addedVertId, b: edge.b);
 
         equivalentPolygon = default(Polygon);
         bool tryReceiveEquivalentPolygon = receiveEquivalentPolygon.HasValue;
@@ -1281,7 +1371,7 @@ namespace Leap.Unity.Meshing {
           Pool<List<int>>.Recycle(vertsBufferB);
         }
 
-        addedEdge = new Edge() { mesh = mesh, a = vertIdx0, b = vertIdx1 };
+        addedEdge = new Edge(mesh: mesh, a: vertIdx0, b: vertIdx1);
 
         mesh.RemovePolygon(poly);
         mesh.AddPolygon(addedPoly0);
@@ -1502,11 +1592,7 @@ namespace Leap.Unity.Meshing {
               break;
             }
             else {
-              var edge = new Edge() {
-                mesh = polygon.mesh,
-                a = polygon[i],
-                b = polygon[i + 1]
-              };
+              var edge = new Edge(mesh: polygon.mesh, a: polygon[i], b: polygon[i + 1]);
               if (desiredPointOnPoly.IsInside(edge)) {
                 _maybeNewPointEdge = edge;
               }
@@ -2267,11 +2353,11 @@ namespace Leap.Unity.Meshing {
                 // We need to return ALL of the edges that form a cut, even if it's not
                 // a new cut. So it's OK to return a cut operation that only exists along
                 // a pre-existing edge.
-                if (aPoly.mesh.CheckValidEdge(new Edge() {
-                  mesh = aPoly.mesh,
-                  a = c0.existingPoint,
-                  b = c1.existingPoint
-                })) {
+                if (aPoly.mesh.CheckValidEdge(new Edge(
+                  mesh: aPoly.mesh,
+                  a: c0.existingPoint,
+                  b: c1.existingPoint
+                ))) {
                   isNewCut = false;
                 }
                 else {
@@ -2466,11 +2552,11 @@ namespace Leap.Unity.Meshing {
 
             // If an edge already exists between these two points, we're already done;
             // no modifications needed, simply return the cut edge.
-            var trivialCutEdge = new Edge() {
-              mesh = c0.polygon.mesh,
-              a = c0.existingPoint,
-              b = c1.existingPoint
-            };
+            var trivialCutEdge = new Edge(
+              mesh: c0.polygon.mesh,
+              a: c0.existingPoint,
+              b: c1.existingPoint
+            );
             if (c0.polygon.mesh.CheckValidEdge(trivialCutEdge)) {
               cutEdges.Add(trivialCutEdge);
             }
@@ -2507,11 +2593,11 @@ namespace Leap.Unity.Meshing {
                   // Vertex-Face cut.
                   ApplyVertexFaceCut(polygon, c0.existingPoint, c1.newPoint,
                                      out addedVertId);
-                  cutEdges.Add(new Edge() {
-                    mesh = polygon.mesh,
-                    a = c0.existingPoint,
-                    b = addedVertId
-                  });
+                  cutEdges.Add(new Edge(
+                    mesh: polygon.mesh,
+                    a: c0.existingPoint,
+                    b: addedVertId
+                  ));
                   break;
                 default:
                   throw new System.InvalidOperationException(
@@ -2547,11 +2633,11 @@ namespace Leap.Unity.Meshing {
                                      c0.edge, c0.newPoint,
                                      c1.newPoint,
                                      out addedVertId0, out addedVertId1);
-                    cutEdges.Add(new Edge() {
-                      mesh = polygon.mesh,
-                      a = addedVertId0,
-                      b = addedVertId1
-                    });
+                    cutEdges.Add(new Edge(
+                      mesh: polygon.mesh,
+                      a: addedVertId0,
+                      b: addedVertId1
+                    ));
                     break;
                   default:
                     throw new System.InvalidOperationException(
@@ -2569,11 +2655,11 @@ namespace Leap.Unity.Meshing {
                   ApplyFaceFaceCut(polygon, c0.newPoint, c1.newPoint,
                                    out addedVertId0, out addedVertId1);
 
-                  cutEdges.Add(new Edge() {
-                    mesh = polygon.mesh,
-                    a = addedVertId0,
-                    b = addedVertId1
-                  });
+                  cutEdges.Add(new Edge(
+                    mesh: polygon.mesh,
+                    a: addedVertId0,
+                    b: addedVertId1
+                  ));
                 }
                 else {
                   throw new System.InvalidOperationException(
@@ -2676,11 +2762,11 @@ namespace Leap.Unity.Meshing {
           LowOps.SplitPolygon(equivalentPolygon, vert, addedVertId);
 
           if (outCutEdges != null) {
-            outCutEdges.Add(new Edge() {
-              mesh = polygon.mesh,
-              a = vert,
-              b = addedVertId
-            });
+            outCutEdges.Add(new Edge(
+              mesh: polygon.mesh,
+              a: vert,
+              b: addedVertId
+            ));
           }
         }
         else {
@@ -2740,19 +2826,19 @@ namespace Leap.Unity.Meshing {
           }
           else {
             LowOps.SplitPolygon(equivalentPolygon, addedVertId0, addedVertId1);
-            outCutEdges.Add(new Edge() {
-              mesh = polygon.mesh,
-              a = addedVertId0,
-              b = addedVertId1
-            });
+            outCutEdges.Add(new Edge(
+              mesh: polygon.mesh,
+              a: addedVertId0,
+              b: addedVertId1
+            ));
           }
         }
         else {
-          outCutEdges.Add(new Edge() {
-            mesh = polygon.mesh,
-            a = addedVertId0,
-            b = addedVertId1
-          });
+          outCutEdges.Add(new Edge(
+            mesh: polygon.mesh,
+            a: addedVertId0,
+            b: addedVertId1
+          ));
         }
 
       }

@@ -50,7 +50,6 @@ namespace Leap.Unity.Meshing.Examples {
                                     ((float)vertIdx / poly.verts.Count));
           drawer.DrawWireSphere(vertPos, PolyMath.POSITION_TOLERANCE * debugVertRadiusMult);
           drawer.DrawWireCube(vertPos, Vector3.one * PolyMath.POSITION_TOLERANCE * debugVertRadiusMult);
-          drawer.DrawWireSphere(vertPos, PolyMath.CLUSTER_TOLERANCE * debugVertRadiusMult);
           vertIdx++;
         }
       }

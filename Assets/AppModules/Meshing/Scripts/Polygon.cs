@@ -297,11 +297,7 @@ namespace Leap.Unity.Meshing {
           var b = P(this[i + 1]);
           hitIdx1 |= this[i + 1] == vertIdx1;
           Vector3 testDir = b - a;
-          var thisEdge = new Edge() {
-            mesh = this.mesh,
-            a = this[i],
-            b = this[i + 1]
-          };
+          var thisEdge = new Edge(mesh, this[i], this[i+1]);
           if (edgeDir.hasValue) {
             if (Vector3.Cross(testDir, edgeDir.valueOrDefault) == Vector3.zero) {
               // Colinear, add this edge tentatively and keep going.
@@ -350,11 +346,7 @@ namespace Leap.Unity.Meshing {
             var b = P(this[i - 1]);
             hitIdx1 |= this[i - 1] == vertIdx1;
             Vector3 testDir = b - a;
-            var thisEdge = new Edge() {
-              mesh = this.mesh,
-              a = this[i - 0],
-              b = this[i - 1]
-            };
+            var thisEdge = new Edge(this.mesh, this[i = 0], this[i - 1]);
             if (edgeDir.hasValue) {
               if (Vector3.Cross(testDir, edgeDir.valueOrDefault) == Vector3.zero) {
                 // Colinear, add this edge tentatively and keep going.
@@ -458,11 +450,10 @@ namespace Leap.Unity.Meshing {
         _curIdx = -1;
       }
       public Edge Current {
-        get { return new Edge() {
-                mesh = _poly.mesh,
-                a    = _poly[_curIdx],
-                b    = _poly[_curIdx + 1]
-              };
+        get { return new Edge(_poly.mesh,
+                              _poly[_curIdx],
+                              _poly[_curIdx + 1],
+                              literalOrder: true);
         }
       }
       public bool MoveNext() {

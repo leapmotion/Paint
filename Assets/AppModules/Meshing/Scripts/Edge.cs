@@ -6,12 +6,16 @@ namespace Leap.Unity.Meshing {
   /// <summary>
   /// Edges are automatically constructed and managed by PolyMesh operations. They
   /// represent a connection between two position indices (vertices) of its mesh;
-  /// however, they do not maintain a reference to any specific Polygon on their own!
+  /// however, they do not maintain a reference to any specific Polygon on their own.
   /// 
-  /// Edges do NOT have direction. Two edges with opposite A and B indices are considered
-  /// identical by PolyMesh operations. This is possible in part because edges are only
-  /// "soft" data for a mesh; Polygons are not defined by edges but by an ordered
-  /// sequence of mesh position indices.
+  /// Edges, by default, are always directed from the lower indexed position to the
+  /// higher indexed position.
+  /// 
+  /// Polygons are not defined by Edges, so Edge directionality is irrelevant to them;
+  /// their 'edges' are implcitily defined by their position index arrays. (However, they
+  /// do provide Edge enumerators for convenience; these Edges are constructed on the fly,
+  /// and DO have a consistent winding order from A to B around the polygon. Keep in mind
+  /// that two Edges are considered equal even if their As and Bs are swapped.
   /// 
   /// The mesh itself stores and manages the data for face-adjacency with any given Edge,
   /// and edge-adjacency for any given face (polygon), and an Edge struct will remain
@@ -25,7 +29,24 @@ namespace Leap.Unity.Meshing {
   /// </summary>
   public struct Edge : IEquatable<Edge> {
     public PolyMesh mesh;
-    public int a, b;
+    
+    private int _a, _b;
+    public int a { get { return _a; } }
+    public int b { get { return _b; } }
+    
+    public Edge(int a, int b) : this(null, a, b, false) { }
+    public Edge(PolyMesh mesh, int a, int b, bool literalOrder = false) {
+      this.mesh = mesh;
+
+      if (!literalOrder) {
+        if (a > b) {
+          Utils.Swap(ref a, ref b);
+        }
+      }
+
+      _a = a;
+      _b = b;
+    }
 
     public int this[int idx] {
       get {

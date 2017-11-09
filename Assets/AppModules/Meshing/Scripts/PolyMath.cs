@@ -36,7 +36,6 @@ namespace Leap.Unity.Meshing {
     public const float POSITION_TOLERANCE = 1e-03f;
     public const float POSITION_TOLERANCE_MID = 5e-04f;
     public const float POSITION_TOLERANCE_SQR = 1e-03f * 1e-03f;
-    public const float CLUSTER_TOLERANCE = 5e-02f;
 
     public const int MAX_LOOPS = 10000;
 
@@ -77,9 +76,8 @@ namespace Leap.Unity.Meshing {
     }
 
     public static bool FindEdgeCutPositions(Edge edgeA, Edge edgeB,
-                                List<Vector3> newPointsOnEdgeA,
-                                List<Vector3> newPointsOnEdgeB,
-                                bool includeEdgeVertexPoints = true) {
+                                List<Vector3> cutPointsOnEdgeA,
+                                List<Vector3> cutPointsOnEdgeB) {
       var eA_a = edgeA.GetPositionA();
       var eA_b = edgeA.GetPositionB();
       var eB_a = edgeB.GetPositionA();
@@ -87,42 +85,30 @@ namespace Leap.Unity.Meshing {
 
       var eA_a_onEdgeB = eA_a.ClampedTo(eB_a, eB_b);
       var eA_a_isOnEdgeB = (eA_a_onEdgeB - eA_a).sqrMagnitude < POSITION_TOLERANCE_SQR;
-      if (eA_a_isOnEdgeB
-          && (includeEdgeVertexPoints
-              || (   (eA_a_onEdgeB - eB_a).sqrMagnitude > POSITION_TOLERANCE_SQR
-                  && (eA_a_onEdgeB - eB_b).sqrMagnitude > POSITION_TOLERANCE_SQR))) {
-
-        newPointsOnEdgeB.Add(eA_a_onEdgeB);
+      if (eA_a_isOnEdgeB) {
+        cutPointsOnEdgeA.Add(eA_a_onEdgeB);
+        cutPointsOnEdgeB.Add(eA_a_onEdgeB);
       }
 
       var eA_b_onEdgeB = eA_b.ClampedTo(eB_a, eB_b);
       var eA_b_isOnEdgeB = (eA_b_onEdgeB - eA_b).sqrMagnitude < POSITION_TOLERANCE_SQR;
-      if (eA_b_isOnEdgeB
-          && (includeEdgeVertexPoints
-              || (   (eA_b_onEdgeB - eB_a).sqrMagnitude > POSITION_TOLERANCE_SQR
-                  && (eA_b_onEdgeB - eB_b).sqrMagnitude > POSITION_TOLERANCE_SQR))) {
-
-        newPointsOnEdgeB.Add(eA_b_onEdgeB);
+      if (eA_b_isOnEdgeB) {
+        cutPointsOnEdgeA.Add(eA_b_onEdgeB);
+        cutPointsOnEdgeB.Add(eA_b_onEdgeB);
       }
 
       var eB_a_onEdgeA = eB_a.ClampedTo(eA_a, eA_b);
       var eB_a_isOnEdgeA = (eB_a_onEdgeA - eB_a).sqrMagnitude < POSITION_TOLERANCE_SQR;
-      if (eB_a_isOnEdgeA
-          && (includeEdgeVertexPoints
-              || (   (eB_a_onEdgeA - eA_a).sqrMagnitude > POSITION_TOLERANCE_SQR
-                  && (eB_a_onEdgeA - eA_b).sqrMagnitude > POSITION_TOLERANCE_SQR))) {
-
-        newPointsOnEdgeA.Add(eB_a_onEdgeA);
+      if (eB_a_isOnEdgeA) {
+        cutPointsOnEdgeA.Add(eB_a_onEdgeA);
+        cutPointsOnEdgeB.Add(eB_a_onEdgeA);
       }
 
       var eB_b_onEdgeA = eB_b.ClampedTo(eA_a, eA_b);
       var eB_b_isOnEdgeA = (eB_b_onEdgeA - eB_b).sqrMagnitude < POSITION_TOLERANCE_SQR;
-      if (eB_b_isOnEdgeA
-          && (includeEdgeVertexPoints
-              || (   (eB_b_onEdgeA - eA_a).sqrMagnitude > POSITION_TOLERANCE_SQR
-                  && (eB_b_onEdgeA - eA_b).sqrMagnitude > POSITION_TOLERANCE_SQR))) {
-
-        newPointsOnEdgeA.Add(eB_b_onEdgeA);
+      if (eB_b_isOnEdgeA) {
+        cutPointsOnEdgeA.Add(eB_b_onEdgeA);
+        cutPointsOnEdgeB.Add(eB_b_onEdgeA);
       }
 
       // Look for a crossing.
@@ -152,19 +138,19 @@ namespace Leap.Unity.Meshing {
               // It's definitely not right.
 
               // Render this intersection.
-              //PolyMesh.RenderPoint(intersection, LeapColor.jade, 10f);
-              //PolyMesh.RenderPoint(intersection, LeapColor.jade, 11f);
-              //PolyMesh.RenderPoint(intersection, LeapColor.jade, 12f);
-              //PolyMesh.RenderPoint(intersection, LeapColor.jade, 13f);
+              PolyMesh.RenderPoint(intersection, LeapColor.gold, 10f);
+              PolyMesh.RenderPoint(intersection, LeapColor.gold, 11f);
+              PolyMesh.RenderPoint(intersection, LeapColor.gold, 12f);
+              PolyMesh.RenderPoint(intersection, LeapColor.gold, 13f);
 
-              //newPointsOnEdgeA.Add(intersection.ClampedTo(eA_a, eA_b));
-              //newPointsOnEdgeB.Add(intersection.ClampedTo(eB_a, eB_b));
+              cutPointsOnEdgeA.Add(intersection.ClampedTo(eA_a, eA_b));
+              cutPointsOnEdgeB.Add(intersection.ClampedTo(eB_a, eB_b));
             }
           }
         }
       }
 
-      return newPointsOnEdgeA.Count != 0 && newPointsOnEdgeB.Count != 0;
+      return cutPointsOnEdgeA.Count != 0 && cutPointsOnEdgeB.Count != 0;
     }
 
     #region zzOld Edge Intersection
@@ -338,16 +324,15 @@ namespace Leap.Unity.Meshing {
     }
 
     /// <summary>
-    /// Returns this Vector3 clamped to the implicit edge between positions edgeA and
-    /// edgeB.
+    /// Returns this Vector3 clamped to the implicit edge between positions pA and pB.
     /// </summary>
-    public static Vector3 ClampedTo(this Vector3 pos, Vector3 edgeA, Vector3 edgeB) {
-      var a = edgeA;
-      var b = edgeB;
+    public static Vector3 ClampedTo(this Vector3 pos, Vector3 pA, Vector3 pB) {
+      var a = pA;
+      var b = pB;
       var ab = b - a;
       var mag = ab.magnitude;
       var lineDir = ab / mag;
-      var progress = Mathf.Clamp(Vector3.Dot((pos - a), lineDir), 0f, mag);
+      var progress = Vector3.Dot((pos - a), lineDir);
       if (progress < POSITION_TOLERANCE) progress = 0f;
       else if (progress > (mag - POSITION_TOLERANCE)) progress = mag;
       return a + lineDir * progress;
