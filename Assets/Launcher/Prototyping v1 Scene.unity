@@ -3872,7 +3872,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 293544010}
+  - component: {fileID: 293544013}
   - component: {fileID: 293544011}
+  - component: {fileID: 293544012}
   m_Layer: 0
   m_Name: UI Panel (1) Object
   m_TagString: Untagged
@@ -3907,6 +3909,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   includeTheseHandles:
   - {fileID: 1945627547}
+--- !u!114 &293544012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 293544009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32178672dce82a943a26326a598e35b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _uiAnchorHandle: {fileID: 0}
+  _uiLookAnchor: {fileID: 0}
+  flip180: 0
+  drawDebug: 0
+--- !u!114 &293544013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 293544009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b5773425f6bf247a4e0a252b5f1ce6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _handle: {fileID: 1945627550}
+  stateController: {fileID: 0}
+  panelClosedState: Widget Sphere
+  panelOpenState: Panel Pivot
+  ballTransform: {fileID: 0}
+  panelTransform: {fileID: 0}
+  _targetPoseProvider: {fileID: 0}
+  _movementToPose: {fileID: 0}
 --- !u!43 &316970150
 Mesh:
   m_ObjectHideFlags: 3

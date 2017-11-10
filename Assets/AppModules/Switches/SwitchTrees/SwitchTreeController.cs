@@ -36,7 +36,7 @@ namespace Leap.Unity.Animation {
     }
 
     private void refreshTree() {
-      tree = new SwitchTree(this.transform, tree.curActiveNodeName);
+      tree = new SwitchTree(this.transform, tree == null ? null : tree.curActiveNodeName);
     }
 
     #endregion

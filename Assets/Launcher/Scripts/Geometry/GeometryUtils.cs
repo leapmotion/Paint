@@ -85,7 +85,7 @@ namespace Leap.Unity.Geometry {
           drawer.color = color.GetValueOrDefault();
         }
 
-        drawer.DrawWireSphere(pos, 0.01f * scale);
+        drawer.DrawWireSphere(pos, finalScale);
       }
     }
 
