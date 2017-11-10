@@ -2492,6 +2492,7 @@ GameObject:
   m_Component:
   - component: {fileID: 157105667}
   - component: {fileID: 157105668}
+  - component: {fileID: 157105669}
   m_Layer: 0
   m_Name: Main Panel
   m_TagString: Untagged
@@ -2565,6 +2566,19 @@ MonoBehaviour:
   _size: {x: 0.36500004, y: 0.324}
   _nineSliced: 0
   _thickness: 0.01
+--- !u!114 &157105669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 157105666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bbcb70d52f531047acb0792d7d0f89d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookPositionTransform: {fileID: 157105667}
+  lookAnchorTranslationSwitch: {fileID: 0}
 --- !u!1 &161428444
 GameObject:
   m_ObjectHideFlags: 0
@@ -3920,8 +3934,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32178672dce82a943a26326a598e35b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiAnchorHandle: {fileID: 0}
-  _uiLookAnchor: {fileID: 0}
+  _uiHandle: {fileID: 1945627550}
+  _uiLookPositionProvider: {fileID: 157105669}
   flip180: 0
   drawDebug: 0
 --- !u!114 &293544013
@@ -3941,8 +3955,8 @@ MonoBehaviour:
   panelOpenState: Panel Pivot
   ballTransform: {fileID: 0}
   panelTransform: {fileID: 0}
-  _targetPoseProvider: {fileID: 0}
-  _movementToPose: {fileID: 0}
+  _targetPoseProvider: {fileID: 293544012}
+  _movementToPose: {fileID: 1945627555}
 --- !u!43 &316970150
 Mesh:
   m_ObjectHideFlags: 3
@@ -31234,6 +31248,8 @@ GameObject:
   - component: {fileID: 1945627550}
   - component: {fileID: 1945627549}
   - component: {fileID: 1945627548}
+  - component: {fileID: 1945627555}
+  - component: {fileID: 1945627554}
   m_Layer: 0
   m_Name: Orb Handle
   m_TagString: Untagged
@@ -31248,7 +31264,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1945627546}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.32, z: -0.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 161428445}
@@ -31350,11 +31366,61 @@ BoxCollider:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1945627546}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1945627554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1945627546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bcb0f05ec098304e88fd58b462309a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isSimulating: 0
+  overrideGravity: 1
+  customGravity: {x: 0, y: -4.905, z: 0}
+  drag: 20
+  angularDrag: 0.2
+  _drawRuntimeGizmos: 1
+--- !u!114 &1945627555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1945627546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e30de1764c4ca478ffd378f763d9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPose:
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+  simulator: {fileID: 1945627554}
+  lerpToPoseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1946009814
 GameObject:
   m_ObjectHideFlags: 0

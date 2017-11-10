@@ -8,16 +8,22 @@
  ******************************************************************************/
 
 using UnityEngine;
+using System;
+using System.Collections.Generic;
+using Leap.Unity.Query;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using System.Collections.Generic;
-using System;
-using Leap.Unity.Query;
+
+using UnityObject = UnityEngine.Object;
 
 namespace Leap.Unity.Attributes {
 
-  public class ImplementsInterfaceAttribute : CombinablePropertyAttribute, IPropertyConstrainer {
+  public class ImplementsInterfaceAttribute : CombinablePropertyAttribute,
+                                              IPropertyConstrainer,
+                                              IFullPropertyDrawer,
+                                              ISupportDragAndDrop {
 
 #pragma warning disable 0414
     private Type type;
@@ -33,26 +39,79 @@ namespace Leap.Unity.Attributes {
 #if UNITY_EDITOR
     public void ConstrainValue(SerializedProperty property) {
       if (property.objectReferenceValue != null) {
-        var objectReferenceValue = property.objectReferenceValue;
 
-        if (objectReferenceValue.GetType().ImplementsInterface(type)) {
-          // All good! This Component implements the interface.
-          return;
+        UnityObject implementingObject = FindImplementer(property.objectReferenceValue);
+
+        if (implementingObject == null) {
+          Debug.LogError(property.objectReferenceValue.GetType().Name + " does not implement " + type.Name);
         }
+
+        property.objectReferenceValue = implementingObject;
+      }
+    }
+
+    /// <summary>
+    /// Checks if the object or one of its associated GameObject components implements
+    /// the interface that this attribute constrains objects to, and returns the object
+    /// that implements that interface, or null if none was found.
+    /// </summary>
+    public UnityObject FindImplementer(UnityObject obj) {
+      if (obj.GetType().ImplementsInterface(type)) {
+        // All good! This object reference implements the interface.
+        return obj;
+      }
+      else {
+        UnityObject implementingObject;
+
+        if (obj is GameObject) {
+          obj = (obj as GameObject).transform;
+        }
+
+        if (obj is Component) {
+          // If the object is a Component, first search the rest of the GameObject 
+          // for a component that implements the interface. If found, assign it instead,
+          // otherwise null out the property.
+          implementingObject = (obj as Component)
+                               .GetComponents<Component>()
+                               .Query()
+                               .Where(c => c.GetType().ImplementsInterface(type))
+                               .FirstOrDefault();
+        } 
         else {
-          // Search the rest of the GameObject for a component that implements the
-          // interface.
-          var implementer = (objectReferenceValue as Component)
-                            .GetComponents<Component>()
-                            .Query()
-                            .Where(c => c.GetType().ImplementsInterface(type))
-                            .FirstOrDefault();
-          if (implementer == null) {
-            Debug.LogError(property.objectReferenceValue.GetType().Name + " does not implement " + type.Name);
-          }
-
-          property.objectReferenceValue = implementer;
+          // If the object is not a Component, just null out the property.
+          implementingObject = null;
         }
+
+        return implementingObject;
+      }
+    }
+
+    public void DrawProperty(Rect rect, SerializedProperty property, GUIContent label) {
+      if (property.objectReferenceValue != null) {
+        EditorGUI.ObjectField(rect, property, type, label);
+      }
+      else {
+        EditorGUI.ObjectField(rect, label, null, type, false);
+      }
+    }
+
+    public Rect GetDropArea(Rect rect, SerializedProperty property) {
+      return rect;
+    }
+
+    public bool IsDropValid(UnityObject obj, SerializedProperty property) {
+      return FindImplementer(obj) != null;
+    }
+
+    public void ProcessDroppedObject(UnityObject droppedObj, SerializedProperty property) {
+      var implementer = FindImplementer(droppedObj);
+
+      if (implementer == null) {
+        Debug.LogError(property.objectReferenceValue.GetType().Name
+                       + " does not implement " + type.Name);
+      }
+      else {
+        property.objectReferenceValue = implementer;
       }
     }
 
@@ -61,8 +120,6 @@ namespace Leap.Unity.Attributes {
         yield return SerializedPropertyType.ObjectReference;
       }
     }
-
 #endif
   }
-
 }

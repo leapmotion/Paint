@@ -8,7 +8,11 @@ namespace Leap.Unity.Layout {
   public class UILookPositionProvider : MonoBehaviour,
                                         IWorldPositionProvider {
 
-    public Transform lookAnchorTransform;
+    public Transform lookPositionTransform;
+
+    private void Reset() {
+      if (lookPositionTransform == null) lookPositionTransform = this.transform;
+    }
 
     [Header("Optional")]
 
@@ -28,7 +32,7 @@ namespace Leap.Unity.Layout {
                                           .TransformPoint(lookAnchorTranslationSwitch.onLocalPosition);
       }
       else {
-        return lookAnchorTransform.position;
+        return lookPositionTransform.position;
       }
     }
 

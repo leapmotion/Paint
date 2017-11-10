@@ -216,24 +216,22 @@ namespace Leap.Unity.Gestures {
         }
       }
       else {
-        #if UNITY_EDITOR
-        refreshEditorHands();
-        #endif
+        if (!Application.isPlaying) {
+          refreshEditorHands();
+        }
       }
     }
 
     protected virtual void Update() {
-      #if UNITY_EDITOR
-      refreshEditorHands();
-      #endif
+      if (!Application.isPlaying) {
+        refreshEditorHands();
+      }
     }
 
-#if UNITY_EDITOR
     private void refreshEditorHands() {
       _lHand = TestHandUtil.MakeTestHand(isLeft: true);
       _rHand = TestHandUtil.MakeTestHand(isLeft: false);
     }
-#endif
 
     protected virtual void onUpdateFrame(Frame frame) {
 

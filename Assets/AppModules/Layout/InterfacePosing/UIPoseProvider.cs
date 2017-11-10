@@ -12,18 +12,18 @@ namespace Leap.Unity.Layout {
     #region Inspector
 
     [SerializeField, ImplementsInterface(typeof(IHandle))]
-    private MonoBehaviour _uiAnchorHandle;
-    public IHandle uiAnchorHandle {
+    private MonoBehaviour _uiHandle;
+    public IHandle uiHandle {
       get {
-        return _uiAnchorHandle as IHandle;
+        return _uiHandle as IHandle;
       }
     }
 
     [SerializeField, ImplementsInterface(typeof(IWorldPositionProvider))]
-    private MonoBehaviour _uiLookAnchor;
-    public  IWorldPositionProvider uiLookAnchor {
+    private MonoBehaviour _uiLookPositionProvider;
+    public  IWorldPositionProvider uiLookPositionProvider {
       get {
-        return _uiLookAnchor as IWorldPositionProvider;
+        return _uiLookPositionProvider as IWorldPositionProvider;
       }
     }
 
@@ -37,10 +37,10 @@ namespace Leap.Unity.Layout {
     public Vector3 GetTargetPosition() {
       Vector3 layoutPos;
 
-      if (uiAnchorHandle.movement.velocity.magnitude
+      if (uiHandle.movement.velocity.magnitude
             <= PhysicalInterfaceUtils.MIN_THROW_SPEED) {
 
-        layoutPos = uiAnchorHandle.pose.position;
+        layoutPos = uiHandle.pose.position;
 
         if (drawDebug) {
           DebugPing.Ping(layoutPos, Color.white);
@@ -51,8 +51,8 @@ namespace Leap.Unity.Layout {
         // final position relative to the user's head given the position and velocity of
         // the throw.
         layoutPos = LayoutUtils.LayoutThrownUIPosition2(Camera.main.transform.ToWorldPose(),
-                                                       uiAnchorHandle.pose.position,
-                                                       uiAnchorHandle.movement.velocity);
+                                                       uiHandle.pose.position,
+                                                       uiHandle.movement.velocity);
 
         // However, UIs whose central "look" anchor is in a different position than their
         // grabbed/thrown anchor shouldn't be placed directly at the determined position.
@@ -65,8 +65,8 @@ namespace Leap.Unity.Layout {
         Pose finalUIPose = new Pose(layoutPos, GetTargetRotationForPosition(layoutPos));
 
         // We assume the uiAnchorHandle and the uiLookAnchor are rigidly connected.
-        Vector3 curHandleToLookAnchorOffset = (uiLookAnchor.GetTargetWorldPosition()
-                                               - uiAnchorHandle.pose.position);
+        Vector3 curHandleToLookAnchorOffset = (uiLookPositionProvider.GetTargetWorldPosition()
+                                               - uiHandle.pose.position);
 
         // We undo the current rotation of the UI handle and apply that rotation
         // on the current world-space offset between the handle and the look anchor.
@@ -75,7 +75,7 @@ namespace Leap.Unity.Layout {
         // by the layout function and the 
         Vector3 finalRotatedLookAnchorOffset =
           finalUIPose.rotation
-            * (Quaternion.Inverse(uiAnchorHandle.pose.rotation)
+            * (Quaternion.Inverse(uiHandle.pose.rotation)
                * curHandleToLookAnchorOffset);
 
         // We adjust the layout position by this offset, so now the UI should wind up
@@ -96,7 +96,7 @@ namespace Leap.Unity.Layout {
     }
 
     public Quaternion GetTargetRotation() {
-      return GetTargetRotationForPosition(uiLookAnchor.GetTargetWorldPosition());
+      return GetTargetRotationForPosition(uiLookPositionProvider.GetTargetWorldPosition());
     }
 
     private Quaternion GetTargetRotationForPosition(Vector3 worldPosition) {

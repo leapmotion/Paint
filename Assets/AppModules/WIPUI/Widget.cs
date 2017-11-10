@@ -82,8 +82,10 @@ namespace Leap.Unity.WIPUI {
     private void onHandlePickedUp() {
       movementToPose.Cancel();
 
-      if (stateController.currentState.Equals(panelOpenState)) {
-        stateController.SwitchTo(panelClosedState);
+      if (stateController != null) {
+        if (stateController.currentState.Equals(panelOpenState)) {
+          stateController.SwitchTo(panelClosedState);
+        }
       }
     }
 
@@ -119,7 +121,9 @@ namespace Leap.Unity.WIPUI {
     }
 
     private void onPlacementTargetReached() {
-      stateController.SwitchTo(panelOpenState);
+      if (stateController != null) {
+        stateController.SwitchTo(panelOpenState);
+      }
     }
 
     #region Move To Child // TODO: Needs generalization
