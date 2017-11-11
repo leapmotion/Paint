@@ -72,7 +72,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// Fired when the user is moving this handle, and passes itself and where it moved
     /// as event arguments.
     /// </summary>
-    event Action<IHandle, Pose> OnMovedHandle;
+    event Action<IHandle, Pose, Pose> OnMovedHandle;
 
 
     /// <summary>

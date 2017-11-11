@@ -31,6 +31,10 @@ namespace Leap.Unity.Geometry {
       _position = Vector3.zero;
     }
 
+    public static implicit operator Vector3(Point point) {
+      return point.position;
+    }
+
   }
 
   public static class PointExtensions {

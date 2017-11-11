@@ -29,6 +29,8 @@ namespace Leap.Unity.Layout {
 
     public bool flip180 = false;
 
+    public float layoutDistanceMultiplier = 1f;
+
     [Header("Runtime Gizmo Debugging")]
     public bool drawDebug = false;
 
@@ -52,7 +54,8 @@ namespace Leap.Unity.Layout {
         // the throw.
         layoutPos = LayoutUtils.LayoutThrownUIPosition2(Camera.main.transform.ToWorldPose(),
                                                        uiHandle.pose.position,
-                                                       uiHandle.movement.velocity);
+                                                       uiHandle.movement.velocity,
+                                                       layoutDistanceMultiplier);
 
         // However, UIs whose central "look" anchor is in a different position than their
         // grabbed/thrown anchor shouldn't be placed directly at the determined position.
@@ -72,7 +75,7 @@ namespace Leap.Unity.Layout {
         // on the current world-space offset between the handle and the look anchor.
         // Then we apply the final rotation of the UI to this unrotated offset vector,
         // giving us the expected final offset between the position that was calculated
-        // by the layout function and the 
+        // by the layout function and the handle.
         Vector3 finalRotatedLookAnchorOffset =
           finalUIPose.rotation
             * (Quaternion.Inverse(uiHandle.pose.rotation)

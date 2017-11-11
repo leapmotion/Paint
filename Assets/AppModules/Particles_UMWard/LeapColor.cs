@@ -15,7 +15,7 @@ namespace Leap.Unity {
     }
 
     public static Color gray {
-      get { return Lerp(white, black, 0.5f); }
+      get { return new Color(0.5f, 0.5f, 0.5f); }
     }
 
     public static Color white {
@@ -23,7 +23,7 @@ namespace Leap.Unity {
     }
 
     public static Color pink {
-      get { return Utils.ParseHtmlColorString("#FFC0CB"); }
+      get { return new Color(255f / 255f, 0xC0 / 255f, 0xCB / 255f); }
     }
 
     public static Color magenta {
@@ -42,15 +42,15 @@ namespace Leap.Unity {
     }
 
     public static Color brown {
-      get { return Utils.ParseHtmlColorString("#964B00"); }
+      get { return new Color(0x96 / 255f, 0x4B / 255f, 0x00 / 255f); }
     }
 
     public static Color beige {
-      get { return Utils.ParseHtmlColorString("#F5F5DC"); }
+      get { return new Color(0xF5 / 255f, 0xF5 / 255f, 0xDC / 255f); }
     }
 
     public static Color coral {
-      get { return Utils.ParseHtmlColorString("#FF7F50"); }
+      get { return new Color(0xFF / 255f, 0x7F / 255f, 0x50 / 255f); }
     }
 
     public static Color orange {
@@ -58,11 +58,11 @@ namespace Leap.Unity {
     }
 
     public static Color khaki {
-      get { return Utils.ParseHtmlColorString("	#C3B091"); }
+      get { return new Color(0xC3 / 255f, 0xB0 / 255f, 0x91 / 255f); }
     }
 
     public static Color amber {
-      get { return Utils.ParseHtmlColorString("#FFBF00"); }
+      get { return new Color(0xFF / 255f, 0xBF / 255f, 0x00 / 255f); }
     }
 
     public static Color yellow {
@@ -70,7 +70,7 @@ namespace Leap.Unity {
     }
 
     public static Color gold {
-      get { return Utils.ParseHtmlColorString("#D4AF37"); }
+      get { return new Color(0xD4 / 255f, 0xAF / 255f, 0x37 / 255f); }
     }
 
     public static Color green {
@@ -78,31 +78,31 @@ namespace Leap.Unity {
     }
 
     public static Color forest {
-      get { return Utils.ParseHtmlColorString("#228B22"); }
+      get { return new Color(0x22 / 255f, 0x8B / 255f, 0x22 / 255f); }
     }
 
     public static Color mint {
-      get { return Utils.ParseHtmlColorString("#98FB98"); }
+      get { return new Color(0x98 / 255f, 0xFB / 255f, 0x98 / 255f); }
     }
 
     public static Color olive {
-      get { return Utils.ParseHtmlColorString("#808000"); }
+      get { return new Color(0x80 / 255f, 0x80 / 255f, 0x00 / 255f); }
     }
 
     public static Color jade {
-      get { return Utils.ParseHtmlColorString("#00A86B"); }
+      get { return new Color(0x00 / 255f, 0xA8 / 255f, 0x6B / 255f); }
     }
 
     public static Color teal {
-      get { return Utils.ParseHtmlColorString("#008080"); }
+      get { return new Color(0x00 / 255f, 0x80 / 255f, 0x80 / 255f); }
     }
 
     public static Color turquoise {
-      get { return Utils.ParseHtmlColorString("#40E0D0"); }
+      get { return new Color(0x40 / 255f, 0xE0 / 255f, 0xD0 / 255f); }
     }
 
     public static Color veridian {
-      get { return Utils.ParseHtmlColorString("#40826D"); }
+      get { return new Color(0x40 / 255f, 0x82 / 255f, 0x6D / 255f); }
     }
 
     public static Color cyan {
@@ -110,11 +110,11 @@ namespace Leap.Unity {
     }
 
     public static Color cerulean {
-      get { return Utils.ParseHtmlColorString("#007BA7"); }
+      get { return new Color(0x00 / 255f, 0x7B / 255f, 0xA7 / 255f); }
     }
 
     public static Color electricBlue {
-      get { return Utils.ParseHtmlColorString("#7DF9FF"); }
+      get { return new Color(0x7D / 255f, 0xF9 / 255f, 0xFF / 255f); }
     }
 
     public static Color blue {
@@ -122,11 +122,11 @@ namespace Leap.Unity {
     }
 
     public static Color navy {
-      get { return Utils.ParseHtmlColorString("#000080"); }
+      get { return new Color(0x00 / 255f, 0x00 / 255f, 0x80 / 255f); }
     }
 
     public static Color periwinkle {
-      get { return Utils.ParseHtmlColorString("#CCCCFF"); }
+      get { return new Color(0xCC / 255f, 0xCC / 255f, 0xFF / 255f); }
     }
 
     public static Color purple {
@@ -134,11 +134,11 @@ namespace Leap.Unity {
     }
 
     public static Color violet {
-      get { return Utils.ParseHtmlColorString("#7F00FF"); }
+      get { return new Color(0x7F / 255f, 0x00 / 255f, 0xFF / 255f); }
     }
 
     public static Color lavender {
-      get { return Utils.ParseHtmlColorString("#B57EDC"); }
+      get { return new Color(0xB5 / 255f, 0x7E / 255f, 0xDC / 255f); }
     }
 
     #region Shorthand

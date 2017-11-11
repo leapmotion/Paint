@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace Leap.Unity.WIPUI {
 
+  public enum HeldOrientabilityType { LockedFacing, SingleAxis, Free }
+
+  public enum HeldVisiblityType { Hide, StayOpen }
+
   public class Widget : MonoBehaviour {
 
     #region Inspector
@@ -53,11 +57,35 @@ namespace Leap.Unity.WIPUI {
 
     [SerializeField]
     [ImplementsInterface(typeof(IMoveToPose))]
+    [OnEditorChange("movementToPose")]
     [Tooltip("This component handles how the widget moves to its target pose when placed or "
          + "thrown by the user.")]
     private MonoBehaviour _movementToPose;
     public IMoveToPose movementToPose {
       get { return _movementToPose as IMoveToPose; }
+      set {
+        if (Application.isPlaying) {
+          if (_movementToPose != null) {
+            movementToPose.OnMovementUpdate -= onMovementUpdate;
+            movementToPose.OnReachTarget -= onPlacementTargetReached;
+          }
+          _movementToPose = value as MonoBehaviour;
+
+          movementToPose.OnMovementUpdate += onMovementUpdate;
+          movementToPose.OnReachTarget += onPlacementTargetReached;
+        }
+      }
+    }
+    
+    [Header("Held Orientability")]
+
+    [SerializeField, OnEditorChange("heldOrientability")]
+    private HeldOrientabilityType _heldOrientability;
+    public HeldOrientabilityType heldOrientability {
+      get { return _heldOrientability; }
+      set {
+        _heldOrientability = value;
+      }
     }
 
     #endregion
@@ -66,13 +94,18 @@ namespace Leap.Unity.WIPUI {
 
     void Start() {
       handle.OnPickedUp += onHandlePickedUp;
-      handle.OnMoved += onHandleMoved;
+      handle.OnMovedHandle += onMovedHandle;
       handle.OnPlaced += onHandlePlaced;
       handle.OnThrown += onHandleThrown;
       handle.OnPlacedInContainer += onHandlePlacedInContainer;
 
-      movementToPose.OnMovementUpdate += onMovementUpdate;
-      movementToPose.OnReachTarget += onPlacementTargetReached;
+      if (movementToPose != null) {
+        movementToPose.OnMovementUpdate -= onMovementUpdate;
+        movementToPose.OnReachTarget    -= onPlacementTargetReached;
+
+        movementToPose.OnMovementUpdate += onMovementUpdate;
+        movementToPose.OnReachTarget    += onPlacementTargetReached;
+      }
     }
 
     #endregion
@@ -80,7 +113,9 @@ namespace Leap.Unity.WIPUI {
     #region Handle Events
 
     private void onHandlePickedUp() {
-      movementToPose.Cancel();
+      if (movementToPose != null) {
+        movementToPose.Cancel();
+      }
 
       if (stateController != null) {
         if (stateController.currentState.Equals(panelOpenState)) {
@@ -89,8 +124,35 @@ namespace Leap.Unity.WIPUI {
       }
     }
 
-    private void onHandleMoved() {
-      // (no logic)
+    private void onMovedHandle(IHandle handleMoved, Pose oldPose, Pose newPose) {
+
+      var sqrDist = (handle.pose.position - newPose.position).sqrMagnitude;
+
+      float angle = Quaternion.Angle(handle.pose.rotation, newPose.rotation);
+
+      switch (heldOrientability) {
+        case HeldOrientabilityType.Free:
+
+          handle.SetPose(new Pose(Vector3.Lerp(handle.pose.position, newPose.position,
+                                   sqrDist.Map(0.00001f, 0.0004f, 0.1f, 0.8f)),
+                                  Quaternion.Slerp(handle.pose.rotation,
+                                    newPose.rotation,
+                                    angle.Map(0.3f, 4f, 0.01f, 0.8f))));
+
+
+          break;
+        case HeldOrientabilityType.LockedFacing:
+
+          var targetRotation = targetPoseProvider.GetTargetRotation();
+
+          handle.SetPose(new Pose(Vector3.Lerp(handle.pose.position, newPose.position,
+                                   sqrDist.Map(0.00001f, 0.0004f, 0.1f, 0.8f)),
+                                  Quaternion.Slerp(handle.pose.rotation, targetRotation, 0.1f)));
+
+          break;
+        case HeldOrientabilityType.SingleAxis:
+          break;
+      }
     }
 
     private void onHandlePlaced() {
@@ -108,9 +170,13 @@ namespace Leap.Unity.WIPUI {
     #endregion
 
     private void initiateMovementToTarget() {
-      var targetPose = targetPoseProvider.GetTargetPose();
+      if (targetPoseProvider != null) {
+        var targetPose = targetPoseProvider.GetTargetPose();
 
-      movementToPose.MoveToTarget(targetPose);
+        if (movementToPose != null) {
+          movementToPose.MoveToTarget(targetPose);
+        }
+      }
     }
 
     private void onMovementUpdate() {

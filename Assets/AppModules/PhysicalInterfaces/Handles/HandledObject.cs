@@ -110,7 +110,7 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
-    private void onHandleMoved(IHandle handle, Pose movedToPose) {
+    private void onHandleMoved(IHandle handle, Pose oldPose, Pose newPose) {
 
     }
 

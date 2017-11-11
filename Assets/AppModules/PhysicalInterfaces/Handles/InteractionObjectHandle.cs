@@ -48,7 +48,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     private void onGraspedMovement(Vector3 preMovedPos, Quaternion preMovedRot,
                                    Vector3 postMovedPos, Quaternion postMovedRot,
                                    List<InteractionController> graspingControllers) {
-      fireOnMoved(new Pose(postMovedPos, postMovedRot));
+      fireOnMoved(new Pose(preMovedPos, preMovedRot), new Pose(postMovedPos, postMovedRot));
     }
 
     private void onGraspEnd() {
@@ -83,9 +83,9 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
-    private void fireOnMoved(Pose movedToPose) {
+    private void fireOnMoved(Pose oldPose, Pose newPose) {
       OnMoved();
-      OnMovedHandle(this, movedToPose);
+      OnMovedHandle(this, oldPose, newPose);
 
       if (drawDebugGizmos) {
         DebugPing.Ping(intObj.transform.position, LeapColor.blue, 0.075f);
@@ -97,15 +97,15 @@ namespace Leap.Unity.PhysicalInterfaces {
     #region IHandle
 
     public Pose pose {
-      get { return intObj.transform.ToWorldPose(); }
+      get { return intObj.worldPose; }
     }
 
     public void SetPose(Pose pose) {
       intObj.transform.SetWorldPose(pose);
       intObj.rigidbody.position = pose.position;
       intObj.rigidbody.rotation = pose.rotation;
-      //intObj.rigidbody.MovePosition(pose.position);
-      //intObj.rigidbody.MoveRotation(pose.rotation);
+      intObj.rigidbody.MovePosition(pose.position);
+      intObj.rigidbody.MoveRotation(pose.rotation);
     }
 
     public Movement movement {
@@ -134,7 +134,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     public event Action<Vector3> OnThrown = (v) => { };
 
     public event Action<IHandle> OnPickedUpHandle = (x) => { };
-    public event Action<IHandle, Pose> OnMovedHandle = (x, p) => { };
+    public event Action<IHandle, Pose, Pose> OnMovedHandle = (x, p0, p1) => { };
     public event Action<IHandle> OnPlacedHandle = (x) => { };
     public event Action<IHandle> OnPlacedHandleInContainer = (x) => { };
     public event Action<IHandle, Vector3> OnThrownHandle = (x, v) => { };

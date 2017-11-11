@@ -89,7 +89,8 @@ namespace Leap.Unity.Layout {
     /// </summary>
     public static Vector3 LayoutThrownUIPosition2(Pose userHeadPose,
                                                   Vector3 initPosition,
-                                                  Vector3 initVelocity) {
+                                                  Vector3 initVelocity,
+                                                  float optimalDistanceMultiplier = 1f) {
       Vector3 headPosition = userHeadPose.position;
       Quaternion headRotation = userHeadPose.rotation;
 
@@ -123,14 +124,14 @@ namespace Leap.Unity.Layout {
 
         // Add a little bit of the effective look direction to the projectDirection to skew towards winding up
         // in front of the user unless they really throw it hard behind them
-        float forwardSkewAmount = 1F;
+        float forwardSkewAmount = 2F;
         projectDirection += effectiveLookDirection * forwardSkewAmount;
         projectDirection = projectDirection.normalized;
 
         // Find good workstation position based on projection direction
         Vector3 workstationDirection = (initPosition + (projectDirection * 20F) - headPosition);
         Vector3 groundAlignedWorkstationDirection = new Vector3(workstationDirection.x, 0F, workstationDirection.z).normalized;
-        workstationPosition = headPosition + PhysicalInterfaceUtils.OPTIMAL_UI_DISTANCE * groundAlignedWorkstationDirection;
+        workstationPosition = headPosition + PhysicalInterfaceUtils.OPTIMAL_UI_DISTANCE * optimalDistanceMultiplier * groundAlignedWorkstationDirection;
 
         // Allow the WearableManager to pick a new location if the target location overlaps with another workstation
         //workstationPosition = _manager.ValidateTargetWorkstationPosition(workstationPosition, this);
