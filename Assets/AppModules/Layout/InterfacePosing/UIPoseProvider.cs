@@ -17,6 +17,9 @@ namespace Leap.Unity.Layout {
       get {
         return _uiHandle as IHandle;
       }
+      set {
+        _uiHandle = value as MonoBehaviour;
+      }
     }
 
     [SerializeField, ImplementsInterface(typeof(IWorldPositionProvider))]
@@ -39,8 +42,9 @@ namespace Leap.Unity.Layout {
     public Vector3 GetTargetPosition() {
       Vector3 layoutPos;
 
-      if (uiHandle.movement.velocity.magnitude
-            <= PhysicalInterfaceUtils.MIN_THROW_SPEED) {
+      if (!uiHandle.wasThrown) {
+      //if (uiHandle.movement.velocity.magnitude
+      //      <= PhysicalInterfaceUtils.MIN_THROW_SPEED) {
 
         layoutPos = uiHandle.pose.position;
 
@@ -52,7 +56,7 @@ namespace Leap.Unity.Layout {
         // When the UI is thrown, utilize the static thrown UI util to calculate a decent
         // final position relative to the user's head given the position and velocity of
         // the throw.
-        layoutPos = LayoutUtils.LayoutThrownUIPosition2(Camera.main.transform.ToWorldPose(),
+        layoutPos = LayoutUtils.LayoutThrownUIPosition2(Camera.main.transform.ToPose(),
                                                        uiHandle.pose.position,
                                                        uiHandle.movement.velocity,
                                                        layoutDistanceMultiplier);

@@ -89,7 +89,7 @@ namespace Leap.Unity {
     /// will have a value.  If the value is null, this maybe will have no value.
     /// </summary>
     public Maybe(T t) {
-      hasValue = t != null;
+      hasValue = !(t.IsDefaultForType());
       _t = t;
     }
 

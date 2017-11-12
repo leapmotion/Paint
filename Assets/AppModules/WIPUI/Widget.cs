@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Leap.Unity.WIPUI {
 
-  public enum HeldOrientabilityType { LockedFacing, SingleAxis, Free }
+  public enum HeldOrientabilityType { LockedFacing, Free }
 
   public enum HeldVisiblityType { Hide, StayOpen }
 
@@ -20,14 +20,64 @@ namespace Leap.Unity.WIPUI {
     [SerializeField]
     [ImplementsInterface(typeof(IHandle))]
     [Tooltip("This is what the user grabs and places to open a panel.")]
+    [OnEditorChange("handle")]
     private MonoBehaviour _handle;
     public IHandle handle {
       get {
         return _handle as IHandle;
       }
+      set {
+        var newHandleBehaviour = value as MonoBehaviour;
+        if (newHandleBehaviour != _handle) {
+
+          var _oldIHandle = _handle as IHandle;
+          if (_oldIHandle != null) {
+            if (_oldIHandle.isHeld) {
+              onHandlePlaced();
+            }
+            
+            _oldIHandle.OnPickedUp          -= onHandlePickedUp;
+            _oldIHandle.OnMovedHandle       -= onMovedHandle;
+            _oldIHandle.OnPlaced            -= onHandlePlaced;
+            _oldIHandle.OnThrown            -= onHandleThrown;
+            _oldIHandle.OnPlacedInContainer -= onHandlePlacedInContainer;
+          }
+          
+          if (value != null) {
+            value.OnPickedUp          += onHandlePickedUp;
+            value.OnMovedHandle       += onMovedHandle;
+            value.OnPlaced            += onHandlePlaced;
+            value.OnThrown            += onHandleThrown;
+            value.OnPlacedInContainer += onHandlePlacedInContainer;
+          }
+          _handle = newHandleBehaviour;
+
+          // TODO: Super bad. Not sustainable nor really a good idea at all.
+          var movementToPose = newHandleBehaviour.GetComponent<IMoveToPose>();
+          this.movementToPose = movementToPose;
+          this.GetComponent<UIPoseProvider>().uiHandle = handle;
+        }
+      }
     }
 
     [Header("State Changes")]
+
+    [SerializeField, OnEditorChange("heldVisibilityType")]
+    private HeldVisiblityType _heldVisibilityType = HeldVisiblityType.Hide;
+    public HeldVisiblityType heldVisibilityType {
+      get { return _heldVisibilityType; }
+      set {
+        if (value != _heldVisibilityType) {
+          if (value == HeldVisiblityType.StayOpen) {
+            if (stateController.currentState.Equals(panelClosedState)) {
+              stateController.SwitchTo(panelOpenState);
+            }
+          }
+
+          _heldVisibilityType = value;
+        }
+      }
+    }
 
     [Tooltip("This controller opens and closes the panel.")]
     public SwitchTreeController stateController;
@@ -39,6 +89,7 @@ namespace Leap.Unity.WIPUI {
 
     // Not "general" but only utilized at edit-time currently.
     // TODO: Make the Handled Object work at edit-time? hrmm....
+    [Header("(Edit-time Only, Optional)")]
     [QuickButton("Move Here", "MoveToBall")]
     public Transform ballTransform;
     [QuickButton("Move Here", "MoveToPanel")]
@@ -93,11 +144,19 @@ namespace Leap.Unity.WIPUI {
     #region Unity Events
 
     void Start() {
-      handle.OnPickedUp += onHandlePickedUp;
-      handle.OnMovedHandle += onMovedHandle;
-      handle.OnPlaced += onHandlePlaced;
-      handle.OnThrown += onHandleThrown;
-      handle.OnPlacedInContainer += onHandlePlacedInContainer;
+      if (handle != null) {
+        handle.OnPickedUp          -= onHandlePickedUp;
+        handle.OnMovedHandle       -= onMovedHandle;
+        handle.OnPlaced            -= onHandlePlaced;
+        handle.OnThrown            -= onHandleThrown;
+        handle.OnPlacedInContainer -= onHandlePlacedInContainer;
+
+        handle.OnPickedUp          += onHandlePickedUp;
+        handle.OnMovedHandle       += onMovedHandle;
+        handle.OnPlaced            += onHandlePlaced;
+        handle.OnThrown            += onHandleThrown;
+        handle.OnPlacedInContainer += onHandlePlacedInContainer;
+      }
 
       if (movementToPose != null) {
         movementToPose.OnMovementUpdate -= onMovementUpdate;
@@ -118,7 +177,8 @@ namespace Leap.Unity.WIPUI {
       }
 
       if (stateController != null) {
-        if (stateController.currentState.Equals(panelOpenState)) {
+        if (heldVisibilityType != HeldVisiblityType.StayOpen
+            && stateController.currentState.Equals(panelOpenState)) {
           stateController.SwitchTo(panelClosedState);
         }
       }
@@ -149,8 +209,6 @@ namespace Leap.Unity.WIPUI {
                                    sqrDist.Map(0.00001f, 0.0004f, 0.1f, 0.8f)),
                                   Quaternion.Slerp(handle.pose.rotation, targetRotation, 0.1f)));
 
-          break;
-        case HeldOrientabilityType.SingleAxis:
           break;
       }
     }
@@ -203,7 +261,7 @@ namespace Leap.Unity.WIPUI {
     }
 
     public void MoveTo(Transform t) {
-      Pose followingPose = t.ToWorldPose();
+      Pose followingPose = t.ToPose();
 
       this.transform.SetWorldPose(followingPose);
 

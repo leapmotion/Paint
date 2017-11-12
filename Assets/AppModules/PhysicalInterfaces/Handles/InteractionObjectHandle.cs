@@ -4,140 +4,78 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Leap.Unity.Attributes;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
   public class InteractionObjectHandle : MonoBehaviour,
                                          IHandle {
 
+    #region Inspector
+
     public InteractionBehaviour intObj;
-    public AnchorableBehaviour anchObj;
-
-    [Header("Runtime Gizmo Debugging")]
-    public bool drawDebugGizmos = false;
-
-    #region Unity Events
 
     void Reset() {
       if (intObj == null) intObj = GetComponent<InteractionBehaviour>();
-      if (anchObj == null) anchObj = GetComponent<AnchorableBehaviour>();
     }
 
-    void OnValidate() {
-      if (intObj == null) intObj = GetComponent<InteractionBehaviour>();
-      if (anchObj == null) anchObj = GetComponent<AnchorableBehaviour>();
+    #endregion
+
+    #region Unity Events
+
+    private DeltaBuffer _deltaPosBuffer = new DeltaBuffer(5);
+    private DeltaQuaternionBuffer _deltaRotBuffer = new DeltaQuaternionBuffer(5);
+
+    void OnEnable() {
+      _deltaPosBuffer.Clear();
+      _deltaRotBuffer.Clear();
     }
 
-    void Start() {
-      intObj.OnGraspBegin += onGraspBegin;
+    void Update() {
 
-      intObj.OnGraspedMovement += onGraspedMovement;
-
-      if (anchObj != null) {
-        anchObj.OnPostTryAnchorOnGraspEnd += onGraspEnd;
-      }
-      else {
-        intObj.OnGraspEnd += onGraspEnd;
-      }
-    }
-
-    private void onGraspBegin() {
-      fireOnPickedUp();
-    }
-
-    private void onGraspedMovement(Vector3 preMovedPos, Quaternion preMovedRot,
-                                   Vector3 postMovedPos, Quaternion postMovedRot,
-                                   List<InteractionController> graspingControllers) {
-      fireOnMoved(new Pose(preMovedPos, preMovedRot), new Pose(postMovedPos, postMovedRot));
-    }
-
-    private void onGraspEnd() {
-      if (anchObj != null && anchObj.preferredAnchor != null) {
-        OnPlacedInContainer();
-        OnPlacedHandleInContainer(this);
-      }
-      else if (intObj.rigidbody.velocity.magnitude > PhysicalInterfaceUtils.MIN_THROW_SPEED) {
-        OnThrown(intObj.rigidbody.velocity);
-        OnThrownHandle(this, intObj.rigidbody.velocity);
-      }
-      else {
-        OnPlaced();
-        OnPlacedHandle(this);
-      }
-
-      if (drawDebugGizmos) {
-        DebugPing.Ping(intObj.transform.position, LeapColor.orange, 0.5f);
-      }
-    }
-
-    private void fireOnPickedUp() {
-      if (anchObj != null && anchObj.isAttached) {
-        OnPlaced();
-      }
-
-      OnPickedUp();
-      OnPickedUpHandle(this);
-
-      if (drawDebugGizmos) {
-        DebugPing.Ping(intObj.transform.position, LeapColor.cyan, 0.5f);
-      }
-    }
-
-    private void fireOnMoved(Pose oldPose, Pose newPose) {
-      OnMoved();
-      OnMovedHandle(this, oldPose, newPose);
-
-      if (drawDebugGizmos) {
-        DebugPing.Ping(intObj.transform.position, LeapColor.blue, 0.075f);
-      }
     }
 
     #endregion
 
     #region IHandle
 
-    public Pose pose {
-      get { return intObj.worldPose; }
-    }
-
-    public void SetPose(Pose pose) {
-      intObj.transform.SetWorldPose(pose);
-      intObj.rigidbody.position = pose.position;
-      intObj.rigidbody.rotation = pose.rotation;
-      intObj.rigidbody.MovePosition(pose.position);
-      intObj.rigidbody.MoveRotation(pose.rotation);
-    }
+    public Pose pose { get { return intObj.transform.ToPose(); } }
 
     public Movement movement {
-      get { return new Movement(intObj.worldPose,
-                                intObj.worldPose.Then(intObj.worldDeltaPose),
-                                Time.fixedDeltaTime); }
+
     }
 
-    public Pose deltaPose {
-      get { return intObj.worldDeltaPose; }
+    public bool isHeld => throw new NotImplementedException();
+
+    public bool wasHeld => throw new NotImplementedException();
+
+    public bool wasMoved => throw new NotImplementedException();
+
+    public bool wasReleased => throw new NotImplementedException();
+
+    public bool wasThrown => throw new NotImplementedException();
+
+    public bool wasTeleported => throw new NotImplementedException();
+
+    public void Hold() {
+      throw new NotImplementedException();
     }
 
-    public bool isHeld {
-      get { return intObj.isGrasped || (anchObj != null && anchObj.isAttached); }
+    public void Move(Pose newPose) {
+      throw new NotImplementedException();
     }
 
-    public Vector3 heldPosition {
-      get { return intObj.isGrasped ? intObj.graspingController.position
-                                    : anchObj.anchor.transform.position; }
+    public void Release() {
+      throw new NotImplementedException();
     }
 
-    public event Action OnPickedUp = () => { };
-    public event Action OnMoved = () => { };
-    public event Action OnPlaced = () => { };
-    public event Action OnPlacedInContainer = () => { };
-    public event Action<Vector3> OnThrown = (v) => { };
+    public void Teleport(Pose newPose) {
+      throw new NotImplementedException();
+    }
 
-    public event Action<IHandle> OnPickedUpHandle = (x) => { };
-    public event Action<IHandle, Pose, Pose> OnMovedHandle = (x, p0, p1) => { };
-    public event Action<IHandle> OnPlacedHandle = (x) => { };
-    public event Action<IHandle> OnPlacedHandleInContainer = (x) => { };
-    public event Action<IHandle, Vector3> OnThrownHandle = (x, v) => { };
+    public void Throw() {
+      throw new NotImplementedException();
+    }
 
     #endregion
 

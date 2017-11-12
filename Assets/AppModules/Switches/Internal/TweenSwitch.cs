@@ -21,7 +21,7 @@ namespace Leap.Unity.Animation {
 
     [SerializeField, MinValue(0f), OnEditorChange("tweenTime")]
     [UnityEngine.Serialization.FormerlySerializedAs("tweenTime")]
-    private float _tweenTime = 1f;
+    private float _tweenTime = 0.33f;
     public float tweenTime {
       get {
         return _tweenTime;
@@ -49,7 +49,11 @@ namespace Leap.Unity.Animation {
       }
     }
 
+    private bool _isDestroyed = false;
+
     protected virtual void OnDestroy() {
+      _isDestroyed = true;
+
       if (_backingSwitchTween.isValid) {
         _backingSwitchTween.Release();
       }
@@ -152,6 +156,8 @@ namespace Leap.Unity.Animation {
     }
 
     public void OnNow() {
+      if (_isDestroyed) return;
+
 #if UNITY_EDITOR
       if (!Application.isPlaying) {
         Undo.RegisterFullObjectHierarchyUndo(gameObject, "Appear Object(s) Now");

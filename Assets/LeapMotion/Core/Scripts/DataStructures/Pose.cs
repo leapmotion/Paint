@@ -12,6 +12,10 @@ namespace Leap.Unity {
     public Vector3    position;
     public Quaternion rotation;
 
+    public Pose(Vector3 position)
+      : this(position, Quaternion.identity) { }
+    public Pose(Quaternion rotation)
+      : this(Vector3.zero, rotation) { }
     public Pose(Vector3 position, Quaternion rotation) {
       this.position = position;
       this.rotation = rotation;
@@ -117,7 +121,7 @@ namespace Leap.Unity {
     /// <summary>
     /// Creates a Pose using the transform's position and rotation.
     /// </summary>
-    public static Pose ToWorldPose(this Transform t) {
+    public static Pose ToPose(this Transform t) {
       return new Pose(t.position, t.rotation);
     }
 

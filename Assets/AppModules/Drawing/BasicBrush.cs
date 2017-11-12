@@ -97,7 +97,7 @@ namespace Leap.Unity.Drawing {
       get { return _isBrushing; }
     }
 
-    public Pose pose { get { return this.transform.ToWorldPose(); } }
+    public Pose pose { get { return this.transform.ToPose(); } }
 
     public Color color { get { return _color; } set { _color = value; } }
 

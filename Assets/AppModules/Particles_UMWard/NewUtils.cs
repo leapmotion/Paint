@@ -7,6 +7,15 @@ using UnityEngine;
 
 public static class NewUtils {
 
+  #region Equality Utils (General Utils?)
+
+  public static bool IsDefaultForType<T>(this T t) {
+    return EqualityComparer<T>.Default.Equals(t, default(T));
+  }
+
+  #endregion
+
+
   #region Transform Utils
 
   /// <summary>

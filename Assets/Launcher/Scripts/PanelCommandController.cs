@@ -50,6 +50,10 @@ namespace Leap.Unity.Launcher {
       }
 
       if (_lastKnownReceiver != closestReceiver) {
+        //if (closestReceiver != null) {
+
+        //}
+
         initializeWithNewReceiver(closestReceiver);
 
         _lastKnownReceiver = closestReceiver;
@@ -73,6 +77,11 @@ namespace Leap.Unity.Launcher {
         heldOrientabilityToggles.controlsEnabled = false;
         heldVisibilityToggles.controlsEnabled = false;
         handleTypeToggles.controlsEnabled = false;
+
+        curvatureTypeToggles.UntoggleAll();
+        heldOrientabilityToggles.UntoggleAll();
+        heldVisibilityToggles.UntoggleAll();
+        handleTypeToggles.UntoggleAll();
       }
       else {
         renderNewReceiverGained(receiver);
@@ -139,6 +148,8 @@ namespace Leap.Unity.Launcher {
     }
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      if (!gameObject.activeInHierarchy) return;
+
       controllerPoint.RenderSphere(renderColor, 3f);
       controllerPoint.Render(renderColor, 3f);
 

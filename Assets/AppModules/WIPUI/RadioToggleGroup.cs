@@ -25,8 +25,14 @@ public class RadioToggleGroup : MonoBehaviour {
     }
     set {
       foreach (var toggle in toggles) {
-        toggle.controlEnabled = false;
+        toggle.controlEnabled = value;
       }
+    }
+  }
+
+  public void UntoggleAll() {
+    foreach (var toggle in toggles) {
+      toggle.Untoggle();
     }
   }
 

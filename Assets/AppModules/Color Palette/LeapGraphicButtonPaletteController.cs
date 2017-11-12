@@ -13,11 +13,13 @@ public class LeapGraphicButtonPaletteController : GraphicPaletteController {
 
   public int primaryHoverColorIdx;
   public int pressedColorIdx;
+  public int controlDisabledColorIdx;
 
   private Pulsator _pressPulsator;
 
   public Color primaryHoveredColor { get { return palette[primaryHoverColorIdx]; } }
   public Color pressedColor { get { return palette[pressedColorIdx]; } }
+  public Color controlDisabledColor { get { return palette[controlDisabledColorIdx]; } }
 
   protected override void Reset() {
     base.Reset();
@@ -68,7 +70,10 @@ public class LeapGraphicButtonPaletteController : GraphicPaletteController {
   protected override Color updateTargetColor() {
     var targetColor = restingColor;
     
-    if (!_pressPulsator.isResting) {
+    if (!button.controlEnabled) {
+      targetColor = controlDisabledColor;
+    }
+    else if (!_pressPulsator.isResting) {
       if (_pressPulsator.value < 1.0F) {
         targetColor = Color.Lerp(restingColor, pressedColor, _pressPulsator.value);
       }
@@ -77,7 +82,7 @@ public class LeapGraphicButtonPaletteController : GraphicPaletteController {
       }
     }
     else if (button.isPrimaryHovered) {
-      targetColor = palette[primaryHoverColorIdx];
+      targetColor = primaryHoveredColor;
     }
 
     return targetColor;
