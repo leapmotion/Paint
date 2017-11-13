@@ -38,20 +38,20 @@ namespace Leap.Unity {
         }
       }
 
-      var localPosition = this.transform.localPosition;
-      var localRotation = this.transform.localRotation;
-      var localScale    = this.transform.localScale;
+      //var localPosition = this.transform.localPosition;
+      //var localRotation = this.transform.localRotation;
+      //var localScale    = this.transform.localScale;
 
-      if (localPosition != Vector3.zero
-          || localRotation != Quaternion.identity
-          || localScale != Vector3.one) {
-        Debug.LogError("Grouping-only objects must have identity transforms. Groups are "
-                     + "intended to be a hierarchy convenience only, not normal "
-                     + "transform container objects.", this.transform);
-        this.transform.localPosition = Vector3.zero;
-        this.transform.localRotation = Quaternion.identity;
-        this.transform.localScale    = Vector3.one;
-      }
+      //if (localPosition != Vector3.zero
+      //    || localRotation != Quaternion.identity
+      //    || localScale != Vector3.one) {
+      //  Debug.LogError("Grouping-only objects must have identity transforms. Groups are "
+      //               + "intended to be a hierarchy convenience only, not normal "
+      //               + "transform container objects.", this.transform);
+      //  this.transform.localPosition = Vector3.zero;
+      //  this.transform.localRotation = Quaternion.identity;
+      //  this.transform.localScale    = Vector3.one;
+      //}
 #endif
     }
 

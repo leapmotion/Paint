@@ -1,4 +1,5 @@
 ﻿using Leap.Unity.Attributes;
+using Leap.Unity.PhysicalInterfaces;
 using Leap.Unity.Space;
 using Leap.Unity.WIPUI;
 using System;
@@ -133,19 +134,71 @@ namespace Leap.Unity.Launcher {
     }
 
     public HeldVisiblityType GetHeldVisiblityType() {
-      return HeldVisiblityType.StayOpen;
+      return widget.heldVisibilityType;
     }
 
     public void SetHeldVisiblityType(HeldVisiblityType type) {
+      widget.heldVisibilityType = type;
+    }
 
+    [Header("Handle Switching")]
+
+    [SerializeField, OnEditorChange("currentHandleType")]
+    private HandleType _currentHandleType = HandleType.Orb;
+    public HandleType currentHandleType {
+      get { return _currentHandleType; }
+      set {
+        if (value != _currentHandleType) {
+          if (value == HandleType.Orb) {
+            if (widget != null) {
+              if (orbHandle as MonoBehaviour != null) {
+                (orbHandle as MonoBehaviour).gameObject.SetActive(true);
+              }
+              if (titlebarHandle as MonoBehaviour != null) {
+                (titlebarHandle as MonoBehaviour).gameObject.SetActive(false);
+              }
+              widget.handle = orbHandle;
+            }
+          }
+          else if (value == HandleType.Titlebar) {
+            if (widget != null) {
+              if (titlebarHandle as MonoBehaviour != null) {
+                (titlebarHandle as MonoBehaviour).gameObject.SetActive(true);
+              }
+              if (orbHandle as MonoBehaviour != null) {
+                (orbHandle as MonoBehaviour).gameObject.SetActive(false);
+              }
+              widget.handle = titlebarHandle;
+            }
+          }
+
+          _currentHandleType = value;
+        }
+      }
+    }
+
+    [SerializeField, ImplementsInterface(typeof(IHandle))]
+    private MonoBehaviour _orbHandle;
+    public IHandle orbHandle {
+      get {
+        return _orbHandle as IHandle;
+      }
+    }
+
+    [SerializeField, ImplementsInterface(typeof(IHandle))]
+    private MonoBehaviour _titlebarHandle;
+    public IHandle titlebarHandle {
+      get {
+        return _titlebarHandle as IHandle;
+      }
     }
 
     public HandleType GetHandleType() {
-      return HandleType.Orb;
+      return currentHandleType;
     }
 
     public void SetHandleType(HandleType type) {
-
+      currentHandleType = type;
     }
 
     #endregion

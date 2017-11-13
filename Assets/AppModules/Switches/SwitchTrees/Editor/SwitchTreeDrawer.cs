@@ -10,20 +10,6 @@ namespace Leap.Unity.Animation {
   [CustomPropertyDrawer(typeof(SwitchTree), true)]
   public class SwitchTreeDrawer : PropertyDrawer {
 
-    #region Pair Class
-
-    public class Pair<T, U> {
-      public T first;
-      public U second;
-
-      public Pair(T first, U second) {
-        this.first = first;
-        this.second = second;
-      }
-    }
-
-    #endregion
-
     #region GUI Properties & Colors
 
     private const float EXTRA_HEIGHT = 6f;
@@ -66,6 +52,8 @@ namespace Leap.Unity.Animation {
 
     #endregion
 
+    #region PropertyDrawer Overrides
+
     public override float GetPropertyHeight(SerializedProperty property,
                                             GUIContent label) {
       return (EditorGUIUtility.singleLineHeight + EXTRA_HEIGHT_PER_NODE)
@@ -75,9 +63,24 @@ namespace Leap.Unity.Animation {
              ;
     }
 
+    #region Pair Class
+
+    public class Pair<T, U> {
+      public T first;
+      public U second;
+
+      public Pair(T first, U second) {
+        this.first = first;
+        this.second = second;
+      }
+    }
+
+    #endregion
+
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
       var switchTree = makeSwitchTree(property);
+
       int nodeCount = switchTree.NodeCount;
 
       Rect curNodeStateLabelRect;
@@ -106,12 +109,55 @@ namespace Leap.Unity.Animation {
 
     }
 
+    #endregion
+
+    #region SwitchTree Support
+
+    private struct HashTreePair { public Hash hash; public SwitchTree tree; }
+
+    private Dictionary<Transform, HashTreePair> _cachedSwitchTrees
+      = new Dictionary<Transform, HashTreePair>();
+
+    //private Dictionary<Hash, SwitchTree> _cachedSwitchTrees
+    //  = new Dictionary<Hash, SwitchTree>();
+
+    private void invalidateCachedTree(Transform forTransform) {
+      _cachedSwitchTrees.Remove(forTransform);
+    }
+
     private SwitchTree makeSwitchTree(SerializedProperty treeProperty) {
-      return new SwitchTree((treeProperty.FindPropertyRelative("rootSwitchBehaviour")
-                                         .objectReferenceValue as MonoBehaviour).transform,
+
+      var treeRootTransform = (treeProperty.FindPropertyRelative("rootSwitchBehaviour")
+                                .objectReferenceValue as MonoBehaviour).transform;
+      var hierarchyHash = Hash.GetHierarchyHash(treeRootTransform);
+      
+
+      HashTreePair hashTreePair;
+      if (_cachedSwitchTrees.TryGetValue(treeRootTransform, out hashTreePair)
+          && hashTreePair.hash == hierarchyHash) {
+        // Either there's no tree for this transform, or the hierarchy of the transform
+        // has changed (switches may have been disabled, enabled, added, or removed).
+
+        return hashTreePair.tree;
+      }
+      else {
+        // Construct a new tree and cache it.
+        var newTree = new SwitchTree(treeRootTransform,
                             (treeProperty.FindPropertyRelative("_curActiveNodeName")
                                          .stringValue));
+
+        _cachedSwitchTrees[treeRootTransform] = new HashTreePair() {
+          hash = hierarchyHash,
+          tree = newTree
+        };
+
+        return newTree;
+      }
     }
+
+    #endregion
+
+    #region Tree Drawing Support
 
     private void drawNode(SwitchTree.Node node, Rect rect, SwitchTree switchTree,
                           SerializedProperty treeProperty,
@@ -256,6 +302,10 @@ namespace Leap.Unity.Animation {
       EditorGUI.DrawRect(rect, color);
     }
 
+    #endregion
+
+    #region Line Drawing Support
+
     [System.Flags]
     private enum Direction4 {
       Up    = 1 << 0,
@@ -308,13 +358,13 @@ namespace Leap.Unity.Animation {
 
     private void drawCenteredLineUp(Rect rect, float sideRatio, float originRatio, Color color) {
       Rect middle = rect.PadLeftRightPercent(sideRatio);
-      Rect line = middle.PadBottomPercent(originRatio);
+      Rect line = middle.PadTopPercent(originRatio);
       EditorGUI.DrawRect(line, color);
     }
 
     private void drawCenteredLineDown(Rect rect, float sideRatio, float originRatio, Color color) {
       Rect middle = rect.PadLeftRightPercent(sideRatio);
-      Rect line = middle.PadTopPercent(originRatio);
+      Rect line = middle.PadBottomPercent(originRatio);
       EditorGUI.DrawRect(line, color);
     }
 
@@ -329,6 +379,8 @@ namespace Leap.Unity.Animation {
       Rect line = middle.PadLeftPercent(originRatio);
       EditorGUI.DrawRect(line, color);
     }
+
+    #endregion
 
     #region GUIStyle nonsense
 
@@ -354,7 +406,6 @@ namespace Leap.Unity.Animation {
     //    GUI.color = restoreColor;
     //  }
     //}
-
 
     #endregion
 

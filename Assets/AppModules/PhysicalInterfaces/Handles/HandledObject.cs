@@ -1,362 +1,155 @@
-﻿using Leap.Unity;
+﻿using Leap.Unity.Attributes;
 using Leap.Unity.Query;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using Leap.Unity.Attributes;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class HandledObject : MonoBehaviour {
+  public class HandledObject : MovementObservingBehaviour, IHandle {
 
     #region Inspector
 
-    [Header("Handles")]
-    
-    /// <summary>
-    /// Only put IHandles in here!! TODO: Terrible requirement, enforce via attribute,
-    /// whatever, this is a total mess
-    /// </summary>
-    public List<Transform> includeTheseHandles;
-    
-    // Rendered via Custom Editor.
-    /// <summary>
-    /// All handles owned by this HandledObject. Manipulating these handles will
-    /// manipulate the HandlesObject in some way -- by default, by moving it.
-    /// </summary>
-    private List<IHandle> _attachedHandles = new List<IHandle>();
-
-    /// <summary>
-    /// All handles owned by this HandledObject. Read-only.
-    /// </summary>
-    public ReadonlyList<IHandle> attachedHandles {
-      get { return _attachedHandles; }
+    [Header("Handles (each must be IHandle)")]
+    //[ElementsImplementInterface(typeof(IHandle))]
+    // TODO: Write a custom property drawer that renders ImplementsInterface fields
+    // instead of plain Transform fields.
+    [SerializeField, EditTimeOnly]
+    private Transform[] _handles;
+    public IIndexable<IHandle> handles {
+      get {
+        return new TransformArrayComponentWrapper<IHandle>(_handles);
+      }
     }
 
     #endregion
 
     #region Unity Events
 
-    protected virtual void Reset() {
-      RefreshHandles();
+    private Dictionary<IHandle, Pose> _objToHandleDeltaPoses
+      = new Dictionary<IHandle, Pose>();
+
+    protected virtual void Start() {
+      foreach (var handle in handles.GetEnumerator()) {
+        _objToHandleDeltaPoses[handle] = handle.pose.From(this.pose);
+      }
     }
 
-    protected virtual void OnValidate() {
-      RefreshHandles();
-    }
+    private IHandle _heldHandle = null;
 
-    protected virtual void OnEnable() {
-      if (!_handlesInitialized) {
-        RefreshHandles();
+    protected override void Update() {
+      base.Update();
+
+      if (_heldHandle != null && _heldHandle.wasReleased) {
+        _heldHandle = null;
       }
 
-      initializeHandledObject();
+      // Enforces only one handle is held at a time.
+      // This isn't great, but needs to be true for now.
+      {
+        foreach (var handle in handles.GetEnumerator()) {
+          if (handle.wasHeld && handle != _heldHandle) {
+            if (_heldHandle != null) {
+              _heldHandle.Release();
+            }
 
-      registerHandleCallbacks();
-    }
-
-    protected virtual void OnDisable() {
-      unregisterHandleCallbacks();
-    }
-
-    protected virtual void Update() {
-      updateHandledObject();
-    }
-
-    #endregion
-
-    #region Attached Handles
-
-    private bool _handlesInitialized = false;
-
-    public void RefreshHandles() {
-      NewUtils.FindOwnedChildComponents(this, _attachedHandles,
-                                        includeInactiveObjects: true);
-
-      foreach (var transform in includeTheseHandles) {
-        if (transform != null) {
-          var handle = transform.GetComponent<IHandle>();
-          if (handle != null) {
-            _attachedHandles.Add(handle);
+            _heldHandle = handle;
           }
         }
       }
 
-      _handlesInitialized = true;
+      if (_heldHandle != null) {
+        // Handle movement -- easier when only one handle is held at any one
+        // time.
+        if (_heldHandle.wasMoved) {
+          // Move this object based on the movement of the held handle.
+          var objToHeldHandle =_objToHandleDeltaPoses[_heldHandle];
+          this.Move(_heldHandle.pose * objToHeldHandle.inverse);
+
+          // Move non-held handles to match the new pose of this object.
+          var objPose = this.pose;
+          foreach (var handle in handles.GetEnumerator()) {
+            if (handle != _heldHandle) {
+              handle.Move(objPose * _objToHandleDeltaPoses[handle]);
+            }
+          }
+        }
+      }
+
     }
 
     #endregion
 
-    #region Handle Events
+    #region IHandle
 
-    private void registerHandleCallbacks() {
-      foreach (var handle in _attachedHandles) {
-        handle.OnMovedHandle             += onHandleMoved;
-        handle.OnPickedUpHandle          += onHandlePickedUp;
-        handle.OnPlacedHandle            += onHandlePlaced;
-        handle.OnPlacedHandleInContainer += onHandlePlacedInContainer;
-        handle.OnThrownHandle            += onHandleThrown;
-      }
-    }
-
-    private void unregisterHandleCallbacks() {
-      foreach (var handle in _attachedHandles) {
-        handle.OnMovedHandle             -= onHandleMoved;
-        handle.OnPickedUpHandle          -= onHandlePickedUp;
-        handle.OnPlacedHandle            -= onHandlePlaced;
-        handle.OnPlacedHandleInContainer -= onHandlePlacedInContainer;
-        handle.OnThrownHandle            -= onHandleThrown;
-      }
-    }
-
-    private void onHandleMoved(IHandle handle, Pose oldPose, Pose newPose) {
-
-    }
-
-    private void onHandlePickedUp(IHandle handle) {
-      _idleHandles.Remove(handle);
-
-      _heldHandles.Add(handle);
-    }
-
-    private void onHandlePlaced(IHandle handle) {
-      _heldHandles.Remove(handle);
-
-      _idleHandles.Add(handle);
-    }
-
-    private void onHandlePlacedInContainer(IHandle handle) {
-      _heldHandles.Remove(handle);
-
-      _idleHandles.Add(handle);
-    }
-
-    private void onHandleThrown(IHandle handle, Vector3 throwVector) {
-      _heldHandles.Remove(handle);
-
-      _idleHandles.Add(handle);
-    }
-
-    #endregion
-
-    #region Handled Object
-
-    public Pose pose {
-      get {
-        return this.transform.ToWorldPose();
-      }
-    }
-
-    /// <summary> Handles that are currently not held. </summary>
-    private HashSet<IHandle> _idleHandles = new HashSet<IHandle>();
-    /// <summary> Handles that are currently not held. (Read only.) </summary>
-    protected ReadonlyHashSet<IHandle> idleHandles {
-      get { return _idleHandles; }
-    }
-
-    /// <summary> Handles that are currently held. </summary>
-    private HashSet<IHandle> _heldHandles = new HashSet<IHandle>();
-    /// <summary> Handles that are currently held. (Read only.) </summary>
-    protected ReadonlyHashSet<IHandle> heldHandles {
-      get { return _heldHandles; }
+    public override Pose pose {
+      get { return this.transform.ToPose(); }
     }
 
     public bool isHeld {
-      get { return _heldHandles.Count > 0; }
-    }
-
-    private void initializeHandledObject() {
-      _idleHandles.Clear();
-      _heldHandles.Clear();
-
-      foreach (var handle in _attachedHandles) {
-        if (handle.isHeld) {
-          _heldHandles.Add(handle);
-        }
-        else {
-          _idleHandles.Add(handle);
-        }
+      get {
+        return handles.Query().Any(h => h.isHeld);
       }
     }
 
-    private void updateHandledObject() {
-      updatePreKabschState();
-
-      Matrix4x4 kabschResult;
-      solveHandleKabsch(out kabschResult);
-
-      updatePostKabschState();
-
-      updateHandledObjectPose(kabschResult);
-    }
-
-    #endregion
-
-    #region Virtual Functions
-
-    protected virtual void updateHandledObjectPose(Matrix4x4 kabschResult) {
-      // Move this object based on the deltaPose, but preserve the handles' poses if
-      // they happen to be child transforms of this object.
-
-      // Strategy 1: Preserve original poses.
-      var origPoses = Pool<List<Pose>>.Spawn();
-      origPoses.Clear();
-      try {
-        //foreach (var handle in _attachedHandles) {
-        //  origPoses.Add(handle.pose);
-        //}
-
-        //Debug.Log("Delta pose from handles: " + deltaPoseFromHandles);
-        //Debug.Log("OK, my target pose will be " + this.pose.Then(deltaPoseFromHandles));
-        //this.transform.SetWorldPose(this.pose.Then(deltaPoseFromHandles));
-        this.transform.position = kabschResult.GetVector3() + this.transform.position;
-        this.transform.rotation = kabschResult.GetQuaternion() * this.transform.rotation;
-
-        //int origPosesIdx = 0;
-        //foreach (var handle in _attachedHandles) {
-        //  handle.SetPose(origPoses[origPosesIdx++]);
-        //}
-      }
-      finally {
-        origPoses.Clear();
-        Pool<List<Pose>>.Recycle(origPoses);
-      }
-
-      // Strategy 2: Remove child transforms as children, then re-attach after shifting
-      // the handled object.
-      //var origParents = Pool<List<Transform>>.Spawn();
-      //origParents.Clear();
-      //var handleTransforms = Pool<List<Transform>>.Spawn();
-      //handleTransforms.Clear();
-      //try {
-      //  foreach (var handle in _attachedHandles) {
-      //    var handleBehaviour = handle as MonoBehaviour;
-      //    if (handleBehaviour != null) {
-      //      handleTransforms.Add(handleBehaviour.transform);
-      //    }
-      //  }
-
-      //  foreach (var handleTransform in handleTransforms) {
-      //    origParents.Add(handleTransform.parent);
-      //    handleTransform.parent = null;
-      //  }
-
-      //  this.transform.position = kabschResult.GetVector3() + this.transform.position;
-      //  this.transform.rotation = kabschResult.GetQuaternion() * this.transform.rotation;
-
-      //  int origParentIdx = 0;
-      //  foreach (var handleTransform in handleTransforms) {
-      //    handleTransform.parent = origParents[origParentIdx++];
-      //  }
-      //}
-      //finally {
-      //  origParents.Clear();
-      //  Pool<List<Transform>>.Recycle(origParents);
-
-      //  handleTransforms.Clear();
-      //  Pool<List<Transform>>.Recycle(handleTransforms);
-      //}
-    }
-
-    #endregion
-
-    #region Kabsch Movement
-
-    private Interaction.KabschSolver _kabsch = new Interaction.KabschSolver();
-
-    private Dictionary<IHandle, Pose> _origHandlePoses = new Dictionary<IHandle, Pose>();
-
-    private void updatePreKabschState() {
-      // Ensure there's a reference pose for all currently attached handles.
-      foreach (var handle in _attachedHandles) {
-        if (!_origHandlePoses.ContainsKey(handle)) {
-          _origHandlePoses[handle] = handle.pose;
-        }
-      }
-
-      // Ensure there's NO reference pose for non-attached handles.
-      var removeHandlesFromKabsch = Pool<List<IHandle>>.Spawn();
-      removeHandlesFromKabsch.Clear();
-      try {
-        foreach (var handlePosePair in _origHandlePoses) {
-          if (!_attachedHandles.Contains(handlePosePair.Key)) {
-            removeHandlesFromKabsch.Add(handlePosePair.Key);
-          }
-        }
-        foreach (var handle in removeHandlesFromKabsch) {
-          _origHandlePoses.Remove(handle);
-        }
-      }
-      finally {
-        removeHandlesFromKabsch.Clear();
-        Pool<List<IHandle>>.Recycle(removeHandlesFromKabsch);
+    public bool wasHeld {
+      get {
+        return handles.Query().Any(h => h.wasHeld);
       }
     }
 
-    private void solveHandleKabsch(out Matrix4x4 kabschResult) {
-      if (_origHandlePoses.Count == 0) {
-        kabschResult = Matrix4x4.identity;
-        return;
-      }
-
-      List<Vector3> origPoints = Pool<List<Vector3>>.Spawn();
-      origPoints.Clear();
-      List<Vector3> curPoints = Pool<List<Vector3>>.Spawn();
-      curPoints.Clear();
-
-      try {
-        Vector3 objectPos = this.pose.position;
-
-        foreach (var handlePosePair in _origHandlePoses) {
-          Pose origPose = handlePosePair.Value;
-          origPoints.Add(origPose.position - objectPos);
-          origPoints.Add(origPose.position + origPose.rotation * Vector3.up * 0.01f - objectPos);
-          origPoints.Add(origPose.position + origPose.rotation * Vector3.right * 0.01f - objectPos);
-
-          Pose curPose = handlePosePair.Key.pose;
-          curPoints.Add(curPose.position - objectPos);
-          curPoints.Add(curPose.position + curPose.rotation * Vector3.up * 0.01f - objectPos);
-          curPoints.Add(curPose.position + curPose.rotation * Vector3.right * 0.01f - objectPos);
-        }
-
-        if (origPoints.Count == 0) {
-          kabschResult = Matrix4x4.identity;
-          return;
-        }
-
-        kabschResult = _kabsch.SolveKabsch(origPoints, curPoints);
-
-        //solvedPoseFromCurrentPose = solvedMatrix.GetPose();
-      }
-      finally {
-        origPoints.Clear();
-        Pool<List<Vector3>>.Recycle(origPoints);
-
-        curPoints.Clear();
-        Pool<List<Vector3>>.Recycle(curPoints);
+    public bool wasMoved {
+      get {
+        return handles.Query().Any(h => h.wasMoved);
       }
     }
 
-    private void updatePostKabschState() {
-      foreach (var handle in _attachedHandles) {
-        if (_origHandlePoses.ContainsKey(handle)) {
-          _origHandlePoses[handle] = handle.pose;
-        }
+    public bool wasReleased {
+      get {
+        return handles.Query().Any(h => h.wasReleased);
+      }
+    }
+
+    public bool wasThrown {
+      get {
+        return handles.Query().Any(h => h.wasReleased);
+      }
+    }
+
+    public void Hold() {
+      Debug.LogError("Can't hold a HandledObjct directy; instead, call Hold() on one "
+                     + "of one of its Handles.");
+    }
+
+    public void Move(Pose newPose) {
+      this.transform.SetWorldPose(newPose);
+    }
+
+    public void Release() {
+      if (_heldHandle != null) {
+        _heldHandle.Release();
       }
     }
 
     #endregion
 
-    #region Access Helpers
+  }
 
-    /// <summary>
-    /// isHeld property support for PlayMaker.
-    /// </summary>
-    public bool GetIsHeld() { return isHeld; }
+  public struct TransformArrayComponentWrapper<GetComponentType>
+                : IIndexable<GetComponentType>
+  {
+    Transform[] _arr;
 
-    #endregion
+    public TransformArrayComponentWrapper(Transform[] arr) {
+      _arr = arr;
+    }
 
+    public GetComponentType this[int idx] {
+      get { return _arr[idx].GetComponent<GetComponentType>(); }
+    }
+
+    public int Count { get { return _arr.Length; } }
   }
 
 }

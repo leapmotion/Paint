@@ -14,6 +14,8 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// of the vector in degrees.
     /// </summary>
     public Vector3 angularVelocity;
+
+    public static readonly Movement identity = new Movement();
     
     /// <summary>
     /// Constructs a linear Movement involving no rotation.

@@ -4,140 +4,127 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Leap.Unity.Attributes;
+using UnityEngine.EventSystems;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class InteractionObjectHandle : MonoBehaviour,
-                                         IHandle {
+  public class InteractionObjectHandle : TransformHandle {
 
-    public InteractionBehaviour intObj;
-    public AnchorableBehaviour anchObj;
+    #region Inspector
 
-    [Header("Runtime Gizmo Debugging")]
-    public bool drawDebugGizmos = false;
+    [SerializeField, OnEditorChange("intObj")]
+    private InteractionBehaviour _intObj;
+    public InteractionBehaviour intObj {
+      get { return _intObj; }
+      set {
+        if (_intObj != value) {
+          if (isHeld) Release();
 
-    #region Unity Events
+          if (_intObj != null && Application.isPlaying) {
+            unsubscribeIntObjCallbacks();
+          }
 
-    void Reset() {
-      if (intObj == null) intObj = GetComponent<InteractionBehaviour>();
-      if (anchObj == null) anchObj = GetComponent<AnchorableBehaviour>();
-    }
+          if (value != null && Application.isPlaying) {
+            subscribeIntObjCallbacks();
+          }
 
-    void OnValidate() {
-      if (intObj == null) intObj = GetComponent<InteractionBehaviour>();
-      if (anchObj == null) anchObj = GetComponent<AnchorableBehaviour>();
-    }
-
-    void Start() {
-      intObj.OnGraspBegin += onGraspBegin;
-
-      intObj.OnGraspedMovement += onGraspedMovement;
-
-      if (anchObj != null) {
-        anchObj.OnPostTryAnchorOnGraspEnd += onGraspEnd;
-      }
-      else {
-        intObj.OnGraspEnd += onGraspEnd;
-      }
-    }
-
-    private void onGraspBegin() {
-      fireOnPickedUp();
-    }
-
-    private void onGraspedMovement(Vector3 preMovedPos, Quaternion preMovedRot,
-                                   Vector3 postMovedPos, Quaternion postMovedRot,
-                                   List<InteractionController> graspingControllers) {
-      fireOnMoved(new Pose(preMovedPos, preMovedRot), new Pose(postMovedPos, postMovedRot));
-    }
-
-    private void onGraspEnd() {
-      if (anchObj != null && anchObj.preferredAnchor != null) {
-        OnPlacedInContainer();
-        OnPlacedHandleInContainer(this);
-      }
-      else if (intObj.rigidbody.velocity.magnitude > PhysicalInterfaceUtils.MIN_THROW_SPEED) {
-        OnThrown(intObj.rigidbody.velocity);
-        OnThrownHandle(this, intObj.rigidbody.velocity);
-      }
-      else {
-        OnPlaced();
-        OnPlacedHandle(this);
-      }
-
-      if (drawDebugGizmos) {
-        DebugPing.Ping(intObj.transform.position, LeapColor.orange, 0.5f);
-      }
-    }
-
-    private void fireOnPickedUp() {
-      if (anchObj != null && anchObj.isAttached) {
-        OnPlaced();
-      }
-
-      OnPickedUp();
-      OnPickedUpHandle(this);
-
-      if (drawDebugGizmos) {
-        DebugPing.Ping(intObj.transform.position, LeapColor.cyan, 0.5f);
-      }
-    }
-
-    private void fireOnMoved(Pose oldPose, Pose newPose) {
-      OnMoved();
-      OnMovedHandle(this, oldPose, newPose);
-
-      if (drawDebugGizmos) {
-        DebugPing.Ping(intObj.transform.position, LeapColor.blue, 0.075f);
+          _intObj = value;
+        }
       }
     }
 
     #endregion
 
-    #region IHandle
-
-    public Pose pose {
-      get { return intObj.worldPose; }
+    #region Unity Events
+    
+    protected virtual void Reset() {
+      initInspector();
     }
 
-    public void SetPose(Pose pose) {
-      intObj.transform.SetWorldPose(pose);
-      intObj.rigidbody.position = pose.position;
-      intObj.rigidbody.rotation = pose.rotation;
-      intObj.rigidbody.MovePosition(pose.position);
-      intObj.rigidbody.MoveRotation(pose.rotation);
+    protected virtual void OnValidate() {
+      initInspector();
     }
 
-    public Movement movement {
-      get { return new Movement(intObj.worldPose,
-                                intObj.worldPose.Then(intObj.worldDeltaPose),
-                                Time.fixedDeltaTime); }
+    protected virtual void Awake() {
+      initInspector();
     }
 
-    public Pose deltaPose {
-      get { return intObj.worldDeltaPose; }
+    private void initInspector() {
+      if (intObj == null) intObj = GetComponent<InteractionBehaviour>();
+
+      subscribeIntObjCallbacks();
     }
 
-    public bool isHeld {
-      get { return intObj.isGrasped || (anchObj != null && anchObj.isAttached); }
+    #endregion
+
+    #region Interaction Object Handle
+
+    private void unsubscribeIntObjCallbacks() {
+      intObj.OnGraspBegin -= onGraspBegin;
+      intObj.OnGraspEnd -= onGraspEnd;
+
+      intObj.OnGraspedMovement -= onGraspedMovement;
     }
 
-    public Vector3 heldPosition {
-      get { return intObj.isGrasped ? intObj.graspingController.position
-                                    : anchObj.anchor.transform.position; }
+    private void subscribeIntObjCallbacks() {
+      intObj.OnGraspBegin += onGraspBegin;
+      intObj.OnGraspEnd += onGraspEnd;
+
+      intObj.OnGraspedMovement += onGraspedMovement;
     }
 
-    public event Action OnPickedUp = () => { };
-    public event Action OnMoved = () => { };
-    public event Action OnPlaced = () => { };
-    public event Action OnPlacedInContainer = () => { };
-    public event Action<Vector3> OnThrown = (v) => { };
+    private void onGraspBegin() {
+      if (!isHeld) {
+        Hold();
+      }
+    }
 
-    public event Action<IHandle> OnPickedUpHandle = (x) => { };
-    public event Action<IHandle, Pose, Pose> OnMovedHandle = (x, p0, p1) => { };
-    public event Action<IHandle> OnPlacedHandle = (x) => { };
-    public event Action<IHandle> OnPlacedHandleInContainer = (x) => { };
-    public event Action<IHandle, Vector3> OnThrownHandle = (x, v) => { };
+    private void onGraspEnd() {
+      if (isHeld) {
+        Release();
+      }
+    }
+
+    public override void Release() {
+      base.Release();
+
+      if (intObj.isGrasped) {
+        intObj.ReleaseFromGrasp();
+      }
+    }
+
+    private void onGraspedMovement(Vector3 oldPosition, Quaternion oldRotation,
+                                   Vector3 newPosition, Quaternion newRotation,
+                                   List<InteractionController> graspingControllers) {
+      var oldPose = new Pose() {
+        position = oldPosition,
+        rotation = oldRotation
+      };
+      var newPose = new Pose() {
+        position = newPosition,
+        rotation = newRotation
+      };
+      filterGraspedMovement(oldPose, newPose);
+    }
+
+    private void filterGraspedMovement(Pose oldPose, Pose newPose) {
+      var sqrDist = (oldPose.position - newPose.position).sqrMagnitude;
+      float angle = Quaternion.Angle(oldPose.rotation, newPose.rotation);
+
+      var smoothedPose = new Pose(Vector3.Lerp(oldPose.position, newPose.position,
+                                   sqrDist.Map(0.00001f, 0.0004f, 0.2f, 0.8f)),
+                                  Quaternion.Slerp(oldPose.rotation,
+                                    newPose.rotation,
+                                    angle.Map(0.3f, 4f, 0.01f, 0.8f)));
+
+      Move(smoothedPose);
+    }
+
+    public override void Move(Pose newPose) {
+      intObj.rigidbody.MovePosition(newPose.position);
+      intObj.rigidbody.MoveRotation(newPose.rotation);
+    }
 
     #endregion
 

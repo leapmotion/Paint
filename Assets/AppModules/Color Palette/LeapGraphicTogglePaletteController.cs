@@ -56,6 +56,10 @@ public class LeapGraphicTogglePaletteController : LeapGraphicButtonPaletteContro
       }
     }
 
+    if (!toggle.isToggled && !toggle.controlEnabled) {
+      targetColor = controlDisabledColor;
+    }
+
     return targetColor;
   }
 
