@@ -5,76 +5,113 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Leap.Unity.Attributes;
+using UnityEngine.EventSystems;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class InteractionObjectHandle : MonoBehaviour,
-                                         IHandle {
+  public class InteractionObjectHandle : TransformHandle {
 
     #region Inspector
 
-    public InteractionBehaviour intObj;
+    [SerializeField, OnEditorChange("intObj")]
+    private InteractionBehaviour _intObj;
+    public InteractionBehaviour intObj {
+      get { return _intObj; }
+      set {
+        if (_intObj != value) {
+          if (isHeld) Release();
 
-    void Reset() {
+          if (_intObj != null && Application.isPlaying) {
+            unsubscribeIntObjCallbacks();
+          }
+
+          if (value != null && Application.isPlaying) {
+            subscribeIntObjCallbacks();
+          }
+
+          _intObj = value;
+        }
+      }
+    }
+
+    private void initInspector() {
       if (intObj == null) intObj = GetComponent<InteractionBehaviour>();
+
+      subscribeIntObjCallbacks();
     }
 
     #endregion
 
     #region Unity Events
-
-    private DeltaBuffer _deltaPosBuffer = new DeltaBuffer(5);
-    private DeltaQuaternionBuffer _deltaRotBuffer = new DeltaQuaternionBuffer(5);
-
-    void OnEnable() {
-      _deltaPosBuffer.Clear();
-      _deltaRotBuffer.Clear();
+    
+    protected virtual void Reset() {
+      initInspector();
     }
 
-    void Update() {
+    protected virtual void OnValidate() {
+      initInspector();
+    }
 
+    protected virtual void Awake() {
+      initInspector();
     }
 
     #endregion
 
-    #region IHandle
+    #region Interaction Object Handle
 
-    public Pose pose { get { return intObj.transform.ToPose(); } }
+    private void unsubscribeIntObjCallbacks() {
+      intObj.OnGraspBegin -= onGraspBegin;
+      intObj.OnGraspEnd -= onGraspEnd;
 
-    public Movement movement {
-
+      intObj.OnGraspedMovement -= onGraspedMovement;
     }
 
-    public bool isHeld => throw new NotImplementedException();
+    private void subscribeIntObjCallbacks() {
+      intObj.OnGraspBegin += onGraspBegin;
+      intObj.OnGraspEnd += onGraspEnd;
 
-    public bool wasHeld => throw new NotImplementedException();
-
-    public bool wasMoved => throw new NotImplementedException();
-
-    public bool wasReleased => throw new NotImplementedException();
-
-    public bool wasThrown => throw new NotImplementedException();
-
-    public bool wasTeleported => throw new NotImplementedException();
-
-    public void Hold() {
-      throw new NotImplementedException();
+      intObj.OnGraspedMovement += onGraspedMovement;
     }
 
-    public void Move(Pose newPose) {
-      throw new NotImplementedException();
+    private void onGraspBegin() {
+      Hold();
     }
 
-    public void Release() {
-      throw new NotImplementedException();
+    private void onGraspEnd() {
+      Release();
     }
 
-    public void Teleport(Pose newPose) {
-      throw new NotImplementedException();
+    private void onGraspedMovement(Vector3 oldPosition, Quaternion oldRotation,
+                                   Vector3 newPosition, Quaternion newRotation,
+                                   List<InteractionController> graspingControllers) {
+      var oldPose = new Pose() {
+        position = oldPosition,
+        rotation = oldRotation
+      };
+      var newPose = new Pose() {
+        position = newPosition,
+        rotation = newRotation
+      };
+      filterGraspedMovement(oldPose, newPose);
     }
 
-    public void Throw() {
-      throw new NotImplementedException();
+    private void filterGraspedMovement(Pose oldPose, Pose newPose) {
+      var sqrDist = (oldPose.position - newPose.position).sqrMagnitude;
+      float angle = Quaternion.Angle(oldPose.rotation, newPose.rotation);
+
+      var smoothedPose = new Pose(Vector3.Lerp(oldPose.position, newPose.position,
+                                   sqrDist.Map(0.00001f, 0.0004f, 0.2f, 0.8f)),
+                                  Quaternion.Slerp(oldPose.rotation,
+                                    newPose.rotation,
+                                    angle.Map(0.3f, 4f, 0.01f, 0.8f)));
+
+      Move(smoothedPose);
+    }
+
+    public override void Move(Pose newPose) {
+      intObj.rigidbody.MovePosition(newPose.position);
+      intObj.rigidbody.MoveRotation(newPose.rotation);
     }
 
     #endregion

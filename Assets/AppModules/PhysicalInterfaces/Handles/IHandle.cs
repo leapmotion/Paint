@@ -6,22 +6,20 @@ namespace Leap.Unity.PhysicalInterfaces {
 
   public interface IHandle {
     
-    Pose        pose          { get; }
-    Movement    movement      { get; }
+    Pose     pose     { get; }
+    Movement movement { get; }
                               
-    bool isHeld               { get; }
-                              
-    bool wasHeld              { get; }
-    bool wasMoved             { get; }
-    bool wasReleased          { get; }
-    bool wasThrown            { get; }
-    bool wasTeleported        { get; }
-    
+    bool isHeld       { get; }
+    bool wasHeld      { get; }
     void Hold();
+
+    bool wasMoved     { get; }
     void Move(Pose newPose);
+
+    bool wasReleased  { get; }
     void Release();
-    void Throw();
-    void Teleport(Pose newPose);
+
+    bool wasThrown    { get; }
 
   }
 

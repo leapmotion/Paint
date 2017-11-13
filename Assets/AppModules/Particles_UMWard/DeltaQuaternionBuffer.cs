@@ -56,13 +56,28 @@ namespace Leap.Unity {
     }
 
     /// <summary>
-    /// Returns the average change between each sample rotation per unit time as an
+    /// Returns the average angular velocity of Quaternions in the buffer as an
     /// angle-axis vector, or zero if the buffer is empty.
     /// </summary>
     public Vector3 Delta() {
-      if (length == 0) return Vector3.zero;
+      if (length <= 1) return Vector3.zero;
 
-      // TODO: FINISH
+      var deltaSum = Vector3.zero;
+      for (int i = 0; i + 1 < length; i++) {
+        var sample0 = _buffer.Get(i);
+        var sample1 = _buffer.Get(i + 1);
+        var r0 = sample0.value;
+        var t0 = sample0.time;
+        var r1 = sample1.value;
+        var t1 = sample1.time;
+
+        var delta = (r1.From(r0)).ToAngleAxisVector();
+        var deltaTime = t1.From(t0);
+
+        deltaSum += delta / deltaTime;
+      }
+
+      return deltaSum / length;
     }
 
     /// <summary> Returns the average change between each sample per unit time, or zero if the buffer is not full. </summary>

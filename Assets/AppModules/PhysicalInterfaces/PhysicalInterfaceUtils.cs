@@ -9,6 +9,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// and beneath which a released object should be considered placed.
     /// </summary>
     public const float MIN_THROW_SPEED = 0.70f;
+    public const float MIN_THROW_SPEED_SQR = MIN_THROW_SPEED * MIN_THROW_SPEED;
 
     /// <summary>
     /// For the purposes of mapping values based on throw speed, 10 m/s represents

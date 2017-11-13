@@ -33,22 +33,22 @@ namespace Leap.Unity.WIPUI {
           var _oldIHandle = _handle as IHandle;
           if (_oldIHandle != null) {
             if (_oldIHandle.isHeld) {
-              onHandlePlaced();
+              //onHandlePlaced();
             }
             
-            _oldIHandle.OnPickedUp          -= onHandlePickedUp;
-            _oldIHandle.OnMovedHandle       -= onMovedHandle;
-            _oldIHandle.OnPlaced            -= onHandlePlaced;
-            _oldIHandle.OnThrown            -= onHandleThrown;
-            _oldIHandle.OnPlacedInContainer -= onHandlePlacedInContainer;
+            //_oldIHandle.OnPickedUp          -= onHandlePickedUp;
+            //_oldIHandle.OnMovedHandle       -= onMovedHandle;
+            //_oldIHandle.OnPlaced            -= onHandlePlaced;
+            //_oldIHandle.OnThrown            -= onHandleThrown;
+            //_oldIHandle.OnPlacedInContainer -= onHandlePlacedInContainer;
           }
           
           if (value != null) {
-            value.OnPickedUp          += onHandlePickedUp;
-            value.OnMovedHandle       += onMovedHandle;
-            value.OnPlaced            += onHandlePlaced;
-            value.OnThrown            += onHandleThrown;
-            value.OnPlacedInContainer += onHandlePlacedInContainer;
+            //value.OnPickedUp          += onHandlePickedUp;
+            //value.OnMovedHandle       += onMovedHandle;
+            //value.OnPlaced            += onHandlePlaced;
+            //value.OnThrown            += onHandleThrown;
+            //value.OnPlacedInContainer += onHandlePlacedInContainer;
           }
           _handle = newHandleBehaviour;
 
@@ -117,13 +117,13 @@ namespace Leap.Unity.WIPUI {
       set {
         if (Application.isPlaying) {
           if (_movementToPose != null) {
-            movementToPose.OnMovementUpdate -= onMovementUpdate;
-            movementToPose.OnReachTarget -= onPlacementTargetReached;
+            //movementToPose.OnMovementUpdate -= onMovementUpdate;
+            //movementToPose.OnReachTarget -= onPlacementTargetReached;
           }
           _movementToPose = value as MonoBehaviour;
 
-          movementToPose.OnMovementUpdate += onMovementUpdate;
-          movementToPose.OnReachTarget += onPlacementTargetReached;
+          //movementToPose.OnMovementUpdate += onMovementUpdate;
+          //movementToPose.OnReachTarget += onPlacementTargetReached;
         }
       }
     }
@@ -141,134 +141,133 @@ namespace Leap.Unity.WIPUI {
 
     #endregion
 
-    #region Unity Events
+    //#region Unity Events
 
-    void Start() {
-      if (handle != null) {
-        handle.OnPickedUp          -= onHandlePickedUp;
-        handle.OnMovedHandle       -= onMovedHandle;
-        handle.OnPlaced            -= onHandlePlaced;
-        handle.OnThrown            -= onHandleThrown;
-        handle.OnPlacedInContainer -= onHandlePlacedInContainer;
+    //void Start() {
+    //  if (handle != null) {
+    //    handle.OnPickedUp          -= onHandlePickedUp;
+    //    handle.OnMovedHandle       -= onMovedHandle;
+    //    handle.OnPlaced            -= onHandlePlaced;
+    //    handle.OnThrown            -= onHandleThrown;
+    //    handle.OnPlacedInContainer -= onHandlePlacedInContainer;
 
-        handle.OnPickedUp          += onHandlePickedUp;
-        handle.OnMovedHandle       += onMovedHandle;
-        handle.OnPlaced            += onHandlePlaced;
-        handle.OnThrown            += onHandleThrown;
-        handle.OnPlacedInContainer += onHandlePlacedInContainer;
-      }
+    //    handle.OnPickedUp          += onHandlePickedUp;
+    //    handle.OnMovedHandle       += onMovedHandle;
+    //    handle.OnPlaced            += onHandlePlaced;
+    //    handle.OnThrown            += onHandleThrown;
+    //    handle.OnPlacedInContainer += onHandlePlacedInContainer;
+    //  }
 
-      if (movementToPose != null) {
-        movementToPose.OnMovementUpdate -= onMovementUpdate;
-        movementToPose.OnReachTarget    -= onPlacementTargetReached;
+    //  if (movementToPose != null) {
+    //    movementToPose.OnMovementUpdate -= onMovementUpdate;
+    //    movementToPose.OnReachTarget    -= onPlacementTargetReached;
 
-        movementToPose.OnMovementUpdate += onMovementUpdate;
-        movementToPose.OnReachTarget    += onPlacementTargetReached;
-      }
-    }
+    //    movementToPose.OnMovementUpdate += onMovementUpdate;
+    //    movementToPose.OnReachTarget    += onPlacementTargetReached;
+    //  }
+    //}
 
-    #endregion
+    //#endregion
 
-    #region Handle Events
+    //#region Handle Events
 
-    private void onHandlePickedUp() {
-      if (movementToPose != null) {
-        movementToPose.Cancel();
-      }
+    //private void onHandlePickedUp() {
+    //  if (movementToPose != null) {
+    //    movementToPose.Cancel();
+    //  }
 
-      if (stateController != null) {
-        if (heldVisibilityType != HeldVisiblityType.StayOpen
-            && stateController.currentState.Equals(panelOpenState)) {
-          stateController.SwitchTo(panelClosedState);
-        }
-      }
-    }
+    //  if (stateController != null) {
+    //    if (heldVisibilityType != HeldVisiblityType.StayOpen
+    //        && stateController.currentState.Equals(panelOpenState)) {
+    //      stateController.SwitchTo(panelClosedState);
+    //    }
+    //  }
+    //}
 
-    private void onMovedHandle(IHandle handleMoved, Pose oldPose, Pose newPose) {
+    //private void onMovedHandle(IHandle handleMoved, Pose oldPose, Pose newPose) {
 
-      var sqrDist = (handle.pose.position - newPose.position).sqrMagnitude;
+    //  var sqrDist = (handle.pose.position - newPose.position).sqrMagnitude;
+    //  float angle = Quaternion.Angle(handle.pose.rotation, newPose.rotation);
 
-      float angle = Quaternion.Angle(handle.pose.rotation, newPose.rotation);
+    //  switch (heldOrientability) {
+    //    case HeldOrientabilityType.Free:
 
-      switch (heldOrientability) {
-        case HeldOrientabilityType.Free:
-
-          handle.SetPose(new Pose(Vector3.Lerp(handle.pose.position, newPose.position,
-                                   sqrDist.Map(0.00001f, 0.0004f, 0.1f, 0.8f)),
-                                  Quaternion.Slerp(handle.pose.rotation,
-                                    newPose.rotation,
-                                    angle.Map(0.3f, 4f, 0.01f, 0.8f))));
+    //      handle.SetPose(new Pose(Vector3.Lerp(handle.pose.position, newPose.position,
+    //                               sqrDist.Map(0.00001f, 0.0004f, 0.1f, 0.8f)),
+    //                              Quaternion.Slerp(handle.pose.rotation,
+    //                                newPose.rotation,
+    //                                angle.Map(0.3f, 4f, 0.01f, 0.8f))));
 
 
-          break;
-        case HeldOrientabilityType.LockedFacing:
+    //      break;
+    //    case HeldOrientabilityType.LockedFacing:
 
-          var targetRotation = targetPoseProvider.GetTargetRotation();
+    //      var targetRotation = targetPoseProvider.GetTargetRotation();
 
-          handle.SetPose(new Pose(Vector3.Lerp(handle.pose.position, newPose.position,
-                                   sqrDist.Map(0.00001f, 0.0004f, 0.1f, 0.8f)),
-                                  Quaternion.Slerp(handle.pose.rotation, targetRotation, 0.1f)));
+    //      handle.SetPose(new Pose(Vector3.Lerp(handle.pose.position, newPose.position,
+    //                               sqrDist.Map(0.00001f, 0.0004f, 0.1f, 0.8f)),
+    //                              Quaternion.Slerp(handle.pose.rotation, targetRotation, 0.1f)));
 
-          break;
-      }
-    }
+    //      break;
+    //  }
+    //}
 
-    private void onHandlePlaced() {
-      initiateMovementToTarget();
-    }
+    //private void onHandlePlaced() {
+    //  initiateMovementToTarget();
+    //}
 
-    private void onHandleThrown(Vector3 velocity) {
-      initiateMovementToTarget();
-    }
+    //private void onHandleThrown(Vector3 velocity) {
+    //  initiateMovementToTarget();
+    //}
 
-    private void onHandlePlacedInContainer() {
-      // (no logic)
-    }
+    //private void onHandlePlacedInContainer() {
+    //  // (no logic)
+    //}
 
-    #endregion
+    //#endregion
 
-    private void initiateMovementToTarget() {
-      if (targetPoseProvider != null) {
-        var targetPose = targetPoseProvider.GetTargetPose();
+    //private void initiateMovementToTarget() {
+    //  if (targetPoseProvider != null) {
+    //    var targetPose = targetPoseProvider.GetTargetPose();
 
-        if (movementToPose != null) {
-          movementToPose.MoveToTarget(targetPose);
-        }
-      }
-    }
+    //    if (movementToPose != null) {
+    //      movementToPose.MoveToTarget(targetPose);
+    //    }
+    //  }
+    //}
 
-    private void onMovementUpdate() {
-      movementToPose.targetPose = new Pose() {
-        position = movementToPose.targetPose.position,
-        rotation = targetPoseProvider.GetTargetRotation()
-      };
-    }
+    //private void onMovementUpdate() {
+    //  movementToPose.targetPose = new Pose() {
+    //    position = movementToPose.targetPose.position,
+    //    rotation = targetPoseProvider.GetTargetRotation()
+    //  };
+    //}
 
-    private void onPlacementTargetReached() {
-      if (stateController != null) {
-        stateController.SwitchTo(panelOpenState);
-      }
-    }
+    //private void onPlacementTargetReached() {
+    //  if (stateController != null) {
+    //    stateController.SwitchTo(panelOpenState);
+    //  }
+    //}
 
-    #region Move To Child // TODO: Needs generalization
+    //#region Move To Child // TODO: Needs generalization
 
-    public void MoveToBall() {
-      MoveTo(ballTransform);
-    }
+    //public void MoveToBall() {
+    //  MoveTo(ballTransform);
+    //}
 
-    public void MoveToPanel() {
-      MoveTo(panelTransform);
-    }
+    //public void MoveToPanel() {
+    //  MoveTo(panelTransform);
+    //}
 
-    public void MoveTo(Transform t) {
-      Pose followingPose = t.ToPose();
+    //public void MoveTo(Transform t) {
+    //  Pose followingPose = t.ToPose();
 
-      this.transform.SetWorldPose(followingPose);
+    //  this.transform.SetWorldPose(followingPose);
 
-      t.SetWorldPose(followingPose);
-    }
+    //  t.SetWorldPose(followingPose);
+    //}
 
-    #endregion
+    //#endregion
 
   }
 
