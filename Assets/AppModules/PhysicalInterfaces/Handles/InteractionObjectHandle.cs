@@ -34,12 +34,6 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
-    private void initInspector() {
-      if (intObj == null) intObj = GetComponent<InteractionBehaviour>();
-
-      subscribeIntObjCallbacks();
-    }
-
     #endregion
 
     #region Unity Events
@@ -54,6 +48,12 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     protected virtual void Awake() {
       initInspector();
+    }
+
+    private void initInspector() {
+      if (intObj == null) intObj = GetComponent<InteractionBehaviour>();
+
+      subscribeIntObjCallbacks();
     }
 
     #endregion
@@ -75,11 +75,23 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     private void onGraspBegin() {
-      Hold();
+      if (!isHeld) {
+        Hold();
+      }
     }
 
     private void onGraspEnd() {
-      Release();
+      if (isHeld) {
+        Release();
+      }
+    }
+
+    public override void Release() {
+      base.Release();
+
+      if (intObj.isGrasped) {
+        intObj.ReleaseFromGrasp();
+      }
     }
 
     private void onGraspedMovement(Vector3 oldPosition, Quaternion oldRotation,
