@@ -387,78 +387,20 @@ public static class NewUtils {
   #endregion
 
 
-  #region Pose Utils
-
-  /// <summary>
-  /// Returns the rotation that makes a transform at objectPosition point its forward
-  /// vector at targetPosition and keep its rightward vector parallel with the horizon
-  /// defined by a normal of Vector3.up.
-  /// 
-  /// For example, this will point an interface panel at a user camera while
-  /// maintaining the alignment of text and other elements with the horizon line.
-  /// </summary>
-  /// <returns></returns>
-  public static Quaternion FaceTargetWithoutTwist(Vector3 fromPosition, Vector3 targetPosition, bool flip180 = false) {
-    return FaceTargetWithoutTwist(fromPosition, targetPosition, Vector3.up, flip180);
-  }
-
-  /// <summary>
-  /// Returns the rotation that makes a transform at objectPosition point its forward
-  /// vector at targetPosition and keep its rightward vector parallel with the horizon
-  /// defined by the upwardDirection normal.
-  /// 
-  /// For example, this will point an interface panel at a user camera while
-  /// maintaining the alignment of text and other elements with the horizon line.
-  /// </summary>
-  public static Quaternion FaceTargetWithoutTwist(Vector3 objectPosition, Vector3 targetPosition, Vector3 upwardDirection, bool flip180 = false) {
-    Vector3 objToTarget = -1f * (Camera.main.transform.position - objectPosition);
-    Vector3 horizonRight = Vector3.Cross(upwardDirection, objToTarget);
-    Vector3 objUp = Vector3.Cross(objToTarget.normalized, horizonRight.normalized);
-    return Quaternion.LookRotation((flip180 ? -1 : 1) * objToTarget, objUp);
-  }
-
-  #endregion
-
-
-  #region Float Utils
-
-  public static float From(this float thisFloat, float otherFloat) {
-    return thisFloat - otherFloat;
-  }
-
-  public static float Then(this float thisFloat, float otherFloat) {
-    return thisFloat + otherFloat;
-  }
-
-  #endregion
-
-
-  #region Matrix4x4 Utils
-
-  public static Matrix4x4 From(this Matrix4x4 thisMatrix, Matrix4x4 otherMatrix) {
-    return thisMatrix * otherMatrix.inverse;
-  }
-
-  public static Matrix4x4 Then(this Matrix4x4 thisMatrix, Matrix4x4 otherMatrix) {
-    return otherMatrix * thisMatrix;
-  }
-
-  #endregion
-
-
   #region Vector3 Utils
 
-  public static Vector3 From(this Vector3 thisVector, Vector3 otherVector) {
-    // More commonly written as "thisVector - otherVector"!
-    return -1 * otherVector + thisVector;
-  }
-
-  public static Vector3 Then(this Vector3 thisVector, Vector3 otherVector) {
-    return thisVector + otherVector;
-  }
-
-  public static Vector3 Rotate(this Vector3 thisVector, Quaternion byQuaternion) {
-    return byQuaternion * thisVector;
+  /// <summary>
+  /// Returns this position moved towards the argument position, up to but no more than
+  /// the max movement amount from the original position.
+  /// </summary>
+  public static Vector3 MovedTowards(this Vector3 thisPosition,
+                                    Vector3 otherPosition,
+                                    float maxMovementAmount) {
+    var delta = thisPosition - otherPosition;
+    if (delta.sqrMagnitude > maxMovementAmount * maxMovementAmount) {
+      delta = Vector3.ClampMagnitude(delta, maxMovementAmount);
+    }
+    return thisPosition + delta;
   }
 
   #endregion

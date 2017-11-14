@@ -104,7 +104,7 @@ namespace Leap.Unity.Layout {
     }
 
     private Quaternion GetTargetRotationForPosition(Vector3 worldPosition) {
-      return NewUtils.FaceTargetWithoutTwist(worldPosition,
+      return Utils.FaceTargetWithoutTwist(worldPosition,
                                              Camera.main.transform.position,
                                              flip180: flip180);
     }

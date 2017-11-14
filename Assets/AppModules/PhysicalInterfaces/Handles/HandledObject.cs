@@ -66,31 +66,29 @@ namespace Leap.Unity.PhysicalInterfaces {
         }
       }
 
+      // Handle movement (easier when only one handle is held at any one time).
       if (_heldHandle != null) {
-        // Handle movement -- easier when only one handle is held at any one
-        // time.
-        if (_heldHandle.wasMoved) {
-          // Move this object based on the movement of the held handle.
-          var handleToObjPose = _objToHandleDeltaPoses[_heldHandle].inverse;
-          var newObjPose = _heldHandle.pose.Then(handleToObjPose);
+        // Move this object based on the movement of the held handle.
+        var handleToObjPose = _objToHandleDeltaPoses[_heldHandle].inverse;
+        var newObjPose = _heldHandle.pose.Then(handleToObjPose);
 
-          this.targetPose = newObjPose;
-
-          // Move non-held handles to match the new pose of this object.
-          foreach (var handle in handles.GetEnumerator()) {
-            if (handle != _heldHandle) {
-              var objToHandlePose = _objToHandleDeltaPoses[handle];
-              handle.targetPose = objPose.Then(objToHandlePose);
-            }
-          }
-        }
+        this.targetPose = newObjPose;
       }
 
       updateMoveToTarget();
 
+      // Move all handles to match the new pose of this object.
+      foreach (var handle in handles.GetEnumerator()) {
+        var objToHandlePose = _objToHandleDeltaPoses[handle];
+        handle.targetPose = objPose.Then(objToHandlePose);
+      }
     }
 
+    public Action OnUpdateTarget = () => { };
+
     private void updateMoveToTarget() {
+      OnUpdateTarget();
+
       pose = PhysicalInterfaceUtils.SmoothMove(pose, targetPose);
     }
 

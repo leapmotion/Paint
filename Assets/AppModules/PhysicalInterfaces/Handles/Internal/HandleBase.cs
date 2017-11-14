@@ -57,6 +57,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     protected virtual void updateMoveToTarget() {
       var current = this.pose;
+
       var target = targetPose;
 
       var smoothedPose = PhysicalInterfaceUtils.SmoothMove(current, target);

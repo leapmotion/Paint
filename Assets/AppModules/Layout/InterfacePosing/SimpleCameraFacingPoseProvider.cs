@@ -15,7 +15,7 @@ namespace Leap.Unity.Layout {
     }
 
     public Quaternion GetTargetRotation() {
-      return NewUtils.FaceTargetWithoutTwist(this.transform.position,
+      return Utils.FaceTargetWithoutTwist(this.transform.position,
                                              Camera.main.transform.position,
                                              flipPose);
     }
