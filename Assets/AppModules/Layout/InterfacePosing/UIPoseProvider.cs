@@ -43,9 +43,6 @@ namespace Leap.Unity.Layout {
       Vector3 layoutPos;
 
       if (!uiHandle.wasThrown) {
-      //if (uiHandle.movement.velocity.magnitude
-      //      <= PhysicalInterfaceUtils.MIN_THROW_SPEED) {
-
         layoutPos = uiHandle.pose.position;
 
         if (drawDebug) {

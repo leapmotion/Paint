@@ -1,4 +1,5 @@
 ﻿using Leap.Unity.RuntimeGizmos;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,17 +10,32 @@ namespace Leap.Unity {
 
     public const string PING_OBJECT_NAME = "__Debug Ping Runner__";
 
-    public const float DEFAULT_PING_RADIUS = 0.15f;
+    public const float DEFAULT_PING_RADIUS = 0.10f;
 
     public const float PING_DURATION = 0.25f;
 
-    public static AnimationCurve pingRadiusCurve = DefaultCurve.SigmoidUp;
+    public static AnimationCurve pingAnimCurve = DefaultCurve.SigmoidUp;
+
+    public enum ShapeType {
+      Sphere,
+      Capsule,
+      Cone
+    }
+
+    public enum AnimType {
+      Expand,
+      Fade,
+      ExpandAndFade
+    }
 
     public struct PingState {
-      public Vector3 position;
+      public Vector3 position0, position1;
+      public Func<Vector3> position0Func, position1Func;
       public float sizeMultiplier;
       public float time;
       public Color color;
+      public ShapeType shapeType;
+      public AnimType animType;
     }
 
     public static void Ping(Vector3 worldPosition) {
@@ -30,18 +46,119 @@ namespace Leap.Unity {
       Ping(worldPosition, color, 1f);
     }
 
-    public static void Ping(Vector3 worldPosition,
-                            Color color,
-                            float sizeMultiplier) {
+    private static void Ping(Vector3 worldPosition0,
+                             Vector3 worldPosition1 = default(Vector3),
+                             Func<Vector3> worldPosition0Func = null,
+                             Func<Vector3> worldPosition1Func = null,
+                             float sizeMultiplier = 1f,
+                             Color color = default(Color),
+                             AnimType animType = default(AnimType),
+                             ShapeType shapeType = default(ShapeType)) {
       ensurePingRunnerExists();
 
       s_instance.AddPing(new PingState() {
-        position = worldPosition,
+        position0 = worldPosition0,
+        position1 = worldPosition1,
+        position0Func = worldPosition0Func,
+        position1Func = worldPosition1Func,
         sizeMultiplier = sizeMultiplier,
         time = 0f,
-        color = color
+        color = color,
+        animType = animType,
+        shapeType = shapeType
       });
     }
+
+    #region Static Ping API
+
+    public static void Ping(Func<Vector3> worldPositionFunc,
+                            Color color,
+                            float sizeMultiplier,
+                            AnimType animType = AnimType.Expand) {
+      Ping(
+        Vector3.zero,
+        worldPosition0Func: worldPositionFunc,
+        color: color,
+        sizeMultiplier: sizeMultiplier,
+        animType: animType
+      );
+    }
+
+    public static void Ping(Vector3 worldPosition,
+                            Color color,
+                            float sizeMultiplier,
+                            AnimType animType = AnimType.Expand) {
+      Ping(
+        worldPosition,
+        Vector3.zero,
+        color:          color,
+        sizeMultiplier: sizeMultiplier,
+        animType:       animType
+      );
+    }
+
+    public static void PingCapsule(Func<Vector3> worldPosition0Func,
+                                   Func<Vector3> worldPosition1Func,
+                                   Color color,
+                                   float sizeMultiplier,
+                                   AnimType animType = AnimType.Expand) {
+      Ping(
+        Vector3.zero,
+        worldPosition0Func: worldPosition0Func,
+        worldPosition1Func: worldPosition1Func,
+        color: color,
+        sizeMultiplier: sizeMultiplier,
+        shapeType: ShapeType.Capsule,
+        animType: animType
+      );
+    }
+
+    public static void PingCapsule(Vector3 worldPosition0,
+                                   Vector3 worldPosition1,
+                                   Color color,
+                                   float sizeMultiplier,
+                                   AnimType animType = AnimType.Expand) {
+      Ping(
+        worldPosition0, worldPosition1,
+        color: color,
+        sizeMultiplier: sizeMultiplier,
+        shapeType: ShapeType.Capsule,
+        animType: animType
+      );
+    }
+
+    public static void PingCone(Vector3 worldPosition0,
+                                Vector3 worldPosition1,
+                                Color color,
+                                float sizeMultiplier,
+                                AnimType animType = AnimType.Expand) {
+      Ping(
+        worldPosition0,
+        worldPosition1,
+        color: color,
+        sizeMultiplier: sizeMultiplier,
+        animType: animType,
+        shapeType: ShapeType.Cone
+      );
+    }
+
+    public static void PingCone(Func<Vector3> worldPosition0Func,
+                                Func<Vector3> worldPosition1Func,
+                                Color color,
+                                float sizeMultiplier,
+                                AnimType animType = AnimType.Expand) {
+      Ping(
+        Vector3.zero,
+        worldPosition0Func: worldPosition0Func,
+        worldPosition1Func: worldPosition1Func,
+        color: color,
+        sizeMultiplier: sizeMultiplier,
+        animType: animType,
+        shapeType: ShapeType.Cone
+      );
+    }
+
+    #endregion
 
     private static DebugPing s_instance = null;
 
@@ -84,14 +201,83 @@ namespace Leap.Unity {
     }
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      Color pingColor;
+      float pingSize;
+      float animTime;
+      Vector3 pingPos0, pingPos1;
       foreach (var ping in _activePings) {
-        drawer.color = ping.color;
-        drawer.DrawWireSphere(ping.position,
-          ping.sizeMultiplier * DEFAULT_PING_RADIUS
-          * Mathf.Lerp(0f, 1f, ping.time / PING_DURATION));
+
+        if (ping.position0Func != null) {
+          pingPos0 = ping.position0Func();
+        }
+        else {
+          pingPos0 = ping.position0;
+        }
+        
+        if (ping.position1Func != null) {
+          pingPos1 = ping.position1Func();
+        }
+        else {
+          pingPos1 = ping.position1;
+        }
+
+        pingColor = ping.color;
+
+        animTime = Mathf.Lerp(0f, 1f, ping.time / PING_DURATION);
+        animTime = pingAnimCurve.Evaluate(animTime);
+
+        pingSize = ping.sizeMultiplier * DEFAULT_PING_RADIUS;
+
+        switch (ping.animType) {
+          case AnimType.Expand:
+            pingSize = pingSize * animTime;
+            break;
+          case AnimType.Fade:
+            pingColor = ping.color.WithAlpha(1f - animTime);
+            break;
+          case AnimType.ExpandAndFade:
+            pingSize = pingSize * animTime;
+            pingColor = ping.color.WithAlpha(1f - animTime);
+            break;
+        }
+        
+
+        drawer.color = pingColor;
+
+        switch (ping.shapeType) {
+          case ShapeType.Sphere:
+            drawer.DrawWireSphere(pingPos0, pingSize);
+            break;
+          case ShapeType.Capsule:
+            drawer.DrawWireCapsule(pingPos0, pingPos1, pingSize);
+            break;
+          case ShapeType.Cone:
+            drawer.DrawCone(pingPos0, pingPos1, pingSize);
+            break;
+        }
+
       }
     }
 
-}
+  }
+
+  public static class RuntimeGizmoDrawerExtensions {
+
+    public static void DrawCone(this RuntimeGizmoDrawer drawer,
+                                Vector3 pos0, Vector3 pos1,
+                                float radius,
+                                int resolution = 24) {
+      var dir = pos1 - pos0;
+      var R = dir.Perpendicular().normalized * radius;
+      Quaternion rot = Quaternion.AngleAxis(360f / 24, dir);
+      for (int i = 0; i < resolution; i++) {
+        drawer.DrawLine(pos0 + R, pos1);
+        var nextR = rot * R;
+        drawer.DrawLine(pos0 + R, pos0 + nextR);
+        R = nextR;
+      }
+    }
+
+  }
 
 }

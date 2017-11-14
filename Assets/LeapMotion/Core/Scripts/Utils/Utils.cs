@@ -840,7 +840,7 @@ namespace Leap.Unity {
     }
 
     /// <summary>
-    /// Returns the rotation that makes a transform at objectPosition point its forward
+    /// Returns the rotation that makes a transform at fromPosition point its forward
     /// vector at targetPosition and keep its rightward vector parallel with the horizon
     /// defined by a normal of Vector3.up.
     /// 
@@ -855,18 +855,18 @@ namespace Leap.Unity {
     }
 
     /// <summary>
-    /// Returns the rotation that makes a transform at objectPosition point its forward
+    /// Returns the rotation that makes a transform at fromPosition point its forward
     /// vector at targetPosition and keep its rightward vector parallel with the horizon
     /// defined by the upwardDirection normal.
     /// 
     /// For example, this will point an interface panel at a user camera while
     /// maintaining the alignment of text and other elements with the horizon line.
     /// </summary>
-    public static Quaternion FaceTargetWithoutTwist(Vector3 objectPosition,
+    public static Quaternion FaceTargetWithoutTwist(Vector3 fromPosition,
                                                     Vector3 targetPosition,
                                                     Vector3 upwardDirection,
                                                     bool flip180 = false) {
-      Vector3 objToTarget = targetPosition - objectPosition;
+      Vector3 objToTarget = targetPosition - fromPosition;
       return Quaternion.LookRotation((flip180 ? -1 : 1) * objToTarget,
                                      upwardDirection);
     }
@@ -1051,7 +1051,7 @@ namespace Leap.Unity {
     /// For example, A.Then(B.From(A)) == B.
     /// </summary>
     public static Pose From(this Pose thisPose, Pose otherPose) {
-      return thisPose * otherPose.inverse;
+      return otherPose.inverse * thisPose;
     }
 
     /// <summary>
@@ -1061,18 +1061,19 @@ namespace Leap.Unity {
     /// For example, A.Then(A.To(B)) == B.
     /// </summary>
     public static Pose To(this Pose thisPose, Pose otherPose) {
-      return otherPose * thisPose.inverse;
+      return thisPose.inverse * otherPose;
     }
 
     /// <summary>
-    /// Returns thisPose transformed by otherPose. The other Pose can be understood as
-    /// the parent pose, and the returned pose is this pose transformed from the other
-    /// pose's local space to world space.
+    /// Returns the other pose transformed by this pose. This pose could be understood as
+    /// the parent pose, and the other pose transformed from local this-pose space to
+    /// world space.
     /// 
-    /// Unlike matrix multiplication, this syntax is rightward: A * B == B.Then(A).
+    /// This is similar to matrix multiplication: A * B == A.Then(B). However, order of
+    /// operations is more explicit with this syntax.
     /// </summary>
     public static Pose Then(this Pose thisPose, Pose otherPose) {
-      return otherPose * thisPose;
+      return thisPose * otherPose;
     }
 
     #endregion

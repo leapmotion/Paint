@@ -21,7 +21,7 @@ namespace Leap.Unity.PhysicalInterfaces {
       _movement = new Movement(_deltaPosBuffer.Delta(), _deltaRotBuffer.Delta());
     }
 
-    public abstract Pose pose { get; }
+    public abstract Pose pose { get; protected set; }
 
     private Movement _movement = Movement.identity;
     public Movement movement {

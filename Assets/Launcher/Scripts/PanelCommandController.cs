@@ -42,7 +42,7 @@ namespace Leap.Unity.Launcher {
       float closestSqrDist = float.PositiveInfinity;
       foreach (var receiver in receiverQueryManager.ActiveObjects) {
         float testSqrDist = (receiver.transform.position
-                             - controllerPoint.pos).sqrMagnitude;
+                             - controllerPoint).sqrMagnitude;
         if (testSqrDist < closestSqrDist) {
           closestReceiver = receiver;
           testSqrDist = closestSqrDist;
@@ -50,11 +50,9 @@ namespace Leap.Unity.Launcher {
       }
 
       if (_lastKnownReceiver != closestReceiver) {
-        //if (closestReceiver != null) {
-
-        //}
-
-        initializeWithNewReceiver(closestReceiver);
+        if (closestReceiver != null) {
+          initializeWithNewReceiver(closestReceiver);
+        }
 
         _lastKnownReceiver = closestReceiver;
       }
@@ -84,10 +82,14 @@ namespace Leap.Unity.Launcher {
         handleTypeToggles.UntoggleAll();
       }
       else {
-        renderNewReceiverGained(receiver);
-
-        curvatureAmountSlider.controlEnabled = true;
-        curvatureTypeToggles.controlsEnabled = true;
+        if (receiver.supportsCurvature) {
+          curvatureAmountSlider.controlEnabled = true;
+          curvatureTypeToggles.controlsEnabled = true;
+        }
+        else {
+          curvatureAmountSlider.controlEnabled = false;
+          curvatureTypeToggles.controlsEnabled = false;
+        }
         heldOrientabilityToggles.controlsEnabled = true;
         heldVisibilityToggles.controlsEnabled = true;
         handleTypeToggles.controlsEnabled = true;
@@ -101,6 +103,10 @@ namespace Leap.Unity.Launcher {
       }
 
       _attachedReceiver = receiver;
+
+      if (receiver != null) {
+        renderNewReceiverGained(receiver);
+      }
     }
 
     protected override void Update() {
@@ -134,28 +140,78 @@ namespace Leap.Unity.Launcher {
 
     }
 
+    #region Debug Rendering
+
     private Color renderColor = Color.Lerp(LeapColor.cerulean, Color.cyan, 0.7f);
 
     private void renderLossOfSignal() {
-      // TODO: Make this look nicer.
+      // TODO: Currently unused, signal is never nullified.
       DebugPing.Ping(controllerPoint, Color.black);
     }
 
-    private void renderNewReceiverGained(Receiver receiver) {
-      // TODO: Make this look nicer.
-      DebugPing.Ping(controllerPoint, renderColor);
-      DebugPing.Ping(receiver.transform.position, renderColor);
+    private Func<Vector3> getControllerPointFunc = null;
+    private Vector3 getControllerPoint() {
+      return controllerPoint;
     }
 
+    private Func<Vector3> getReceiverPointFunc = null;
+    private Vector3 _lastKnownReceiverPoint = Vector3.zero;
+    private Vector3 getReceiverPoint() {
+      if (_attachedReceiver != null) {
+        _lastKnownReceiverPoint = _attachedReceiver.transform.position;
+      }
+
+      return _lastKnownReceiverPoint;
+    }
+
+    private void renderNewReceiverGained(Receiver receiver) {
+
+      if (getControllerPointFunc == null) {
+        getControllerPointFunc = getControllerPoint;
+      }
+
+      if (getReceiverPointFunc == null) {
+        getReceiverPointFunc = getReceiverPoint;
+      }
+
+      DebugPing.PingCone(getControllerPointFunc,
+                         getReceiverPointFunc,
+                         renderColor,
+                         0.3f,
+                         DebugPing.AnimType.Fade);
+
+      DebugPing.Ping(getReceiverPointFunc,
+                     renderColor, 0.40f, DebugPing.AnimType.ExpandAndFade);
+      DebugPing.Ping(getReceiverPointFunc,
+                     renderColor, 0.42f, DebugPing.AnimType.ExpandAndFade);
+      DebugPing.Ping(getReceiverPointFunc,
+                     renderColor, 0.44f, DebugPing.AnimType.ExpandAndFade);
+      DebugPing.Ping(getReceiverPointFunc,
+                     renderColor, 0.46f, DebugPing.AnimType.ExpandAndFade);
+      DebugPing.Ping(getReceiverPointFunc,
+                     renderColor, 0.48f, DebugPing.AnimType.ExpandAndFade);
+
+    }
+
+    private bool _foundAnyReceiver = false;
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
       if (!gameObject.activeInHierarchy) return;
 
       controllerPoint.RenderSphere(renderColor, 3f);
       controllerPoint.Render(renderColor, 3f);
 
-      var subtleColor = renderColor.WithAlpha(0.4f);
-      visibilitySphere.Render(subtleColor);
+      if (!_foundAnyReceiver) {
+        var subtleColor = renderColor.WithAlpha(0.4f);
+        visibilitySphere.Render(subtleColor);
+
+        if (_attachedReceiver != null) {
+          _foundAnyReceiver = true;
+        }
+      }
     }
+
+    #endregion
+
   }
 
 }

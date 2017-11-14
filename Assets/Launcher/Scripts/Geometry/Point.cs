@@ -6,6 +6,8 @@ namespace Leap.Unity.Geometry {
 
   [System.Serializable]
   public struct Point {
+
+    [SerializeField]
     public Transform transform;
 
     [SerializeField]
@@ -20,8 +22,6 @@ namespace Leap.Unity.Geometry {
         else _position = transform.InverseTransformPoint(value);
       }
     }
-    /// <summary> Short-hand for position. </summary>
-    public Vector3 pos { get { return position; } set { position = value; } }
 
     public Point(Component transformSource = null)
       : this(default(Vector3), transformSource) { }

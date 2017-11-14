@@ -5,22 +5,68 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
+  /// <summary>
+  /// A quick template for creating a custom IHandle based on a MonoBehaviour. The only
+  /// implementations required are ways to get and set the object's current Pose.
+  /// 
+  /// TransformHandle is a trivial implementation of HandleBase using a Transform as
+  /// the Pose source.
+  /// </summary>
   public abstract class HandleBase : MovementObservingBehaviour, IHandle {
+
+    public abstract override Pose pose {
+      get;
+      protected set;
+    }
+
+    #region Unity Events
 
     protected override void OnEnable() {
       base.OnEnable();
 
-      _lastPose = this.pose;
+      _lastPose = _targetPose = this.pose;
     }
 
     protected override void Update() {
       base.Update();
 
+      // Move to the target.
+      updateMoveToTarget();
+      
       updateHeldState();
       updateMovedState();
       updateReleaseState();
       updateThrownState();
     }
+
+    protected virtual void OnDestroy() {
+      if (isHeld) {
+        Release();
+      }
+    }
+
+    #endregion
+
+    #region Target Pose
+
+    private Pose _targetPose = Pose.identity;
+    public Pose targetPose {
+      get { return _targetPose; }
+      set { _targetPose = value; }
+    }
+
+    protected virtual void updateMoveToTarget() {
+      var current = this.pose;
+      var target = targetPose;
+
+      var smoothedPose = PhysicalInterfaceUtils.SmoothMove(current, target);
+
+      this.pose = smoothedPose;
+    }
+
+    #endregion
+
+    #region Held State
 
     private bool _isHeld = false;
     public bool isHeld {
@@ -35,17 +81,11 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public void Hold() {
       _isHeld = true;
-
+      
       _wasHeld = true;
     }
 
     private void updateHeldState() {
-      if (_wasReleased) {
-        // The release signal cancels out any hold signal.
-        _wasHeld = false;
-        _sawWasHeld = false;
-      }
-
       if (_wasHeld && !_sawWasHeld) {
         _sawWasHeld = true;
       }
@@ -54,6 +94,10 @@ namespace Leap.Unity.PhysicalInterfaces {
         _sawWasHeld = false;
       }
     }
+
+    #endregion
+
+    #region Moved State
 
     private bool _wasMoved = false;
     public bool wasMoved {
@@ -74,9 +118,9 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
-    public virtual void Move(Pose newPose) {
-      transform.SetWorldPose(newPose);
-    }
+    #endregion
+
+    #region Released State
 
     private bool _wasReleased = false;
     private bool _sawWasReleased = false;
@@ -103,6 +147,10 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
+    #endregion
+
+    #region Thrown State
+
     private bool _wasThrown = false;
     private bool _sawWasThrown = true;
     public bool wasThrown {
@@ -120,6 +168,8 @@ namespace Leap.Unity.PhysicalInterfaces {
         _sawWasThrown = false;
       }
     }
+
+    #endregion
 
   }
 

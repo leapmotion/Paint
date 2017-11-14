@@ -1,8 +1,12 @@
 ﻿
 
+using UnityEngine;
+
 namespace Leap.Unity.PhysicalInterfaces {
 
   public class PhysicalInterfaceUtils {
+
+    #region Constants
 
     /// <summary>
     /// The minimum speed past which a released object should be considered thrown,
@@ -34,6 +38,25 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// the head.
     /// </summary>
     public const float OPTIMAL_UI_DISTANCE = 0.60f;
+
+    #endregion
+
+    #region 
+
+    public static Pose SmoothMove(Pose current, Pose target) {
+      var sqrDist = (current.position - target.position).sqrMagnitude;
+      float angle = Quaternion.Angle(current.rotation, target.rotation);
+
+      var smoothedPose = new Pose(Vector3.Lerp(current.position, target.position,
+                                   sqrDist.Map(0.00001f, 0.0004f, 0.2f, 0.8f)),
+                                  Quaternion.Slerp(current.rotation,
+                                    target.rotation,
+                                    angle.Map(0.3f, 4f, 0.01f, 0.8f)));
+
+      return smoothedPose;
+    }
+
+    #endregion
 
   }
 

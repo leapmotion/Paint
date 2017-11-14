@@ -26,7 +26,7 @@ namespace Leap.Unity {
     public Pose inverse {
       get {
         var invQ = Quaternion.Inverse(this.rotation);
-        return new Pose(-(invQ * this.position), invQ);
+        return new Pose(invQ * -this.position, invQ);
       }
     }
 
@@ -126,6 +126,13 @@ namespace Leap.Unity {
     }
 
     /// <summary>
+    /// Creates a Pose using the transform's position and rotation.
+    /// </summary>
+    public static Pose ToWorldPose(this Transform t) {
+      return t.ToPose();
+    }
+
+    /// <summary>
     /// Sets the localPosition and localRotation of this transform to the argument pose's
     /// position and rotation.
     /// </summary>
@@ -133,14 +140,21 @@ namespace Leap.Unity {
       t.localPosition = localPose.position;
       t.localRotation = localPose.rotation;
     }
+    /// <summary>
+    /// Sets the position and rotation of this transform to the argument pose's
+    /// position and rotation. Identical to SetWorldPose.
+    /// </summary>
+    public static void SetPose(this Transform t, Pose worldPose) {
+      t.position = worldPose.position;
+      t.rotation = worldPose.rotation;
+    }
 
     /// <summary>
     /// Sets the position and rotation of this transform to the argument pose's
-    /// position and rotation.
+    /// position and rotation. Identical to SetPose.
     /// </summary>
     public static void SetWorldPose(this Transform t, Pose worldPose) {
-      t.position = worldPose.position;
-      t.rotation = worldPose.rotation;
+      t.SetPose(worldPose);
     }
 
     /// <summary>
@@ -152,6 +166,22 @@ namespace Leap.Unity {
                                                        : Quaternion.LookRotation(
                                                            m.GetColumn(2),
                                                            m.GetColumn(1)));
+    }
+
+    /// <summary>
+    /// Returns a new Pose with the argument rotation instead of the Pose's current
+    /// rotation.
+    /// </summary>
+    public static Pose WithRotation(this Pose pose, Quaternion newRotation) {
+      return new Pose(pose.position, newRotation);
+    }
+
+    /// <summary>
+    /// Returns a new Pose with the argument position instead of the Pose's current
+    /// position.
+    /// </summary>
+    public static Pose WithPosition(this Pose pose, Vector3 newPosition) {
+      return new Pose(newPosition, pose.rotation);
     }
 
     public static Vector3 GetVector3(this Matrix4x4 m) { return m.GetColumn(3); }

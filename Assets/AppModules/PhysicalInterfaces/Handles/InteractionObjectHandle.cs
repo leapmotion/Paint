@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class InteractionObjectHandle : TransformHandle {
+  public class InteractionObjectHandle : HandleBase {
 
     #region Inspector
 
@@ -33,11 +33,12 @@ namespace Leap.Unity.PhysicalInterfaces {
         }
       }
     }
+    
 
     #endregion
 
     #region Unity Events
-    
+
     protected virtual void Reset() {
       initInspector();
     }
@@ -59,6 +60,19 @@ namespace Leap.Unity.PhysicalInterfaces {
     #endregion
 
     #region Interaction Object Handle
+
+    public override Pose pose {
+      get { return intObj.transform.ToPose(); }
+      protected set {
+        if (gameObject.activeInHierarchy) {
+          intObj.rigidbody.MovePosition(value.position);
+          intObj.rigidbody.MoveRotation(value.rotation);
+        }
+        else {
+          intObj.transform.SetPose(value);
+        }
+      }
+    }
 
     private void unsubscribeIntObjCallbacks() {
       intObj.OnGraspBegin -= onGraspBegin;
@@ -97,33 +111,13 @@ namespace Leap.Unity.PhysicalInterfaces {
     private void onGraspedMovement(Vector3 oldPosition, Quaternion oldRotation,
                                    Vector3 newPosition, Quaternion newRotation,
                                    List<InteractionController> graspingControllers) {
-      var oldPose = new Pose() {
-        position = oldPosition,
-        rotation = oldRotation
-      };
+
       var newPose = new Pose() {
         position = newPosition,
         rotation = newRotation
       };
-      filterGraspedMovement(oldPose, newPose);
-    }
 
-    private void filterGraspedMovement(Pose oldPose, Pose newPose) {
-      var sqrDist = (oldPose.position - newPose.position).sqrMagnitude;
-      float angle = Quaternion.Angle(oldPose.rotation, newPose.rotation);
-
-      var smoothedPose = new Pose(Vector3.Lerp(oldPose.position, newPose.position,
-                                   sqrDist.Map(0.00001f, 0.0004f, 0.2f, 0.8f)),
-                                  Quaternion.Slerp(oldPose.rotation,
-                                    newPose.rotation,
-                                    angle.Map(0.3f, 4f, 0.01f, 0.8f)));
-
-      Move(smoothedPose);
-    }
-
-    public override void Move(Pose newPose) {
-      intObj.rigidbody.MovePosition(newPose.position);
-      intObj.rigidbody.MoveRotation(newPose.rotation);
+      targetPose = newPose;
     }
 
     #endregion

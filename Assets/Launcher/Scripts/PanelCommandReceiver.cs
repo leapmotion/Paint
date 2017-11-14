@@ -1,5 +1,6 @@
 ﻿using Leap.Unity.Attributes;
 using Leap.Unity.PhysicalInterfaces;
+using Leap.Unity.Query;
 using Leap.Unity.Space;
 using Leap.Unity.WIPUI;
 using System;
@@ -18,6 +19,8 @@ namespace Leap.Unity.Launcher {
     #region Curvature Control
 
     [Header("Curvature Control")]
+
+    public bool supportsCurvature = true;
 
     [SerializeField, OnEditorChange("curvatureType")]
     private CurvatureType _currentCurvatureType = CurvatureType.Spherical;
@@ -119,27 +122,52 @@ namespace Leap.Unity.Launcher {
 
     #endregion
 
-    #region Widget Control
+    #region Held Orientability
 
-    [Header("Widget Control")]
+    [Header("Held Orientability")]
 
-    public Widget widget;
+    public MonoBehaviour[] lockOrientationComponents;
 
     public HeldOrientabilityType GetHeldOrientabilityType() {
-      return widget.heldOrientability;
+      if (lockOrientationComponents.Query().Any(c => c.enabled)) {
+        return HeldOrientabilityType.LockedFacing;
+      }
+
+      return HeldOrientabilityType.Free;
     }
 
     public void SetHeldOrientabilityType(HeldOrientabilityType type) {
-      widget.heldOrientability = type;
+      switch (type) {
+        case HeldOrientabilityType.Free:
+          foreach (var component in lockOrientationComponents) {
+            component.enabled = false;
+          }
+          break;
+        case HeldOrientabilityType.LockedFacing:
+          foreach (var component in lockOrientationComponents) {
+            component.enabled = true;
+          }
+          break;
+      }
     }
 
+    #endregion
+
+    #region Held Orientability - NYI
+
+    //[Header("Held Orientability - NYI")]
+
     public HeldVisiblityType GetHeldVisiblityType() {
-      return widget.heldVisibilityType;
+      return HeldVisiblityType.Hide;
     }
 
     public void SetHeldVisiblityType(HeldVisiblityType type) {
-      widget.heldVisibilityType = type;
+      return;
     }
+
+    #endregion
+
+    #region Handle Switching
 
     [Header("Handle Switching")]
 
@@ -150,29 +178,35 @@ namespace Leap.Unity.Launcher {
       set {
         if (value != _currentHandleType) {
           if (value == HandleType.Orb) {
-            if (widget != null) {
-              if (orbHandle as MonoBehaviour != null) {
-                (orbHandle as MonoBehaviour).gameObject.SetActive(true);
-              }
-              if (titlebarHandle as MonoBehaviour != null) {
-                (titlebarHandle as MonoBehaviour).gameObject.SetActive(false);
-              }
-              widget.handle = orbHandle;
+            if (orbHandle as MonoBehaviour != null) {
+              (orbHandle as MonoBehaviour).gameObject.SetActive(true);
+            }
+            if (titlebarHandle as MonoBehaviour != null) {
+              (titlebarHandle as MonoBehaviour).gameObject.SetActive(false);
             }
           }
           else if (value == HandleType.Titlebar) {
-            if (widget != null) {
-              if (titlebarHandle as MonoBehaviour != null) {
-                (titlebarHandle as MonoBehaviour).gameObject.SetActive(true);
-              }
-              if (orbHandle as MonoBehaviour != null) {
-                (orbHandle as MonoBehaviour).gameObject.SetActive(false);
-              }
-              widget.handle = titlebarHandle;
+            if (titlebarHandle as MonoBehaviour != null) {
+              (titlebarHandle as MonoBehaviour).gameObject.SetActive(true);
+            }
+            if (orbHandle as MonoBehaviour != null) {
+              (orbHandle as MonoBehaviour).gameObject.SetActive(false);
             }
           }
 
           _currentHandleType = value;
+        }
+      }
+    }
+
+    private MonoBehaviour curHandleBehaviour {
+      get {
+        switch (_currentHandleType) {
+          case HandleType.Orb:
+            return _orbHandle;
+          case HandleType.Titlebar:
+          default:
+            return _titlebarHandle;
         }
       }
     }

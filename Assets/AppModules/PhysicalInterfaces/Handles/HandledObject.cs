@@ -30,16 +30,16 @@ namespace Leap.Unity.PhysicalInterfaces {
     private Dictionary<IHandle, Pose> _objToHandleDeltaPoses
       = new Dictionary<IHandle, Pose>();
 
-    protected virtual void Start() {
-      foreach (var handle in handles.GetEnumerator()) {
-        _objToHandleDeltaPoses[handle] = handle.pose.From(this.pose);
-      }
-    }
-
     private IHandle _heldHandle = null;
+
+    protected virtual void Awake() {
+      _targetPose = this.pose;
+    }
 
     protected override void Update() {
       base.Update();
+
+      var objPose = this.pose;
 
       if (_heldHandle != null && _heldHandle.wasReleased) {
         _heldHandle = null;
@@ -59,24 +59,39 @@ namespace Leap.Unity.PhysicalInterfaces {
         }
       }
 
+      // Make sure there's a delta pose entry for all currently attached handles.
+      foreach (var handle in handles.GetEnumerator()) {
+        if (!_objToHandleDeltaPoses.ContainsKey(handle)) {
+          _objToHandleDeltaPoses[handle] = handle.pose.From(objPose);
+        }
+      }
+
       if (_heldHandle != null) {
         // Handle movement -- easier when only one handle is held at any one
         // time.
         if (_heldHandle.wasMoved) {
           // Move this object based on the movement of the held handle.
-          var objToHeldHandle =_objToHandleDeltaPoses[_heldHandle];
-          this.Move(_heldHandle.pose * objToHeldHandle.inverse);
+          var handleToObjPose = _objToHandleDeltaPoses[_heldHandle].inverse;
+          var newObjPose = _heldHandle.pose.Then(handleToObjPose);
+
+          this.targetPose = newObjPose;
 
           // Move non-held handles to match the new pose of this object.
-          var objPose = this.pose;
           foreach (var handle in handles.GetEnumerator()) {
             if (handle != _heldHandle) {
-              handle.Move(objPose * _objToHandleDeltaPoses[handle]);
+              var objToHandlePose = _objToHandleDeltaPoses[handle];
+              handle.targetPose = objPose.Then(objToHandlePose);
             }
           }
         }
       }
 
+      updateMoveToTarget();
+
+    }
+
+    private void updateMoveToTarget() {
+      pose = PhysicalInterfaceUtils.SmoothMove(pose, targetPose);
     }
 
     #endregion
@@ -85,7 +100,17 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public override Pose pose {
       get { return this.transform.ToPose(); }
+      protected set {
+        this.transform.SetPose(value);
+      }
     }
+
+    private Pose _targetPose;
+    public Pose targetPose {
+      get { return _targetPose; }
+      set { _targetPose = value; }
+    }
+
 
     public bool isHeld {
       get {
@@ -118,17 +143,15 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     public void Hold() {
-      Debug.LogError("Can't hold a HandledObjct directy; instead, call Hold() on one "
+      Debug.LogError("Can't hold a HandledObject directy; instead, call Hold() on one "
                      + "of one of its Handles.");
-    }
-
-    public void Move(Pose newPose) {
-      this.transform.SetWorldPose(newPose);
     }
 
     public void Release() {
       if (_heldHandle != null) {
         _heldHandle.Release();
+
+        _heldHandle = null;
       }
     }
 

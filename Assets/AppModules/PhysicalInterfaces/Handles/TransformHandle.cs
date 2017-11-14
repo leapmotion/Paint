@@ -4,10 +4,17 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
+  /// <summary>
+  /// A basic implementation of the HandleBase handle using the Transform as the Pose
+  /// source.
+  /// </summary>
   public class TransformHandle : HandleBase {
 
     public override Pose pose {
       get { return transform.ToPose(); }
+      protected set {
+        transform.SetWorldPose(value);
+      }
     }
 
   }
