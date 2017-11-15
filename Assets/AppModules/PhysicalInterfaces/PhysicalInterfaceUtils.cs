@@ -43,15 +43,23 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     #region 
 
-    public static Pose SmoothMove(Pose current, Pose target) {
-      var sqrDist = (current.position - target.position).sqrMagnitude;
+    public static Pose SmoothMove(Pose prev, Pose current, Pose target) {
+      var prevSqrDist = (current.position - prev.position).sqrMagnitude;
+      var lerpFilter = prevSqrDist.Map(0.0f, 0.4f, 0.2f, 1f);
+
+      var prevAngle = Quaternion.Angle(current.rotation, prev.rotation);
+      var slerpFilter = prevAngle.Map(0.0f, 16f, 0.01f, 1f);
+
+      var sqrDist = (target.position - current.position).sqrMagnitude;
       float angle = Quaternion.Angle(current.rotation, target.rotation);
 
       var smoothedPose = new Pose(Vector3.Lerp(current.position, target.position,
-                                   sqrDist.Map(0.00001f, 0.0004f, 0.2f, 0.8f)),
+                                   sqrDist.Map(0.00001f, 0.0004f,
+                                               0.2f, 0.8f) * lerpFilter),
                                   Quaternion.Slerp(current.rotation,
                                     target.rotation,
-                                    angle.Map(0.3f, 4f, 0.01f, 0.8f)));
+                                    angle.Map(0.3f, 4f,
+                                              0.01f, 0.8f) * slerpFilter));
 
       return smoothedPose;
     }

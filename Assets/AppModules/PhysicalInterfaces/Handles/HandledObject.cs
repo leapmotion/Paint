@@ -31,6 +31,7 @@ namespace Leap.Unity.PhysicalInterfaces {
       = new Dictionary<IHandle, Pose>();
 
     private IHandle _heldHandle = null;
+    public IHandle heldHandle { get { return _heldHandle; } }
 
     protected virtual void Awake() {
       _targetPose = this.pose;
@@ -89,7 +90,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     private void updateMoveToTarget() {
       OnUpdateTarget();
 
-      pose = PhysicalInterfaceUtils.SmoothMove(pose, targetPose);
+      pose = PhysicalInterfaceUtils.SmoothMove(prevPose, pose, targetPose);
     }
 
     #endregion
@@ -111,7 +112,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public bool isHeld {
       get {
-        return handles.Query().Any(h => h.isHeld);
+        return _heldHandle != null;
       }
     }
 

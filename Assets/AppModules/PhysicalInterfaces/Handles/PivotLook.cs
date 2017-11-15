@@ -11,21 +11,9 @@ namespace Leap.Unity.PhysicalInterfaces {
       public Vector3 pivotTarget;
       public Vector3 lookTarget;
       public Vector3 horizonNormal;
+
+      public bool flip180;
     }
-
-    //public static void AnalyticSolve(Pose panel,
-    //                                 Pose panelToPivot,
-    //                                 Vector3 pivotTarget,
-    //                                 Vector3 lookTarget,
-    //                                 Vector3 horizonNormal) {
-    //  var R = panelToPivot.position.magnitude;
-
-    //  var camToPivot = panel.Then(panelToPivot).position - lookTarget;
-
-    //  var pivotRotateAxis = Vector3.Cross(camToPivot, horizonNormal);
-
-    //  var pivotUpward = Vector3.Cross(pivotRotateAxis, camToPivot);
-    //}
 
     /// <summary>
     /// Returns the Panel pose necessary to solve the look constraint that places
@@ -34,45 +22,55 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// </summary>
     public static Pose Solve(Pose panel,
                              Pose panelToPivot,
-                             Vector3 pivotTarget,
                              Vector3 lookTarget,
                              Vector3 horizonNormal = default(Vector3),
-                             int maxIterations = 8) {
+                             int maxIterations = 8,
+                             float solveAngle = 0.1f,
+                             bool flip180 = false) {
       if (horizonNormal == default(Vector3)) {
         horizonNormal = Vector3.up;
       };
 
-      return Solve(new PivotLookConstraint() {
-        panel = panel,
-        panelToPivot = panelToPivot,
-        pivotTarget = pivotTarget,
-        lookTarget = lookTarget
-      }).panel;
+      return Solve(
+        new PivotLookConstraint() {
+          panel = panel,
+          panelToPivot = panelToPivot,
+          pivotTarget = panel.Then(panelToPivot).position,
+          lookTarget = lookTarget,
+          horizonNormal = horizonNormal,
+          flip180 = flip180
+        },
+        maxIterations,
+        solveAngle).panel;
     }
 
-    public static PivotLookConstraint Solve(PivotLookConstraint pivotLook,
+    private static PivotLookConstraint Solve(PivotLookConstraint pivotLook,
                                             int maxIterations = 8,
                                             float solveAngle = 0.1f) {
       var lookTarget = pivotLook.lookTarget;
       var pivotTarget = pivotLook.pivotTarget;
       var horizonNormal = pivotLook.horizonNormal;
       var panelToPivot = pivotLook.panelToPivot;
+      var flip180 = pivotLook.flip180;
 
       var panelPivotSqrDist = pivotLook.panelToPivot.position.sqrMagnitude;
       var lookPivotSqrDist = (lookTarget - pivotTarget).sqrMagnitude;
       if (lookPivotSqrDist <= panelPivotSqrDist) {
-        Debug.LogError("Pivot to close to look target; no solution.");
+        Debug.LogError("Pivot too close to look target; no solution.");
         return pivotLook;
       }
       
       var iterations = 0;
-      var angleToCam = Vector3.Angle((pivotLook.panel.rotation * Vector3.forward),
+      var angleToCam = Vector3.Angle((pivotLook.panel.rotation
+                                      * Vector3.forward
+                                      * (flip180 ? -1 : 1)),
                                      (lookTarget - pivotLook.panel.position));
       while (angleToCam > solveAngle && iterations++ < maxIterations) {
         // Panel look at camera.
         pivotLook.panel.rotation = Utils.FaceTargetWithoutTwist(pivotLook.panel.position,
                                                                 lookTarget,
-                                                                horizonNormal);
+                                                                horizonNormal,
+                                                                flip180);
 
         // Restore pivot position relative to panel.
         var newPivotPosition = pivotLook.panel.Then(panelToPivot).position;
@@ -83,7 +81,9 @@ namespace Leap.Unity.PhysicalInterfaces {
         pivotLook.panel = pivotLook.panel.WithPosition(pivotLook.panel.position
                                                        + newPivotToPivotTarget);
 
-        angleToCam = Vector3.Angle((pivotLook.panel.rotation * Vector3.forward),
+        angleToCam = Vector3.Angle((pivotLook.panel.rotation
+                                    * Vector3.forward
+                                    * (flip180 ? -1 : 1)),
                                      (lookTarget - pivotLook.panel.position));
       }
 

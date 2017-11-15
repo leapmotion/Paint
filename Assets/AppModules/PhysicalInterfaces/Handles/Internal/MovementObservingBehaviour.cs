@@ -28,6 +28,10 @@ namespace Leap.Unity.PhysicalInterfaces {
       get { return _movement; }
     }
 
+    public Pose prevPose {
+      get { return pose.Then(movement.inverse * Time.deltaTime); }
+    }
+
   }
   
 }

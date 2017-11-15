@@ -16,6 +16,19 @@ namespace Leap.Unity.PhysicalInterfaces {
     public Vector3 angularVelocity;
 
     public static readonly Movement identity = new Movement();
+
+    public Movement inverse {
+      get { return new Movement(-velocity, -angularVelocity); }
+    }
+
+    public static Pose operator *(Movement movement, float deltaTime) {
+      var angVelMag = movement.angularVelocity.magnitude;
+      return new Pose(
+        movement.velocity * deltaTime,
+        Quaternion.AngleAxis(
+          angVelMag * Time.deltaTime,
+          movement.angularVelocity / angVelMag));
+    }
     
     /// <summary>
     /// Constructs a linear Movement involving no rotation.

@@ -10,12 +10,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public HandledObject handledObj;
 
-    [SerializeField]
-    [ImplementsInterface(typeof(IHandle))]
-    private MonoBehaviour _handle;
-    public IHandle handle {
-      get { return _handle as IHandle; }
-    }
+    public bool flip180 = false;
 
     void OnEnable() {
       handledObj.OnUpdateTarget -= _onHandleUpdateTargetAction;
@@ -36,25 +31,17 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
     private void onHandleUpdateTarget() {
-      var target = handledObj.targetPose;
+      if (handledObj.isHeld) {
+        var target = handledObj.targetPose;
+        var pivot = handledObj.heldHandle.targetPose;
 
-      var pivot = handle.pose;
-
-      handledObj.targetPose = PivotLook.Solve(handledObj.pose,
-                                              pivot.From(handledObj.pose),
-                                              handle.targetPose.position,
-                                              Camera.main.transform.position,
-                                              Camera.main.transform.parent.up);
+        handledObj.targetPose = PivotLook.Solve(target,
+                                                pivot.From(target),
+                                                Camera.main.transform.position,
+                                                Camera.main.transform.parent.up,
+                                                flip180: flip180);
+      }
     }
-
-    //public static Quaternion PivotLookRotation(Pose lookerPose,
-    //                                           Vector3 pivotAroundPoint,
-    //                                           Vector3 lookAtTarget,
-    //                                           bool flip180 = false,
-    //                                           Maybe<Vector3> horizonNormal
-    //                                             = default(Maybe<Vector3>)) {
-
-    //}
 
   }
 
