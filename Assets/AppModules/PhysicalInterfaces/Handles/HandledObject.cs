@@ -109,7 +109,6 @@ namespace Leap.Unity.PhysicalInterfaces {
       set { _targetPose = value; }
     }
 
-
     public bool isHeld {
       get {
         return handles.Query().Any(h => h.isHeld);

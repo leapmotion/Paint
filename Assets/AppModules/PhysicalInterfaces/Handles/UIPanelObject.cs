@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Leap.Unity.Attributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,13 @@ namespace Leap.Unity.PhysicalInterfaces {
   public class UIPanelObject : MonoBehaviour {
 
     public HandledObject handledObj;
+
+    [SerializeField]
+    [ImplementsInterface(typeof(IHandle))]
+    private MonoBehaviour _handle;
+    public IHandle handle {
+      get { return _handle as IHandle; }
+    }
 
     void OnEnable() {
       handledObj.OnUpdateTarget -= _onHandleUpdateTargetAction;
@@ -30,14 +38,23 @@ namespace Leap.Unity.PhysicalInterfaces {
     private void onHandleUpdateTarget() {
       var target = handledObj.targetPose;
 
-      // TODO: Yeah, this doesn't work.
+      var pivot = handle.pose;
 
-      // Best solve is with both handles.
-
-      handledObj.targetPose = target.WithRotation(
-        Utils.FaceTargetWithoutTwist(target.position,
-          Camera.main.transform.position));
+      handledObj.targetPose = PivotLook.Solve(handledObj.pose,
+                                              pivot.From(handledObj.pose),
+                                              handle.targetPose.position,
+                                              Camera.main.transform.position,
+                                              Camera.main.transform.parent.up);
     }
+
+    //public static Quaternion PivotLookRotation(Pose lookerPose,
+    //                                           Vector3 pivotAroundPoint,
+    //                                           Vector3 lookAtTarget,
+    //                                           bool flip180 = false,
+    //                                           Maybe<Vector3> horizonNormal
+    //                                             = default(Maybe<Vector3>)) {
+
+    //}
 
   }
 
