@@ -4,10 +4,14 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public interface IHandle {
+  public interface zzOld_IHandle {
     
     Pose pose           { get; }
     Pose targetPose     { get; set; }
+
+    float rigidness   { get; }
+
+    Vector3 localPivot { get; }
 
     Movement movement   { get; }
                                 

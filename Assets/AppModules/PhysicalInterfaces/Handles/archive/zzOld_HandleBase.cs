@@ -12,12 +12,21 @@ namespace Leap.Unity.PhysicalInterfaces {
   /// TransformHandle is a trivial implementation of HandleBase using a Transform as
   /// the Pose source.
   /// </summary>
-  public abstract class HandleBase : MovementObservingBehaviour, IHandle {
+  public abstract class zzOld_HandleBase : zzOld_MovementObservingBehaviour, zzOld_IHandle {
 
     public abstract override Pose pose {
       get;
       protected set;
     }
+
+    #region Inspector
+
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float _rigidness = 0f;
+    public float rigidness { get { return _rigidness; } }
+    
+    #endregion
 
     #region Unity Events
 
@@ -27,16 +36,17 @@ namespace Leap.Unity.PhysicalInterfaces {
       _lastPose = _targetPose = this.pose;
     }
 
-    protected override void Update() {
-      base.Update();
-
-      // Move to the target.
-      updateMoveToTarget();
-      
+    protected virtual void Update() {
       updateHeldState();
       updateMovedState();
       updateReleaseState();
       updateThrownState();
+    }
+
+    protected override void LateUpdate() {
+      lateUpdateMoveToTarget();
+
+      base.LateUpdate();
     }
 
     protected virtual void OnDestroy() {
@@ -44,6 +54,12 @@ namespace Leap.Unity.PhysicalInterfaces {
         Release();
       }
     }
+
+    #endregion
+
+    #region Pivot Point
+
+    public virtual Vector3 localPivot { get { return Vector3.zero; } }
 
     #endregion
 
@@ -55,10 +71,11 @@ namespace Leap.Unity.PhysicalInterfaces {
       set { _targetPose = value; }
     }
 
-    protected virtual void updateMoveToTarget() {
+    protected virtual void lateUpdateMoveToTarget() {
       var smoothedPose = PhysicalInterfaceUtils.SmoothMove(prevPose,
                                                            this.pose,
-                                                           targetPose);
+                                                           targetPose,
+                                                           rigidness);
       this.pose = smoothedPose;
     }
 

@@ -41,31 +41,53 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     #endregion
 
-    #region 
+    #region Functions
 
-    public static Pose SmoothMove(Pose prev, Pose current, Pose target) {
+    public static Pose SmoothMove(Pose prev, Pose current, Pose target,
+                                  float rigidness = 0f) {
       var prevSqrDist = (current.position - prev.position).sqrMagnitude;
       var lerpFilter = prevSqrDist.Map(0.0f, 0.4f, 0.2f, 1f);
+
+      //lerpFilter = Vector3.Dot((current.position - prev.position),
+      //                         (target.position - current.position))
+      //                    .Map(0f, 1f, 0f, 1f);
 
       var prevAngle = Quaternion.Angle(current.rotation, prev.rotation);
       var slerpFilter = prevAngle.Map(0.0f, 16f, 0.01f, 1f);
 
+      //slerpFilter = Vector3.Dot(current.rotation.From(prev.rotation).ToAngleAxisVector(),
+      //                          target.rotation.From(current.rotation).ToAngleAxisVector())
+      //                     .Map(0f, 1f, 0f, 1f);
+
       var sqrDist = (target.position - current.position).sqrMagnitude;
       float angle = Quaternion.Angle(current.rotation, target.rotation);
 
-      var smoothedPose = new Pose(Vector3.Lerp(current.position, target.position,
-                                   sqrDist.Map(0.00001f, 0.0004f,
-                                               0.2f, 0.8f) * lerpFilter),
+      var smoothLerpCoeff = sqrDist.Map(0.00001f, 0.0004f, 0.2f, 0.8f) * lerpFilter;
+      var rigidLerpCoeff = 1f;
+      var effLerpCoeff = Mathf.Lerp(smoothLerpCoeff, rigidLerpCoeff, rigidness.Clamp01());
+
+      var smoothSlerpCoeff = angle.Map(0.3f, 4f, 0.01f, 0.8f) * slerpFilter;
+      var rigidSlerpCoeff = 1f;
+      var effSlerpCoeff = Mathf.Lerp(smoothSlerpCoeff, rigidSlerpCoeff, rigidness.Clamp01());
+
+      var smoothedPose = new Pose(Vector3.Lerp(current.position,
+                                               target.position,
+                                               effLerpCoeff),
                                   Quaternion.Slerp(current.rotation,
-                                    target.rotation,
-                                    angle.Map(0.3f, 4f,
-                                              0.01f, 0.8f) * slerpFilter));
+                                                   target.rotation,
+                                                   effSlerpCoeff));
 
       return smoothedPose;
     }
 
     #endregion
 
+  }
+
+  public static class FloatExtensions {
+    public static float Clamp01(this float f) {
+      return Mathf.Clamp01(f);
+    }
   }
 
 }

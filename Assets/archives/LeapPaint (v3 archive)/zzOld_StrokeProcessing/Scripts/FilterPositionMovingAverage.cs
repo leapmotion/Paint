@@ -16,9 +16,9 @@ namespace Leap.Unity.LeapPaint_v3 {
     public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
       for (int i = Mathf.Min(data.Length - 1, NEIGHBORHOOD); i >= 0; i--) {
         StrokePoint point = data.GetFromEnd(i);
-        //point.position = Vector3.Lerp(point.position, CalcNeighborAverage(i, NEIGHBORHOOD, data), 1F / (data.Size - NEIGHBORHOOD));
+        //point.position = Vector3.Lerp(point.position, CalcNeighborAverage(i, NEIGHBORHOOD, data), 1F / (data.Length - NEIGHBORHOOD));
         point.position = CalcNeighborAverage(i, NEIGHBORHOOD, data);
-        data.SetLatest(point);
+        data.SetFromEnd(i, point);
       }
     }
 

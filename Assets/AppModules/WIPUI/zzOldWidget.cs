@@ -18,19 +18,19 @@ namespace Leap.Unity.WIPUI {
     [Header("Widget Handle")]
 
     [SerializeField]
-    [ImplementsInterface(typeof(IHandle))]
+    [ImplementsInterface(typeof(zzOld_IHandle))]
     [Tooltip("This is what the user grabs and places to open a panel.")]
     [OnEditorChange("handle")]
     private MonoBehaviour _handle;
-    public IHandle handle {
+    public zzOld_IHandle handle {
       get {
-        return _handle as IHandle;
+        return _handle as zzOld_IHandle;
       }
       set {
         var newHandleBehaviour = value as MonoBehaviour;
         if (newHandleBehaviour != _handle) {
 
-          var _oldIHandle = _handle as IHandle;
+          var _oldIHandle = _handle as zzOld_IHandle;
           if (_oldIHandle != null) {
             if (_oldIHandle.isHeld) {
               //onHandlePlaced();

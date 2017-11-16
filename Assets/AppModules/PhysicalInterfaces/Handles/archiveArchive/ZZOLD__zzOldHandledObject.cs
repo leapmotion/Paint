@@ -8,7 +8,7 @@ using Leap.Unity.Attributes;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class zzOldHandledObject : MonoBehaviour {
+  public class ZZOLD__zzOldHandledObject : MonoBehaviour {
 
     #region Inspector
 
@@ -25,12 +25,12 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// All handles owned by this HandledObject. Manipulating these handles will
     /// manipulate the HandlesObject in some way -- by default, by moving it.
     /// </summary>
-    private List<IHandle> _attachedHandles = new List<IHandle>();
+    private List<zzOld_IHandle> _attachedHandles = new List<zzOld_IHandle>();
 
     /// <summary>
     /// All handles owned by this HandledObject. Read-only.
     /// </summary>
-    public ReadonlyList<IHandle> attachedHandles {
+    public ReadonlyList<zzOld_IHandle> attachedHandles {
       get { return _attachedHandles; }
     }
 

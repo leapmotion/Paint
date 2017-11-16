@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class UIPanelObject : MonoBehaviour {
+  public class zzOld_UIPanelObject : MonoBehaviour {
 
-    public HandledObject handledObj;
+    public zzOld_HandledObject handledObj;
 
     public bool flip180 = false;
 
@@ -33,10 +33,13 @@ namespace Leap.Unity.PhysicalInterfaces {
     private void onHandleUpdateTarget() {
       if (handledObj.isHeld) {
         var target = handledObj.targetPose;
-        var pivot = handledObj.heldHandle.targetPose;
+        var handle = handledObj.heldHandle.targetPose;
+        var localPivot = handledObj.heldHandle.localPivot;
+
+        DebugPing.Ping(target.Then(handle.From(target) * localPivot), LeapColor.amber, 0.2f);
 
         handledObj.targetPose = PivotLook.Solve(target,
-                                                pivot.From(target),
+                                                handle.From(target) * localPivot,
                                                 Camera.main.transform.position,
                                                 Camera.main.transform.parent.up,
                                                 flip180: flip180);

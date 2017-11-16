@@ -39,6 +39,15 @@ namespace Leap.Unity {
                       A.rotation * B.rotation);
     }
 
+    /// <summary>
+    /// Transforms the right-hand-side Vector3 as a local-space position into world space
+    /// as if this Pose were its reference frame.
+    /// </summary>
+    public static Pose operator *(Pose pose, Vector3 localPosition) {
+      return new Pose(pose.position + pose.rotation * localPosition,
+                      pose.rotation);
+    }
+
     public bool ApproxEquals(Pose other) {
       return position.ApproxEquals(other.position) && rotation.ApproxEquals(other.rotation);
     }

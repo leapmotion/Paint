@@ -11,11 +11,11 @@ namespace Leap.Unity.Layout {
 
     #region Inspector
 
-    [SerializeField, ImplementsInterface(typeof(IHandle))]
+    [SerializeField, ImplementsInterface(typeof(zzOld_IHandle))]
     private MonoBehaviour _uiHandle;
-    public IHandle uiHandle {
+    public zzOld_IHandle uiHandle {
       get {
-        return _uiHandle as IHandle;
+        return _uiHandle as zzOld_IHandle;
       }
       set {
         _uiHandle = value as MonoBehaviour;

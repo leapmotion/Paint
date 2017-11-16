@@ -211,19 +211,19 @@ namespace Leap.Unity.Launcher {
       }
     }
 
-    [SerializeField, ImplementsInterface(typeof(IHandle))]
+    [SerializeField, ImplementsInterface(typeof(zzOld_IHandle))]
     private MonoBehaviour _orbHandle;
-    public IHandle orbHandle {
+    public zzOld_IHandle orbHandle {
       get {
-        return _orbHandle as IHandle;
+        return _orbHandle as zzOld_IHandle;
       }
     }
 
-    [SerializeField, ImplementsInterface(typeof(IHandle))]
+    [SerializeField, ImplementsInterface(typeof(zzOld_IHandle))]
     private MonoBehaviour _titlebarHandle;
-    public IHandle titlebarHandle {
+    public zzOld_IHandle titlebarHandle {
       get {
-        return _titlebarHandle as IHandle;
+        return _titlebarHandle as zzOld_IHandle;
       }
     }
 

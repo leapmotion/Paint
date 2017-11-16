@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class HandledObject : MovementObservingBehaviour, IHandle {
+  public class zzOld_HandledObject : zzOld_MovementObservingBehaviour, zzOld_IHandle {
 
     #region Inspector
 
@@ -17,9 +17,9 @@ namespace Leap.Unity.PhysicalInterfaces {
     // instead of plain Transform fields.
     [SerializeField, EditTimeOnly]
     private Transform[] _handles;
-    public IIndexable<IHandle> handles {
+    public IIndexable<zzOld_IHandle> handles {
       get {
-        return new TransformArrayComponentWrapper<IHandle>(_handles);
+        return new zzOld_TransformArrayComponentWrapper<zzOld_IHandle>(_handles);
       }
     }
 
@@ -27,19 +27,17 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     #region Unity Events
 
-    private Dictionary<IHandle, Pose> _objToHandleDeltaPoses
-      = new Dictionary<IHandle, Pose>();
+    private Dictionary<zzOld_IHandle, Pose> _objToHandleDeltaPoses
+      = new Dictionary<zzOld_IHandle, Pose>();
 
-    private IHandle _heldHandle = null;
-    public IHandle heldHandle { get { return _heldHandle; } }
+    private zzOld_IHandle _heldHandle = null;
+    public zzOld_IHandle heldHandle { get { return _heldHandle; } }
 
     protected virtual void Awake() {
       _targetPose = this.pose;
     }
 
-    protected override void Update() {
-      base.Update();
-
+    protected virtual void Update() {
       var objPose = this.pose;
 
       if (_heldHandle != null && _heldHandle.wasReleased) {
@@ -71,9 +69,11 @@ namespace Leap.Unity.PhysicalInterfaces {
       if (_heldHandle != null) {
         // Move this object based on the movement of the held handle.
         var handleToObjPose = _objToHandleDeltaPoses[_heldHandle].inverse;
-        var newObjPose = _heldHandle.pose.Then(handleToObjPose);
+        var newObjPose = _heldHandle.targetPose.Then(handleToObjPose);
 
         this.targetPose = newObjPose;
+
+        OnUpdateTarget();
       }
 
       updateMoveToTarget();
@@ -88,9 +88,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     public Action OnUpdateTarget = () => { };
 
     private void updateMoveToTarget() {
-      OnUpdateTarget();
-
-      pose = PhysicalInterfaceUtils.SmoothMove(prevPose, pose, targetPose);
+      pose = PhysicalInterfaceUtils.SmoothMove(prevPose, pose, this.targetPose, 1f);
     }
 
     #endregion
@@ -104,10 +102,18 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
+    public Vector3 localPivot {
+      get { return Vector3.zero; }
+    }
+
     private Pose _targetPose;
     public Pose targetPose {
       get { return _targetPose; }
       set { _targetPose = value; }
+    }
+
+    public float rigidness {
+      get { return _heldHandle == null ? 0f : _heldHandle.rigidness; }
     }
 
     public bool isHeld {
@@ -157,12 +163,12 @@ namespace Leap.Unity.PhysicalInterfaces {
 
   }
 
-  public struct TransformArrayComponentWrapper<GetComponentType>
+  public struct zzOld_TransformArrayComponentWrapper<GetComponentType>
                 : IIndexable<GetComponentType>
   {
     Transform[] _arr;
 
-    public TransformArrayComponentWrapper(Transform[] arr) {
+    public zzOld_TransformArrayComponentWrapper(Transform[] arr) {
       _arr = arr;
     }
 

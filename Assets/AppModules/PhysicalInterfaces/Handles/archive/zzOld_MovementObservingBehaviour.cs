@@ -2,7 +2,7 @@
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public abstract class MovementObservingBehaviour : MonoBehaviour {
+  public abstract class zzOld_MovementObservingBehaviour : MonoBehaviour {
 
     private DeltaBuffer           _deltaPosBuffer = new DeltaBuffer(5);
     private DeltaQuaternionBuffer _deltaRotBuffer = new DeltaQuaternionBuffer(5);
@@ -12,7 +12,7 @@ namespace Leap.Unity.PhysicalInterfaces {
       _deltaRotBuffer.Clear();
     }
 
-    protected virtual void Update() {
+    protected virtual void LateUpdate() {
       var time = Time.time;
       var curPose = pose;
       _deltaPosBuffer.Add(curPose.position, time);

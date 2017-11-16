@@ -31,11 +31,45 @@ namespace Leap.Unity {
     public struct PingState {
       public Vector3 position0, position1;
       public Func<Vector3> position0Func, position1Func;
+      public Quaternion rotation0;
       public float sizeMultiplier;
       public float time;
       public Color color;
       public ShapeType shapeType;
       public AnimType animType;
+    }
+
+    private static void Ping(Vector3 worldPosition0,
+                             Vector3 worldPosition1 = default(Vector3),
+                             Func<Vector3> worldPosition0Func = null,
+                             Func<Vector3> worldPosition1Func = null,
+                             Quaternion rotation0 = default(Quaternion),
+                             float sizeMultiplier = 1f,
+                             Color color = default(Color),
+                             AnimType animType = default(AnimType),
+                             ShapeType shapeType = default(ShapeType)) {
+      ensurePingRunnerExists();
+
+      rotation0 = rotation0.ToNormalized();
+
+      s_instance.AddPing(new PingState() {
+        position0 = worldPosition0,
+        position1 = worldPosition1,
+        position0Func = worldPosition0Func,
+        position1Func = worldPosition1Func,
+        rotation0 = rotation0,
+        sizeMultiplier = sizeMultiplier,
+        time = 0f,
+        color = color,
+        animType = animType,
+        shapeType = shapeType
+      });
+    }
+
+    #region Static Ping API
+
+    public static void Ping(Pose worldPose) {
+      Ping(worldPose, Color.white, 1f);
     }
 
     public static void Ping(Vector3 worldPosition) {
@@ -46,30 +80,9 @@ namespace Leap.Unity {
       Ping(worldPosition, color, 1f);
     }
 
-    private static void Ping(Vector3 worldPosition0,
-                             Vector3 worldPosition1 = default(Vector3),
-                             Func<Vector3> worldPosition0Func = null,
-                             Func<Vector3> worldPosition1Func = null,
-                             float sizeMultiplier = 1f,
-                             Color color = default(Color),
-                             AnimType animType = default(AnimType),
-                             ShapeType shapeType = default(ShapeType)) {
-      ensurePingRunnerExists();
-
-      s_instance.AddPing(new PingState() {
-        position0 = worldPosition0,
-        position1 = worldPosition1,
-        position0Func = worldPosition0Func,
-        position1Func = worldPosition1Func,
-        sizeMultiplier = sizeMultiplier,
-        time = 0f,
-        color = color,
-        animType = animType,
-        shapeType = shapeType
-      });
+    public static void Ping(Pose worldPose, Color color) {
+      Ping(worldPose, color, 1f);
     }
-
-    #region Static Ping API
 
     public static void Ping(Func<Vector3> worldPositionFunc,
                             Color color,
@@ -94,6 +107,21 @@ namespace Leap.Unity {
         color:          color,
         sizeMultiplier: sizeMultiplier,
         animType:       animType
+      );
+    }
+
+    public static void Ping(Pose worldPose,
+                            Color color,
+                            float sizeMultiplier,
+                            AnimType animType = AnimType.Expand) {
+      Ping(
+        worldPose.position,
+        default(Vector3),
+        null, null,
+        worldPose.rotation,
+        color: color,
+        sizeMultiplier: sizeMultiplier,
+        animType: animType
       );
     }
 
@@ -205,6 +233,7 @@ namespace Leap.Unity {
       float pingSize;
       float animTime;
       Vector3 pingPos0, pingPos1;
+      Quaternion pingRot0;
       foreach (var ping in _activePings) {
 
         if (ping.position0Func != null) {
@@ -220,6 +249,8 @@ namespace Leap.Unity {
         else {
           pingPos1 = ping.position1;
         }
+
+        pingRot0 = ping.rotation0;
 
         pingColor = ping.color;
 
@@ -246,7 +277,7 @@ namespace Leap.Unity {
 
         switch (ping.shapeType) {
           case ShapeType.Sphere:
-            drawer.DrawWireSphere(pingPos0, pingSize);
+            drawer.DrawWireSphere(pingPos0, pingRot0, pingSize);
             break;
           case ShapeType.Capsule:
             drawer.DrawWireCapsule(pingPos0, pingPos1, pingSize);
@@ -262,6 +293,19 @@ namespace Leap.Unity {
   }
 
   public static class RuntimeGizmoDrawerExtensions {
+
+    public static void DrawWireSphere(this RuntimeGizmoDrawer drawer,
+                                      Vector3 position,
+                                      Quaternion rotation,
+                                      float radius) {
+      drawer.PushMatrix();
+
+      drawer.matrix = Matrix4x4.TRS(position, rotation, Vector3.one);
+
+      drawer.DrawWireSphere(Vector3.zero, radius);
+
+      drawer.PopMatrix();
+    }
 
     public static void DrawCone(this RuntimeGizmoDrawer drawer,
                                 Vector3 pos0, Vector3 pos1,

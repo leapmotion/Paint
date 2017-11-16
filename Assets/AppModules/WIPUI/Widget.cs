@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Leap.Unity.WIPUI {
 
-  public class Widget : HandledObject {
+  public class Widget : zzOld_HandledObject {
 
     // Held Orientability.
 

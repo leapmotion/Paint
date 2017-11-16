@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  [CustomEditor(typeof(zzOldHandledObject), editorForChildClasses: true)]
-  public class HandledObjectEditor : CustomEditorBase<zzOldHandledObject> {
+  [CustomEditor(typeof(ZZOLD__zzOldHandledObject), editorForChildClasses: true)]
+  public class ZZOLD__zzOldHandledObjectEditor : CustomEditorBase<ZZOLD__zzOldHandledObject> {
 
     protected override void OnEnable() {
       base.OnEnable();

@@ -8,7 +8,7 @@ namespace Leap.Unity.PhysicalInterfaces {
   /// A basic implementation of the HandleBase handle using the Transform as the Pose
   /// source.
   /// </summary>
-  public class TransformHandle : HandleBase {
+  public class zzOld_TransformHandle : zzOld_HandleBase {
 
     public override Pose pose {
       get { return transform.ToPose(); }

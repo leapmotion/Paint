@@ -9,9 +9,11 @@ using UnityEngine.EventSystems;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class InteractionObjectHandle : HandleBase {
+  public class zzOld_InteractionObjectHandle : zzOld_HandleBase {
 
     #region Inspector
+
+    [Header("Interaction Object Handle")]
 
     [SerializeField, OnEditorChange("intObj")]
     private InteractionBehaviour _intObj;
@@ -33,7 +35,6 @@ namespace Leap.Unity.PhysicalInterfaces {
         }
       }
     }
-    
 
     #endregion
 
@@ -65,12 +66,25 @@ namespace Leap.Unity.PhysicalInterfaces {
       get { return intObj.transform.ToPose(); }
       protected set {
         if (gameObject.activeInHierarchy) {
-          intObj.rigidbody.MovePosition(value.position);
-          intObj.rigidbody.MoveRotation(value.rotation);
+          //intObj.rigidbody.MovePosition(value.position);
+          //intObj.rigidbody.MoveRotation(value.rotation);
+          intObj.rigidbody.position = value.position;
+          intObj.rigidbody.rotation = value.rotation;
+          intObj.transform.SetPose(value);
         }
         else {
           intObj.transform.SetPose(value);
         }
+      }
+    }
+
+    private Vector3 _localGraspedPoint = Vector3.zero;
+    public override Vector3 localPivot {
+      get {
+        if (isHeld) {
+          return _localGraspedPoint;
+        }
+        return Vector3.zero;
       }
     }
 
@@ -91,6 +105,9 @@ namespace Leap.Unity.PhysicalInterfaces {
     private void onGraspBegin() {
       if (!isHeld) {
         Hold();
+
+        _localGraspedPoint = (pose.inverse
+                              * intObj.GetGraspPoint(intObj.graspingController)).position;
       }
     }
 
@@ -108,16 +125,51 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
+    protected override void LateUpdate() {
+      base.LateUpdate();
+
+      _numGraspedMovements = 0;
+    }
+
+    private int _numGraspedMovements = 0;
+
+    //private Maybe<Pose> _maybeLastGraspedPose = Maybe.None;
+
     private void onGraspedMovement(Vector3 oldPosition, Quaternion oldRotation,
                                    Vector3 newPosition, Quaternion newRotation,
                                    List<InteractionController> graspingControllers) {
 
-      var newPose = new Pose() {
+      var newTargetPose = new Pose() {
         position = newPosition,
         rotation = newRotation
       };
 
-      targetPose = newPose;
+      //targetPose = newPose;
+
+      //var lastGraspedPose = new Pose() {
+      //  position = oldPosition,
+      //  rotation = oldRotation
+      //};
+
+      //var lastGraspedPose = _maybeLastGraspedPose.hasValue ?
+      //                        _maybeLastGraspedPose.valueOrDefault
+      //                      : newPose;
+
+      //var lastGraspedPose = targetPose.Then(movement.inverse * Time.fixedDeltaTime);
+
+      targetPose = newTargetPose;
+      //if (_numGraspedMovements == 0) {
+      //  targetPose = newTargetPose;
+      //}
+      _numGraspedMovements += 1;
+
+
+      //_maybeLastGraspedPose = targetPose;
+
+      //_localGraspedPoint = (targetPose.inverse
+      //                      * intObj.GetGraspPoint(intObj.graspingController)).position;
+
+
     }
 
     #endregion

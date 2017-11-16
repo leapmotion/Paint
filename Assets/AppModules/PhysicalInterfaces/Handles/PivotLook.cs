@@ -23,25 +23,31 @@ namespace Leap.Unity.PhysicalInterfaces {
     public static Pose Solve(Pose panel,
                              Pose panelToPivot,
                              Vector3 lookTarget,
-                             Vector3 horizonNormal = default(Vector3),
+                             //Maybe<Vector3> pivotTarget = default(Maybe<Vector3>),
+                             Maybe<Vector3> horizonNormal = default(Maybe<Vector3>),
                              int maxIterations = 8,
                              float solveAngle = 0.1f,
                              bool flip180 = false) {
-      if (horizonNormal == default(Vector3)) {
+      if (!horizonNormal.hasValue) {
         horizonNormal = Vector3.up;
       };
+      //if (pivotTarget.hasValue) {
+      //  pivotTarget = panel.Then(panelToPivot).position;
+      //};
 
       return Solve(
         new PivotLookConstraint() {
           panel = panel,
           panelToPivot = panelToPivot,
+          //pivotTarget = pivotTarget.valueOrDefault,
           pivotTarget = panel.Then(panelToPivot).position,
           lookTarget = lookTarget,
-          horizonNormal = horizonNormal,
+          horizonNormal = horizonNormal.valueOrDefault,
           flip180 = flip180
         },
         maxIterations,
-        solveAngle).panel;
+        solveAngle
+      ).panel;
     }
 
     private static PivotLookConstraint Solve(PivotLookConstraint pivotLook,
