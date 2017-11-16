@@ -5913,7 +5913,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76b563231d52b5b4e995e0c5d9258847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rigidness: 1
+  _rigidness: 0
   _intObj: {fileID: 357263619}
 --- !u!114 &357263619
 MonoBehaviour:

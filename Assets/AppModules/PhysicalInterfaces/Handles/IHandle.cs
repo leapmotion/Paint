@@ -1,28 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Leap.Unity.PhysicalInterfaces {
-
-  public delegate Pose FilterPoseEvent(Pose curPose, Pose newPose);
-  public delegate Pose FilterHandlePoseEvent(IHandle handle, Pose curPose, Pose newPose);
+﻿namespace Leap.Unity.PhysicalInterfaces {
 
   public interface IHandle {
 
     Pose targetPose { get; }
-    event FilterPoseEvent OnSetTarget;
-    event FilterHandlePoseEvent OnHandleSetTarget;
 
-  }
-  
-  public delegate Pose FilterObjectPoseEvent(IHandledObject handledObject,
-                                             IHandle handle,
-                                             )
+    ReadonlyList<IHandledObject> attachedObjects { get; }
 
-  public interface IHandledObject {
-
-
+    bool isHeld { get; }
 
   }
 

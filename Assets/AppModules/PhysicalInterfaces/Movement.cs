@@ -21,13 +21,24 @@ namespace Leap.Unity.PhysicalInterfaces {
       get { return new Movement(-velocity, -angularVelocity); }
     }
 
-    public static Pose operator *(Movement movement, float deltaTime) {
-      var angVelMag = movement.angularVelocity.magnitude;
-      return new Pose(
-        movement.velocity * deltaTime,
-        Quaternion.AngleAxis(
-          angVelMag * Time.deltaTime,
-          movement.angularVelocity / angVelMag));
+    public static Movement operator *(Movement movement, float multiplier) {
+      return new Movement(movement.velocity * multiplier,
+                          movement.angularVelocity * multiplier);
+    }
+
+    public static Movement operator /(Movement movement, float divisor) {
+      return movement * (1f / divisor);
+    }
+
+    public Pose ToPose() {
+      var angVelMag = angularVelocity.magnitude;
+      return new Pose(velocity,
+        Quaternion.AngleAxis(angVelMag, angularVelocity / angVelMag));
+    }
+
+    public static Movement operator +(Movement movement0, Movement movement1) {
+      return new Movement(movement0.velocity + movement1.velocity,
+                          movement0.angularVelocity + movement1.angularVelocity);
     }
     
     /// <summary>
@@ -48,15 +59,16 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     /// <summary>
     /// Returns the Movement necessary to go from Pose p0 to Pose p1 in dt seconds.
+    /// You can ignore the time parameter if you wish simply to store delta positions
+    /// and angle-axis vector rotations.
     /// </summary>
-    public Movement(Pose fromPose, Pose toPose, float dt) {
+    public Movement(Pose fromPose, Pose toPose, float dt = 1f) {
       Vector3 deltaPosition = toPose.position - fromPose.position;
       Quaternion deltaRotation = Quaternion.Inverse(fromPose.rotation) * toPose.rotation;
 
       this.velocity = deltaPosition / dt;
       this.angularVelocity = deltaRotation.ToAngleAxisVector() / dt;
     }
-
 
     #region Accelerations
 

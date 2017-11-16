@@ -9,9 +9,9 @@ namespace Leap.Unity.PhysicalInterfaces {
     Pose pose           { get; }
     Pose targetPose     { get; set; }
 
-    float rigidness   { get; }
+    float rigidness     { get; }
 
-    Vector3 localPivot { get; }
+    Vector3 localPivot  { get; }
 
     Movement movement   { get; }
                                 

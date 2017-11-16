@@ -39,7 +39,7 @@ namespace Leap.Unity.PhysicalInterfaces {
         DebugPing.Ping(target.Then(handle.From(target) * localPivot), LeapColor.amber, 0.2f);
 
         handledObj.targetPose = PivotLook.Solve(target,
-                                                handle.From(target) * localPivot,
+                                                (handle.From(target) * localPivot).position,
                                                 Camera.main.transform.position,
                                                 Camera.main.transform.parent.up,
                                                 flip180: flip180);

@@ -21,7 +21,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// the lookTarget.
     /// </summary>
     public static Pose Solve(Pose panel,
-                             Pose panelToPivot,
+                             Vector3 pivotPoint,
                              Vector3 lookTarget,
                              //Maybe<Vector3> pivotTarget = default(Maybe<Vector3>),
                              Maybe<Vector3> horizonNormal = default(Maybe<Vector3>),
@@ -34,6 +34,7 @@ namespace Leap.Unity.PhysicalInterfaces {
       //if (pivotTarget.hasValue) {
       //  pivotTarget = panel.Then(panelToPivot).position;
       //};
+      var panelToPivot = pivotPoint.From(panel);
 
       return Solve(
         new PivotLookConstraint() {

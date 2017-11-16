@@ -1,9 +1,12 @@
 ﻿using Leap.Unity;
+using Leap.Unity.PhysicalInterfaces;
 using Leap.Unity.Query;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+using Pose = Leap.Unity.Pose;
 
 public static class NewUtils {
 
@@ -401,6 +404,23 @@ public static class NewUtils {
       delta = Vector3.ClampMagnitude(delta, maxMovementAmount);
     }
     return thisPosition + delta;
+  }
+
+  #endregion
+
+
+  #region Pose
+
+  /// <summary>
+  /// Returns a pose such that fromPose.Then(thisPose) will have this position
+  /// and the fromPose's rotation.
+  /// </summary>
+  public static Pose From(this Vector3 position, Pose fromPose) {
+    return new Pose(position, fromPose.rotation).From(fromPose);
+  }
+
+  public static Pose Then(this Pose pose, Movement movement) {
+    return pose.Then(movement.ToPose());
   }
 
   #endregion
