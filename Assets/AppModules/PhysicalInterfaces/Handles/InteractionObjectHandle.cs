@@ -56,47 +56,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
   }
 
-  public interface IHandledObject {
-
-    void MoveByHandle(IHandle attachedHandle,
-                      Pose toPose,
-                      Vector3 aroundPivot,
-                      out Pose newHandleTargetPose);
-
-  }
-
-  public class HandledObject : IHandledObject {
-
-    public Pose curPose {
-      get { throw new System.NotImplementedException(); }
-    }
-
-    public List<IHandledObjectConstraint> constraints {
-      get { throw new System.NotImplementedException(); }
-    }
-
-    public Dictionary<IHandle, Pose> objToHandleDeltas {
-      get { throw new System.NotImplementedException(); }
-    }
-
-    public void MoveByHandle(IHandle attachedHandle,
-                             Pose toPose,
-                             Vector3 aroundPivot,
-                             out Pose newHandleTargetPose) {
-
-      // Iterate over constraints naively to try and satisfy them all?
-
-      // Or average the constraint results...
-
-      var finalPose = curPose;
-      foreach (var constraint in constraints) {
-        finalPose = constraint.Apply(toPose, aroundPivot);
-      }
-
-      newHandleTargetPose = finalPose.Then(objToHandleDeltas[attachedHandle]);
-    }
-
-  }
+  
 
   public interface IHandledObjectConstraint {
 
