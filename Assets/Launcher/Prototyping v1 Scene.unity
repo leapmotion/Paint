@@ -3026,6 +3026,8 @@ GameObject:
   - component: {fileID: 174749001}
   - component: {fileID: 174749000}
   - component: {fileID: 174749002}
+  - component: {fileID: 174749004}
+  - component: {fileID: 174749003}
   m_Layer: 0
   m_Name: Widget Panel
   m_TagString: Untagged
@@ -3040,9 +3042,10 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 174748998}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 1440671883}
   - {fileID: 923287355}
   m_Father: {fileID: 835074577}
   m_RootOrder: 2
@@ -3066,10 +3069,13 @@ MonoBehaviour:
   _cylindricalSpace: {fileID: 0}
   cylindricalPanelObject: {fileID: 0}
   _curvatureAmount: 0
-  lockOrientationComponents: []
+  lockOrientationComponents:
+  - {fileID: 1707630354}
+  - {fileID: 1709109025}
+  _hideWhenHeldSwitch: {fileID: 1440671884}
+  _orbSwitch: {fileID: 1707630357}
+  _titlebarSwitch: {fileID: 1709109028}
   _currentHandleType: 0
-  _orbHandle: {fileID: 0}
-  _titlebarHandle: {fileID: 0}
 --- !u!54 &174749001
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3079,7 +3085,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 60
-  m_AngularDrag: 1000
+  m_AngularDrag: 40
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
@@ -3099,6 +3105,111 @@ MonoBehaviour:
   handles:
   - {fileID: 1707630351}
   - {fileID: 1709109022}
+--- !u!114 &174749003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 174748998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e7e685ed21338449d229560959da62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tweenTime: 0.33
+  _startOn: 1
+  localScaleTarget: {fileID: 174748999}
+  onLocalScale: {x: 1, y: 1, z: 1}
+  offLocalScale: {x: 0, y: 0, z: 0}
+  enforceNonzeroScale: 1
+  deactivateSelfWhenZero: 0
+  scaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  nonUniformScale: 1
+  xScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  yScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  zScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+--- !u!114 &174749004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 174748998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 141476d83afdbb24c876300606d784e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isOn: 0
+  overrideTweenTime: 0
+  tweenTime: 1
 --- !u!43 &175723562
 Mesh:
   m_ObjectHideFlags: 3
@@ -5087,9 +5198,10 @@ MonoBehaviour:
   cylindricalPanelObject: {fileID: 0}
   _curvatureAmount: 1
   lockOrientationComponents: []
+  _hideWhenHeldSwitch: {fileID: 0}
+  _orbSwitch: {fileID: 0}
+  _titlebarSwitch: {fileID: 0}
   _currentHandleType: 0
-  _orbHandle: {fileID: 1945627550}
-  _titlebarHandle: {fileID: 769997599}
 --- !u!114 &293544015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5646,7 +5758,7 @@ GameObject:
   - component: {fileID: 332356964}
   - component: {fileID: 332356963}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Titlebar Handle Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6142,7 +6254,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &358142756
 Transform:
   m_ObjectHideFlags: 0
@@ -12484,6 +12596,34 @@ Transform:
   m_Father: {fileID: 75466856}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &758525909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 758525910}
+  m_Layer: 0
+  m_Name: PivotLook From Transform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &758525910
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 758525909}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.3, y: 0.2, z: 0.01}
+  m_Children: []
+  m_Father: {fileID: 835074577}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &759062821
 GameObject:
   m_ObjectHideFlags: 0
@@ -14207,6 +14347,7 @@ Transform:
   - {fileID: 1707630353}
   - {fileID: 1709109024}
   - {fileID: 174748999}
+  - {fileID: 758525910}
   m_Father: {fileID: 0}
   m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -15398,11 +15539,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 923287354}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 0.3, y: 0.2, z: 0.01}
   m_Children: []
   m_Father: {fileID: 174748999}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &923287356
 MeshRenderer:
@@ -15445,7 +15586,7 @@ BoxCollider:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 923287354}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -16885,9 +17026,10 @@ MonoBehaviour:
   cylindricalPanelObject: {fileID: 0}
   _curvatureAmount: 0
   lockOrientationComponents: []
+  _hideWhenHeldSwitch: {fileID: 0}
+  _orbSwitch: {fileID: 0}
+  _titlebarSwitch: {fileID: 0}
   _currentHandleType: 0
-  _orbHandle: {fileID: 1588926112}
-  _titlebarHandle: {fileID: 357263618}
 --- !u!114 &1031226456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19711,7 +19853,7 @@ GameObject:
   - component: {fileID: 1247205918}
   - component: {fileID: 1247205917}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Orb Handle Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22945,6 +23087,134 @@ MonoBehaviour:
   parentBox: {fileID: 1253069916}
   extraDepth: 0.0001
   _parentBoxDepth: 0.001
+--- !u!1 &1440671882
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1440671883}
+  - component: {fileID: 1440671884}
+  - component: {fileID: 1440671885}
+  m_Layer: 0
+  m_Name: Hide When Held Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1440671883
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1440671882}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 174748999}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1440671884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1440671882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3946f37cddb8e414ab17a4603de5f90b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tweenTime: 0.33
+  _startOn: 1
+  propertyType: 0
+  onBoolValue: 1
+  offBoolValue: 0
+  updateBoolValue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1440671885}
+        m_MethodName: set_enabled
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+BoolEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onFloatValue: 1
+  offFloatValue: 0
+  updateFloatValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+FloatEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onIntValue: 1
+  offIntValue: 0
+  updateIntValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+IntEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onStringValue: On
+  offStringValue: Off
+  updateStringValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+StringEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onVector2Value: {x: 1, y: 1}
+  offVector2Value: {x: 0, y: 0}
+  updateVector2Value:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+Vector2Event, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onVector3Value: {x: 1, y: 1, z: 1}
+  offVector3Value: {x: 0, y: 0, z: 0}
+  updateVector3Value:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+Vector3Event, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  interpolationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1440671885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1440671882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742703373100a384e8eb3a287991716a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _handle: {fileID: 174749002}
+  _objectVisibleSwitch: {fileID: 174749004}
 --- !u!1 &1442841133
 GameObject:
   m_ObjectHideFlags: 0
@@ -27260,6 +27530,9 @@ GameObject:
   - component: {fileID: 1707630351}
   - component: {fileID: 1707630350}
   - component: {fileID: 1707630354}
+  - component: {fileID: 1707630357}
+  - component: {fileID: 1707630356}
+  - component: {fileID: 1707630355}
   m_Layer: 0
   m_Name: Interaction Orb Handle
   m_TagString: Untagged
@@ -27277,7 +27550,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: -0.18939999, z: 0}
+  m_ConnectedAnchor: {x: 0, y: -0.089399986, z: 0}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 2
@@ -27319,17 +27592,17 @@ ConfigurableJoint:
   m_TargetVelocity: {x: 0, y: 0, z: 0}
   m_XDrive:
     serializedVersion: 3
-    positionSpring: 1000
+    positionSpring: 2000
     positionDamper: 0
     maximumForce: 3.4028233e+38
   m_YDrive:
     serializedVersion: 3
-    positionSpring: 1000
+    positionSpring: 2000
     positionDamper: 0
     maximumForce: 3.4028233e+38
   m_ZDrive:
     serializedVersion: 3
-    positionSpring: 1000
+    positionSpring: 2000
     positionDamper: 0
     maximumForce: 3.4028233e+38
   m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -27347,8 +27620,8 @@ ConfigurableJoint:
     maximumForce: 3.4028233e+38
   m_SlerpDrive:
     serializedVersion: 3
-    positionSpring: 300
-    positionDamper: 60
+    positionSpring: 2400
+    positionDamper: 5
     maximumForce: 3.4028233e+38
   m_ProjectionMode: 0
   m_ProjectionDistance: 0.1
@@ -27432,9 +27705,199 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   intObj: {fileID: 1707630351}
-  lookFrom: {fileID: 174748999}
+  lookFrom: {fileID: 758525910}
   lookTarget: {fileID: 1487317108}
   flip180: 1
+--- !u!114 &1707630355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1707630349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3946f37cddb8e414ab17a4603de5f90b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tweenTime: 0.33
+  _startOn: 1
+  propertyType: 0
+  onBoolValue: 0
+  offBoolValue: 1
+  updateBoolValue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1707630351}
+        m_MethodName: set_ignoreGrasping
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+BoolEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onFloatValue: 1
+  offFloatValue: 0
+  updateFloatValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+FloatEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onIntValue: 1
+  offIntValue: 0
+  updateIntValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+IntEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onStringValue: On
+  offStringValue: Off
+  updateStringValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+StringEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onVector2Value: {x: 1, y: 1}
+  offVector2Value: {x: 0, y: 0}
+  updateVector2Value:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+Vector2Event, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onVector3Value: {x: 1, y: 1, z: 1}
+  offVector3Value: {x: 0, y: 0, z: 0}
+  updateVector3Value:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+Vector3Event, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  interpolationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1707630356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1707630349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e7e685ed21338449d229560959da62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tweenTime: 0.33
+  _startOn: 1
+  localScaleTarget: {fileID: 1707630353}
+  onLocalScale: {x: 1, y: 1, z: 1}
+  offLocalScale: {x: 0, y: 0, z: 0}
+  enforceNonzeroScale: 1
+  deactivateSelfWhenZero: 0
+  scaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  nonUniformScale: 0
+  xScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  yScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  zScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1707630357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1707630349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 141476d83afdbb24c876300606d784e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isOn: 1
+  overrideTweenTime: 0
+  tweenTime: 1
 --- !u!1 &1709109020
 GameObject:
   m_ObjectHideFlags: 0
@@ -27447,6 +27910,9 @@ GameObject:
   - component: {fileID: 1709109022}
   - component: {fileID: 1709109021}
   - component: {fileID: 1709109025}
+  - component: {fileID: 1709109028}
+  - component: {fileID: 1709109027}
+  - component: {fileID: 1709109026}
   m_Layer: 0
   m_Name: Interaction Titlebar Handle
   m_TagString: Untagged
@@ -27464,7 +27930,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: -0.099999994, z: 0}
+  m_ConnectedAnchor: {x: 0, y: 0.000000007450581, z: 0}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 0
@@ -27635,7 +28101,7 @@ Transform:
   m_GameObject: {fileID: 1709109020}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.0001, y: 0.0001, z: 0.0001}
   m_Children:
   - {fileID: 332356962}
   m_Father: {fileID: 835074577}
@@ -27653,9 +28119,199 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   intObj: {fileID: 1709109022}
-  lookFrom: {fileID: 174748999}
+  lookFrom: {fileID: 758525910}
   lookTarget: {fileID: 1487317108}
   flip180: 1
+--- !u!114 &1709109026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1709109020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3946f37cddb8e414ab17a4603de5f90b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tweenTime: 0.33
+  _startOn: 0
+  propertyType: 0
+  onBoolValue: 0
+  offBoolValue: 1
+  updateBoolValue:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1709109022}
+        m_MethodName: set_ignoreGrasping
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+BoolEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onFloatValue: 1
+  offFloatValue: 0
+  updateFloatValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+FloatEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onIntValue: 1
+  offIntValue: 0
+  updateIntValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+IntEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  onStringValue: On
+  offStringValue: Off
+  updateStringValue:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+StringEvent, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onVector2Value: {x: 1, y: 1}
+  offVector2Value: {x: 0, y: 0}
+  updateVector2Value:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+Vector2Event, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  onVector3Value: {x: 1, y: 1, z: 1}
+  offVector3Value: {x: 0, y: 0, z: 0}
+  updateVector3Value:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Leap.Unity.Animation.PropertySwitch+Vector3Event, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  interpolationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1709109027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1709109020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e7e685ed21338449d229560959da62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tweenTime: 0.33
+  _startOn: 0
+  localScaleTarget: {fileID: 1709109024}
+  onLocalScale: {x: 1, y: 1, z: 1}
+  offLocalScale: {x: 0, y: 0, z: 0}
+  enforceNonzeroScale: 1
+  deactivateSelfWhenZero: 0
+  scaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  nonUniformScale: 0
+  xScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  yScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  zScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &1709109028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1709109020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 141476d83afdbb24c876300606d784e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isOn: 0
+  overrideTweenTime: 0
+  tweenTime: 1
 --- !u!1 &1712516420
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class InteractionObjectHandle : MonoBehaviour, IHandle {
+  public class InteractionObjectHandle : MonoBehaviour, zz2Old_IHandle {
 
     public InteractionBehaviour intObj;
 

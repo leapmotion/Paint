@@ -34,6 +34,8 @@ namespace Leap.Unity.PhysicalInterfaces {
                                    Vector3 newPos, Quaternion newRot,
                                    List<InteractionController> controllers) {
 
+      if (!gameObject.activeInHierarchy || !this.enabled) return;
+
       // An important reason this works is because even though the various rigidbodies
       // have constantly-fluctuated poses with respect to one another, there are rigid
       // "ideal" poses and relative poses stored on Start() that allow target positions

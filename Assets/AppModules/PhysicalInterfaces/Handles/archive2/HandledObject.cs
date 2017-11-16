@@ -16,9 +16,9 @@ namespace Leap.Unity.PhysicalInterfaces {
       get { return _constraints; }
     }
 
-    private Dictionary<IHandle, Pose> _objToHandleDeltas = null;
+    private Dictionary<zz2Old_IHandle, Pose> _objToHandleDeltas = null;
 
-    public void MoveByHandle(IHandle attachedHandle,
+    public void MoveByHandle(zz2Old_IHandle attachedHandle,
                              Pose toPose,
                              Vector3 aroundPivot,
                              out Pose newHandleTargetPose) {

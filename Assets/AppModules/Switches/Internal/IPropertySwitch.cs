@@ -1,4 +1,4 @@
-﻿
+﻿using UnityEngine;
 
 namespace Leap.Unity.Animation {
 
@@ -57,6 +57,28 @@ namespace Leap.Unity.Animation {
     /// respect Undo behaviour through the use of Undo.X() calls.
     /// </summary>
     void OffNow();
+
+  }
+
+  public static class IPropertySwitchExtensions {
+
+    public static void AutoOn(this IPropertySwitch propSwitch) {
+      if (Application.isPlaying) {
+        propSwitch.On();
+      }
+      else {
+        propSwitch.OnNow();
+      }
+    }
+
+    public static void AutoOff(this IPropertySwitch propSwitch) {
+      if (Application.isPlaying) {
+        propSwitch.Off();
+      }
+      else {
+        propSwitch.OffNow();
+      }
+    }
 
   }
 

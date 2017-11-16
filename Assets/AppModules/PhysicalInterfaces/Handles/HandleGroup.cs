@@ -8,12 +8,18 @@ namespace Leap.Unity.PhysicalInterfaces {
 
   using IntObj = InteractionBehaviour;
 
-  public class HandleGroup : MonoBehaviour {
+  public class HandleGroup : MonoBehaviour, IHandle {
 
     public IntObj[] handles;
 
     private HashSet<IntObj> _heldHandles
       = new HashSet<IntObj>();
+
+    public bool isHeld {
+      get {
+        return _heldHandles.Query().Any(intObj => intObj.isGrasped);
+      }
+    }
 
     void Start() {
       foreach (var handle in handles) {

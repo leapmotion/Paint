@@ -1,4 +1,5 @@
-﻿using Leap.Unity.Attributes;
+﻿using Leap.Unity.Animation;
+using Leap.Unity.Attributes;
 using Leap.Unity.PhysicalInterfaces;
 using Leap.Unity.Query;
 using Leap.Unity.Space;
@@ -153,16 +154,57 @@ namespace Leap.Unity.Launcher {
 
     #endregion
 
-    #region Held Orientability - NYI
+    #region Held Visibility
 
-    //[Header("Held Orientability - NYI")]
+    [Header("Held Visiblity")]
+
+    [SerializeField, ImplementsInterface(typeof(IPropertySwitch))]
+    private MonoBehaviour _hideWhenHeldSwitch;
+    public IPropertySwitch hideWhenHeldSwitch {
+      get {
+        return _hideWhenHeldSwitch as IPropertySwitch;
+      }
+    }
+
+    public HeldVisiblityType heldVisibilityType {
+      get {
+        if (hideWhenHeldSwitch == null) {
+          return HeldVisiblityType.StayOpen;
+        }
+        else {
+          if (hideWhenHeldSwitch.GetIsOnOrTurningOn()) {
+            return HeldVisiblityType.Hide;
+          }
+          else {
+            return HeldVisiblityType.StayOpen;
+          }
+        }
+      }
+      set {
+        if (hideWhenHeldSwitch == null) return;
+
+        switch (value) {
+          case HeldVisiblityType.StayOpen:
+            if (hideWhenHeldSwitch.GetIsOnOrTurningOn()) {
+              hideWhenHeldSwitch.AutoOff();
+            }
+            break;
+
+          case HeldVisiblityType.Hide:
+            if (hideWhenHeldSwitch.GetIsOffOrTurningOff()) {
+              hideWhenHeldSwitch.AutoOn();
+            }
+            break;
+        }
+      }
+    }
 
     public HeldVisiblityType GetHeldVisiblityType() {
-      return HeldVisiblityType.Hide;
+      return heldVisibilityType;
     }
 
     public void SetHeldVisiblityType(HeldVisiblityType type) {
-      return;
+      heldVisibilityType = type;
     }
 
     #endregion
@@ -171,59 +213,61 @@ namespace Leap.Unity.Launcher {
 
     [Header("Handle Switching")]
 
+    [SerializeField, ImplementsInterface(typeof(IPropertySwitch))]
+    private MonoBehaviour _orbSwitch;
+    public IPropertySwitch orbSwitch {
+      get {
+        return _orbSwitch as IPropertySwitch;
+      }
+    }
+
+    [SerializeField, ImplementsInterface(typeof(IPropertySwitch))]
+    private MonoBehaviour _titlebarSwitch;
+    public IPropertySwitch titlebarSwitch {
+      get {
+        return _titlebarSwitch as IPropertySwitch;
+      }
+    }
+    
+
     [SerializeField, OnEditorChange("currentHandleType")]
     private HandleType _currentHandleType = HandleType.Orb;
     public HandleType currentHandleType {
       get { return _currentHandleType; }
       set {
-        if (value != _currentHandleType) {
-          if (value == HandleType.Orb) {
-            if (orbHandle as MonoBehaviour != null) {
-              (orbHandle as MonoBehaviour).gameObject.SetActive(true);
-            }
-            if (titlebarHandle as MonoBehaviour != null) {
-              (titlebarHandle as MonoBehaviour).gameObject.SetActive(false);
-            }
-          }
-          else if (value == HandleType.Titlebar) {
-            if (titlebarHandle as MonoBehaviour != null) {
-              (titlebarHandle as MonoBehaviour).gameObject.SetActive(true);
-            }
-            if (orbHandle as MonoBehaviour != null) {
-              (orbHandle as MonoBehaviour).gameObject.SetActive(false);
-            }
-          }
+        var orbOn = false;
+        var barOn = false;
 
-          _currentHandleType = value;
+        if (value == HandleType.Orb) {
+          orbOn = true;
         }
-      }
-    }
-
-    private MonoBehaviour curHandleBehaviour {
-      get {
-        switch (_currentHandleType) {
-          case HandleType.Orb:
-            return _orbHandle;
-          case HandleType.Titlebar:
-          default:
-            return _titlebarHandle;
+        else if (value == HandleType.Titlebar) {
+          barOn = true;
         }
-      }
-    }
 
-    [SerializeField, ImplementsInterface(typeof(zzOld_IHandle))]
-    private MonoBehaviour _orbHandle;
-    public zzOld_IHandle orbHandle {
-      get {
-        return _orbHandle as zzOld_IHandle;
-      }
-    }
+        if (orbOn) {
+          if (orbSwitch.GetIsOffOrTurningOff()) {
+            orbSwitch.AutoOn();
+          }
+        }
+        else {
+          if (orbSwitch.GetIsOnOrTurningOn()) {
+            orbSwitch.AutoOff();
+          }
+        }
 
-    [SerializeField, ImplementsInterface(typeof(zzOld_IHandle))]
-    private MonoBehaviour _titlebarHandle;
-    public zzOld_IHandle titlebarHandle {
-      get {
-        return _titlebarHandle as zzOld_IHandle;
+        if (barOn) {
+          if (titlebarSwitch.GetIsOffOrTurningOff()) {
+            titlebarSwitch.AutoOn();
+          }
+        }
+        else {
+          if (titlebarSwitch.GetIsOnOrTurningOn()) {
+            titlebarSwitch.AutoOff();
+          }
+        }
+
+        _currentHandleType = value;
       }
     }
 
