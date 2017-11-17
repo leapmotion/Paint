@@ -18,12 +18,12 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// <summary>
     /// Returns the Panel pose necessary to solve the look constraint that places
     /// the pivot defined by panelToPivot at the pivotTarget, and the panel looking at
-    /// the lookTarget.
+    /// the lookTarget. Also provides the solved handle pose as an output parameter.
     /// </summary>
     public static Pose Solve(Pose panel,
-                             Vector3 pivotPoint,
+                             Pose handlePose,
                              Vector3 lookTarget,
-                             //Maybe<Vector3> pivotTarget = default(Maybe<Vector3>),
+                             out Pose solvedHandlePose,
                              Maybe<Vector3> horizonNormal = default(Maybe<Vector3>),
                              int maxIterations = 8,
                              float solveAngle = 0.1f,
@@ -31,12 +31,9 @@ namespace Leap.Unity.PhysicalInterfaces {
       if (!horizonNormal.hasValue) {
         horizonNormal = Vector3.up;
       };
-      //if (pivotTarget.hasValue) {
-      //  pivotTarget = panel.Then(panelToPivot).position;
-      //};
-      var panelToPivot = pivotPoint.From(panel);
+      var panelToPivot = handlePose.From(panel);
 
-      return Solve(
+      var solved = Solve(
         new PivotLookConstraint() {
           panel = panel,
           panelToPivot = panelToPivot,
@@ -48,10 +45,33 @@ namespace Leap.Unity.PhysicalInterfaces {
         },
         maxIterations,
         solveAngle
-      ).panel;
+      );
+
+      solvedHandlePose = solved.panel.Then(solved.panelToPivot);
+
+      return solved.panel;
     }
 
-    private static PivotLookConstraint Solve(PivotLookConstraint pivotLook,
+    /// <summary>
+    /// Returns the Panel pose necessary to solve the look constraint that places
+    /// the pivot defined by panelToPivot at the pivotTarget, and the panel looking at
+    /// the lookTarget.
+    /// </summary>
+    public static Pose Solve(Pose panel,
+                             Vector3 pivotPoint,
+                             Vector3 lookTarget,
+                             Maybe<Vector3> horizonNormal = default(Maybe<Vector3>),
+                             int maxIterations = 8,
+                             float solveAngle = 0.1f,
+                             bool flip180 = false) {
+      Pose outHandlePose;
+
+      return Solve(panel, panel.Then(pivotPoint.From(panel)), lookTarget,
+        out outHandlePose,
+        horizonNormal, maxIterations, solveAngle, flip180);
+    }
+
+      private static PivotLookConstraint Solve(PivotLookConstraint pivotLook,
                                             int maxIterations = 8,
                                             float solveAngle = 0.1f) {
       var lookTarget = pivotLook.lookTarget;

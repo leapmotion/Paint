@@ -40,6 +40,17 @@ namespace Leap.Unity {
     }
 
     /// <summary>
+    /// Returns the accumulation of the two poses: The positions summed, and with
+    /// rotation A.rotation * B.rotation. Note that this accumulates the poses without
+    /// interpreting either pose as a parent space of the other; but also beware that
+    /// rotations are noncommutative, so this operation is also noncommutative.
+    /// </summary>
+    public static Pose operator +(Pose A, Pose B) {
+      return new Pose(A.position + B.position,
+                      A.rotation * B.rotation);
+    }
+
+    /// <summary>
     /// Transforms the right-hand-side Vector3 as a local-space position into world space
     /// as if this Pose were its reference frame.
     /// </summary>

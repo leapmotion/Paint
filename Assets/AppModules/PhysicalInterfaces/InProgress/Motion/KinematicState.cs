@@ -7,6 +7,11 @@ namespace Leap.Unity.PhysicalInterfaces {
     public Pose pose;
     public Movement movement;
 
+    public KinematicState(Pose pose, Movement movement) {
+      this.pose = pose;
+      this.movement = movement;
+    }
+
 
     public void Integrate(float deltaTime) {
       pose.Integrate(movement, deltaTime);
@@ -33,8 +38,9 @@ namespace Leap.Unity.PhysicalInterfaces {
       thisPose.position = movement.velocity * deltaTime + thisPose.position;
 
       if (movement.angularVelocity.sqrMagnitude > 0.00001f) {
-        thisPose.rotation = Quaternion.AngleAxis(movement.angularVelocity.magnitude * deltaTime,
-                                                 movement.angularVelocity.normalized)
+        var angVelMag = movement.angularVelocity.magnitude;
+        thisPose.rotation = Quaternion.AngleAxis(angVelMag * deltaTime,
+                                                 movement.angularVelocity / angVelMag)
                    * thisPose.rotation;
       }
     }

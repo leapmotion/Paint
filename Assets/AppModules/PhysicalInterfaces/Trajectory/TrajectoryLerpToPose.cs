@@ -13,6 +13,14 @@ namespace Leap.Unity.Animation {
 
     [Header("Target")]
 
+    public Transform targetTransform;
+    public Transform effTargetTransform {
+      get {
+        if (targetTransform == null) return this.transform;
+        return targetTransform;
+      }
+    }
+
     public Pose targetPose;
 
     [Header("Trajectory")]
@@ -46,12 +54,13 @@ namespace Leap.Unity.Animation {
     #endregion
 
     private void updateLerp(float t) {
-      this.transform.SetWorldPose(Pose.Lerp(simulator.GetSimulatedPose(), targetPose, t));
+      effTargetTransform.SetWorldPose(Pose.Lerp(simulator.GetSimulatedPose(), targetPose, t));
 
       // Reset the absolute rotation of the object being simulated;
       // this adds a lot of rotational "drag" but prevents flips due to the complex
       // nature of quaternions :\
-      simulator.SetSimulatedRotation(this.transform.rotation);
+      // TODO: John S may have a solution for this
+      simulator.SetSimulatedRotation(effTargetTransform.rotation);
 
       bool isFinished = t == 1f;
       if (isFinished) {
@@ -70,8 +79,8 @@ namespace Leap.Unity.Animation {
       set { targetPose = value; }
     }
 
-    public event Action OnReachTarget;
-    public event Action OnMovementUpdate;
+    public event Action OnReachTarget = () => { };
+    public event Action OnMovementUpdate = () => { };
 
     public void Cancel() {
       if (_tween.isValid && _tween.isRunning) {

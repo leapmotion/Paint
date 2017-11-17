@@ -10,6 +10,10 @@ namespace Leap.Unity.Layout {
 
     public bool flipPose = false;
 
+    public Pose GetPose() {
+      return new Pose(GetTargetPosition(), GetTargetRotation());
+    }
+
     public Vector3 GetTargetPosition() {
       return this.transform.position;
     }

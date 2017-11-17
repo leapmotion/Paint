@@ -7,10 +7,27 @@ using UnityEngine;
 
 namespace Leap.Unity.Animation {
 
-  public class TrajectorySimulator : MonoBehaviour, IRuntimeGizmoComponent {
+  public class TrajectorySimulator : MonoBehaviour,
+                                     IRuntimeGizmoComponent,
+                                     IKinematicStateProvider {
 
     #region Inspector
-    
+
+    [Header("Non-Simulation")]
+
+    [Tooltip("The TrajectorySimulator watches this transform to match its velocity and "
+           + "angular velocity when the simulation begins. If null, the simulator will "
+           + "watch its own transform.")]
+    public Transform watchTransform;
+    private Transform effWatchTransform {
+      get {
+        if (watchTransform == null) {
+          return this.transform;
+        }
+        return watchTransform;
+      }
+    }
+
     [Header("Simulation")]
 
     [SerializeField, OnEditorChange("simulating")]
@@ -80,6 +97,11 @@ namespace Leap.Unity.Animation {
     public Vector3 position { get { return _position; } }
     public Vector3 velocity { get { return _velocity; } }
 
+    public KinematicState GetKinematicState() {
+      return new KinematicState(new Pose(_position, _rotation),
+                                new Movement(_velocity, _angularVelocity));
+    }
+
     public void StartSimulating() {
       _isSimulating = true;
     }
@@ -102,6 +124,17 @@ namespace Leap.Unity.Animation {
 
     public Pose GetSimulatedPose() {
       return new Pose(_position, _rotation);
+    }
+
+    public void SetMovement(Movement movement) {
+      _velocity = movement.velocity;
+      _angularVelocity = movement.angularVelocity;
+    }
+
+    public void ResetNonSimulationTracking() {
+      _hasPositionLastUpdate = false;
+      _velocity = Vector3.zero;
+      _angularVelocity = Vector3.zero;
     }
 
     #endregion
@@ -147,8 +180,8 @@ namespace Leap.Unity.Animation {
     /// and position so that the simulation begins in a sensible state.
     /// </summary>
     private void updateNonSimulation() {
-      _position = this.transform.position;
-      _rotation = this.transform.rotation;
+      _position = effWatchTransform.position;
+      _rotation = effWatchTransform.rotation;
 
       if (_rigidbody != null) {
         _velocity = _rigidbody.velocity;

@@ -1,4 +1,5 @@
 ﻿using Leap.Unity.Interaction;
+using Leap.Unity.Layout;
 using Leap.Unity.Query;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
   using IntObj = InteractionBehaviour;
 
-  public class HeldPivotLook : MonoBehaviour {
+  public class HeldPivotLook : MonoBehaviour, IAttachmentProvider {
 
     public IntObj intObj;
 
@@ -18,6 +19,9 @@ namespace Leap.Unity.PhysicalInterfaces {
     public bool flip180;
 
     private Pose _handleToPanelPose;
+    public Pose GetHandleToAttachmentPose() {
+      return _handleToPanelPose;
+    }
 
     void Start() {
       intObj.OnGraspedMovement -= onGraspedMovement;
@@ -50,7 +54,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
       var graspingCentroid = controllers.Query()
                                         .Select(c => c.GetGraspPoint())
-                                        .Fold((acc, p) => p + acc)
+                                        .Fold((sum, p) => p + sum)
                              / controllers.Count;
 
       var targetLookFromPose = PivotLook.Solve(newPanelPose,

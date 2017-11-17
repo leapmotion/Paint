@@ -39,6 +39,10 @@ namespace Leap.Unity.Layout {
 
     #endregion
 
+    public Pose GetPose() {
+      return new Pose(GetTargetPosition(), GetTargetRotation());
+    }
+
     public Vector3 GetTargetPosition() {
       Vector3 layoutPos;
 

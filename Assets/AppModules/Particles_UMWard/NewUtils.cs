@@ -419,10 +419,6 @@ public static class NewUtils {
     return new Pose(position, fromPose.rotation).From(fromPose);
   }
 
-  public static Pose Then(this Pose pose, Movement movement) {
-    return pose.Then(movement.ToPose());
-  }
-
   #endregion
 
 

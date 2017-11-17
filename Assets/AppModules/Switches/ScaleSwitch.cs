@@ -36,6 +36,22 @@ namespace Leap.Unity.Animation {
     /// Deactivates THIS OBJECT when its target localScale is zero or very near zero.
     /// </summary>
     public bool deactivateSelfWhenZero = true;
+    
+    [Tooltip("Enable this setting to connect a Switch that will receive Off() when the "
+           + "scale is effectively zero and On() when the scale is effectively nonzero.")]
+    public bool switchWhenNonzero = false;
+
+    [SerializeField, ImplementsInterface(typeof(IPropertySwitch))]
+    [DisableIf("switchWhenNonzero", isEqualTo: false)]
+    [Tooltip("The switch attached here will receive Off() when this Scale Switch is at an "
+           + "effectively 'zero' scale (even if Enforce Nonzero Scale is checked), and "
+           + "On() when the Scale Switch is at an effectively nonzero scale.")]
+    private MonoBehaviour _nonzeroSwitch;
+    public IPropertySwitch nonzeroSwitch {
+      get {
+        return _nonzeroSwitch as IPropertySwitch;
+      }
+    }
 
     [Header("Animation Curves")]
     [UnitCurve]
@@ -85,8 +101,21 @@ namespace Leap.Unity.Animation {
         localScaleTarget.localScale = targetScale;
       }
 
+      bool effectivelyZeroScale = targetScale.CompMin() <= NEAR_ZERO;
+
       if (deactivateSelfWhenZero) {
-        this.gameObject.SetActive(!(targetScale.CompMin() <= NEAR_ZERO));
+        this.gameObject.SetActive(!effectivelyZeroScale);
+      }
+
+      if (switchWhenNonzero && nonzeroSwitch != null) {
+        if (effectivelyZeroScale && nonzeroSwitch.GetIsOnOrTurningOn()) {
+          if (immediately) nonzeroSwitch.OffNow();
+          else nonzeroSwitch.Off();
+        }
+        if (!effectivelyZeroScale && nonzeroSwitch.GetIsOffOrTurningOff()) {
+          if (immediately) nonzeroSwitch.OnNow();
+          else nonzeroSwitch.On();
+        }
       }
     }
 
