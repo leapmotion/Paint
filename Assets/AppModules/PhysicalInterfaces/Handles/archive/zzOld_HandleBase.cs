@@ -12,9 +12,13 @@ namespace Leap.Unity.PhysicalInterfaces {
   /// TransformHandle is a trivial implementation of HandleBase using a Transform as
   /// the Pose source.
   /// </summary>
-  public abstract class zzOld_HandleBase : zzOld_MovementObservingBehaviour, zzOld_IHandle {
+  public abstract class zzOld_HandleBase : MovementObservingBehaviour, zzOld_IHandle {
 
-    public abstract override Pose pose {
+    public override Pose GetPose() {
+      return pose;
+    }
+
+    public abstract Pose pose {
       get;
       protected set;
     }

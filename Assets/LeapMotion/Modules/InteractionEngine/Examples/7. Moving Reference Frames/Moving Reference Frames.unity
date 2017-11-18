@@ -1015,6 +1015,7 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 1}
   useWireframe: 1
   traverseHierarchy: 1
+  drawTriggers: 0
 --- !u!1 &205759361
 GameObject:
   m_ObjectHideFlags: 0
@@ -4301,6 +4302,7 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 1}
   useWireframe: 1
   traverseHierarchy: 1
+  drawTriggers: 0
 --- !u!1 &853861902
 GameObject:
   m_ObjectHideFlags: 0

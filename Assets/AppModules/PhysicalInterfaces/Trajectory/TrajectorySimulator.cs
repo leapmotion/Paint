@@ -1,4 +1,5 @@
 ﻿using Leap.Unity.Attributes;
+using Leap.Unity.Layout;
 using Leap.Unity.PhysicalInterfaces;
 using Leap.Unity.RuntimeGizmos;
 using System.Collections;
@@ -50,11 +51,32 @@ namespace Leap.Unity.Animation {
       }
     }
 
-    [Tooltip("If set, you can specify a custom acceleration value for the simulation's gravity.")]
-    public bool overrideGravity = false;
+    public bool simulateRotation = true;
 
-    [DisableIf("overrideGravity", isEqualTo: false)]
-    public Vector3 customGravity = new Vector3(0f, -9.81f, 0f);
+    [Tooltip("If set, you can specify a custom acceleration value for the simulation's "
+           + "gravity.")]
+    public bool applyGravity = false;
+
+    [DisableIf("applyGravity", isEqualTo: false)]
+    public Vector3 gravityAcceleration = new Vector3(0f, -9.81f, 0f);
+
+    public bool accelerateTowardsTransform;
+
+    [DisableIf("accelerateTowardsTransform", isEqualTo: false)]
+    public Transform targetTransform;
+
+    public bool accelerateTowardsPose;
+
+    [DisableIf("accelerateTowardsPose", isEqualTo: false)]
+    [SerializeField, ImplementsInterface(typeof(IPoseProvider))]
+    private MonoBehaviour _targetPoseProvider;
+    public IPoseProvider targetPoseProvider {
+      get { return _targetPoseProvider as IPoseProvider; }
+    }
+
+    [MinValue(0f)]
+    [DisableIfAll("accelerateTowardsTransform", "accelerateTowardsPose", areEqualTo: false)]
+    public float accelerationForce = 1f;
 
     [MinValue(0f)]
     public float drag = 0f;
@@ -71,10 +93,8 @@ namespace Leap.Unity.Animation {
 
     #region Unity Events
 
-    void OnValidate() {
-      if (!overrideGravity) {
-        customGravity = Physics.gravity;
-      }
+    void Reset() {
+      gravityAcceleration = Physics.gravity;
     }
 
     void Start() {
@@ -104,6 +124,10 @@ namespace Leap.Unity.Animation {
 
     public void StartSimulating() {
       _isSimulating = true;
+
+      if (accelerateTowardsPose && targetPoseProvider != null) {
+        _cachedTargetPose = targetPoseProvider.GetPose();
+      }
     }
 
     public void StopSimulating() {
@@ -151,6 +175,8 @@ namespace Leap.Unity.Animation {
     private Quaternion _rotation = Quaternion.identity;
     private Vector3 _angularVelocity = Vector3.zero;
 
+    private Pose _cachedTargetPose = Pose.identity;
+
     private void initSimulation() {
       _rigidbody = GetComponent<Rigidbody>();
       _hasPositionLastUpdate = false;
@@ -161,18 +187,31 @@ namespace Leap.Unity.Animation {
     /// </summary>
     private void updateSimulation() {
       Vector3 dragAccel = -_velocity.normalized * _velocity.sqrMagnitude * drag;
-      Vector3 gravAccel = (overrideGravity ? customGravity : Physics.gravity);
+      Vector3 gravAccel = applyGravity ? gravityAcceleration : Vector3.zero;
+
+      if (accelerateTowardsTransform && targetTransform != null) {
+        var accelTowardsTarget = targetTransform.position.From(_position)
+                                 * accelerationForce;
+        gravAccel += accelTowardsTarget;
+      }
+      if (accelerateTowardsPose && targetPoseProvider != null) {
+        var accelTowardsPoseTarget = _cachedTargetPose.position.From(_position)
+                                     * accelerationForce;
+        gravAccel += accelTowardsPoseTarget;
+      }
 
       _velocity += (dragAccel + gravAccel) * Time.deltaTime;
 
       _position += _velocity * Time.deltaTime;
 
       // Rotation
-      Vector3 angDragAccel = -_angularVelocity.normalized * _angularVelocity.sqrMagnitude * angularDrag;
+      if (simulateRotation) {
+        Vector3 angDragAccel = -_angularVelocity.normalized * _angularVelocity.sqrMagnitude * angularDrag;
 
-      _angularVelocity += angDragAccel * Time.deltaTime;
-      
-      _rotation = Quaternion.AngleAxis(_angularVelocity.magnitude * Time.deltaTime, _angularVelocity.normalized) * _rotation;
+        _angularVelocity += angDragAccel * Time.deltaTime;
+
+        _rotation = Quaternion.AngleAxis(_angularVelocity.magnitude * Time.deltaTime, _angularVelocity.normalized) * _rotation;
+      }
     }
 
     /// <summary>

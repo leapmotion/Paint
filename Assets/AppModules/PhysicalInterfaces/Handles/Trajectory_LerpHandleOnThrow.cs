@@ -29,7 +29,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     private void onGraspEnd() {
-      trajectoryLerpToPose.MoveToTarget();
+      trajectoryLerpToPose.MoveToTarget(targetPoseProvider.GetPose());
     }
 
   }

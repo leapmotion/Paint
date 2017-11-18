@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class zzOld_HandledObject : zzOld_MovementObservingBehaviour, zzOld_IHandle {
+  public class zzOld_HandledObject : MovementObservingBehaviour, zzOld_IHandle {
 
     #region Inspector
 
@@ -33,7 +33,9 @@ namespace Leap.Unity.PhysicalInterfaces {
     private zzOld_IHandle _heldHandle = null;
     public zzOld_IHandle heldHandle { get { return _heldHandle; } }
 
-    protected virtual void Awake() {
+    protected override void Awake() {
+      base.Awake();
+
       _targetPose = this.pose;
     }
 
@@ -95,7 +97,11 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     #region IHandle
 
-    public override Pose pose {
+    public override Pose GetPose() {
+      return pose;
+    }
+
+    public virtual Pose pose {
       get { return this.transform.ToPose(); }
       protected set {
         this.transform.SetPose(value);

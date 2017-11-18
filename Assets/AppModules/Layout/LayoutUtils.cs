@@ -90,13 +90,14 @@ namespace Leap.Unity.Layout {
     public static Vector3 LayoutThrownUIPosition2(Pose userHeadPose,
                                                   Vector3 initPosition,
                                                   Vector3 initVelocity,
-                                                  float optimalDistanceMultiplier = 1f) {
+                                                  float optimalHeightFromHead = 0f,
+                                                  float optimalDistance = PhysicalInterfaceUtils.OPTIMAL_UI_DISTANCE) {
       Vector3 headPosition = userHeadPose.position;
       Quaternion headRotation = userHeadPose.rotation;
 
       Vector3 workstationPosition = Vector3.zero;
       //bool modifyHeight = true;
-      if (initVelocity.magnitude < PhysicalInterfaces.PhysicalInterfaceUtils.MIN_THROW_SPEED) {
+      if (initVelocity.magnitude < PhysicalInterfaceUtils.MIN_THROW_SPEED) {
         // Just use current position as the position to choose.
         workstationPosition = initPosition;
         //modifyHeight = false;
@@ -122,16 +123,19 @@ namespace Leap.Unity.Layout {
           projectDirection = groundAlignedInitVelocity;
         }
 
-        // Add a little bit of the effective look direction to the projectDirection to skew towards winding up
-        // in front of the user unless they really throw it hard behind them
-        float forwardSkewAmount = 2F;
+        // Add a little bit of the effective look direction to the projectDirection to
+        // skew towards winding up in front of the user unless they really throw it hard
+        // behind them.
+        float forwardSkewAmount = 1F;
         projectDirection += effectiveLookDirection * forwardSkewAmount;
         projectDirection = projectDirection.normalized;
 
         // Find good workstation position based on projection direction
         Vector3 workstationDirection = (initPosition + (projectDirection * 20F) - headPosition);
         Vector3 groundAlignedWorkstationDirection = new Vector3(workstationDirection.x, 0F, workstationDirection.z).normalized;
-        workstationPosition = headPosition + PhysicalInterfaceUtils.OPTIMAL_UI_DISTANCE * optimalDistanceMultiplier * groundAlignedWorkstationDirection;
+        workstationPosition = headPosition
+          + Vector3.down * optimalHeightFromHead
+          + optimalDistance * groundAlignedWorkstationDirection;
 
         // Allow the WearableManager to pick a new location if the target location overlaps with another workstation
         //workstationPosition = _manager.ValidateTargetWorkstationPosition(workstationPosition, this);

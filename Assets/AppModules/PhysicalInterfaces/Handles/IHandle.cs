@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
@@ -6,6 +6,17 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     bool isHeld { get; }
 
+    bool isMoving { get; }
+
+    bool isKinematic { get; set; }
+
+
+    event Action OnHoldBegin;
+    event Action<IHandle> OnHandleHoldBegin;
+
+    event Action OnHoldEnd;
+    event Action<IHandle> OnHandleHoldEnd;
+    
   }
 
 }

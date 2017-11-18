@@ -24,7 +24,7 @@
 
   struct v2f_n {
     float4 vertex : SV_POSITION;
-    float3 normal : NORMAL;
+    float3 normal : TEXCOORD0;
   };
 
   struct v2f {

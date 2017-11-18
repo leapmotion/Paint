@@ -1,5 +1,6 @@
 ﻿using System;
 using Leap.Unity.Query;
+using System.Collections.Generic;
 
 namespace Leap.Unity {
 
@@ -18,7 +19,7 @@ namespace Leap.Unity {
     }
 
     public static QueryWrapper<T, IQueryOp<T>> Query<T>(this IIndexable<T> indexable) {
-      return new QueryWrapper<T, IQueryOp<T>>(indexable.GetEnumerator());
+      return new QueryWrapper<T, IQueryOp<T>>(GetEnumerator(indexable));
     }
 
   }

@@ -34,6 +34,17 @@ namespace Leap.Unity.PhysicalInterfaces {
     public const float STANDARD_SPEED = 1.00f;
 
     /// <summary>
+    /// A standard minimum speed under which an object is considered to be standing
+    /// still.
+    /// </summary>
+    public const float MIN_MOVING_SPEED = 0.001f;
+
+    /// <summary>
+    /// As MIN_MOVING_SPEED, but squared, for checks against sqrMagnitude.
+    /// </summary>
+    public const float MIN_MOVING_SPEED_SQR = MIN_MOVING_SPEED * MIN_MOVING_SPEED;
+
+    /// <summary>
     /// A distance representing being well within arms-reach without being too close to
     /// the head.
     /// </summary>

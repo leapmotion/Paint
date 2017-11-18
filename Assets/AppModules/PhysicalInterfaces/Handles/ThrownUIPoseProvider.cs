@@ -24,24 +24,45 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
+    public float optimalHeightFromHead = 0.20f;
+
+    public float optimalDistance = 0.60f;
+
     public bool flip180 = false;
+
+    [Header("Debug")]
+    public bool drawDebug = false;
 
     public Pose GetPose() {
       var handleKinematicState = handleKinematicStateProvider.GetKinematicState();
 
       var handlePose = handleKinematicState.pose;
 
-      var layoutPos = LayoutUtils.LayoutThrownUIPosition2(Camera.main.transform.ToPose(),
-                                                     handlePose.position,
-                                                     handleKinematicState.movement.velocity,
-                                                     optimalDistanceMultiplier: 1f);
+      var handleToAttachedUIPose = handleAttachmentPoseProvider.GetHandleToAttachmentPose();
+      
+      var layoutPos = LayoutUtils.LayoutThrownUIPosition2(
+                                    Camera.main.transform.ToPose(),
+
+                                    //handlePose.position,
+
+                                    handlePose.Then(handleToAttachedUIPose).position,
+
+                                    handleKinematicState.movement.velocity,
+                                    optimalHeightFromHead: optimalHeightFromHead,
+                                    optimalDistance: optimalDistance);
+
+      if (drawDebug) {
+        DebugPing.Ping(handlePose, LeapColor.red, 0.2f);
+        DebugPing.PingCapsule(handlePose.position, layoutPos, LeapColor.purple, 0.2f);
+        DebugPing.Ping(layoutPos, LeapColor.blue, 0.2f);
+      }
 
       var solvedHandlePose =
         new Pose(layoutPos,
                  Utils.FaceTargetWithoutTwist(layoutPos,
                                               Camera.main.transform.position,
                                               flip180))
-            .Then(handleAttachmentPoseProvider.GetHandleToAttachmentPose().inverse);
+            .Then(handleToAttachedUIPose.inverse);
 
       return solvedHandlePose;
     }

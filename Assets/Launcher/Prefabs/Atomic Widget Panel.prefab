@@ -26,6 +26,7 @@ GameObject:
   - component: {fileID: 114660394766223604}
   - component: {fileID: 114952579034230876}
   - component: {fileID: 114883935225871000}
+  - component: {fileID: 114300130308785934}
   m_Layer: 0
   m_Name: Interaction Orb Handle
   m_TagString: Untagged
@@ -48,6 +49,7 @@ GameObject:
   - component: {fileID: 114802759614307170}
   - component: {fileID: 114162939506957000}
   - component: {fileID: 114302781420308286}
+  - component: {fileID: 114971270537548562}
   m_Layer: 0
   m_Name: Interaction Titlebar Handle
   m_TagString: Untagged
@@ -693,6 +695,18 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114300130308785934
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1112823513366574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb42d71377bdfe34dbc14f69601c1ff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _intObj: {fileID: 114454637698823720}
 --- !u!114 &114302781420308286
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -933,9 +947,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ca313e434ccb584785b04dc2d08e38d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handles:
-  - {fileID: 114454637698823720}
-  - {fileID: 114705144395326490}
+  _handles:
+  - {fileID: 1112823513366574}
+  - {fileID: 1218548211363514}
 --- !u!114 &114568129965249744
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1332,6 +1346,18 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &114971270537548562
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1218548211363514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb42d71377bdfe34dbc14f69601c1ff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _intObj: {fileID: 114705144395326490}
 --- !u!135 &135828670098316324
 SphereCollider:
   m_ObjectHideFlags: 1

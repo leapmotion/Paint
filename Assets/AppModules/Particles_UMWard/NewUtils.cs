@@ -419,6 +419,10 @@ public static class NewUtils {
     return new Pose(position, fromPose.rotation).From(fromPose);
   }
 
+  public static Pose GetPose(this Rigidbody rigidbody) {
+    return new Pose(rigidbody.position, rigidbody.rotation);
+  }
+
   #endregion
 
 

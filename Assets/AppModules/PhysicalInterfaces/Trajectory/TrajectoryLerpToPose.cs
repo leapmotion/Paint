@@ -116,7 +116,7 @@ namespace Leap.Unity.Animation {
       float minDurationDueToVelocity = Mathf.Clamp(simulator.velocity.magnitude,
                                                    0f, PhysicalInterfaceUtils.MAX_THROW_SPEED)
                                        .Map(0f, PhysicalInterfaceUtils.MID_THROW_SPEED,
-                                            0f, 2.5f);
+                                            0f, 1.5f);
 
       float minDurationDueToDistance = Vector3.Distance(targetPose.position,
                                                         simulator.position)

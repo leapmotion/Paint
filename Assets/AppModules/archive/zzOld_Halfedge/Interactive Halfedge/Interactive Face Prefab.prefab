@@ -85,6 +85,7 @@ MonoBehaviour:
   color: {r: 0.35294116, g: 1, b: 0.43772826, a: 1}
   useWireframe: 1
   traverseHierarchy: 1
+  drawTriggers: 0
 --- !u!114 &114396198429910228
 MonoBehaviour:
   m_ObjectHideFlags: 1

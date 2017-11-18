@@ -237,9 +237,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _anchor: {fileID: 0}
   _featureData:
-  - {fileID: 114447575586389984}
-  - {fileID: 114429864621888610}
-  _attachedGroup: {fileID: 0}
+    _table: []
+    _a: []
+    _b: []
+    _c: []
+    _d: []
+    _e: []
+    _f: []
+    _g: []
+    _h: []
+  _attachedRenderer: {fileID: 0}
+  _attachedGroupIndex: -1
+  _favoriteGroupName: 
   _preferredRendererType:
     _fullName: Leap.Unity.GraphicalRenderer.LeapBakedRenderer
   vertexColor: {r: 1, g: 1, b: 1, a: 1}
@@ -258,9 +267,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _anchor: {fileID: 0}
   _featureData:
-  - {fileID: 114892554530719408}
-  - {fileID: 114666782749168950}
-  _attachedGroup: {fileID: 0}
+    _table: []
+    _a: []
+    _b: []
+    _c: []
+    _d: []
+    _e: []
+    _f: []
+    _g: []
+    _h: []
+  _attachedRenderer: {fileID: 0}
+  _attachedGroupIndex: -1
+  _favoriteGroupName: 
   _preferredRendererType:
     _fullName: Leap.Unity.GraphicalRenderer.LeapBakedRenderer
   vertexColor: {r: 1, g: 1, b: 1, a: 1}
@@ -278,29 +296,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
-  _ignoreHover: 0
+  _ignoreHoverMode: 0
+  _isIgnoringAllHoverState: 0
+  _ignorePrimaryHover: 0
   _ignoreContact: 0
   _ignoreGrasping: 0
   _contactForceMode: 1
   _allowMultiGrasp: 0
   _moveObjectWhenGrasped: 1
-  _eventTable:
-    _entries: []
   graspedMovementType: 0
   graspHoldWarpingEnabled__curIgnored: 1
+  _overrideInteractionLayer: 0
+  _interactionLayer:
+    layerIndex: 0
+  _overrideNoContactLayer: 0
+  _noContactLayer:
+    layerIndex: 0
+  _eventTable:
+    _entries: []
+  _controlEnabled: 1
+  startingPositionMode: 0
   minMaxHeight: {x: 0, y: 0.02}
   restingHeight: 0.5
   _springForce: 0.1
-  OnPress:
+  _OnPress:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
-  OnUnpress:
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  _OnUnpress:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114403539231868584
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -396,9 +424,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _anchor: {fileID: 0}
   _featureData:
-  - {fileID: 114470679978770254}
-  - {fileID: 114403539231868584}
-  _attachedGroup: {fileID: 0}
+    _table: []
+    _a: []
+    _b: []
+    _c: []
+    _d: []
+    _e: []
+    _f: []
+    _g: []
+    _h: []
+  _attachedRenderer: {fileID: 0}
+  _attachedGroupIndex: -1
+  _favoriteGroupName: 
   _preferredRendererType:
     _fullName: Leap.Unity.GraphicalRenderer.LeapBakedRenderer
   vertexColor: {r: 0, g: 0.63235295, b: 0.37068966, a: 1}

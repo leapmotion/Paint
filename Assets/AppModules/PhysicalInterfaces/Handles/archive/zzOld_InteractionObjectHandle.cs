@@ -48,7 +48,9 @@ namespace Leap.Unity.PhysicalInterfaces {
       initInspector();
     }
 
-    protected virtual void Awake() {
+    protected override void Awake() {
+      base.Awake();
+
       initInspector();
     }
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
-  public class HideWhenHeld : MonoBehaviour {
+  public class HideWhenHandleMoving : MonoBehaviour {
 
     [SerializeField, ImplementsInterface(typeof(IHandle))]
     private MonoBehaviour _handle;
@@ -26,18 +26,18 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     void OnDisable() {
-      if (objectVisibleSwitch.GetIsOffOrTurningOff() && handle.isHeld) {
+      if (objectVisibleSwitch.GetIsOffOrTurningOff() && handle.isMoving) {
         objectVisibleSwitch.On();
       }
     }
 
     void Update() {
 
-      if (handle.isHeld && objectVisibleSwitch.GetIsOnOrTurningOn()) {
+      if (handle.isMoving && objectVisibleSwitch.GetIsOnOrTurningOn()) {
         objectVisibleSwitch.Off();
       }
 
-      if (!handle.isHeld && objectVisibleSwitch.GetIsOffOrTurningOff()) {
+      if (!handle.isMoving && objectVisibleSwitch.GetIsOffOrTurningOff()) {
         objectVisibleSwitch.On();
       }
 
