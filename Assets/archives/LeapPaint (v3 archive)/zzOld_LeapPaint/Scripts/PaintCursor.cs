@@ -2,14 +2,39 @@
 using System.Collections;
 using Leap.Unity.RuntimeGizmos;
 using Leap.Unity;
+using Leap.Unity.Attributes;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
-
-
   public class PaintCursor : MonoBehaviour {
 
+    [Header("Pinch Detector")]
+
     public PinchDetector _pinchDetector;
+
+
+    [Header("Cursor Following")]
+
+    [Disable]
+    public Vector3 rigidLocalPosition = Vector3.zero;
+
+    public enum CursorFollowType {
+      Rigid,
+      Dynamic
+    }
+
+    [RunTimeOnly]
+    public CursorFollowType cursorFollowType = CursorFollowType.Rigid;
+    public void SetCursorFollowRigid() {
+      cursorFollowType = CursorFollowType.Rigid;
+    }
+    public void SetCursorFollowDynamic() {
+      cursorFollowType = CursorFollowType.Dynamic;
+    }
+
+
+    [Header("Misc")]
+
     public RectToroid _rectToroidPinchTarget;
     public MeshRenderer _rectToroidPinchTargetRenderer;
     public RectToroid _rectToroidPinchState;
@@ -56,12 +81,44 @@ namespace Leap.Unity.LeapPaint_v3 {
       get { return _indexTipColor.GetColor(); }
     }
 
+    protected virtual void OnValidate() {
+      rigidLocalPosition = this.transform.localPosition;
+    }
+
     protected virtual void Start() {
       _handModel = _pinchDetector.GetComponentInParent<IHandModel>();
       _minRadius = _pinchDetector.ActivateDistance / 2F;
     }
 
     protected virtual void Update() {
+      // Cursor follow type
+      {
+        switch (cursorFollowType) {
+          case CursorFollowType.Rigid:
+            this.transform.localPosition = rigidLocalPosition;
+            break;
+          case CursorFollowType.Dynamic:
+            var hand = _pinchDetector.HandModel.GetLeapHand();
+            var indexPos = hand.GetIndex().TipPosition.ToVector3();
+            var thumbPos = hand.GetThumb().TipPosition.ToVector3();
+            var pinchPos = (indexPos + thumbPos) / 2f;
+
+            var idlePos = this.transform.parent.TransformPoint(rigidLocalPosition);
+            var effPinchStrength = 0f;
+            if (_pinchDetector.IsPinching) {
+              effPinchStrength = 1f;
+            }
+            else {
+              effPinchStrength = Vector3.Distance(indexPos, thumbPos)
+                                   .Map(0.10f, 0.02f, 0f, 1f);
+            }
+            var finalPos = Vector3.Lerp(idlePos, pinchPos, effPinchStrength);
+
+            this.transform.position = finalPos;
+            break;
+        }
+      }
+
       // Calc radius
       float pinchRadius = _pinchDetector.Distance / 2;
       _radius = Mathf.Max(_minRadius, pinchRadius);

@@ -6,7 +6,6 @@ using Leap.Unity.Attributes;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
-
   public class PinchStrokeProcessor : MonoBehaviour {
 
     private const float MIN_THICKNESS_MIN_SEGMENT_LENGTH = 0.001F;
