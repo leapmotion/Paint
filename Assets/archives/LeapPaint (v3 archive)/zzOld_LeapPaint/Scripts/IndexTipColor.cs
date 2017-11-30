@@ -32,7 +32,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected void Update() {
-      _tipMeshRenderer.material.color = new Color(_paintColor.r, _paintColor.g, _paintColor.b, _cursor.GetHandAlpha());
+      _tipMeshRenderer.material.color = new Color(_paintColor.r, _paintColor.g, _paintColor.b, _cursor.GetHandAlpha() * _paintColor.a);
     }
 
     public Color GetColor() {
@@ -41,7 +41,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     public void SetColor(Color color) {
       _paintColor = color;
-      _tipMeshRenderer.material.color = new Color(color.r, color.g, color.b, _cursor.GetHandAlpha());
+      _tipMeshRenderer.material.color = new Color(color.r, color.g, color.b, _cursor.GetHandAlpha() * _paintColor.a);
 
       if (_paintColor.a < 0.01F) {
         _colorMarbleRenderer.material = _transparentMarbleMaterial;

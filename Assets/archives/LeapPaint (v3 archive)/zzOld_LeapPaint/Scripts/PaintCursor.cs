@@ -22,9 +22,8 @@ namespace Leap.Unity.LeapPaint_v3 {
       Rigid,
       Dynamic
     }
-
-    [RunTimeOnly]
-    public CursorFollowType cursorFollowType = CursorFollowType.Rigid;
+    
+    public CursorFollowType cursorFollowType = CursorFollowType.Dynamic;
     public void SetCursorFollowRigid() {
       cursorFollowType = CursorFollowType.Rigid;
     }
@@ -40,7 +39,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     public RectToroid _rectToroidPinchState;
     public MeshRenderer _rectToroidPinchStateRenderer;
     public IndexTipColor _indexTipColor;
-    public Renderer _ghostableHandRenderer;
+    public CapsuleHand capsuleHand;
     public Material _ghostableHandMat;
     public Material _nonGhostableHandMat;
     public Renderer _indexTipColorRenderer;
@@ -145,23 +144,23 @@ namespace Leap.Unity.LeapPaint_v3 {
       _rectToroidPinchStateRenderer.material.color = _cursorColor;
 
       // Fade hands when drawing
-      float handAlphaTarget = (1F - cursorAlpha).Map(0F, 1F, 0.3F, 1F);
+      float handAlphaTarget = (1F - cursorAlpha).Map(0F, 1F, 0.2F, 1F);
       _smoothedHandAlpha = Mathf.Lerp(_smoothedHandAlpha, handAlphaTarget, 0.2F);
       if (_smoothedHandAlpha < 0.01F) {
-        _ghostableHandRenderer.enabled = false;
+        capsuleHand.doRender = false;
         _indexTipColorRenderer.enabled = false;
       }
       else {
-        _ghostableHandRenderer.enabled = true;
+        capsuleHand.doRender = true;
         _indexTipColorRenderer.enabled = true;
 
         if (_smoothedHandAlpha > 0.99F) {
-          _ghostableHandRenderer.material = _nonGhostableHandMat;
+          capsuleHand.useGhostable = false;
         }
         else {
-          _ghostableHandRenderer.material = _ghostableHandMat;
+          capsuleHand.useGhostable = true;
           Color ghostHandColor = _ghostableHandMat.color;
-          _ghostableHandMat.color = new Color(ghostHandColor.r, ghostHandColor.g, ghostHandColor.b, _smoothedHandAlpha);
+          _ghostableHandMat.color = _ghostableHandMat.color.WithAlpha(_smoothedHandAlpha);
         }
       }
     }
