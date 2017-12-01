@@ -187,7 +187,7 @@ namespace Leap.Unity.LeapPaint_v3 {
       _rectToroidPinchStateRenderer.material.color = _cursorColor;
 
       // Fade hands when drawing
-      float handAlphaTarget = (1F - cursorAlpha).Map(0F, 1F, 0.2F, 1F);
+      float handAlphaTarget = (1F - cursorAlpha).Map(0F, 1F, 0.4F, 1F);
       _smoothedHandAlpha = Mathf.Lerp(_smoothedHandAlpha, handAlphaTarget, 0.2F);
       if (_smoothedHandAlpha < 0.01F) {
         capsuleHand.doRender = false;

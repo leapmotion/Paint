@@ -7,7 +7,8 @@ namespace Leap.Unity.LeapPaint_v3 {
 
   public class IndexTipColor : MonoBehaviour {
 
-    public IHandModel _hand;
+    private Vector3 _lastPos;
+
     public Renderer _tipMeshRenderer;
     public Color _startingColor = Color.white;
     public PaintCursor _cursor;
@@ -33,6 +34,9 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     protected void Update() {
       _tipMeshRenderer.material.color = new Color(_paintColor.r, _paintColor.g, _paintColor.b, _cursor.GetHandAlpha() * _paintColor.a);
+
+      _velocity = this.transform.position.From(_lastPos) / Time.deltaTime;
+      _lastPos = this.transform.position;
     }
 
     public Color GetColor() {
@@ -54,6 +58,13 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     #region Mixing Paint Colors
 
+    private Vector3 _velocity = Vector3.zero;
+    public Vector3 velocity {
+      get {
+        return _velocity;
+      }
+    }
+
     protected void OnTriggerStay(Collider other) {
       ColorMixingBasin mixingLiquid = other.GetComponentInParent<ColorMixingBasin>();
       if (mixingLiquid != null && mixingLiquid.enabled) {
@@ -61,7 +72,7 @@ namespace Leap.Unity.LeapPaint_v3 {
           this.SetColor(mixingLiquid.GetColor());
         }
         else {
-          float handSpeed = _hand.GetLeapHand().Fingers[(int)Leap.Finger.FingerType.TYPE_INDEX].TipVelocity.ToVector3().magnitude;
+          float handSpeed = velocity.magnitude;
           if (handSpeed < 0.1F) handSpeed = 0F;
           this.SetColor(mixingLiquid.MixWithIndexTipColor(this, handSpeed));
         }
