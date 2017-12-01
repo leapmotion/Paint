@@ -127,7 +127,7 @@ namespace Leap.Unity.LeapPaint_v3 {
       Color drawColor = _paintCursor.Color;
       if (drawColor.a > 0.99F
         && !_inDangerZone
-        && !_wearableManager.IsPinchDetectorGrabbing(_paintCursor._pinchDetector)
+        && !_wearableManager.IsPinchDetectorGrabbing(_paintCursor.pinchDetector)
         && !isUIDisplayingOnThisHand
         && _handLifetime > MIN_HAND_DRAWING_LIFETIME
         && !isLoading
@@ -166,7 +166,7 @@ namespace Leap.Unity.LeapPaint_v3 {
         BeginStroke();
       }
 
-      if (_paintCursor.IsActive && possibleToActualize && possibleToBeginActualizing && !_strokeProcessor.IsActualizingStroke) {
+      if (_paintCursor.IsPinching && possibleToActualize && possibleToBeginActualizing && !_strokeProcessor.IsActualizingStroke) {
         StartActualizingStroke();
         _paintCursor.NotifyIsPainting(true);
       }
@@ -175,7 +175,7 @@ namespace Leap.Unity.LeapPaint_v3 {
         UpdateStroke();
       }
 
-      if ((!_paintCursor.IsActive || _inDangerZone || !possibleToActualize) && _strokeProcessor.IsActualizingStroke) {
+      if ((!_paintCursor.IsPinching || _inDangerZone || !possibleToActualize) && _strokeProcessor.IsActualizingStroke) {
         StopActualizingStroke();
         _paintCursor.NotifyIsPainting(false);
       }

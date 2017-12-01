@@ -3,27 +3,40 @@ using System.Collections;
 using Leap.Unity.RuntimeGizmos;
 using Leap.Unity;
 using Leap.Unity.Attributes;
+using Leap.Unity.Gestures;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
   public class PaintCursor : MonoBehaviour {
 
+    [Header("Pinch Detection Mode")]
+
+    public PinchDetectionMode pinchMode = PinchDetectionMode.PinchGesture;
+
+    public enum PinchDetectionMode {
+      PinchGesture,
+      PinchDetector
+    }
+
+    [Header("Pinch Gesture")]
+
+    public PinchGesture pinchGesture;
+
+
     [Header("Pinch Detector")]
 
-    public PinchDetector _pinchDetector;
+    public PinchDetector pinchDetector;
 
 
     [Header("Cursor Following")]
-
-    [Disable]
-    public Vector3 rigidLocalPosition = Vector3.zero;
+    
+    public CursorFollowType cursorFollowType = CursorFollowType.Dynamic;
 
     public enum CursorFollowType {
       Rigid,
       Dynamic
     }
     
-    public CursorFollowType cursorFollowType = CursorFollowType.Dynamic;
     public void SetCursorFollowRigid() {
       cursorFollowType = CursorFollowType.Rigid;
     }
@@ -64,52 +77,76 @@ namespace Leap.Unity.LeapPaint_v3 {
     public Quaternion Rotation {
       get { return this.transform.rotation; }
     }
-    public bool IsActive {
-      get { return this._pinchDetector.IsActive; }
+    public bool IsPinching {
+      get {
+        if (pinchMode == PinchDetectionMode.PinchDetector) {
+          return this.pinchDetector.IsActive;
+        }
+        else {
+          return this.pinchGesture.isActive;
+        }
+      }
     }
     public bool IsTracked {
-      get { return this._pinchDetector.HandModel.IsTracked; }
+      get {
+        return this.pinchDetector.HandModel.IsTracked;
+      }
     }
     public bool DidStartPinch {
-      get { return this._pinchDetector.DidStartPinch; }
+      get {
+        if (pinchMode == PinchDetectionMode.PinchDetector) {
+          return this.pinchDetector.DidStartPinch;
+        }
+        else {
+          return this.pinchGesture.wasActivated;
+        }
+      }
     }
     public Chirality Handedness {
-      get { return this._pinchDetector.HandModel.Handedness; }
+      get {
+        if (pinchMode == PinchDetectionMode.PinchDetector) {
+          return this.pinchDetector.HandModel.Handedness;
+        }
+        else {
+          return this.pinchGesture.whichHand;
+        }
+      }
     }
     public Color Color {
       get { return _indexTipColor.GetColor(); }
     }
 
-    protected virtual void OnValidate() {
-      rigidLocalPosition = this.transform.localPosition;
-    }
-
     protected virtual void Start() {
-      _handModel = _pinchDetector.GetComponentInParent<IHandModel>();
-      _minRadius = _pinchDetector.ActivateDistance / 2F;
+      _handModel = pinchDetector.GetComponentInParent<IHandModel>();
+      _minRadius = pinchDetector.ActivateDistance / 2F;
     }
 
     protected virtual void Update() {
+
+      var hand = pinchDetector.HandModel.GetLeapHand();
+      var indexPos = hand.GetIndex().TipPosition.ToVector3();
+      var thumbPos = hand.GetThumb().TipPosition.ToVector3();
+      var indexThumbDist = Vector3.Distance(indexPos, thumbPos);
+
       // Cursor follow type
       {
+        var rigidLocalPosition = this.transform.parent.InverseTransformPoint(
+                                             hand.GetPredictedPinchPosition());
+
         switch (cursorFollowType) {
           case CursorFollowType.Rigid:
             this.transform.localPosition = rigidLocalPosition;
             break;
           case CursorFollowType.Dynamic:
-            var hand = _pinchDetector.HandModel.GetLeapHand();
-            var indexPos = hand.GetIndex().TipPosition.ToVector3();
-            var thumbPos = hand.GetThumb().TipPosition.ToVector3();
             var pinchPos = (indexPos + thumbPos) / 2f;
 
             var idlePos = this.transform.parent.TransformPoint(rigidLocalPosition);
             var effPinchStrength = 0f;
-            if (_pinchDetector.IsPinching) {
+            if (IsPinching) {
               effPinchStrength = 1f;
             }
             else {
-              effPinchStrength = Vector3.Distance(indexPos, thumbPos)
-                                   .Map(0.10f, 0.02f, 0f, 1f);
+              effPinchStrength = indexThumbDist.Map(0.10f, 0.02f, 0f, 1f);
             }
             var finalPos = Vector3.Lerp(idlePos, pinchPos, effPinchStrength);
 
@@ -119,8 +156,14 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
 
       // Calc radius
-      float pinchRadius = _pinchDetector.Distance / 2;
-      _radius = Mathf.Max(_minRadius, pinchRadius);
+      float pinchRadiusTarget = indexThumbDist / 2f;
+      if (pinchMode == PinchDetectionMode.PinchDetector) {
+        _radius = Mathf.Max(_minRadius, pinchRadiusTarget);
+      }
+      else {
+        pinchRadiusTarget = pinchGesture.isActive ? _minRadius : _maxRadius;
+        _radius = Mathf.Lerp(_radius, pinchRadiusTarget, 20f * Time.deltaTime);
+      }
 
       // Calc fade
       float cursorAlpha = _radius.Map(_minRadius, _maxRadius, 1F, 0F);
