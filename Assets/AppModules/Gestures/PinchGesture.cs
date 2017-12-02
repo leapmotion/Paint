@@ -152,13 +152,13 @@ namespace Leap.Unity.Gestures {
                 + Camera.main.transform.forward * 1f, Vector3.up, Color.red, 0.02f);
             }
 
-            var pinchActivateVelocity = 5f;
+            var pinchActivateVelocity = 3.5f;
             var handVelocity = handPositionBuffer.Delta();
 
-            pinchActivateVelocity = handVelocity.magnitude.Map(0f, 2f, 4f, 20f);
+            pinchActivateVelocity = handVelocity.magnitude.Map(0f, 2f, 2f, 10f);
 
             if (pinchStrengthVelocity > pinchActivateVelocity
-                && latestPinchStrength > 0.8f
+                && latestPinchStrength > 1.0f
                 && handWithinFOV) {
               shouldActivate = true;
               if (_drawDebug) {
