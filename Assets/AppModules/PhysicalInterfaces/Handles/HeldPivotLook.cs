@@ -1,4 +1,5 @@
-﻿using Leap.Unity.Interaction;
+﻿using Leap.Unity.Attributes;
+using Leap.Unity.Interaction;
 using Leap.Unity.Layout;
 using Leap.Unity.Query;
 using System.Collections;
@@ -18,16 +19,23 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public bool flip180;
 
+    [SerializeField, Disable]
     private Pose _handleToPanelPose;
     public Pose GetHandleToAttachmentPose() {
       return _handleToPanelPose;
     }
 
-    void Start() {
+    void OnValidate() {
+      _handleToPanelPose = lookFrom.ToPose().From(intObj.transform.ToPose());
+    }
+
+    void OnEnable() {
       intObj.OnGraspedMovement -= onGraspedMovement;
       intObj.OnGraspedMovement += onGraspedMovement;
+    }
 
-      _handleToPanelPose = lookFrom.ToPose().From(intObj.transform.ToPose());
+    void OnDisable() {
+      intObj.OnGraspedMovement -= onGraspedMovement;
     }
 
     void Reset() {
@@ -40,8 +48,8 @@ namespace Leap.Unity.PhysicalInterfaces {
 
       if (!gameObject.activeInHierarchy || !this.enabled) return;
 
-      // An important reason this works is because even though the various rigidbodies
-      // have constantly-fluctuated poses with respect to one another, there are rigid
+      // An important reason this method works is that even though the various rigidbodies
+      // have constantly-fluctuating poses with respect to one another, there are rigid
       // "ideal" poses and relative poses stored on Start() that allow target positions
       // to always be rigidly calculatable.
 
