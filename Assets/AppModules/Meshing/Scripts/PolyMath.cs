@@ -134,9 +134,6 @@ namespace Leap.Unity.Meshing {
                  && (intersection.ClampedTo(eB_a, eB_b) - intersection).sqrMagnitude
                        < POSITION_TOLERANCE_SQR) {
 
-              // TODO: Continue investigating the edge intersection behavior.
-              // It's definitely not right.
-
               // Render this intersection.
               PolyMesh.RenderPoint(intersection, LeapColor.gold, 10f);
               PolyMesh.RenderPoint(intersection, LeapColor.gold, 11f);
