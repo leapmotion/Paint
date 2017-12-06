@@ -807,6 +807,7 @@ namespace Leap.Unity.Meshing {
         }
 
         // Find face intersection points and render them.
+        // (Cyan.)
         {
           var cutPointsOnA = Pool<List<Vector3>>.Spawn();
           cutPointsOnA.Clear();
@@ -862,13 +863,13 @@ namespace Leap.Unity.Meshing {
               var cutPointOnB = cutPointsOnB[i];
 
               var aColor = Color.Lerp(Color.cyan, Color.red, 0.45f);
-              RenderPoint(cutPointOnA, aColor, 5.0f);
-              RenderPoint(cutPointOnA, aColor, 5.2f);
-              RenderPoint(cutPointOnA, aColor, 5.4f);
+              RenderPoint(cutPointOnA, aColor, 5.6f);
+              RenderPoint(cutPointOnA, aColor, 5.8f);
+              RenderPoint(cutPointOnA, aColor, 6.0f);
               var bColor = Color.Lerp(Color.cyan, Color.blue, 0.45f);
-              RenderPoint(cutPointOnB, bColor, 5.1f);
-              RenderPoint(cutPointOnB, bColor, 5.3f);
-              RenderPoint(cutPointOnB, bColor, 5.5f);
+              RenderPoint(cutPointOnB, bColor, 5.7f);
+              RenderPoint(cutPointOnB, bColor, 5.9f);
+              RenderPoint(cutPointOnB, bColor, 6.1f);
             }
           }
           finally {
