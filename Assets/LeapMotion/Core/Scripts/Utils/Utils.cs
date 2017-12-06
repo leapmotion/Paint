@@ -962,7 +962,7 @@ namespace Leap.Unity {
     /// B.Then(A.From(B)) == A.
     /// </summary>
     public static Quaternion From(this Quaternion thisQuaternion, Quaternion otherQuaternion) {
-      return thisQuaternion * Quaternion.Inverse(otherQuaternion);
+      return Quaternion.Inverse(otherQuaternion) * thisQuaternion;
     }
 
     /// <summary>
@@ -971,7 +971,7 @@ namespace Leap.Unity {
     /// B.Then(B.To(A)) == A.
     /// </summary>
     public static Quaternion To(this Quaternion thisQuaternion, Quaternion otherQuaternion) {
-      return otherQuaternion * Quaternion.Inverse(thisQuaternion);
+      return Quaternion.Inverse(thisQuaternion) * otherQuaternion;
     }
 
     /// <summary>
@@ -979,7 +979,7 @@ namespace Leap.Unity {
     /// Quaternion multiplication, which normally obeys left-multiply ordering.
     /// </summary>
     public static Quaternion Then(this Quaternion thisQuaternion, Quaternion otherQuaternion) {
-      return otherQuaternion * thisQuaternion;
+      return thisQuaternion * otherQuaternion;
     }
 
     /// <summary>

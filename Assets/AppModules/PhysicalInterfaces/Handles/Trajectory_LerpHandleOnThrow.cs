@@ -29,6 +29,8 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     private void onGraspEnd() {
+      if (!gameObject.activeInHierarchy || !this.enabled) return; 
+
       trajectoryLerpToPose.MoveToTarget(targetPoseProvider.GetPose());
     }
 

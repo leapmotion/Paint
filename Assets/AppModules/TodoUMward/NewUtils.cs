@@ -142,38 +142,6 @@ public static class NewUtils {
   #endregion
 
 
-  #region Quaternion Utils
-
-  /// <summary>
-  /// Converts the quaternion into an axis and an angle and returns the vector
-  /// axis * angle.
-  /// </summary>
-  public static Vector3 ToAngleAxisVector(this Quaternion q) {
-    float angle;
-    Vector3 axis;
-    q.ToAngleAxis(out angle, out axis);
-    return axis * angle;
-  }
-
-  /// <summary>
-  /// Returns a Quaternion described by the provided angle axis vector.
-  /// </summary>
-  public static Quaternion QuaternionFromAngleAxisVector(Vector3 angleAxisVector) {
-    if (angleAxisVector == Vector3.zero) return Quaternion.identity;
-    return Quaternion.AngleAxis(angleAxisVector.magnitude, angleAxisVector.normalized);
-  }
-
-  public static Quaternion From(this Quaternion thisQuaternion, Quaternion otherQuaternion) {
-    return thisQuaternion * Quaternion.Inverse(otherQuaternion);
-  }
-
-  public static Quaternion Then(this Quaternion thisQuaternion, Quaternion otherQuaternion) {
-    return otherQuaternion * thisQuaternion;
-  }
-
-  #endregion
-
-
   #region Rect Utils
 
   public static Rect PadOuter(this Rect r, float width) {
@@ -425,6 +393,9 @@ public static class NewUtils {
 
   #endregion
 
+  // Newer:
+
+  #region Rect Utils
 
   public static void SplitHorizontallyWithLeft(this Rect rect, out Rect left, out Rect right, float leftWidth) {
     left = rect;
@@ -433,5 +404,121 @@ public static class NewUtils {
     right.x += left.width;
     right.width = rect.width - leftWidth;
   }
+
+  #endregion
+
+  #region Array Utils
+
+  /// <summary>
+  /// Sets all elements in the array of type T to default(T).
+  /// </summary>
+  public static T[] ClearWithDefaults<T>(this T[] arr) {
+    for (int i = 0; i < arr.Length; i++) {
+      arr[i] = default(T);
+    }
+    return arr;
+  }
+
+  /// <summary>
+  /// Sets all elements in the array of type T to the argument value.
+  /// </summary>
+  public static T[] ClearWith<T>(this T[] arr, T value) {
+    for (int i = 0; i < arr.Length; i++) {
+      arr[i] = value;
+    }
+    return arr;
+  }
+
+  public static IIndexable<T> ToIndexable<T>(this T[] arr) {
+    return new ArrayIndexable<T>(arr);
+  }
+
+  public struct ArrayIndexable<T> : IIndexable<T> {
+    private T[] _arr;
+
+    public ArrayIndexable(T[] arr) {
+      _arr = arr;
+    }
+
+    public T this[int idx] { get { return _arr[idx]; } }
+
+    public int Count { get { return _arr.Length; } }
+  }
+
+  #endregion
+
+  #region Geometry Utils
+
+  public static Vector3 GetLocalPositionOnPlane(this Vector3 worldPosition, Pose planePose) {
+    var localSpacePoint = worldPosition.From(planePose).position;
+
+    var localSpaceOnPlane = new Vector3(localSpacePoint.x,
+                                        localSpacePoint.y, 0f);
+
+    return localSpaceOnPlane;
+  }
+
+  public static Vector3 ClampedToPlane(this Vector3 worldPosition, Pose planePose) {
+    var localSpacePoint = worldPosition.From(planePose).position;
+
+    var localSpaceOnPlane = new Vector3(localSpacePoint.x,
+                                        localSpacePoint.y, 0f);
+
+    return (planePose * localSpaceOnPlane).position;
+  }
+
+  public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
+                                      float rectWidth, float rectHeight) {
+    bool unused;
+    return worldPosition.ClampedToRect(rectCenterPose, rectWidth, rectHeight, out unused);
+  }
+
+  public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
+                                      float rectWidth, float rectHeight,
+                                      out bool isProjectionWithinRect) {
+    var localSpacePoint = worldPosition.From(rectCenterPose).position;
+
+    var localSpaceOnPlane = new Vector3(Mathf.Clamp(localSpacePoint.x, -rectWidth,  rectWidth),
+                                        Mathf.Clamp(localSpacePoint.y, -rectHeight, rectHeight), 0f);
+
+    isProjectionWithinRect = Mathf.Abs(localSpacePoint.x) <= rectWidth;
+    isProjectionWithinRect &= Mathf.Abs(localSpacePoint.y) <= rectHeight;
+
+    return (rectCenterPose * localSpaceOnPlane).position;
+  }
+
+  public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
+                                      float rectWidth, float rectHeight,
+                                      out bool isProjectionWithinRect,
+                                      out bool isWorldPositionOnRect,
+                                      float tolerance = 0.001f) {
+    var localSpacePoint = worldPosition.From(rectCenterPose).position;
+
+    isProjectionWithinRect = Mathf.Abs(localSpacePoint.x) <= rectWidth / 2f;
+    isProjectionWithinRect &= Mathf.Abs(localSpacePoint.y) <= rectHeight / 2f;
+
+    var localSpaceOnPlane = new Vector3(Mathf.Clamp(localSpacePoint.x, -rectWidth / 2f,  rectWidth / 2f),
+                                        Mathf.Clamp(localSpacePoint.y, -rectHeight / 2f, rectHeight / 2f), 0f);
+
+    var positionOnRect = (rectCenterPose * localSpaceOnPlane).position;
+
+    var sqrDist = (positionOnRect - worldPosition).sqrMagnitude;
+    isWorldPositionOnRect = sqrDist <= tolerance * tolerance;
+
+    return positionOnRect;
+  }
+
+  //public static bool IsOnRect(this Vector3 worldPosition,
+  //                            Pose rectCenterPose,
+  //                            float rectWidth, float rectHeight,
+  //                            out bool isProjectionWithinRect,
+  //                            out Vector3 positionOnRect,
+  //                            float tolerance = 0.001f) {
+  //  positionOnRect = worldPosition.ClampedToRect(rectCenterPose, rectWidth,
+  //                                               rectHeight, out isProjectionWithinRect);
+
+  //}
+
+  #endregion
 
 }

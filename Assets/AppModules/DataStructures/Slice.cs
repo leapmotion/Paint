@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Leap.Unity.Query;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,9 +42,11 @@ namespace Leap.Unity {
 
   }
 
-  public struct Slice<T> {
+  public struct Slice<T> : IIndexable<T> {
 
     private List<T> _list;
+    private T[] _arr;
+    private bool _isArr;
 
     private int _beginIdx;
     private int _endIdx;
@@ -58,18 +62,47 @@ namespace Leap.Unity {
     /// </summary>
     public Slice(List<T> list, int beginIdx, int endIdx) {
       _list = list;
+      _arr = null;
       _beginIdx = beginIdx;
       _endIdx = endIdx;
       _direction = beginIdx <= endIdx ? 1 : -1;
+
+      _isArr = false;
+    }
+
+    public Slice(T[] arr, int beginIdx, int endIdx) {
+      _list = null;
+      _arr = arr;
+      _beginIdx = beginIdx;
+      _endIdx = endIdx;
+      _direction = beginIdx <= endIdx ? 1 : -1;
+
+      _isArr = true;
+    }
+
+    public Slice(T[] arr) {
+      _list = null;
+      _arr = arr;
+      _beginIdx = 0;
+      _endIdx = arr.Length;
+      _direction = _beginIdx <= _endIdx ? 1 : -1;
+
+      _isArr = true;
     }
 
     public T this[int index] {
       get {
         if (index > Count - 1) { throw new System.IndexOutOfRangeException(); }
+        if (_isArr) {
+          return _arr[_beginIdx + index * _direction];
+        }
         return _list[_beginIdx + index * _direction];
       }
       set {
         if (index > Count - 1) { throw new System.IndexOutOfRangeException(); }
+        if (_isArr) {
+          _arr[_beginIdx + index * _direction] = value;
+        }
         _list[_beginIdx + index * _direction] = value;
       }
     }
@@ -82,9 +115,10 @@ namespace Leap.Unity {
 
     public SliceEnumerator<T> GetEnumerator() { return new SliceEnumerator<T>(this); }
 
+    public QueryWrapper<T, SliceEnumerator<T>> Query() { return new QueryWrapper<T, SliceEnumerator<T>>(new SliceEnumerator<T>(this)); }
   }
 
-  public struct SliceEnumerator<T> {
+  public struct SliceEnumerator<T> : IQueryOp<T> {
 
     private Slice<T> _slice;
 
@@ -102,6 +136,18 @@ namespace Leap.Unity {
       return _index < _slice.Count;
     }
 
+    public void Reset() {
+      _index = -1;
+    }
+
+    public bool TryGetNext(out T t) {
+      t = default(T);
+      if (MoveNext()) {
+        t = Current;
+        return true;
+      }
+      return false;
+    }
   }
 
 }
