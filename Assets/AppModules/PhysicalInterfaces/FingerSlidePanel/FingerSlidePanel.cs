@@ -22,6 +22,12 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public float depthOffset = 0f;
 
+    public float deadzoneWidth = 0.02f;
+
+    public float minDeadzoneWidth = 0.01f;
+
+    public float momentumDecayFriction = 7f;
+
     [Header("Debug")]
     public bool drawDebug = false;
 
@@ -30,7 +36,17 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     private Vector3?[] touchingFingerPositions = new Vector3?[5];
+    private float[] fingerStrengths = new float[5];
     private StablePositionsDelta stableFingersDelta = new StablePositionsDelta(5);
+
+    // Deadzone
+    private Vector3 _deadzoneOrigin = Vector3.zero;
+    private bool _useDeadzone = true;
+
+    // Momentum & Smoothing
+    /// <summary> 0: Own momentum only. 1: Hand's momentum only. </summary>
+    private float _momentumBlend = 0f;
+    private Vector3 _ownMomentum = Vector3.zero;
 
     private void OnEnable() {
 
@@ -41,11 +57,19 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     private void Update() {
+
+      Vector3 movementFromHand = Vector3.zero;
+
+      // Reset momentum blend, adjusted again if fingertips are nearby the portal plane.
+      _momentumBlend = 0f;
+
       if (portalSurfaceIntObj.isPrimaryHovered) {
 
         var hand = portalSurfaceIntObj.primaryHoveringController.intHand.leapHand;
         touchingFingerPositions.ClearWithDefaults();
-        
+        fingerStrengths.ClearWithDefaults();
+
+
         if (hand != null) {
           for (int i = 0; i < hand.Fingers.Count; i++) {
             var finger = hand.Fingers[i];
@@ -53,13 +77,16 @@ namespace Leap.Unity.PhysicalInterfaces {
 
             var portalPose = portalSurfaceIntObj.transform.ToPose() + new Pose(portalSurfaceIntObj.transform.forward * depthOffset);
             var isProjectionOnRect = false;
-            var isFingertipOnRect = false;
+            var sqrDistToRect = 0f;
             var clampedFingertip = fingertipPosition
                                     .ClampedToRect(portalPose, portalObj.width, portalObj.height,
-                                                   out isProjectionOnRect, out isFingertipOnRect,
-                                                   tolerance: thickness);
-            if (isFingertipOnRect && isProjectionOnRect) {
+                                                   out sqrDistToRect, out isProjectionOnRect);
+
+            var pressStrength = sqrDistToRect.Map(0f, thickness * thickness, 1f, 0f);
+
+            if (pressStrength > 0f && isProjectionOnRect) {
               touchingFingerPositions[i] = clampedFingertip;
+              fingerStrengths[i] = pressStrength;
 
               if (drawDebug) {
                 DebugPing.Ping(clampedFingertip, LeapColor.amber, 0.10f);
@@ -69,13 +96,56 @@ namespace Leap.Unity.PhysicalInterfaces {
           }
         }
 
-        stableFingersDelta.UpdateCentroidMovement(touchingFingerPositions.ToIndexable());
+        // Calculate momentum blend increase based on total finger proximity.
+        var fingerStrengthMax = fingerStrengths.Query().Fold((acc, f) => (f > acc ? f : acc));
+        //var targetBlend = fingerStrengthMax.Map(0f, 0.2f, 0f, 1f);
+        //_momentumBlend = Mathf.Lerp(_momentumBlend, targetBlend, 20f * Time.deltaTime);
+        _momentumBlend = fingerStrengthMax.Map(0f, 0.4f, 0f, 1f);
+
+        stableFingersDelta.UpdateCentroidMovement(touchingFingerPositions.ToIndexable(),
+                                                  fingerStrengths.ToIndexable(),
+                                                  drawDebug: drawDebug);
+
+        if (stableFingersDelta.didCentroidAppear) {
+          _deadzoneOrigin = stableFingersDelta.centroid.Value;
+        }
 
         if (stableFingersDelta.isMoving) {
-          slideableObjectsRoot.transform.position += stableFingersDelta.movement;
+          movementFromHand = stableFingersDelta.movement;
+          
+          if (_useDeadzone) {
+            var sqrDistFromOrigin = (_deadzoneOrigin - stableFingersDelta.centroid.Value).sqrMagnitude;
+
+            var deadzoneCoeff = sqrDistFromOrigin.Map(minDeadzoneWidth * minDeadzoneWidth,
+                                                    deadzoneWidth * deadzoneWidth,
+                                                    0f, 1f);
+
+            if (deadzoneCoeff >= 1f) {
+              _useDeadzone = false;
+            }
+
+            movementFromHand *= deadzoneCoeff;
+          }
+        }
+        else {
+          _useDeadzone = true;
         }
 
       }
+
+      // Decay momentum via friction.
+      var ownMomentumPostFriction = _ownMomentum - (_ownMomentum * momentumDecayFriction * Time.deltaTime);
+      if (Vector3.Dot(_ownMomentum, ownMomentumPostFriction) < 0) {
+        _ownMomentum = Vector3.zero;
+      }
+      else {
+        _ownMomentum = ownMomentumPostFriction;
+      }
+
+      // Calculate and apply momentum.
+      _ownMomentum = Vector3.Lerp(_ownMomentum, movementFromHand, _momentumBlend);
+
+      slideableObjectsRoot.transform.position += _ownMomentum;
     }
 
     #region Display
@@ -122,7 +192,15 @@ namespace Leap.Unity.PhysicalInterfaces {
         _lastPositions = new Vector3?[maxPositions];
       }
 
-      public void UpdateCentroidMovement(IIndexable<Vector3?> positions) {
+      public void UpdateCentroidMovement(IIndexable<Vector3?> positions,
+                                         IIndexable<float> strengths = null,
+                                         bool drawDebug = false) {
+        if (strengths != null && positions.Count != strengths.Count) {
+          throw new InvalidOperationException(
+            "positions and strengths Indexables must have the same Count.");
+        }
+
+
         bool[] useableIndices = new bool[_lastPositions.Length];
 
         _didCentroidAppear = false;
@@ -159,9 +237,13 @@ namespace Leap.Unity.PhysicalInterfaces {
         _avgDelta = Vector3.zero;
         int count = 0;
         for (int i = 0; i < useableIndices.Length; i++) {
-          _isMoving = true;
           if (useableIndices[i]) {
-            _avgDelta += (positions[i] - _lastPositions[i]).Value;
+            _isMoving = true;
+            var addedDelta = (positions[i] - _lastPositions[i]).Value;
+            if (strengths != null) {
+              addedDelta *= strengths[i];
+            }
+            _avgDelta += addedDelta;
             count++;
           }
         }
@@ -169,7 +251,7 @@ namespace Leap.Unity.PhysicalInterfaces {
           _avgDelta /= count;
         }
 
-        
+
         // Update centroid state.
 
         if (_didCentroidAppear) {
@@ -178,17 +260,23 @@ namespace Leap.Unity.PhysicalInterfaces {
                                .Fold((acc, v) => acc + v)
                       / numCurValidPositions;
 
-          //DebugPing.Ping(_centroid.Value, LeapColor.cyan, 0.20f);
+          if (drawDebug) {
+            DebugPing.Ping(_centroid.Value, LeapColor.cyan, 0.20f);
+          }
         }
 
         if (_centroid != null) {
           _centroid += _avgDelta;
 
-          //DebugPing.Ping(_centroid.Value, LeapColor.green, 0.15f);
+          if (drawDebug) {
+            DebugPing.Ping(_centroid.Value, LeapColor.green, 0.15f);
+          }
         }
 
         if (_didCentroidDisappear) {
-          //DebugPing.Ping(_centroid.Value, LeapColor.black, 0.20f);
+          if (drawDebug) {
+            DebugPing.Ping(_centroid.Value, LeapColor.black, 0.20f);
+          }
 
           _centroid = null;
         }
@@ -204,6 +292,11 @@ namespace Leap.Unity.PhysicalInterfaces {
             _lastPositions[i] = positions[i];
           }
         }
+      }
+
+      public void UpdateCentroidMovement(IIndexable<Vector3?> positions,
+                                         bool drawDebug = false) {
+        UpdateCentroidMovement(positions, null, drawDebug);
       }
 
       private int CountValid(Vector3?[] positions) {

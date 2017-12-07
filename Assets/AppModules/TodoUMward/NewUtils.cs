@@ -489,9 +489,8 @@ public static class NewUtils {
 
   public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
                                       float rectWidth, float rectHeight,
-                                      out bool isProjectionWithinRect,
-                                      out bool isWorldPositionOnRect,
-                                      float tolerance = 0.001f) {
+                                      out float sqrDistToRect,
+                                      out bool isProjectionWithinRect) {
     var localSpacePoint = worldPosition.From(rectCenterPose).position;
 
     isProjectionWithinRect = Mathf.Abs(localSpacePoint.x) <= rectWidth / 2f;
@@ -502,8 +501,7 @@ public static class NewUtils {
 
     var positionOnRect = (rectCenterPose * localSpaceOnPlane).position;
 
-    var sqrDist = (positionOnRect - worldPosition).sqrMagnitude;
-    isWorldPositionOnRect = sqrDist <= tolerance * tolerance;
+    sqrDistToRect = (positionOnRect - worldPosition).sqrMagnitude;
 
     return positionOnRect;
   }

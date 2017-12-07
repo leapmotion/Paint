@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Floor Edge
-  m_Shader: {fileID: 4800000, guid: c59a224aac64cf247a579e5f91ab5156, type: 3}
+  m_Name: Portal 1 Background
+  m_Shader: {fileID: 4800000, guid: b2f397e9ac0461042abbf53995386227, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -73,5 +73,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.125, g: 0.125, b: 0.125, a: 1}
+    - _Color: {r: 0.33088237, g: 0.33088237, b: 0.33088237, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

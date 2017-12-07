@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Floor Edge
-  m_Shader: {fileID: 4800000, guid: c59a224aac64cf247a579e5f91ab5156, type: 3}
-  m_ShaderKeywords: 
+  m_Name: Hand Only Outline L
+  m_Shader: {fileID: 4800000, guid: 04d540ddc663c4f4280a8189c07d04a7, type: 3}
+  m_ShaderKeywords: _ISLEFTHAND_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -66,12 +66,14 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PortalMask: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
+    - _Width: 0.002
     - _ZWrite: 1
+    - _isLeftHand: 1
     m_Colors:
-    - _Color: {r: 0.125, g: 0.125, b: 0.125, a: 1}
+    - _Color: {r: 0.09699394, g: 0.11838234, b: 0.16911763, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Outline: {r: 0.41176474, g: 0.6627451, b: 0.9058824, a: 1}

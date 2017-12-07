@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Hand Outline R
-  m_Shader: {fileID: 4800000, guid: 04d540ddc663c4f4280a8189c07d04a7, type: 3}
-  m_ShaderKeywords: 
+  m_Name: Hand Outline L 0
+  m_Shader: {fileID: 4800000, guid: 98144af7172bb8d4f87db4c8db6a426b, type: 3}
+  m_ShaderKeywords: _ISLEFTHAND_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -72,7 +72,7 @@ Material:
     - _UVSec: 0
     - _Width: 0.002
     - _ZWrite: 1
-    - _isLeftHand: 0
+    - _isLeftHand: 1
     m_Colors:
     - _Color: {r: 0.09699394, g: 0.11838234, b: 0.16911763, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
