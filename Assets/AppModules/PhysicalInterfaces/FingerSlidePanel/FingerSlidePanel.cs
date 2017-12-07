@@ -1,6 +1,9 @@
-﻿using Leap.Unity.Interaction;
+﻿using Leap.Unity.Attributes;
+using Leap.Unity.Interaction;
+using Leap.Unity.Layout;
 using Leap.Unity.Portals;
 using Leap.Unity.Query;
+using Leap.Unity.RuntimeGizmos;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +13,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
   using IntObj = InteractionBehaviour;
 
-  public class FingerSlidePanel : MonoBehaviour {
+  public class FingerSlidePanel : MonoBehaviour, IRuntimeGizmoComponent {
 
     public Portal portalObj;
 
@@ -18,26 +21,45 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public Transform slideableObjectsRoot;
 
+    [Header("Scrolling Surface")]
+
     public float thickness = 0.02f;
 
     public float depthOffset = 0f;
+
+    [Header("Deadzone")]
 
     public float deadzoneWidth = 0.02f;
 
     public float minDeadzoneWidth = 0.01f;
 
+    [Header("Momentum")]
+
     public float momentumDecayFriction = 7f;
 
+    [Header("Scroll Bounds")]
+
+    public bool infiniteWidth = false;
+    
+    [DisableIf("infiniteWidth", isEqualTo: true)]
+    public float maxScrollWidth = 0.15f;
+
+    public bool infiniteHeight = false;
+
+    [DisableIf("infiniteHeight", isEqualTo: true)]
+    public float maxScrollHeight = 0.10f;
+
     [Header("Debug")]
-    public bool drawDebug = false;
+    public bool drawRectDebug = false;
+    public bool drawInteractionDebug = false;
 
     private void Reset() {
       portalSurfaceIntObj = GetComponent<IntObj>();
     }
 
-    private Vector3?[] touchingFingerPositions = new Vector3?[5];
-    private float[] fingerStrengths = new float[5];
-    private StablePositionsDelta stableFingersDelta = new StablePositionsDelta(5);
+    private Vector3?[] _touchingFingerPositions = new Vector3?[5];
+    private float[] _fingerStrengths = new float[5];
+    private StablePositionsDelta _stableFingersDelta = new StablePositionsDelta(5);
 
     // Deadzone
     private Vector3 _deadzoneOrigin = Vector3.zero;
@@ -48,15 +70,23 @@ namespace Leap.Unity.PhysicalInterfaces {
     private float _momentumBlend = 0f;
     private Vector3 _ownMomentum = Vector3.zero;
 
-    private void OnEnable() {
+    // Display cache
+    private Vector3[] _fingertipPositions = new Vector3[5];
 
+    private void OnEnable() {
+      initDisplay();
     }
+    
 
     private void OnDisable() {
 
     }
 
     private void Update() {
+
+      _touchingFingerPositions.ClearWithDefaults();
+      _fingertipPositions.ClearWith(Vector3.negativeInfinity);
+      _fingerStrengths.ClearWithDefaults();
 
       Vector3 movementFromHand = Vector3.zero;
 
@@ -65,15 +95,14 @@ namespace Leap.Unity.PhysicalInterfaces {
 
       if (portalSurfaceIntObj.isPrimaryHovered) {
 
-        var hand = portalSurfaceIntObj.primaryHoveringController.intHand.leapHand;
-        touchingFingerPositions.ClearWithDefaults();
-        fingerStrengths.ClearWithDefaults();
-
-
-        if (hand != null) {
+        var intHand = portalSurfaceIntObj.primaryHoveringController.intHand;
+        var hand = (intHand == null ? null : portalSurfaceIntObj.primaryHoveringController.intHand.leapHand);
+        
+        if (intHand != null && hand != null && !intHand.isGraspingObject) {
           for (int i = 0; i < hand.Fingers.Count; i++) {
             var finger = hand.Fingers[i];
             var fingertipPosition = finger.TipPosition.ToVector3();
+            _fingertipPositions[i] = fingertipPosition;
 
             var portalPose = portalSurfaceIntObj.transform.ToPose() + new Pose(portalSurfaceIntObj.transform.forward * depthOffset);
             var isProjectionOnRect = false;
@@ -85,52 +114,53 @@ namespace Leap.Unity.PhysicalInterfaces {
             var pressStrength = sqrDistToRect.Map(0f, thickness * thickness, 1f, 0f);
 
             if (pressStrength > 0f && isProjectionOnRect) {
-              touchingFingerPositions[i] = clampedFingertip;
-              fingerStrengths[i] = pressStrength;
+              _touchingFingerPositions[i] = clampedFingertip;
+              _fingerStrengths[i] = pressStrength;
 
-              if (drawDebug) {
+              if (drawInteractionDebug) {
                 DebugPing.Ping(clampedFingertip, LeapColor.amber, 0.10f);
               }
             }
 
           }
         }
+      }
 
-        // Calculate momentum blend increase based on total finger proximity.
-        var fingerStrengthMax = fingerStrengths.Query().Fold((acc, f) => (f > acc ? f : acc));
-        //var targetBlend = fingerStrengthMax.Map(0f, 0.2f, 0f, 1f);
-        //_momentumBlend = Mathf.Lerp(_momentumBlend, targetBlend, 20f * Time.deltaTime);
-        _momentumBlend = fingerStrengthMax.Map(0f, 0.4f, 0f, 1f);
+      // Calculate momentum blend increase based on total finger proximity.
+      var fingerStrengthMax = _fingerStrengths.Query().Fold((acc, f) => (f > acc ? f : acc));
+      var targetBlend = fingerStrengthMax.Map(0f, 0.2f, 0f, 1f);
+      _momentumBlend = Mathf.Lerp(_momentumBlend, targetBlend, 50f * Time.deltaTime); // TODO: Expose
+      //_momentumBlend = fingerStrengthMax.Map(0f, 0.4f, 0f, 1f);
 
-        stableFingersDelta.UpdateCentroidMovement(touchingFingerPositions.ToIndexable(),
-                                                  fingerStrengths.ToIndexable(),
-                                                  drawDebug: drawDebug);
+      // TODO: have finger strengths be persistent and fading..?
 
-        if (stableFingersDelta.didCentroidAppear) {
-          _deadzoneOrigin = stableFingersDelta.centroid.Value;
-        }
+      _stableFingersDelta.UpdateCentroidMovement(_touchingFingerPositions.ToIndexable(),
+                                                _fingerStrengths.ToIndexable(),
+                                                drawDebug: drawInteractionDebug);
 
-        if (stableFingersDelta.isMoving) {
-          movementFromHand = stableFingersDelta.movement;
-          
-          if (_useDeadzone) {
-            var sqrDistFromOrigin = (_deadzoneOrigin - stableFingersDelta.centroid.Value).sqrMagnitude;
+      if (_stableFingersDelta.didCentroidAppear) {
+        _deadzoneOrigin = _stableFingersDelta.centroid.Value;
+      }
 
-            var deadzoneCoeff = sqrDistFromOrigin.Map(minDeadzoneWidth * minDeadzoneWidth,
+      if (_stableFingersDelta.isMoving) {
+        movementFromHand = _stableFingersDelta.movement;
+
+        if (_useDeadzone) {
+          var sqrDistFromOrigin = (_deadzoneOrigin - _stableFingersDelta.centroid.Value).sqrMagnitude;
+
+          var deadzoneCoeff = sqrDistFromOrigin.Map(minDeadzoneWidth * minDeadzoneWidth,
                                                     deadzoneWidth * deadzoneWidth,
                                                     0f, 1f);
 
-            if (deadzoneCoeff >= 1f) {
-              _useDeadzone = false;
-            }
-
-            movementFromHand *= deadzoneCoeff;
+          if (deadzoneCoeff >= 1f) {
+            _useDeadzone = false;
           }
-        }
-        else {
-          _useDeadzone = true;
-        }
 
+          movementFromHand *= deadzoneCoeff;
+        }
+      }
+      else {
+        _useDeadzone = true;
       }
 
       // Decay momentum via friction.
@@ -142,15 +172,186 @@ namespace Leap.Unity.PhysicalInterfaces {
         _ownMomentum = ownMomentumPostFriction;
       }
 
-      // Calculate and apply momentum.
+      // Blend momentum with hand motion.
       _ownMomentum = Vector3.Lerp(_ownMomentum, movementFromHand, _momentumBlend);
 
+      // Apply scroll boundary constraints.
+      var curPos = slideableObjectsRoot.position;
+      var portalPlanePose = portalObj.transform.ToPose();
+
+      var curPosPortalPlaneSpace = curPos.GetLocalPositionOnPlane(portalPlanePose);
+      curPosPortalPlaneSpace.z = portalObj.transform.InverseTransformPoint(curPos).z;
+
+      var curMomentumPortalPlaneSpace = (portalPlanePose.position + _ownMomentum).GetLocalPositionOnPlane(portalPlanePose);
+
+      bool applyMomentumConstraint = false;
+      if (!infiniteWidth) {
+        if (curPosPortalPlaneSpace.x >= maxScrollWidth / 2f && curMomentumPortalPlaneSpace.x > 0f) {
+          curPosPortalPlaneSpace.x = maxScrollWidth / 2f;
+          curMomentumPortalPlaneSpace.x = 0f;
+          applyMomentumConstraint = true;
+        }
+        if (curPosPortalPlaneSpace.x <= -maxScrollWidth / 2f && curMomentumPortalPlaneSpace.x < 0f) {
+          curPosPortalPlaneSpace.x = -maxScrollWidth / 2f;
+          curMomentumPortalPlaneSpace.x = 0f;
+          applyMomentumConstraint = true;
+        }
+      }
+      if (!infiniteHeight) {
+        if (curPosPortalPlaneSpace.y >= maxScrollHeight / 2f && curMomentumPortalPlaneSpace.y > 0f) {
+          curPosPortalPlaneSpace.y = maxScrollHeight / 2f;
+          curMomentumPortalPlaneSpace.y = 0f;
+          applyMomentumConstraint = true;
+        }
+        if (curPosPortalPlaneSpace.y <= -maxScrollHeight / 2f && curMomentumPortalPlaneSpace.y < 0f) {
+          curPosPortalPlaneSpace.y = -maxScrollHeight / 2f;
+          curMomentumPortalPlaneSpace.y = 0f;
+          applyMomentumConstraint = true;
+        }
+      }
+
+      if (applyMomentumConstraint) {
+        slideableObjectsRoot.transform.position = (portalPlanePose * curPosPortalPlaneSpace).position;
+        _ownMomentum = (portalPlanePose * curMomentumPortalPlaneSpace).position.From(portalPlanePose.position);
+      }
+
+      // Apply momentum.
       slideableObjectsRoot.transform.position += _ownMomentum;
+
+      // Update display.
+      updateDisplay(_fingertipPositions, _fingerStrengths);
+
     }
 
     #region Display
 
+    [Header("Display Elements")]
 
+    // Color Receiver Sequence
+    [SerializeField]
+    [ImplementsInterface(typeof(IGameObjectSequenceProvider))]
+    private MonoBehaviour _colorReceivers;
+    public IGameObjectSequenceProvider colorReceivers {
+      get { return _colorReceivers as IGameObjectSequenceProvider; }
+    }
+    public IColorReceiver GetColorReceiver(int index) {
+      return colorReceivers[index].GetComponent<IColorReceiver>();
+    }
+    public int numColorReceivers { get { return colorReceivers.Count; } }
+
+    private IColorReceiver[] _colorReceiverCache;
+
+    // Position Provider Sequence
+    [SerializeField]
+    [ImplementsInterface(typeof(IGameObjectSequenceProvider))]
+    private MonoBehaviour _positionProviders;
+    public IGameObjectSequenceProvider positionProviders {
+      get { return _positionProviders as IGameObjectSequenceProvider; }
+    }
+    public IVector3Provider GetPositionProvider(int index) {
+      return colorReceivers[index].GetComponent<IVector3Provider>();
+    }
+    public int numPositionProviders { get { return positionProviders.Count; } }
+
+    private IVector3Provider[] _positionProviderCache;
+
+    // Color
+    public Color idleColor = LeapColor.gray;
+
+    public Color proximityColor = Color.white;
+
+    // Distance Lerp
+    public float idleDistance = 0.04f;
+
+    public float proximalDistance = 0.01f;
+
+    private void initDisplay() {
+      _positionProviderCache = new IVector3Provider[numPositionProviders];
+      for (int i = 0; i < positionProviders.Count; i++) {
+        _positionProviderCache[i] = GetPositionProvider(i);
+      }
+      
+      _colorReceiverCache = new IColorReceiver[numColorReceivers];
+      for (int i = 0; i < colorReceivers.Count; i++) {
+        _colorReceiverCache[i] = GetColorReceiver(i);
+      }
+    }
+
+    /// <summary>
+    /// Note: Sentinel value for "no fingertip data" is Vector3.negativeInfinity.
+    /// </summary>
+    private void updateDisplay(Vector3[] fingertipPositions, float[] fingerStrengths) {
+
+      float[] gracineEnergy = new float[_positionProviderCache.Length];
+      gracineEnergy.ClearWith(0f);
+
+      unsafe {
+
+        float[] gracineEnergyCopy = new float[gracineEnergy.Length];
+        gracineEnergyCopy.ClearWith(0f);
+
+        int numPositionProviders = _positionProviderCache.Length;
+        Vector3[] elementPositions = new Vector3[numPositionProviders];
+        for (int i = 0; i < numPositionProviders; i++) {
+          elementPositions[i] = _positionProviderCache[i].Get();
+        }
+        
+        for (int i = 0; i < numPositionProviders; i++) {
+          for (int f = 0; f < 5; f++) {
+
+            var testSqrDist = (fingertipPositions[f] - elementPositions[i]).sqrMagnitude;
+            var closeness = testSqrDist.Map(idleDistance * idleDistance,
+                                            proximalDistance * proximalDistance,
+                                            0f, 1f);
+
+            gracineEnergyCopy[i] += closeness * fingerStrengths[f];
+          }
+        }
+
+        for (int i = 0; i < gracineEnergyCopy.Length; i++) {
+          gracineEnergy[i] = gracineEnergyCopy[i];
+        }
+      }
+      
+      for (int i = 0; i < _colorReceiverCache.Length; i++) {
+        _colorReceiverCache[i].Receive(Color.Lerp(idleColor, proximityColor, gracineEnergy[i]));
+      }
+      
+    }
+
+    public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      if (this.enabled && this.gameObject.activeInHierarchy && drawRectDebug) {
+        drawer.color = LeapColor.jade;
+
+        drawer.PushMatrix();
+        drawer.matrix = Matrix4x4.TRS(portalObj.transform.TransformPoint(Vector3.forward * depthOffset), portalObj.transform.rotation, portalObj.transform.lossyScale);
+
+        drawer.DrawWireCube(Vector3.zero, new Vector3(portalObj.width, portalObj.height, thickness));
+        drawer.DrawWireCube(Vector3.zero, new Vector3(portalObj.width * 0.8f, portalObj.height * 0.8f, thickness));
+
+        drawer.PopMatrix();
+
+        drawer.PushMatrix();
+        drawer.matrix = Matrix4x4.TRS(portalObj.transform.TransformPoint(Vector3.forward * depthOffset), portalObj.transform.rotation, Vector3.one);
+
+        drawer.color = LeapColor.magenta;
+        if (!infiniteWidth || !infiniteHeight) {
+          var width = 100000f;
+          var height = 100000f;
+
+          if (!infiniteWidth) {
+            width = maxScrollWidth;
+          }
+          if (!infiniteHeight) {
+            height = maxScrollHeight;
+          }
+
+          drawer.DrawWireCube(Vector3.zero, new Vector3(width, height, thickness));
+        }
+
+        drawer.PopMatrix();
+      }
+    }
 
     #endregion
 

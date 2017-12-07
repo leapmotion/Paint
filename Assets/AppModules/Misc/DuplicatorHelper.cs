@@ -15,6 +15,7 @@ public class DuplicatorHelper : MonoBehaviour {
   public float horizontalSpacing = 0.10f;
   public float verticalSpacing = 0.10f;
 
+  [QuickButton("Clear Children!", "ClearDuplicationParentChildren")]
   public Transform duplicationParent;
 
   public GameObject toDuplicate;
@@ -30,16 +31,13 @@ public class DuplicatorHelper : MonoBehaviour {
       return;
     }
 
-    var numChildren = duplicationParent.childCount;
-    for (int i = numChildren; i >= 0; i--) {
-      DestroyImmediate(duplicationParent.GetChild(i).gameObject);
-    }
+    ClearDuplicationParentChildren();
 
     for (int i = 0; i < numWidthCopies; i++) {
       for (int j = 0; j < numHeightCopies; j++) {
         var position = toDuplicate.transform.position
-                       + i * horizontalSpacing * Vector3.right
-                       + j * verticalSpacing * Vector3.down;
+                       + i * horizontalSpacing * toDuplicate.transform.right
+                       + j * verticalSpacing * -toDuplicate.transform.up;
 
         GameObject duplicate = GameObject.Instantiate(toDuplicate);
         duplicate.transform.parent = duplicationParent;
@@ -47,6 +45,13 @@ public class DuplicatorHelper : MonoBehaviour {
         duplicate.transform.rotation = toDuplicate.transform.rotation;
         duplicate.transform.localScale = toDuplicate.transform.localScale;
       }
+    }
+  }
+
+  public void ClearDuplicationParentChildren() {
+    var numChildren = duplicationParent.childCount;
+    for (int i = numChildren - 1; i >= 0; i--) {
+      DestroyImmediate(duplicationParent.GetChild(i).gameObject);
     }
   }
 
