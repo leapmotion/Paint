@@ -36,8 +36,8 @@ public class DuplicatorHelper : MonoBehaviour {
     for (int i = 0; i < numWidthCopies; i++) {
       for (int j = 0; j < numHeightCopies; j++) {
         var position = toDuplicate.transform.position
-                       + i * horizontalSpacing * toDuplicate.transform.right
-                       + j * verticalSpacing * -toDuplicate.transform.up;
+                       + i * horizontalSpacing * duplicationParent.transform.right
+                       + j * verticalSpacing * -duplicationParent.transform.up;
 
         GameObject duplicate = GameObject.Instantiate(toDuplicate);
         duplicate.transform.parent = duplicationParent;

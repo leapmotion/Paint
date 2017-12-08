@@ -188,6 +188,22 @@ namespace Leap.Unity.Portals {
       Gizmos.DrawLine(new Vector3(+w2, -h2), new Vector3(+w2, +h2));
       Gizmos.DrawLine(new Vector3(+w2, +h2), new Vector3(-w2, +h2));
       Gizmos.DrawLine(new Vector3(-w2, +h2), new Vector3(-w2, -h2));
+      
+      Gizmos.color = Color.black;
+      w = (_width - 0.001f) / 2;
+      h = (_height - 0.001f) / 2;
+      w2 = (_width - 0.05f - 0.001f) / 2;
+      h2 = (_height - 0.05f - 0.001f) / 2;
+
+      Gizmos.DrawLine(new Vector3(-w, -h), new Vector3(+w, -h));
+      Gizmos.DrawLine(new Vector3(+w, -h), new Vector3(+w, +h));
+      Gizmos.DrawLine(new Vector3(+w, +h), new Vector3(-w, +h));
+      Gizmos.DrawLine(new Vector3(-w, +h), new Vector3(-w, -h));
+
+      Gizmos.DrawLine(new Vector3(-w2, -h2), new Vector3(+w2, -h2));
+      Gizmos.DrawLine(new Vector3(+w2, -h2), new Vector3(+w2, +h2));
+      Gizmos.DrawLine(new Vector3(+w2, +h2), new Vector3(-w2, +h2));
+      Gizmos.DrawLine(new Vector3(-w2, +h2), new Vector3(-w2, -h2));
     }
   }
 }

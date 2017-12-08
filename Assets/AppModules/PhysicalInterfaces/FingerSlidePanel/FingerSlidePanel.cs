@@ -25,13 +25,13 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public float thickness = 0.02f;
 
-    public float depthOffset = 0f;
+    public float depthOffset = -0.01f;
 
     [Header("Deadzone")]
 
-    public float deadzoneWidth = 0.02f;
+    public float deadzoneWidth = 0.06f;
 
-    public float minDeadzoneWidth = 0.01f;
+    public float minDeadzoneWidth = 0.03f;
 
     [Header("Momentum")]
 
@@ -261,7 +261,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     public Color proximityColor = Color.white;
 
     // Distance Lerp
-    public float idleDistance = 0.04f;
+    public float idleDistance = 0.08f;
 
     public float proximalDistance = 0.01f;
 
