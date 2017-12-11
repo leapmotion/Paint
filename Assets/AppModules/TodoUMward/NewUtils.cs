@@ -6,517 +6,372 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Pose = Leap.Unity.Pose;
+namespace Leap.Unity {
 
-public static class NewUtils {
-
-  #region Equality Utils (General Utils?)
-
-  public static bool IsDefaultForType<T>(this T t) {
-    return EqualityComparer<T>.Default.Equals(t, default(T));
-  }
-
-  #endregion
+  public static class NewUtils {
 
 
-  #region Transform Utils
+    #region Transform Utils
 
-  /// <summary>
-  /// Returns a list of transforms including this transform and ALL of its children,
-  /// including the children of its children, and the children of their children, and
-  /// so on.
-  /// 
-  /// THIS ALLOCATES GARBAGE. Use it for editor code only.
-  /// </summary>
-  public static List<Transform> GetSelfAndAllChildren(this Transform t,
-                                                     bool includeInactiveObjects = false) {
-    var allChildren = new List<Transform>();
+    /// <summary>
+    /// Returns a list of transforms including this transform and ALL of its children,
+    /// including the children of its children, and the children of their children, and
+    /// so on.
+    /// 
+    /// THIS ALLOCATES GARBAGE. Use it for editor code only.
+    /// </summary>
+    public static List<Transform> GetSelfAndAllChildren(this Transform t,
+                                                       bool includeInactiveObjects = false) {
+      var allChildren = new List<Transform>();
 
-    Stack<Transform> toVisit = Pool<Stack<Transform>>.Spawn();
+      Stack<Transform> toVisit = Pool<Stack<Transform>>.Spawn();
 
-    try {
-      // Traverse the hierarchy of this object's transform to find all of its Colliders.
-      toVisit.Push(t.transform);
-      Transform curTransform;
-      while (toVisit.Count > 0) {
-        curTransform = toVisit.Pop();
+      try {
+        // Traverse the hierarchy of this object's transform to find all of its Colliders.
+        toVisit.Push(t.transform);
+        Transform curTransform;
+        while (toVisit.Count > 0) {
+          curTransform = toVisit.Pop();
 
-        // Recursively search children and children's children
-        foreach (var child in curTransform.GetChildren()) {
-          // Ignore children with Rigidbodies of their own; its own Rigidbody
-          // owns its own colliders and the colliders of its children
-          if (includeInactiveObjects || child.gameObject.activeSelf) {
-            toVisit.Push(child);
+          // Recursively search children and children's children
+          foreach (var child in curTransform.GetChildren()) {
+            // Ignore children with Rigidbodies of their own; its own Rigidbody
+            // owns its own colliders and the colliders of its children
+            if (includeInactiveObjects || child.gameObject.activeSelf) {
+              toVisit.Push(child);
+            }
           }
-        }
 
-        // Since we'll visit every valid child, all we need to do is add the colliders
-        // of every transform we visit.
-        allChildren.Add(curTransform);
+          // Since we'll visit every valid child, all we need to do is add the colliders
+          // of every transform we visit.
+          allChildren.Add(curTransform);
+        }
       }
+      finally {
+        toVisit.Clear();
+        Pool<Stack<Transform>>.Recycle(toVisit);
+      }
+
+      return allChildren;
     }
-    finally {
-      toVisit.Clear();
-      Pool<Stack<Transform>>.Recycle(toVisit);
-    }
-
-    return allChildren;
-  }
 
 
-  /// <summary>
-  /// Recursively searches the hierarchy of the argument Transform to find all of the
-  /// Components of type ComponentType (the first type argument) that should be "owned"
-  /// by the OwnerType component type (the second type argument).
-  /// 
-  /// If a child GameObject itself has an OwnerType component, that
-  /// child is ignored, and its children are ignored -- the assumption being that such
-  /// a child owns itself and any ComponentType components beneath it.
-  /// 
-  /// For example, a call to FindOwnedChildComponents with ComponentType Collider and
-  /// OwnerType Rigidbody would return all of the Colliders that are attached to the
-  /// rootObj Rigidbody, but none of the colliders that are attached to a rootObj's
-  /// child's own Rigidbody.
-  /// 
-  /// Optionally, ComponentType components of inactive GameObjects can be included
-  /// in the returned list; by default, these components are skipped.
-  /// 
-  /// This is not a cheap method to call, but it does not allocate garbage, so it is safe
-  /// for use at runtime.
-  /// </summary>
-  /// 
-  /// <typeparam name="ComponentType">
-  /// The component type to search for.
-  /// </typeparam>
-  /// 
-  /// <typeparam name="OwnerType">
-  /// The component type that assumes ownership of any ComponentType in its own Transform
-  /// or its Transform's children/grandchildren.
-  /// </typeparam>
-  public static void FindOwnedChildComponents<ComponentType, OwnerType>
-                                               (OwnerType rootObj,
-                                                List<ComponentType> ownedComponents,
-                                                bool includeInactiveObjects = false)
-                                             where OwnerType : Component {
-    ownedComponents.Clear();
-    Stack<Transform> toVisit = Pool<Stack<Transform>>.Spawn();
-    List<ComponentType> componentsBuffer = Pool<List<ComponentType>>.Spawn();
+    /// <summary>
+    /// Recursively searches the hierarchy of the argument Transform to find all of the
+    /// Components of type ComponentType (the first type argument) that should be "owned"
+    /// by the OwnerType component type (the second type argument).
+    /// 
+    /// If a child GameObject itself has an OwnerType component, that
+    /// child is ignored, and its children are ignored -- the assumption being that such
+    /// a child owns itself and any ComponentType components beneath it.
+    /// 
+    /// For example, a call to FindOwnedChildComponents with ComponentType Collider and
+    /// OwnerType Rigidbody would return all of the Colliders that are attached to the
+    /// rootObj Rigidbody, but none of the colliders that are attached to a rootObj's
+    /// child's own Rigidbody.
+    /// 
+    /// Optionally, ComponentType components of inactive GameObjects can be included
+    /// in the returned list; by default, these components are skipped.
+    /// 
+    /// This is not a cheap method to call, but it does not allocate garbage, so it is safe
+    /// for use at runtime.
+    /// </summary>
+    /// 
+    /// <typeparam name="ComponentType">
+    /// The component type to search for.
+    /// </typeparam>
+    /// 
+    /// <typeparam name="OwnerType">
+    /// The component type that assumes ownership of any ComponentType in its own Transform
+    /// or its Transform's children/grandchildren.
+    /// </typeparam>
+    public static void FindOwnedChildComponents<ComponentType, OwnerType>
+                                                 (OwnerType rootObj,
+                                                  List<ComponentType> ownedComponents,
+                                                  bool includeInactiveObjects = false)
+                                               where OwnerType : Component {
+      ownedComponents.Clear();
+      Stack<Transform> toVisit = Pool<Stack<Transform>>.Spawn();
+      List<ComponentType> componentsBuffer = Pool<List<ComponentType>>.Spawn();
 
-    try {
-      // Traverse the hierarchy of this object's transform to find
-      // all of its Colliders.
-      toVisit.Push(rootObj.transform);
-      Transform curTransform;
-      while (toVisit.Count > 0) {
-        curTransform = toVisit.Pop();
+      try {
+        // Traverse the hierarchy of this object's transform to find
+        // all of its Colliders.
+        toVisit.Push(rootObj.transform);
+        Transform curTransform;
+        while (toVisit.Count > 0) {
+          curTransform = toVisit.Pop();
 
-        // Recursively search children and children's children.
-        foreach (var child in curTransform.GetChildren()) {
-          // Ignore children with OwnerType components of their own; its own OwnerType
-          // component owns its own ComponentType components and the ComponentType
-          // components of its children.
-          if (child.GetComponent<OwnerType>() == null
-              && (includeInactiveObjects || child.gameObject.activeSelf)) {
-            toVisit.Push(child);
+          // Recursively search children and children's children.
+          foreach (var child in curTransform.GetChildren()) {
+            // Ignore children with OwnerType components of their own; its own OwnerType
+            // component owns its own ComponentType components and the ComponentType
+            // components of its children.
+            if (child.GetComponent<OwnerType>() == null
+                && (includeInactiveObjects || child.gameObject.activeSelf)) {
+              toVisit.Push(child);
+            }
+          }
+
+          // Since we'll visit every valid child, all we need to do is add the
+          // ComponentType components of every transform we visit.
+          componentsBuffer.Clear();
+          curTransform.GetComponents<ComponentType>(componentsBuffer);
+          foreach (var component in componentsBuffer) {
+            ownedComponents.Add(component);
           }
         }
+      }
+      finally {
+        toVisit.Clear();
+        Pool<Stack<Transform>>.Recycle(toVisit);
 
-        // Since we'll visit every valid child, all we need to do is add the
-        // ComponentType components of every transform we visit.
         componentsBuffer.Clear();
-        curTransform.GetComponents<ComponentType>(componentsBuffer);
-        foreach (var component in componentsBuffer) {
-          ownedComponents.Add(component);
-        }
-      }
-    }
-    finally {
-      toVisit.Clear();
-      Pool<Stack<Transform>>.Recycle(toVisit);
-
-      componentsBuffer.Clear();
-      Pool<List<ComponentType>>.Recycle(componentsBuffer);
-    }
-  }
-
-  #endregion
-
-
-  #region Rect Utils
-
-  public static Rect PadOuter(this Rect r, float width) {
-    return new Rect(r.x - width, r.y - width,
-                    r.width + (width * 2f), r.height + (width * 2f));
-  }
-
-  #region Pad, No Out
-
-  public static Rect PadTop(this Rect r, float padding) {
-    return new Rect(r.x, r.y + padding, r.width, r.height - padding);
-  }
-
-  public static Rect PadBottom(this Rect r, float padding) {
-    return new Rect(r.x, r.y, r.width, r.height - padding);
-  }
-
-  public static Rect PadLeft(this Rect r, float padding) {
-    return new Rect(r.x + padding, r.y, r.width - padding, r.height);
-  }
-
-  public static Rect PadRight(this Rect r, float padding) {
-    return new Rect(r.x, r.y, r.width - padding, r.height);
-  }
-
-  #endregion
-
-  #region Pad, With Out
-
-  /// <summary>
-  /// Returns the Rect if padded on the top by the padding amount, and optionally
-  /// outputs the remaining margin into marginRect.
-  /// </summary>
-  public static Rect PadTop(this Rect r, float padding, out Rect marginRect) {
-    marginRect = new Rect(r.x, r.y, r.width, padding);
-    return PadTop(r, padding);
-  }
-
-  /// <summary>
-  /// Returns the Rect if padded on the bottom by the padding amount, and optionally
-  /// outputs the remaining margin into marginRect.
-  /// </summary>
-  public static Rect PadBottom(this Rect r, float padding, out Rect marginRect) {
-    marginRect = new Rect(r.x, r.y + r.height - padding, padding, r.height);
-    return PadBottom(r, padding);
-  }
-
-  /// <summary>
-  /// Returns the Rect if padded on the left by the padding amount, and optionally
-  /// outputs the remaining margin into marginRect.
-  /// </summary>
-  public static Rect PadLeft(this Rect r, float padding, out Rect marginRect) {
-    marginRect = new Rect(r.x, r.y, padding, r.height);
-    return PadLeft(r, padding);
-  }
-
-  /// <summary>
-  /// Returns the Rect if padded on the right by the padding amount, and optionally
-  /// outputs the remaining margin into marginRect.
-  /// </summary>
-  public static Rect PadRight(this Rect r, float padding, out Rect marginRect) {
-    marginRect = new Rect(r.x + r.width - padding, r.y, padding, r.height);
-    return PadRight(r, padding);
-  }
-
-  #endregion
-
-  #region Pad Percent, Two Sides
-
-  public static Rect PadTopBottomPercent(this Rect r, float padPercent) {
-    float padHeight = r.height * padPercent;
-    return new Rect(r.x, r.y + padHeight, r.width, r.height - padHeight * 2f);
-  }
-
-  public static Rect PadLeftRightPercent(this Rect r, float padPercent) {
-    float padWidth = r.width * padPercent;
-    return new Rect(r.x + padWidth, r.y, r.width - padWidth * 2f, r.height);
-  }
-
-  #endregion
-
-  #region Pad Percent
-
-  public static Rect PadTopPercent(this Rect r, float padPercent) {
-    float padHeight = r.height * padPercent;
-    return PadTop(r, padHeight);
-  }
-
-  public static Rect PadBottomPercent(this Rect r, float padPercent) {
-    float padHeight = r.height * padPercent;
-    return PadBottom(r, padHeight);
-  }
-
-  public static Rect PadLeftPercent(this Rect r, float padPercent) {
-    return PadLeft(r, r.width * padPercent);
-  }
-
-  public static Rect PadRightPercent(this Rect r, float padPercent) {
-    return PadRight(r, r.width * padPercent);
-  }
-
-  #endregion
-
-  #region Take, No Out
-
-  /// <summary>
-  /// Return a margin of the given width on the left side of the input Rect.
-  /// <summary>
-  public static Rect TakeLeft(this Rect r, float widthFromLeft) {
-    Rect theRest;
-    return TakeLeft(r, widthFromLeft, out theRest);
-  }
-
-  /// <summary>
-  /// Return a margin of the given width on the left side of the input Rect.
-  /// <summary>
-  public static Rect TakeRight(this Rect r, float widthFromRight) {
-    Rect theRest;
-    return TakeRight(r, widthFromRight, out theRest);
-  }
-
-  #endregion
-
-  #region Take, With Out
-  
-  /// <summary>
-  /// Return a margin of the given width on the left side of the input Rect, and
-  /// optionally outputs the rest of the Rect into theRest.
-  /// <summary>
-  public static Rect TakeLeft(this Rect r, float padWidth, out Rect theRest) {
-    Rect thePadding;
-    theRest = PadLeft(r, padWidth, out thePadding);
-    return thePadding;
-  }
-
-  /// <summary>
-  /// Return a margin of the given width on the right side of the input Rect, and
-  /// optionally outputs the rest of the Rect into theRest.
-  /// <summary>
-  public static Rect TakeRight(this Rect r, float padWidth, out Rect theRest) {
-    Rect thePadding;
-    theRest = PadRight(r, padWidth, out thePadding);
-    return thePadding;
-  }
-
-  #endregion
-
-  /// <summary>
-  /// Returns a horizontal strip of lineHeight of this rect (from the top by default) and
-  /// provides what's left of this rect after the line is removed as theRest.
-  /// </summary>
-  public static Rect TakeHorizontal(this Rect r, float lineHeight,
-                              out Rect theRest,
-                              bool fromTop = true) {
-    theRest = new Rect(r.x, (fromTop ? r.y + lineHeight : r.y), r.width, r.height - lineHeight);
-    return new Rect(r.x, (fromTop ? r.y : r.y + r.height - lineHeight), r.width, lineHeight);
-  }
-
-  #region Enumerators
-
-  /// <summary>
-  /// Slices numLines horizontal line Rects from this Rect and returns an enumerator that
-  /// will return each line Rect.
-  /// 
-  /// The height of each line is the height of the Rect divided by the number of lines
-  /// requested.
-  /// </summary>
-  public static HorizontalLineRectEnumerator TakeAllLines(this Rect r, int numLines) {
-    return new HorizontalLineRectEnumerator(r, numLines);
-  }
-
-  public struct HorizontalLineRectEnumerator : IQueryOp<Rect> {
-    Rect rect;
-    int numLines;
-    int index;
-
-    public HorizontalLineRectEnumerator(Rect rect, int numLines) {
-      this.rect = rect;
-      this.numLines = numLines;
-      this.index = -1;
-    }
-
-    public float eachHeight { get { return this.rect.height / numLines; } }
-
-    public Rect Current {
-      get { return new Rect(rect.x, rect.y + eachHeight * index, rect.width, eachHeight); }
-    }
-    public bool MoveNext() {
-      index += 1;
-      return index < numLines;
-    }
-    public HorizontalLineRectEnumerator GetEnumerator() { return this; }
-
-    public bool TryGetNext(out Rect t) {
-      if (MoveNext()) {
-        t = Current; return true;
-      }
-      else {
-        t = default(Rect); return false;
+        Pool<List<ComponentType>>.Recycle(componentsBuffer);
       }
     }
 
-    public void Reset() {
-      index = -1;
+    #endregion
+    
+    #region Rect Utils
+
+    public static Rect PadOuter(this Rect r, float width) {
+      return new Rect(r.x - width, r.y - width,
+                      r.width + (width * 2f), r.height + (width * 2f));
     }
 
-    public QueryWrapper<Rect, HorizontalLineRectEnumerator> Query() {
-      return new QueryWrapper<Rect, HorizontalLineRectEnumerator>(this);
-    }
-  }
-
-  #endregion
-
-  #endregion
-
-
-  #region Vector3 Utils
-
-  /// <summary>
-  /// Returns this position moved towards the argument position, up to but no more than
-  /// the max movement amount from the original position.
-  /// </summary>
-  public static Vector3 MovedTowards(this Vector3 thisPosition,
-                                    Vector3 otherPosition,
-                                    float maxMovementAmount) {
-    var delta = thisPosition - otherPosition;
-    if (delta.sqrMagnitude > maxMovementAmount * maxMovementAmount) {
-      delta = Vector3.ClampMagnitude(delta, maxMovementAmount);
-    }
-    return thisPosition + delta;
-  }
-
-  #endregion
-
-
-  #region Pose
-
-  /// <summary>
-  /// Returns a pose such that fromPose.Then(thisPose) will have this position
-  /// and the fromPose's rotation.
-  /// </summary>
-  public static Pose From(this Vector3 position, Pose fromPose) {
-    return new Pose(position, fromPose.rotation).From(fromPose);
-  }
-
-  public static Pose GetPose(this Rigidbody rigidbody) {
-    return new Pose(rigidbody.position, rigidbody.rotation);
-  }
-
-  #endregion
-
-  // Newer:
-
-  #region Rect Utils
-
-  public static void SplitHorizontallyWithLeft(this Rect rect, out Rect left, out Rect right, float leftWidth) {
-    left = rect;
-    left.width = leftWidth;
-    right = rect;
-    right.x += left.width;
-    right.width = rect.width - leftWidth;
-  }
-
-  #endregion
-
-  #region Array Utils
-
-  /// <summary>
-  /// Sets all elements in the array of type T to default(T).
-  /// </summary>
-  public static T[] ClearWithDefaults<T>(this T[] arr) {
-    for (int i = 0; i < arr.Length; i++) {
-      arr[i] = default(T);
-    }
-    return arr;
-  }
-
-  /// <summary>
-  /// Sets all elements in the array of type T to the argument value.
-  /// </summary>
-  public static T[] ClearWith<T>(this T[] arr, T value) {
-    for (int i = 0; i < arr.Length; i++) {
-      arr[i] = value;
-    }
-    return arr;
-  }
-
-  public static IIndexable<T> ToIndexable<T>(this T[] arr) {
-    return new ArrayIndexable<T>(arr);
-  }
-
-  public struct ArrayIndexable<T> : IIndexable<T> {
-    private T[] _arr;
-
-    public ArrayIndexable(T[] arr) {
-      _arr = arr;
+    /// <summary>
+    /// Returns a horizontal strip of lineHeight of this rect (from the top by default) and
+    /// provides what's left of this rect after the line is removed as theRest.
+    /// </summary>
+    public static Rect TakeHorizontal(this Rect r, float lineHeight,
+                                out Rect theRest,
+                                bool fromTop = true) {
+      theRest = new Rect(r.x, (fromTop ? r.y + lineHeight : r.y), r.width, r.height - lineHeight);
+      return new Rect(r.x, (fromTop ? r.y : r.y + r.height - lineHeight), r.width, lineHeight);
     }
 
-    public T this[int idx] { get { return _arr[idx]; } }
+    #endregion
+    
+    #region Vector3 Utils
 
-    public int Count { get { return _arr.Length; } }
-  }
+    /// <summary>
+    /// Returns this position moved towards the argument position, up to but no more than
+    /// the max movement amount from the original position.
+    /// </summary>
+    public static Vector3 MovedTowards(this Vector3 thisPosition,
+                                      Vector3 otherPosition,
+                                      float maxMovementAmount) {
+      var delta = thisPosition - otherPosition;
+      if (delta.sqrMagnitude > maxMovementAmount * maxMovementAmount) {
+        delta = Vector3.ClampMagnitude(delta, maxMovementAmount);
+      }
+      return thisPosition + delta;
+    }
 
-  #endregion
+    #endregion
+    
+    #region Pose
 
-  #region Geometry Utils
+    /// <summary>
+    /// Returns a pose such that fromPose.Then(thisPose) will have this position
+    /// and the fromPose's rotation.
+    /// </summary>
+    public static Pose From(this Vector3 position, Pose fromPose) {
+      return new Pose(position, fromPose.rotation).From(fromPose);
+    }
 
-  public static Vector3 GetLocalPositionOnPlane(this Vector3 worldPosition, Pose planePose) {
-    var localSpacePoint = worldPosition.From(planePose).position;
+    public static Pose GetPose(this Rigidbody rigidbody) {
+      return new Pose(rigidbody.position, rigidbody.rotation);
+    }
 
-    var localSpaceOnPlane = new Vector3(localSpacePoint.x,
+    #endregion
+
+    // Newer:
+
+    #region Rect Utils
+
+    public static void SplitHorizontallyWithLeft(this Rect rect, out Rect left, out Rect right, float leftWidth) {
+      left = rect;
+      left.width = leftWidth;
+      right = rect;
+      right.x += left.width;
+      right.width = rect.width - leftWidth;
+    }
+
+    #endregion
+
+    #region Array Utils
+
+    /// <summary>
+    /// Sets all elements in the array of type T to default(T).
+    /// </summary>
+    public static T[] ClearWithDefaults<T>(this T[] arr) {
+      for (int i = 0; i < arr.Length; i++) {
+        arr[i] = default(T);
+      }
+      return arr;
+    }
+
+    /// <summary>
+    /// Sets all elements in the array of type T to the argument value.
+    /// </summary>
+    public static T[] ClearWith<T>(this T[] arr, T value) {
+      for (int i = 0; i < arr.Length; i++) {
+        arr[i] = value;
+      }
+      return arr;
+    }
+
+    public static IIndexable<T> ToIndexable<T>(this T[] arr) {
+      return new ArrayIndexable<T>(arr);
+    }
+
+    public struct ArrayIndexable<T> : IIndexable<T> {
+      private T[] _arr;
+
+      public ArrayIndexable(T[] arr) {
+        _arr = arr;
+      }
+
+      public T this[int idx] { get { return _arr[idx]; } }
+
+      public int Count { get { return _arr.Length; } }
+    }
+
+    #endregion
+
+    #region Geometry Utils
+
+    #region Plane & Rect Clamping
+
+    public static Vector3 GetLocalPositionOnPlane(this Vector3 worldPosition, Pose planePose) {
+      var localSpacePoint = worldPosition.From(planePose).position;
+
+      var localSpaceOnPlane = new Vector3(localSpacePoint.x,
                                         localSpacePoint.y, 0f);
 
-    return localSpaceOnPlane;
-  }
+      return localSpaceOnPlane;
+    }
 
-  public static Vector3 ClampedToPlane(this Vector3 worldPosition, Pose planePose) {
-    var localSpacePoint = worldPosition.From(planePose).position;
+    public static Vector3 ClampedToPlane(this Vector3 worldPosition, Pose planePose) {
+      var localSpacePoint = worldPosition.From(planePose).position;
 
-    var localSpaceOnPlane = new Vector3(localSpacePoint.x,
+      var localSpaceOnPlane = new Vector3(localSpacePoint.x,
                                         localSpacePoint.y, 0f);
 
-    return (planePose * localSpaceOnPlane).position;
-  }
+      return (planePose * localSpaceOnPlane).position;
+    }
 
-  public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
-                                      float rectWidth, float rectHeight) {
-    bool unused;
-    return worldPosition.ClampedToRect(rectCenterPose, rectWidth, rectHeight, out unused);
-  }
+    public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
+                                        float rectWidth, float rectHeight) {
+      bool unused;
+      return worldPosition.ClampedToRect(rectCenterPose, rectWidth, rectHeight, out unused);
+    }
 
-  public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
-                                      float rectWidth, float rectHeight,
-                                      out bool isProjectionWithinRect) {
-    var localSpacePoint = worldPosition.From(rectCenterPose).position;
+    public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
+                                        float rectWidth, float rectHeight,
+                                        out bool isProjectionWithinRect) {
+      var localSpacePoint = worldPosition.From(rectCenterPose).position;
 
-    var localSpaceOnPlane = new Vector3(Mathf.Clamp(localSpacePoint.x, -rectWidth,  rectWidth),
+      var localSpaceOnPlane = new Vector3(Mathf.Clamp(localSpacePoint.x, -rectWidth,  rectWidth),
                                         Mathf.Clamp(localSpacePoint.y, -rectHeight, rectHeight), 0f);
 
-    isProjectionWithinRect = Mathf.Abs(localSpacePoint.x) <= rectWidth;
-    isProjectionWithinRect &= Mathf.Abs(localSpacePoint.y) <= rectHeight;
+      isProjectionWithinRect = Mathf.Abs(localSpacePoint.x) <= rectWidth;
+      isProjectionWithinRect &= Mathf.Abs(localSpacePoint.y) <= rectHeight;
 
-    return (rectCenterPose * localSpaceOnPlane).position;
-  }
+      return (rectCenterPose * localSpaceOnPlane).position;
+    }
 
-  public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
-                                      float rectWidth, float rectHeight,
-                                      out float sqrDistToRect,
-                                      out bool isProjectionWithinRect) {
-    var localSpacePoint = worldPosition.From(rectCenterPose).position;
+    public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
+                                        float rectWidth, float rectHeight,
+                                        out float sqrDistToRect,
+                                        out bool isProjectionWithinRect) {
+      var localSpacePoint = worldPosition.From(rectCenterPose).position;
 
-    isProjectionWithinRect = Mathf.Abs(localSpacePoint.x) <= rectWidth / 2f;
-    isProjectionWithinRect &= Mathf.Abs(localSpacePoint.y) <= rectHeight / 2f;
+      isProjectionWithinRect = Mathf.Abs(localSpacePoint.x) <= rectWidth / 2f;
+      isProjectionWithinRect &= Mathf.Abs(localSpacePoint.y) <= rectHeight / 2f;
 
-    var localSpaceOnPlane = new Vector3(Mathf.Clamp(localSpacePoint.x, -rectWidth / 2f,  rectWidth / 2f),
+      var localSpaceOnPlane = new Vector3(Mathf.Clamp(localSpacePoint.x, -rectWidth / 2f,  rectWidth / 2f),
                                         Mathf.Clamp(localSpacePoint.y, -rectHeight / 2f, rectHeight / 2f), 0f);
 
-    var positionOnRect = (rectCenterPose * localSpaceOnPlane).position;
+      var positionOnRect = (rectCenterPose * localSpaceOnPlane).position;
 
-    sqrDistToRect = (positionOnRect - worldPosition).sqrMagnitude;
+      sqrDistToRect = (positionOnRect - worldPosition).sqrMagnitude;
 
-    return positionOnRect;
+      return positionOnRect;
+    }
+
+    #endregion
+
+    #endregion
+
   }
 
-  //public static bool IsOnRect(this Vector3 worldPosition,
-  //                            Pose rectCenterPose,
-  //                            float rectWidth, float rectHeight,
-  //                            out bool isProjectionWithinRect,
-  //                            out Vector3 positionOnRect,
-  //                            float tolerance = 0.001f) {
-  //  positionOnRect = worldPosition.ClampedToRect(rectCenterPose, rectWidth,
-  //                                               rectHeight, out isProjectionWithinRect);
+  #region Grids
 
-  //}
+  public struct GridPoint {
+    public int x, y;
+    public Vector3 rootPos;
+    public float cellWidth, cellHeight;
+
+    public Vector3 centerPos { get { return rootPos + new Vector3(cellWidth / 2f, -cellHeight / 2f); } }
+
+    public int gridId;
+  }
+
+  public struct GridPointEnumerator {
+
+    public Vector2 size;
+    public int numRows, numCols;
+    public Matrix4x4 transform;
+
+    private int _index;
+    private Vector2 _cellSize;
+
+    public GridPointEnumerator(Vector2 size, int numRows, int numCols) {
+      if (numRows < 1) numRows = 1;
+      if (numCols < 1) numCols = 1;
+
+      this.size = size;
+      this.numRows = numRows;
+      this.numCols = numCols;
+
+      this.transform = Matrix4x4.identity;
+
+      this._index = -1;
+      _cellSize = new Vector2(size.x / numCols, size.y / numRows);
+    }
+
+    public GridPointEnumerator GetEnumerator() { return this; }
+
+    private int maxIndex { get { return numRows * numCols - 1; } }
+
+    public bool MoveNext() {
+      _index += 1;
+      return _index <= maxIndex;
+    }
+
+    public GridPoint Current {
+      get {
+        var x = _index % numCols;
+        var y = _index / numCols;
+        var pos = transform * (new Vector3(-(size.x / 2) + _cellSize.x * x,
+                                           (size.y / 2) - _cellSize.y * y));
+        return new GridPoint() {
+          x = x,
+          y = y,
+          rootPos = pos,
+          gridId = _index,
+          cellWidth = _cellSize.x,
+          cellHeight = _cellSize.y
+        };
+      }
+    }
+
+  }
 
   #endregion
 
 }
+
