@@ -171,6 +171,8 @@ namespace Leap.Unity.Portals {
     }
 
     private void OnDrawGizmos() {
+      if (!this.enabled || !this.gameObject.activeInHierarchy) return;
+
       Gizmos.color = Color.white;
       Gizmos.matrix = transform.localToWorldMatrix;
 

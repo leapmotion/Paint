@@ -36,6 +36,10 @@ public class MeshGridRepeater : MonoBehaviour, IRuntimeGizmoComponent {
   [Tooltip("Grid ID values will be placed into UV1.x for the mesh.")]
   private bool _includeGridIDInUV1 = true;
 
+  [SerializeField]
+  [Tooltip("BlendShape delta vertex values will be placed into UV2.x for the mesh.")]
+  private bool _includeBlendShapeDeltasInUV2 = true;
+
   [SerializeField, EditTimeOnly]
   [Tooltip("Perform the mesh refresh operation on Start at runtime. (Mesh is always refreshed OnValidate.)")]
   private bool _refreshOnStart = true;
@@ -109,14 +113,28 @@ public class MeshGridRepeater : MonoBehaviour, IRuntimeGizmoComponent {
     gridIds.Clear();
     var gridIdUVs = Pool<List<Vector2>>.Spawn();
     gridIdUVs.Clear();
+    var blendShapeDeltaVerts = Pool<List<Vector3>>.Spawn();
+    blendShapeDeltaVerts.Clear();
     try {
-      int repeatedMeshVertCount = inputMesh.vertexCount;
+      int inputMeshVertexCount = inputMesh.vertexCount;
 
       foreach (var gridPoint in new GridPointEnumerator(gridSize, numRows, numCols)) {
         try {
           appendMesh(inputMesh, resultMesh, gridPoint.centerPos, meshScaleMultiplier);
 
-          foreach (var vert in Values.From(0).To(repeatedMeshVertCount)) {
+
+          // Get and load blend shape data.
+          if (inputMesh.blendShapeCount > 0) {
+            Vector3[] deltaVerts = new Vector3[inputMesh.vertexCount];
+            Vector3[] deltaNormals = new Vector3[inputMesh.vertexCount];
+            Vector3[] deltaTangents = new Vector3[inputMesh.vertexCount];
+            inputMesh.GetBlendShapeFrameVertices(0, 0, deltaVerts, deltaNormals, deltaTangents);
+            foreach (var vertIdx in Values.From(0).To(inputMeshVertexCount)) {
+              blendShapeDeltaVerts.Add(deltaVerts[vertIdx] * meshScaleMultiplier);
+            }
+          }
+
+          foreach (var vert in Values.From(0).To(inputMeshVertexCount)) {
             gridIds.Add(gridPoint.gridId);
           }
         }
@@ -133,6 +151,10 @@ public class MeshGridRepeater : MonoBehaviour, IRuntimeGizmoComponent {
         }
         resultMesh.SetUVs(1, gridIdUVs);
       }
+
+      if (_includeBlendShapeDeltasInUV2) {
+        resultMesh.SetUVs(2, blendShapeDeltaVerts);
+      }
     }
     finally {
       gridIds.Clear();
@@ -140,6 +162,9 @@ public class MeshGridRepeater : MonoBehaviour, IRuntimeGizmoComponent {
 
       gridIdUVs.Clear();
       Pool<List<Vector2>>.Recycle(gridIdUVs);
+
+      blendShapeDeltaVerts.Clear();
+      Pool<List<Vector3>>.Recycle(blendShapeDeltaVerts);
     }
 
     if (outputToFilter != null) {

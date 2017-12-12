@@ -5,10 +5,11 @@
     _Color ("Color", Color) = (1, 1, 1, 1)
     _GridSizeAndRowColCount ("Grid Size And Row Col Count", Vector) = (1, 1, 3, 3)
     _Offset ("Offset 2D", Vector) = (0, 0, 0, 0)
+    _SurfaceGlowOffset ("Offset For Fingertip Glow", Vector) = (0, 0, 0, 0)
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType"="Opaque" "DisableBatching"="True" }
 		LOD 100
 
 		Pass
@@ -18,15 +19,16 @@
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
-      #include "Assets/AppModules/Material Library/Resources/HandData.cginc"
+      #include "Assets/AppModules/TodoUMward/Shader Hand Data/HandData.cginc"
 
       // Vert / Frag Structs
 
 			struct appdata
 			{
-				float4 vertex : POSITION;
+				float4 vertex : POSITION; 
 				float2 uv : TEXCOORD0;
         float id : TEXCOORD1;
+        float4 blendshapeDelta : TEXCOORD2;
 			};
 
 			struct v2f
@@ -35,10 +37,32 @@
         //uint id : TEXCOORD1; // ID debug
 			};
 
-      // Material Properties
+      // Public Material Properties
 			float4 _Color;
       float4 _GridSizeAndRowColCount;
       float4 _Offset;
+      float4 _SurfaceGlowOffset;
+
+      // Hidden Material Properties
+      //float4x4 _WorldToObjectMatrix;
+
+      // plane displacement stuff, not even started really
+      //float3 Leap_FingertipsDepthInPlane_AssumeHandsInLocalPlaneSpace() {
+      //  // Find the position that offers the greatest finger displacement.
+      //  //float3 fingertipPos = float3(0, 0, 0);
+      //  //float 
+      //  //for (int i = 0; i < 5; i++) {
+      //  //  _Leap_LH_Fingertips[i]
+      //  //}
+      //
+      //}
+      // Assumes fingertips can be retrieved in LOCAL space relative to the plane-- that is,
+      // that the fingertips' planar projected position is their X and Y coordinates, and their
+      // depth from the plane is their distance along the plane normal.
+      //float3 getDistortionFromFingertips(float4 vertex) {
+      //  // Closest fingertip to plane.
+      //  float3 closestFingertip = Leap_ClosestFingertipToPlane_AssumeHandsInLocalSpace();
+      //}
 
 			v2f vert (appdata v)
 			{
@@ -51,6 +75,8 @@
               halfH = gridH / 2.0;
         float cellW = gridW / numCols,
               cellH = gridH / numRows;
+        float halfCW = cellW / 2.0,
+              halfCH = cellH / 2.0;
 
         // Get expected grid cell based on ID.
         // Grid placement is left-to-right, then top-to-bottom.
@@ -63,17 +89,17 @@
         float y = cellH * gridY;
 
         // Remember original offset of input vertex from its grid point.
-        float vertOffsetX = v.vertex.x - x;
-        float vertOffsetY = v.vertex.y - (-y); // -y cheat makes X/Y modulus logic identical
+        float gridToVertXOffset = v.vertex.x - x;
+        float gridToVertYOffset = v.vertex.y - (-y); // -y cheat makes X/Y modulus logic identical
 
         // Offset vertex position.
         x += _Offset.x;
-        y += _Offset.y;
+        y -= _Offset.y;
         
         {
           // Cell offset for wrapping.
-          x += cellW / 2;
-          y += cellH / 2;
+          x += halfCW;
+          y += halfCH;
         
           {
             // Flip handling when offsets are negative.
@@ -105,13 +131,87 @@
           }
         
           // Undo cell offset.
-          x -= cellW / 2;
-          y -= cellH / 2;
+          x -= halfCW;
+          y -= halfCH;
         }
 
         // Convert final grid point back into final vertex position.
-        v.vertex.x = x + vertOffsetX;
-        v.vertex.y = (-y) + vertOffsetY; // see: -y cheat above
+        v.vertex.x = x + gridToVertXOffset;
+        v.vertex.y = (-y) + gridToVertYOffset; // see: -y cheat above
+
+
+        // Apply blendshape based on distance from fingertips.
+
+        // First, set preprocess matrix for hand data (fingertips in this case) to convert them
+        // from world space to the space of this object.
+        Leap_HandData_Preprocess_Matrix = unity_WorldToObject;
+
+        float sqrDist = Leap_SqrDistToFingertips_WithScale(v.vertex + _SurfaceGlowOffset, float3(0.5, 0.5, 2));
+        
+        float pierceDisplacement = -0.03;
+        float distortionSpreadAmount = 0.26;
+
+        // Displacement _sideways_ experiment. Problems when this is activated are pretty tricky to get around.
+        //float maxSidewaysDisplacementDepth = -0.10;
+        //float maxNormalwiseDisplacementDistance = 10;
+        //
+        //float4 sideOffsetX = float4(0.005, 0, 0, 0), sideOffsetY = float4(0, 0.005, 0, 0);
+        //float pushPlaneDisplacementX0 = getMinDisplacement(float3(0, 0, -1), v.vertex + _SurfaceGlowOffset - sideOffsetX,
+        //                                                   0.0, 0.32);
+        //float pushPlaneDisplacementX1 = getMinDisplacement(float3(0, 0, -1), v.vertex + _SurfaceGlowOffset + sideOffsetX,
+        //                                                   0.0, 0.32);
+        //float pushPlaneDisplacementY0 = getMinDisplacement(float3(0, 0, -1), v.vertex + _SurfaceGlowOffset - sideOffsetY,
+        //                                                   0.0, 0.32);
+        //float pushPlaneDisplacementY1 = getMinDisplacement(float3(0, 0, -1), v.vertex + _SurfaceGlowOffset + sideOffsetY,
+        //                                                   0.0, 0.32);
+        //float displacementX = pushPlaneDisplacementX1 - pushPlaneDisplacementX0;
+        //float displacementY = pushPlaneDisplacementY1 - pushPlaneDisplacementY0;
+        //float3 displacementNormal = float3(displacementX, displacementY, 0);
+        //
+        //float normalwiseDisplacementAmount = 5;
+        //v.vertex += float4(displacementNormal.x * normalwiseDisplacementAmount,
+        //                   displacementNormal.y * normalwiseDisplacementAmount,
+        //                   0, 0);
+
+        
+        float4 offsetFromPierceDisplacement__cheatMatchGlowDepth = float4(0, 0, pierceDisplacement, 0);
+        v.vertex += offsetFromPierceDisplacement__cheatMatchGlowDepth;
+
+        // Distort vertices based on finger position on the plane.
+        float pushPlaneDisplacement = getMinDisplacement(float3(0, 0, -1), v.vertex + _SurfaceGlowOffset,
+                                                         0.0, distortionSpreadAmount);
+
+        
+        float4 gridPoint = float4(x + halfCW, -y - halfCH, 0, 0)
+                           + _SurfaceGlowOffset
+                           + offsetFromPierceDisplacement__cheatMatchGlowDepth;
+
+        gridPoint = v.vertex - float4(gridToVertXOffset, gridToVertYOffset, 0, 0)
+                             - float4(halfW, -halfH, 0, 0)
+                             + float4(halfCW, -halfCH, 0, 0);
+
+        float gridPointDisplacement = getMinDisplacement(float3(0, 0, -1), gridPoint, 0.0, distortionSpreadAmount);
+        float4 displacedGridPoint = gridPoint + float4(0, 0, -1, 1) * gridPointDisplacement;
+
+        // Sideways distortion is pretty cool with some vanishing in there.
+        //int vanish = 0;
+        //if (pushPlaneDisplacement < pierceDisplacement) {
+        //  vanish = 1;
+        //}
+        int vanish = Leap_Map(pushPlaneDisplacement, pierceDisplacement, 0, 1, 0);
+
+        pushPlaneDisplacement = clamp(pushPlaneDisplacement, pierceDisplacement, 0);
+        v.vertex += float4(0, 0, -1, 1) * pushPlaneDisplacement;
+
+        // Finally, apply blendshape, suppressed 
+        float maxRange = 0.04;
+        float mapping = Leap_Map(sqrDist, 0, maxRange * maxRange, 0, 1);
+        v.vertex = v.vertex + (v.blendshapeDelta * mapping);
+
+        //if (vanish == 1) {
+        //  v.vertex = float4(v.vertex.x, v.vertex.y, v.vertex.z + 1000, 1.0);
+        //}
+        v.vertex = lerp(v.vertex, displacedGridPoint, vanish);
 
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);

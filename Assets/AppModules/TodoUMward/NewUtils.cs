@@ -306,6 +306,25 @@ namespace Leap.Unity {
 
     #endregion
 
+    #region Vector3 Utils
+
+    /// <summary>
+    /// Returns this vector converted from world space to the local space of the argument Transform.
+    /// </summary>
+    public static Vector3 InLocalSpace(this Vector3 v, Transform t) {
+      return t.InverseTransformPoint(v);
+    }
+
+    #endregion
+
+    #region Matrix Utils
+    
+    public static Matrix4x4 CompMul(Matrix4x4 m, float f) {
+      return new Matrix4x4(m.GetColumn(0) * f, m.GetColumn(1) * f, m.GetColumn(2) * f, m.GetColumn(3) * f);
+    }
+
+    #endregion
+
   }
 
   #region Grids

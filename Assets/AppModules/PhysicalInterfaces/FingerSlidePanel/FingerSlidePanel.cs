@@ -73,8 +73,14 @@ namespace Leap.Unity.PhysicalInterfaces {
     // Display cache
     private Vector3[] _fingertipPositions = new Vector3[5];
 
+    private void OnValidate() {
+      onValidateDisplay2();
+    }
+
     private void OnEnable() {
-      initDisplay();
+      if (displayType == 1) {
+        initDisplay1();
+      }
     }
     
 
@@ -219,13 +225,24 @@ namespace Leap.Unity.PhysicalInterfaces {
       slideableObjectsRoot.transform.position += _ownMomentum;
 
       // Update display.
-      updateDisplay(_fingertipPositions, _fingerStrengths);
+      if (displayType == 1) {
+        updateDisplay1(_fingertipPositions, _fingerStrengths);
+      }
+      else {
+        updateDisplay2(_fingertipPositions, _fingerStrengths);
+      }
 
     }
 
     #region Display
 
-    [Header("Display Elements")]
+    [Header("Display Type")]
+    [EditTimeOnly]
+    public int displayType = 1;
+
+    #region Display 1
+
+    [Header("Display Elements (option 1)")]
 
     // Color Receiver Sequence
     [SerializeField]
@@ -265,7 +282,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public float proximalDistance = 0.01f;
 
-    private void initDisplay() {
+    private void initDisplay1() {
       _positionProviderCache = new IVector3Provider[numPositionProviders];
       for (int i = 0; i < positionProviders.Count; i++) {
         _positionProviderCache[i] = GetPositionProvider(i);
@@ -280,7 +297,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     /// <summary>
     /// Note: Sentinel value for "no fingertip data" is Vector3.negativeInfinity.
     /// </summary>
-    private void updateDisplay(Vector3[] fingertipPositions, float[] fingerStrengths) {
+    private void updateDisplay1(Vector3[] fingertipPositions, float[] fingerStrengths) {
 
       float[] gracineEnergy = new float[_positionProviderCache.Length];
       gracineEnergy.ClearWith(0f);
@@ -352,6 +369,104 @@ namespace Leap.Unity.PhysicalInterfaces {
         drawer.PopMatrix();
       }
     }
+
+    #endregion
+
+    #region Display 2
+
+    [Header("Display option 2")]
+    
+    public Renderer portalSurfaceRenderer;
+
+    [SerializeField, OnEditorChange("portalGridOffsetParamName")]
+    private string _portalGridOffsetParamName = "_Offset";
+    public string portalGridOffsetParamName {
+      get { return _portalGridOffsetParamName; }
+      set {
+        _portalGridOffsetParamName = value;
+        _portalGridOffsetParamId = Shader.PropertyToID(value);
+      }
+    }
+    [SerializeField, Disable]
+    private int _portalGridOffsetParamId = 0;
+
+    [SerializeField, OnEditorChange("slideSurfaceGlowOffsetParamName")]
+    [Tooltip("With a valid parameter name, this shader parameter will be set on the attached portal surface renderer: "
+             + "Its Z coordinate will match the 'Depth Offset' setting (local space).")]
+    private string _slideSurfaceGlowOffsetParamName = "_SurfaceGlowOffset";
+    public string slideSurfaceGlowOffsetParamName {
+      get { return _slideSurfaceGlowOffsetParamName; }
+      set {
+        _slideSurfaceGlowOffsetParamName = value;
+        _slideSurfaceGlowOffsetParamId = Shader.PropertyToID(value);
+      }
+    }
+    [SerializeField, Disable]
+    private int _slideSurfaceGlowOffsetParamId = 0;
+
+    [SerializeField, OnEditorChange("worldToObjectMatrixParamName")]
+    [Tooltip("Shaders that need a world to object matrix can have this parameter specified here.")]
+    private string _worldToObjectMatrixParamName = "_WorldToObjectMatrix";
+    public string worldToObjectMatrixParamName {
+      get { return _slideSurfaceGlowOffsetParamName; }
+      set {
+        _worldToObjectMatrixParamName = value;
+        _worldToObjectMatrixParamId = Shader.PropertyToID(value);
+      }
+    }
+    [SerializeField, Disable]
+    private int _worldToObjectMatrixParamId = 0;
+
+    private void onValidateDisplay2() {
+      _portalGridOffsetParamId = Shader.PropertyToID(_portalGridOffsetParamName);
+      _slideSurfaceGlowOffsetParamId = Shader.PropertyToID(_slideSurfaceGlowOffsetParamName);
+      SetSurfaceGlowOffsetVector(depthOffset);
+
+      _worldToObjectMatrixParamId = Shader.PropertyToID(_worldToObjectMatrixParamName);
+      RefreshWorldToObjectMatrix();
+    }
+
+    private void updateDisplay2(Vector3[] fingertipPositions, float[] fingerStrengths) {
+
+      // Update material offset based on sliding movement.
+      var materialOffset = slideableObjectsRoot.transform.position
+                             .From(portalObj.transform.position)
+                             .InLocalSpace(portalObj.transform);
+      SetOffsetVector(materialOffset);
+
+      // Update slider surface offset in case the setting has changed.
+      SetSurfaceGlowOffsetVector(depthOffset);
+
+      // Update world to object matrix for the renderer's material shader.
+      RefreshWorldToObjectMatrix();
+    }
+
+    public void SetOffsetVector(Vector2 offset) {
+      if (portalSurfaceRenderer != null) {
+        portalSurfaceRenderer.sharedMaterial.SetVector(_portalGridOffsetParamId,
+          new Vector4(offset.x,
+                      offset.y,
+                      0f, 0f));
+      }
+    }
+    
+    public void RefreshWorldToObjectMatrix() {
+      if (portalSurfaceRenderer != null) {
+        // TODO: Deleteme, unneeded
+        //portalSurfaceRenderer.sharedMaterial.SetMatrix(_worldToObjectMatrixParamId,
+        //                                               portalSurfaceRenderer.transform.worldToLocalMatrix);
+
+
+      }
+    }
+
+    public void SetSurfaceGlowOffsetVector(float depthOffset) {
+      if (portalSurfaceRenderer != null) {
+        portalSurfaceRenderer.sharedMaterial.SetVector(_slideSurfaceGlowOffsetParamId, new Vector4(0f, 0f, depthOffset, 0f));
+      }
+    }
+
+    #endregion
 
     #endregion
 
