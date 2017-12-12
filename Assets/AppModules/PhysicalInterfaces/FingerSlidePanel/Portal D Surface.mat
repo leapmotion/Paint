@@ -76,5 +76,5 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridSizeAndRowColCount: {r: 0.35, g: 0.5, b: 16, a: 11}
     - _HoverFingertipBlendShape_LocalOffset: {r: 0, g: 0, b: 0, a: 0}
-    - _Offset: {r: -0.31285068, g: -0.22529721, b: 0, a: 0}
+    - _Offset: {r: -0.34476906, g: -0.004016201, b: 0, a: 0}
     - _SurfaceGlowOffset: {r: 0, g: 0, b: -0.01, a: 0}

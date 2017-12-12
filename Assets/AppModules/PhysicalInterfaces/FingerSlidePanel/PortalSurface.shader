@@ -198,7 +198,7 @@
         //if (pushPlaneDisplacement < pierceDisplacement) {
         //  vanish = 1;
         //}
-        int vanish = Leap_Map(pushPlaneDisplacement, pierceDisplacement, 0, 1, 0);
+        int vanish = Leap_Map(-pushPlaneDisplacement, -pierceDisplacement, 0, 1, 0);
 
         pushPlaneDisplacement = clamp(pushPlaneDisplacement, pierceDisplacement, 0);
         v.vertex += float4(0, 0, -1, 1) * pushPlaneDisplacement;
