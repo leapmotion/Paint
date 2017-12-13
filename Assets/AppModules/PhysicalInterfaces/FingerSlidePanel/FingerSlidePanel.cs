@@ -64,6 +64,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     // Deadzone
     private Vector3 _deadzoneOrigin = Vector3.zero;
     private bool _useDeadzone = true;
+    private float _deadzoneCoeff = 0f;
 
     // Momentum & Smoothing
     /// <summary> 0: Own momentum only. 1: Hand's momentum only. </summary>
@@ -145,6 +146,7 @@ namespace Leap.Unity.PhysicalInterfaces {
                                                 drawDebug: drawInteractionDebug);
 
       if (_stableFingersDelta.didCentroidAppear) {
+        _deadzoneCoeff = 0f;
         _deadzoneOrigin = _stableFingersDelta.centroid.Value;
       }
 
@@ -152,17 +154,21 @@ namespace Leap.Unity.PhysicalInterfaces {
         movementFromHand = _stableFingersDelta.movement;
 
         if (_useDeadzone) {
-          var sqrDistFromOrigin = (_deadzoneOrigin - _stableFingersDelta.centroid.Value).sqrMagnitude;
+          var sqrDistFromOrigin = (_deadzoneOrigin - _stableFingersDelta.centroid.Value).sqrMagnitude / Time.deltaTime;
 
-          var deadzoneCoeff = sqrDistFromOrigin.Map(minDeadzoneWidth * minDeadzoneWidth,
-                                                    deadzoneWidth * deadzoneWidth,
-                                                    0f, 1f);
+          _deadzoneCoeff += sqrDistFromOrigin.Map(minDeadzoneWidth * minDeadzoneWidth,
+                                                  deadzoneWidth * deadzoneWidth,
+                                                  0f, 1f);
 
-          if (deadzoneCoeff >= 1f) {
+          _deadzoneOrigin = _stableFingersDelta.centroid.Value;
+
+
+          if (_deadzoneCoeff >= 1f) {
             _useDeadzone = false;
+            _deadzoneCoeff = 1f;
           }
 
-          movementFromHand *= deadzoneCoeff;
+          movementFromHand *= _deadzoneCoeff;
         }
       }
       else {

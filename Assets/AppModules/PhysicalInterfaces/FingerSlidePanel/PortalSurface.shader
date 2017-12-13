@@ -19,7 +19,7 @@
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
-      #include "Assets/AppModules/TodoUMward/Shader Hand Data/HandData.cginc"
+      #include "Assets/AppModules/TodoUMward/Shader Hand Data/Resources/HandData.cginc"
 
       // Vert / Frag Structs
 
