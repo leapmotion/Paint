@@ -469,13 +469,15 @@ namespace Leap.Unity.PhysicalInterfaces {
     [SerializeField, Disable]
     private int _worldToObjectMatrixParamId = 0;
 
+    [SerializeField, Disable]
+    private int _colorParamId;
+
     private void onValidateDisplay2() {
       _portalGridOffsetParamId = Shader.PropertyToID(_portalGridOffsetParamName);
       _slideSurfaceGlowOffsetParamId = Shader.PropertyToID(_slideSurfaceGlowOffsetParamName);
       SetSurfaceGlowOffsetVector(depthOffset);
 
-      _worldToObjectMatrixParamId = Shader.PropertyToID(_worldToObjectMatrixParamName);
-      RefreshWorldToObjectMatrix();
+      _colorParamId = Shader.PropertyToID("_Color");
     }
 
     private void updateDisplay2(Vector3[] fingertipPositions, float[] fingerStrengths) {
@@ -486,37 +488,31 @@ namespace Leap.Unity.PhysicalInterfaces {
 
       // Update slider surface offset in case the setting has changed.
       SetSurfaceGlowOffsetVector(depthOffset);
-
-      // Update world to object matrix for the renderer's material shader.
-      RefreshWorldToObjectMatrix();
     }
 
     public void SetOffsetVector(Vector2 offset) {
       if (portalSurfaceRenderer != null) {
         if (Application.isEditor) {
           portalSurfaceRenderer.sharedMaterial.SetVector(_portalGridOffsetParamId,
-            new Vector4(offset.x,
+            new Vector3(offset.x,
                         offset.y,
-                        _lerpedPopState,
                         _lerpedPopState));
+          portalSurfaceRenderer.sharedMaterial.SetVector("_PopStateBackup", Vector4.one * _lerpedPopState);
+
+          // TODO: For some reason the normal pop state vector channels are TOTALLY NOT WORKING in builds!!!!
+          // Instead, use the alpha channel of the shader _Color to store the popped state, this fixes builds >_<
+          portalSurfaceRenderer.sharedMaterial.SetColor(_colorParamId, portalSurfaceRenderer.sharedMaterial.GetColor(_colorParamId).WithAlpha(_lerpedPopState));
+
+          //Debug.LogError("UPLOADED POP STATE: " + _lerpedPopState + ", " + (new Vector3(offset.x, offset.y, _lerpedPopState)));
         }
         else {
-          portalSurfaceRenderer.material.SetVector(_portalGridOffsetParamId,
-            new Vector4(offset.x,
+          portalSurfaceRenderer.sharedMaterial.SetVector(_portalGridOffsetParamId,
+            new Vector3(offset.x,
                         offset.y,
-                        _lerpedPopState,
                         _lerpedPopState));
+          portalSurfaceRenderer.sharedMaterial.SetVector("_PopStateBackup", Vector4.one * _lerpedPopState);
+          portalSurfaceRenderer.material.SetColor(_colorParamId, portalSurfaceRenderer.material.GetColor(_colorParamId).WithAlpha(_lerpedPopState));
         }
-      }
-    }
-    
-    public void RefreshWorldToObjectMatrix() {
-      if (portalSurfaceRenderer != null) {
-        // TODO: Deleteme, unneeded
-        //portalSurfaceRenderer.sharedMaterial.SetMatrix(_worldToObjectMatrixParamId,
-        //                                               portalSurfaceRenderer.transform.worldToLocalMatrix);
-
-
       }
     }
 

@@ -6,10 +6,11 @@
     _GridSizeAndRowColCount ("Grid Size And Row Col Count", Vector) = (1, 1, 3, 3)
     _OffsetAndPopState ("Offset 2D (XY), PopState (Z), LerpedPopState(W)", Vector) = (0, 0, 0, 0)
     _SurfaceGlowOffset ("Offset For Fingertip Glow", Vector) = (0, 0, 0, 0)
+    _PopStateBackup ("Pop State Backup", Vector) = (0, 0, 0, 0)
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" "DisableBatching"="False" }
+		Tags { "RenderType"="Opaque" "DisableBatching"="True" }
 		LOD 100
 
 		Stencil{
@@ -48,6 +49,7 @@
       float4 _GridSizeAndRowColCount;
       float4 _OffsetAndPopState;
       float4 _SurfaceGlowOffset;
+      float4 _PopStateBackup;
 
       // Hidden Material Properties
       //float4x4 _WorldToObjectMatrix;
@@ -121,8 +123,8 @@
 
             {
               // Apply X/Y wrapping
-              x %= gridW;
-              y %= gridH;
+              x = x % gridW;
+              y = y % gridH;
             }
 
             // Undo flip state, and if we were flipped, add an offset
@@ -180,19 +182,20 @@
         //                                 0, 0);
 
         
-        float4 offsetFromPierceDisplacement__cheatMatchGlowDepth = float4(0, 0, pierceDisplacement, 0);
-        //v.vertex += offsetFromPierceDisplacement__cheatMatchGlowDepth;
+        float4 offsetFromPierceDisplacement_cheatMatchGlowDepth = float4(0, 0, pierceDisplacement, 0);
+        //v.vertex += offsetFromPierceDisplacement_cheatMatchGlowDepth;
 
         // Distort vertices based on finger position on the plane.
+        //float lerpedPopState = _OffsetAndPopState.z; 
         float lerpedPopState = _OffsetAndPopState.z;
-        distortionSpreadAmount = distortionSpreadAmount * Leap_Map(lerpedPopState, 0, 1, 1, 4);
+        distortionSpreadAmount = 0.26 * (lerpedPopState * 5.0 + 1.0);
         float pushPlaneDisplacement = getMinDisplacement(float3(0, 0, -1), v.vertex + _SurfaceGlowOffset - 0.02,
                                                          0.0, distortionSpreadAmount);
 
         
         float4 gridPoint = float4(x + halfCW, -y - halfCH, 0, 0)
                            + _SurfaceGlowOffset;
-                           //+ offsetFromPierceDisplacement__cheatMatchGlowDepth;
+                           //+ offsetFromPierceDisplacement_cheatMatchGlowDepth;
 
         gridPoint = v.vertex - float4(gridToVertXOffset, gridToVertYOffset, 0, 0)
                              - float4(halfW, -halfH, 0, 0)
