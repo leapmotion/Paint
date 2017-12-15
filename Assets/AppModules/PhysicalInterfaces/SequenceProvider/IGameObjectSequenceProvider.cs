@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Leap.Unity.Query;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,18 +20,32 @@ namespace Leap.Unity {
   /// <summary>
   /// Enumerator for an IGameObjectSequence.
   /// </summary>
-  public struct IGameObjectSequenceEnumerator {
+  public struct IGameObjectSequenceEnumerator : IQueryOp<GameObject> {
 
     IGameObjectSequenceProvider sequence;
     int index;
 
     public IGameObjectSequenceEnumerator(IGameObjectSequenceProvider sequence) {
       this.sequence = sequence;
-      index = 0;
+      index = -1;
     }
+    
+    public IGameObjectSequenceEnumerator GetEnumerator() { return this; }
 
     public bool MoveNext() { index++;  return index < sequence.Count - 1; }
+
     public GameObject Current { get { return sequence[index]; } }
+
+    public bool TryGetNext(out GameObject t) {
+      var isValid = MoveNext();
+      t = null;
+      if (isValid) t = Current;
+      return isValid;
+    }
+
+    public void Reset() {
+      index = -1;
+    }
 
   }
 
@@ -38,6 +53,10 @@ namespace Leap.Unity {
 
     public static IGameObjectSequenceEnumerator GetEnumerator(this IGameObjectSequenceProvider sequence) {
       return new IGameObjectSequenceEnumerator(sequence);
+    }
+
+    public static QueryWrapper<GameObject, IGameObjectSequenceEnumerator> Query(this IGameObjectSequenceProvider sequence) {
+      return new QueryWrapper<GameObject, IGameObjectSequenceEnumerator>(GetEnumerator(sequence));
     }
 
   }

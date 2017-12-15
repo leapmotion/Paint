@@ -10,6 +10,13 @@ namespace Leap.Unity.IK {
       public Vector3[] points;
       public float[] lengths;
       public Vector3 target;
+
+      public FABRIKChain(Vector3[] points, float[] lengths, Vector3 target) {
+        this.start = points[0];
+        this.points = points;
+        this.lengths = lengths;
+        this.target = target;
+      }
     }
 
     /// <summary>
@@ -47,11 +54,17 @@ namespace Leap.Unity.IK {
     /// <summary>
     /// Performs a single backwards FABRIK solver iteration on the argument chain.
     /// </summary>
-    public static void BackwardSolve(FABRIKChain chain) {
+    public static void BackwardSolve(FABRIKChain chain, Vector3? warmStartDir = null) {
       // Move the last point to the target and project backwards along chain.
-      chain.points[chain.points.Length] = chain.target;
+      chain.points[chain.points.Length - 1] = chain.target;
       for (int i = chain.points.Length - 1; i - 1 >= 0; i--) {
-        var linkDir = (chain.points[i - 1] - chain.points[i]).normalized;
+        Vector3 linkDir;
+        if (warmStartDir.HasValue && i == chain.points.Length - 1) {
+          linkDir = warmStartDir.Value.normalized;
+        }
+        else {
+          linkDir = (chain.points[i - 1] - chain.points[i]).normalized;
+        }
         chain.points[i - 1] = chain.points[i] + linkDir * chain.lengths[i - 1];
       }
     }

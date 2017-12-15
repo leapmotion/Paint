@@ -8,9 +8,10 @@
 
   CGINCLUDE
   #include "UnityCG.cginc"
-#include "Assets/LeapMotion/Core/Resources/LeapCG.cginc"
-  #pragma fragmentoption ARB_precision_hint_fastest
-  #pragma target 2.0
+  #include "Assets/LeapMotion/Core/Resources/LeapCG.cginc"
+
+  //#pragma fragmentoption ARB_precision_hint_fastest
+  //#pragma target 3.0
 
   float4 _Color;
   float4 _Outline;
@@ -51,8 +52,9 @@
   ENDCG
 
 	SubShader {
-		Tags { "Queue"="Transparent" "RenderType"="Transparent" }
-		LOD 100
+		Tags { "Queue"="Overlay+1000" "RenderType"="Opaque" }
+		LOD 200
+    ZWrite On
 
     Pass {
       Cull Back

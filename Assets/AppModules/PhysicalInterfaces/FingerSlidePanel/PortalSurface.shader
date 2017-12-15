@@ -4,13 +4,19 @@
 	{
     _Color ("Color", Color) = (1, 1, 1, 1)
     _GridSizeAndRowColCount ("Grid Size And Row Col Count", Vector) = (1, 1, 3, 3)
-    _Offset ("Offset 2D", Vector) = (0, 0, 0, 0)
+    _OffsetAndPopState ("Offset 2D (XY), PopState (Z), LerpedPopState(W)", Vector) = (0, 0, 0, 0)
     _SurfaceGlowOffset ("Offset For Fingertip Glow", Vector) = (0, 0, 0, 0)
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" "DisableBatching"="True" }
+		Tags { "RenderType"="Opaque" "DisableBatching"="False" }
 		LOD 100
+
+		Stencil{
+			Ref[_PortalMask]
+			ReadMask 3
+			Comp equal
+		}
 
 		Pass
 		{
@@ -40,7 +46,7 @@
       // Public Material Properties
 			float4 _Color;
       float4 _GridSizeAndRowColCount;
-      float4 _Offset;
+      float4 _OffsetAndPopState;
       float4 _SurfaceGlowOffset;
 
       // Hidden Material Properties
@@ -93,8 +99,8 @@
         float gridToVertYOffset = v.vertex.y - (-y); // -y cheat makes X/Y modulus logic identical
 
         // Offset vertex position.
-        x += _Offset.x;
-        y -= _Offset.y;
+        x += _OffsetAndPopState.x;
+        y -= _OffsetAndPopState.y;
         
         {
           // Cell offset for wrapping.
@@ -169,22 +175,24 @@
         //float3 displacementNormal = float3(displacementX, displacementY, 0);
         //
         //float normalwiseDisplacementAmount = 5;
-        //v.vertex += float4(displacementNormal.x * normalwiseDisplacementAmount,
-        //                   displacementNormal.y * normalwiseDisplacementAmount,
-        //                   0, 0);
+        //float4 sidewaysDisplace = float4(displacementNormal.x * normalwiseDisplacementAmount,
+        //                                 displacementNormal.y * normalwiseDisplacementAmount,
+        //                                 0, 0);
 
         
         float4 offsetFromPierceDisplacement__cheatMatchGlowDepth = float4(0, 0, pierceDisplacement, 0);
-        v.vertex += offsetFromPierceDisplacement__cheatMatchGlowDepth;
+        //v.vertex += offsetFromPierceDisplacement__cheatMatchGlowDepth;
 
         // Distort vertices based on finger position on the plane.
-        float pushPlaneDisplacement = getMinDisplacement(float3(0, 0, -1), v.vertex + _SurfaceGlowOffset,
+        float lerpedPopState = _OffsetAndPopState.z;
+        distortionSpreadAmount = distortionSpreadAmount * Leap_Map(lerpedPopState, 0, 1, 1, 4);
+        float pushPlaneDisplacement = getMinDisplacement(float3(0, 0, -1), v.vertex + _SurfaceGlowOffset - 0.02,
                                                          0.0, distortionSpreadAmount);
 
         
         float4 gridPoint = float4(x + halfCW, -y - halfCH, 0, 0)
-                           + _SurfaceGlowOffset
-                           + offsetFromPierceDisplacement__cheatMatchGlowDepth;
+                           + _SurfaceGlowOffset;
+                           //+ offsetFromPierceDisplacement__cheatMatchGlowDepth;
 
         gridPoint = v.vertex - float4(gridToVertXOffset, gridToVertYOffset, 0, 0)
                              - float4(halfW, -halfH, 0, 0)
@@ -198,10 +206,25 @@
         //if (pushPlaneDisplacement < pierceDisplacement) {
         //  vanish = 1;
         //}
-        int vanish = Leap_Map(-pushPlaneDisplacement, -pierceDisplacement, 0, 1, 0);
+        float vanish = Leap_Map(pushPlaneDisplacement, pierceDisplacement - 0.01, pierceDisplacement + 0.01, 1, 0);
+        float gridPointVanish = Leap_Map(gridPointDisplacement, pierceDisplacement - 0.01, pierceDisplacement + 0.01, 1, 0);
+
+        //float sidewaysDisplaceAmount = Leap_Map(vanish, 0.5, 0.8, 0, 1);
+        //float gridSidewaysDisplaceAmount = Leap_Map(gridPointVanish, 0.5, 0.8, 0, 1);
+        //v.vertex           += sidewaysDisplace * sidewaysDisplaceAmount;
+        //displacedGridPoint += sidewaysDisplace * gridSidewaysDisplaceAmount;
 
         pushPlaneDisplacement = clamp(pushPlaneDisplacement, pierceDisplacement, 0);
+
+        //if (_OffsetAndPopState.z >= 0.9) {
+        //  pushPlaneDisplacement = 0;
+        //  vanish = 0;
+        //}
+
+        //vanish = max(vanish, lerp(vanish, 0.9, lerpedPopState));
+
         v.vertex += float4(0, 0, -1, 1) * pushPlaneDisplacement;
+        //displacedGridPoint += float4(0, 0, -1, 1) * pushPlaneDisplacement;
 
         // Finally, apply blendshape, suppressed 
         float maxRange = 0.04;

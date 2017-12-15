@@ -1942,8 +1942,6 @@ MonoBehaviour:
     IsLeftToBeSpawned: 0
     RightModel: {fileID: 114354386972816476}
     IsRightToBeSpawned: 0
-    modelList: []
-    modelsCheckedOut: []
     IsEnabled: 1
     CanDuplicate: 0
     HandPostProcesses:
@@ -1980,8 +1978,6 @@ MonoBehaviour:
     IsLeftToBeSpawned: 0
     RightModel: {fileID: 0}
     IsRightToBeSpawned: 0
-    modelList: []
-    modelsCheckedOut: []
     IsEnabled: 1
     CanDuplicate: 0
     HandPostProcesses:
@@ -2352,8 +2348,6 @@ MonoBehaviour:
     IsLeftToBeSpawned: 0
     RightModel: {fileID: 0}
     IsRightToBeSpawned: 0
-    modelList: []
-    modelsCheckedOut: []
     IsEnabled: 1
     CanDuplicate: 0
     HandPostProcesses:

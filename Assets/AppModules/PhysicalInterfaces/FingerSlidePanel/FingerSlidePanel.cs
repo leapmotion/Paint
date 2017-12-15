@@ -17,8 +17,6 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public Portal portalObj;
 
-    public IntObj portalSurfaceIntObj;
-
     public Transform slideableObjectsRoot;
 
     [Header("Scrolling Surface")]
@@ -53,18 +51,17 @@ namespace Leap.Unity.PhysicalInterfaces {
     public bool drawRectDebug = false;
     public bool drawInteractionDebug = false;
 
-    private void Reset() {
-      portalSurfaceIntObj = GetComponent<IntObj>();
-    }
-
-    private Vector3?[] _touchingFingerPositions = new Vector3?[5];
-    private float[] _fingerStrengths = new float[5];
-    private StablePositionsDelta _stableFingersDelta = new StablePositionsDelta(5);
+    private Vector3?[] _touchingFingerPositions = new Vector3?[10];
+    private float[] _fingerStrengths = new float[10];
+    private StablePositionsDelta _stableFingersDelta = new StablePositionsDelta(10);
+    private bool _popped = false;
+    private float _lerpedPopState = 0f;
 
     // Deadzone
     private Vector3 _deadzoneOrigin = Vector3.zero;
     private bool _useDeadzone = true;
     private float _deadzoneCoeff = 0f;
+    private float _deadzoneAccumMoveDist = 0f;
 
     // Momentum & Smoothing
     /// <summary> 0: Own momentum only. 1: Hand's momentum only. </summary>
@@ -72,7 +69,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     private Vector3 _ownMomentum = Vector3.zero;
 
     // Display cache
-    private Vector3[] _fingertipPositions = new Vector3[5];
+    private Vector3[] _fingertipPositions = new Vector3[10];
 
     private void OnValidate() {
       onValidateDisplay2();
@@ -89,6 +86,69 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     }
 
+    private InteractionHand getIntHand(InteractionManager manager, bool isLeft) {
+      return manager.interactionControllers.Query().FirstOrDefault(c => c.intHand != null && c.intHand.leapHand.IsLeft == isLeft) as InteractionHand;
+    }
+
+    private void updateForHand(Hand hand, out bool areFingertipsOutsideSurface) {
+
+      InteractionHand intHand = null;
+      if (hand != null && InteractionManager.instance != null) {
+        intHand = getIntHand(InteractionManager.instance, hand.IsLeft);
+      }
+
+      areFingertipsOutsideSurface = true;
+      if (hand != null && (intHand == null || !intHand.isGraspingObject)) {
+        for (int i = 0; i < hand.Fingers.Count; i++) {
+
+          int fingerArrayBaseIdx = hand.IsLeft ? 0 : 5;
+
+          var finger = hand.Fingers[i];
+          var fingertipPosition = finger.TipPosition.ToVector3();
+          _fingertipPositions[fingerArrayBaseIdx + i] = fingertipPosition;
+
+          var portalPose = portalObj.transform.ToPose() + new Pose(portalObj.transform.forward * depthOffset);
+          var isFingertipProjectionInRect = false;
+          var sqrDistToRect = 0f;
+          var clampedFingertip = fingertipPosition
+                                    .ClampedToRect(portalPose, portalObj.width, portalObj.height,
+                                                   out sqrDistToRect, out isFingertipProjectionInRect);
+          
+          // Check whether we should 'pop' because the user reached too far.
+          var fingertipPlaneSpace = fingertipPosition.GetLocalPlanePosition(portalPose);
+          var fingertipDepth = fingertipPlaneSpace.z;
+          var popDepth = 0.02f; // TODO: Turn into param
+          if (fingertipDepth > popDepth) {
+            _popped = true;
+          }
+          
+          // We detect whether all fingertips "leave the portal surface" either sideways or depth-wise
+          // to eventually reset the "popped" state of the portal surface.
+          if (isFingertipProjectionInRect && !(fingertipDepth < depthOffset - thickness)) {
+            areFingertipsOutsideSurface = false;
+          }
+
+          if (!_popped) {
+            var pressStrength = sqrDistToRect.Map(0f, thickness * thickness, 1f, 0f);
+
+            if (pressStrength > 0f && isFingertipProjectionInRect) {
+              _touchingFingerPositions[fingerArrayBaseIdx + i] = clampedFingertip;
+              _fingerStrengths[fingerArrayBaseIdx + i] = pressStrength;
+
+              if (drawInteractionDebug) {
+                //DebugPing.Ping(clampedFingertip, LeapColor.amber, 0.10f);
+              }
+            }
+          }
+
+        }
+      }
+
+      if (intHand != null && intHand.isGraspingObject) {
+        areFingertipsOutsideSurface = false;
+      }
+    }
+
     private void Update() {
 
       _touchingFingerPositions.ClearWithDefaults();
@@ -100,38 +160,25 @@ namespace Leap.Unity.PhysicalInterfaces {
       // Reset momentum blend, adjusted again if fingertips are nearby the portal plane.
       _momentumBlend = 0f;
 
-      if (portalSurfaceIntObj.isPrimaryHovered) {
 
-        var intHand = portalSurfaceIntObj.primaryHoveringController.intHand;
-        var hand = (intHand == null ? null : portalSurfaceIntObj.primaryHoveringController.intHand.leapHand);
-        
-        if (intHand != null && hand != null && !intHand.isGraspingObject) {
-          for (int i = 0; i < hand.Fingers.Count; i++) {
-            var finger = hand.Fingers[i];
-            var fingertipPosition = finger.TipPosition.ToVector3();
-            _fingertipPositions[i] = fingertipPosition;
+      var leftHand = Hands.Left;
+      var rightHand = Hands.Right;
 
-            var portalPose = portalSurfaceIntObj.transform.ToPose() + new Pose(portalSurfaceIntObj.transform.forward * depthOffset);
-            var isProjectionOnRect = false;
-            var sqrDistToRect = 0f;
-            var clampedFingertip = fingertipPosition
-                                    .ClampedToRect(portalPose, portalObj.width, portalObj.height,
-                                                   out sqrDistToRect, out isProjectionOnRect);
+      bool allFingertipsOutOfSurface = true;
+      bool handFingertipsOutOfSurface = true;
 
-            var pressStrength = sqrDistToRect.Map(0f, thickness * thickness, 1f, 0f);
+      updateForHand(leftHand, out handFingertipsOutOfSurface);
+      allFingertipsOutOfSurface &= handFingertipsOutOfSurface;
 
-            if (pressStrength > 0f && isProjectionOnRect) {
-              _touchingFingerPositions[i] = clampedFingertip;
-              _fingerStrengths[i] = pressStrength;
+      updateForHand(rightHand, out handFingertipsOutOfSurface);
+      allFingertipsOutOfSurface &= handFingertipsOutOfSurface;
 
-              if (drawInteractionDebug) {
-                DebugPing.Ping(clampedFingertip, LeapColor.amber, 0.10f);
-              }
-            }
-
-          }
-        }
+      if (allFingertipsOutOfSurface && _popped) {
+        _popped = false;
+        //DebugPing.Ping(portalObj.transform.position, LeapColor.blue, 0.2f);
       }
+
+      _lerpedPopState = Mathf.Lerp(_lerpedPopState, _popped ? 1 : 0, 20f * Time.deltaTime);
 
       // Calculate momentum blend increase based on total finger proximity.
       var fingerStrengthMax = _fingerStrengths.Query().Fold((acc, f) => (f > acc ? f : acc));
@@ -146,6 +193,7 @@ namespace Leap.Unity.PhysicalInterfaces {
                                                 drawDebug: drawInteractionDebug);
 
       if (_stableFingersDelta.didCentroidAppear) {
+        _deadzoneAccumMoveDist = 0f;
         _deadzoneCoeff = 0f;
         _deadzoneOrigin = _stableFingersDelta.centroid.Value;
       }
@@ -154,11 +202,9 @@ namespace Leap.Unity.PhysicalInterfaces {
         movementFromHand = _stableFingersDelta.movement;
 
         if (_useDeadzone) {
-          var sqrDistFromOrigin = (_deadzoneOrigin - _stableFingersDelta.centroid.Value).sqrMagnitude / Time.deltaTime;
+          _deadzoneAccumMoveDist += movementFromHand.magnitude;
 
-          _deadzoneCoeff += sqrDistFromOrigin.Map(minDeadzoneWidth * minDeadzoneWidth,
-                                                  deadzoneWidth * deadzoneWidth,
-                                                  0f, 1f);
+          _deadzoneCoeff = _deadzoneAccumMoveDist.Map(minDeadzoneWidth, deadzoneWidth, 0f, 1f);
 
           _deadzoneOrigin = _stableFingersDelta.centroid.Value;
 
@@ -191,10 +237,10 @@ namespace Leap.Unity.PhysicalInterfaces {
       var curPos = slideableObjectsRoot.position;
       var portalPlanePose = portalObj.transform.ToPose();
 
-      var curPosPortalPlaneSpace = curPos.GetLocalPositionOnPlane(portalPlanePose);
+      var curPosPortalPlaneSpace = curPos.GetLocalPlanePosition(portalPlanePose);
       curPosPortalPlaneSpace.z = portalObj.transform.InverseTransformPoint(curPos).z;
 
-      var curMomentumPortalPlaneSpace = (portalPlanePose.position + _ownMomentum).GetLocalPositionOnPlane(portalPlanePose);
+      var curMomentumPortalPlaneSpace = (portalPlanePose.position + _ownMomentum).GetLocalPlanePosition(portalPlanePose);
 
       bool applyMomentumConstraint = false;
       if (!infiniteWidth) {
@@ -244,7 +290,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     [Header("Display Type")]
     [EditTimeOnly]
-    public int displayType = 1;
+    public int displayType = 2;
 
     #region Display 1
 
@@ -385,7 +431,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     public Renderer portalSurfaceRenderer;
 
     [SerializeField, OnEditorChange("portalGridOffsetParamName")]
-    private string _portalGridOffsetParamName = "_Offset";
+    private string _portalGridOffsetParamName = "_OffsetAndPopState";
     public string portalGridOffsetParamName {
       get { return _portalGridOffsetParamName; }
       set {
@@ -435,9 +481,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     private void updateDisplay2(Vector3[] fingertipPositions, float[] fingerStrengths) {
 
       // Update material offset based on sliding movement.
-      var materialOffset = slideableObjectsRoot.transform.position
-                             .From(portalObj.transform.position)
-                             .InLocalSpace(portalObj.transform);
+      var materialOffset = slideableObjectsRoot.transform.position.InLocalSpace(portalObj.transform);
       SetOffsetVector(materialOffset);
 
       // Update slider surface offset in case the setting has changed.
@@ -449,10 +493,20 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public void SetOffsetVector(Vector2 offset) {
       if (portalSurfaceRenderer != null) {
-        portalSurfaceRenderer.sharedMaterial.SetVector(_portalGridOffsetParamId,
-          new Vector4(offset.x,
-                      offset.y,
-                      0f, 0f));
+        if (Application.isEditor) {
+          portalSurfaceRenderer.sharedMaterial.SetVector(_portalGridOffsetParamId,
+            new Vector4(offset.x,
+                        offset.y,
+                        _lerpedPopState,
+                        _lerpedPopState));
+        }
+        else {
+          portalSurfaceRenderer.material.SetVector(_portalGridOffsetParamId,
+            new Vector4(offset.x,
+                        offset.y,
+                        _lerpedPopState,
+                        _lerpedPopState));
+        }
       }
     }
     

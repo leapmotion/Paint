@@ -245,13 +245,9 @@ namespace Leap.Unity {
 
     #region Plane & Rect Clamping
 
-    public static Vector3 GetLocalPositionOnPlane(this Vector3 worldPosition, Pose planePose) {
+    public static Vector3 GetLocalPlanePosition(this Vector3 worldPosition, Pose planePose) {
       var localSpacePoint = worldPosition.From(planePose).position;
-
-      var localSpaceOnPlane = new Vector3(localSpacePoint.x,
-                                        localSpacePoint.y, 0f);
-
-      return localSpaceOnPlane;
+      return localSpacePoint;
     }
 
     public static Vector3 ClampedToPlane(this Vector3 worldPosition, Pose planePose) {
@@ -286,11 +282,11 @@ namespace Leap.Unity {
     public static Vector3 ClampedToRect(this Vector3 worldPosition, Pose rectCenterPose,
                                         float rectWidth, float rectHeight,
                                         out float sqrDistToRect,
-                                        out bool isProjectionWithinRect) {
+                                        out bool isProjectionInRect) {
       var localSpacePoint = worldPosition.From(rectCenterPose).position;
 
-      isProjectionWithinRect = Mathf.Abs(localSpacePoint.x) <= rectWidth / 2f;
-      isProjectionWithinRect &= Mathf.Abs(localSpacePoint.y) <= rectHeight / 2f;
+      isProjectionInRect = Mathf.Abs(localSpacePoint.x) <= rectWidth / 2f;
+      isProjectionInRect &= Mathf.Abs(localSpacePoint.y) <= rectHeight / 2f;
 
       var localSpaceOnPlane = new Vector3(Mathf.Clamp(localSpacePoint.x, -rectWidth / 2f,  rectWidth / 2f),
                                         Mathf.Clamp(localSpacePoint.y, -rectHeight / 2f, rectHeight / 2f), 0f);
@@ -313,6 +309,10 @@ namespace Leap.Unity {
     /// </summary>
     public static Vector3 InLocalSpace(this Vector3 v, Transform t) {
       return t.InverseTransformPoint(v);
+    }
+
+    public static float Dot(this Vector3 a, Vector3 b) {
+      return Vector3.Dot(a, b);
     }
 
     #endregion
