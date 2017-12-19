@@ -27,12 +27,12 @@ namespace Leap.Unity.Animation {
 
     #region Attached Switches
 
-    private List<IPropertySwitch> _switches = new List<IPropertySwitch>();
+    protected List<IPropertySwitch> _switches = new List<IPropertySwitch>();
     public ReadonlyList<IPropertySwitch> switches {
       get { return _switches; }
     }
 
-    private bool _refreshed = false;
+    protected bool _refreshed = false;
 
     #endregion
 
@@ -50,7 +50,7 @@ namespace Leap.Unity.Animation {
       RefreshSwitches();
     }
 
-    public void RefreshSwitches() {
+    public virtual void RefreshSwitches() {
       GetComponents<MonoBehaviour>().Query()
                                     .Where(c => c is IPropertySwitch
                                                 && !(c == this)
@@ -85,7 +85,7 @@ namespace Leap.Unity.Animation {
 
     public void OnNow() {
 #if UNITY_EDITOR
-      UnityEditor.Undo.RecordObject(this, "Activate ObjectSwitch");
+      UnityEditor.Undo.RegisterFullObjectHierarchyUndo(this, "Activate ObjectSwitch");
 #endif
       _isOn = true;
 
@@ -109,7 +109,7 @@ namespace Leap.Unity.Animation {
 
     public void OffNow() {
 #if UNITY_EDITOR
-      UnityEditor.Undo.RecordObject(this, "Deactivate ObjectSwitch");
+      UnityEditor.Undo.RegisterFullObjectHierarchyUndo(this, "Deactivate ObjectSwitch");
 #endif
       _isOn = false;
 

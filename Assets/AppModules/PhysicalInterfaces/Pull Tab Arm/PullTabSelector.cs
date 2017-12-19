@@ -35,11 +35,24 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     public AnimationCurve openCloseCurve = DefaultCurve.SigmoidUp;
 
+
+    [Header("Move Next Trigger")]
+    [SerializeField, ImplementsInterface(typeof(ITrigger))]
+    private MonoBehaviour _moveNextTrigger;
+    public ITrigger moveNextTrigger {
+      get {
+        return _moveNextTrigger as ITrigger;
+      }
+    }
+
+
+
     [Header("LineRenderer")]
     public LineRenderer lineRenderer;
 
     [Header("Setting Hand Materials")]
     public Material colorSetMaterial;
+    public float colorSetLerpCoeff = 30f;
 
     [Header("Debug")]
     public bool drawDebug = true;
@@ -51,6 +64,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     private bool _isListOpen = false;
     private float _listOpenCloseAmount = 0f; // 0 is closed
+    public float listOpenCloseAmount { get { return _listOpenCloseAmount; } }
 
     private int _preGrabMarbleIdx;
 
@@ -143,6 +157,12 @@ namespace Leap.Unity.PhysicalInterfaces {
       // "Active Marble" placement
       if (_listOpenCloseAmount > 0.95f) {
         updateActiveMarbleIdx(_marblePositions);
+      }
+      else if (_listOpenCloseAmount < 0.10f) {
+        if (moveNextTrigger.didFire) {
+          activeMarbleIdx += 1;
+          activeMarbleIdx %= marbles.Count;
+        }
       }
 
       var activeMarbleInList = marbles[activeMarbleIdx];
@@ -238,7 +258,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     private void updateSetMaterialColor() {
       if (colorSetMaterial != null) {
-        colorSetMaterial.color = Color.Lerp(colorSetMaterial.color, _targetSetMaterialColor, 20f * Time.deltaTime);
+        colorSetMaterial.color = Color.Lerp(colorSetMaterial.color, _targetSetMaterialColor, colorSetLerpCoeff * Time.deltaTime);
       }
     }
 

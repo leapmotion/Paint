@@ -2,6 +2,7 @@
 {
 	Properties
 	{
+    _PortalMask("Portal Mask", Float) = 0
     _Color ("Color", Color) = (1, 1, 1, 1)
     _GridSizeAndRowColCount ("Grid Size And Row Col Count", Vector) = (1, 1, 3, 3)
     _OffsetAndPopState ("Offset 2D (XY), PopState (Z), LerpedPopState(W)", Vector) = (0, 0, 0, 0)
