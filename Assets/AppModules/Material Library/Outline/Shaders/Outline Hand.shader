@@ -52,7 +52,7 @@
   ENDCG
 
 	SubShader {
-		Tags { "Queue"="Overlay+1000" "RenderType"="Opaque" }
+		Tags { "Queue"="Geometry" "RenderType"="Opaque" }
 		LOD 200
     ZWrite On
 

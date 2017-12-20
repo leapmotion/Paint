@@ -8,7 +8,7 @@ Shader "Portal/Depth Friendly Font" {
 
   SubShader {
     // "IgnoreProjector" = "True"
-    Tags{ "Queue" = "Transparent"  "RenderType"="Transparent" }
+    Tags{ "Queue" = "Transparent+300"  "RenderType"="Transparent" }
     LOD 200
 
     Stencil {

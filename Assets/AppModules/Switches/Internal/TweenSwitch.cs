@@ -108,6 +108,20 @@ namespace Leap.Unity.Animation {
       updateSwitch(value);
     }
 
+    private Tween? _targetModeTween;
+    private float? _tweenTarget;
+    public enum TweenSwitchMode { Switch, TargetValue }
+    public TweenSwitchMode tweenSwitchMode {
+      get {
+        if (_tweenTarget.HasValue) {
+          return TweenSwitchMode.TargetValue;
+        }
+        else {
+          return TweenSwitchMode.Switch;
+        }
+      }
+    }
+
     #endregion
 
     #region Abstract
@@ -124,6 +138,9 @@ namespace Leap.Unity.Animation {
     #region IPropertySwitch
 
     public void On() {
+      // Deactivate "targeted" mode because we received a Switch call.
+      cancelTargetedMode();
+
       _switchTween.Play(Direction.Forward);
     }
 
@@ -140,6 +157,9 @@ namespace Leap.Unity.Animation {
     }
 
     public void Off() {
+      // Deactivate "targeted" mode because we received a Switch call.
+      cancelTargetedMode();
+
       _switchTween.Play(Direction.Backward);
     }
 
@@ -157,6 +177,9 @@ namespace Leap.Unity.Animation {
 
     public void OnNow() {
       if (_isDestroyed) return;
+
+      // Deactivate "targeted" mode because we received a Switch call.
+      cancelTargetedMode();
 
 #if UNITY_EDITOR
       if (!Application.isPlaying) {
@@ -182,6 +205,11 @@ namespace Leap.Unity.Animation {
     }
 
     public void OffNow() {
+      if (_isDestroyed) return;
+
+      // Deactivate "targeted" mode because we received a Switch call.
+      cancelTargetedMode();
+
 #if UNITY_EDITOR
       if (!Application.isPlaying) {
         Undo.RegisterFullObjectHierarchyUndo(gameObject, "Vanish Object(s) Now");
@@ -199,6 +227,64 @@ namespace Leap.Unity.Animation {
       }
 
       updateSwitch(0f, immediately: true);
+    }
+
+    #endregion
+
+    #region Target Value Mode
+
+    /// <summary>
+    /// This method is special to Tween Switches, and allows you to drive them to any
+    /// value between 0 and 1 instead of merely specifying them to target "off" or "on".
+    /// 
+    /// Upon calling this method, the TweenSwitch will change modes to drive towards the
+    /// argument target. In this mode, _tweenTime is used to make the motion faster or
+    /// slower, but no longer represents the exact time to the target state.
+    /// 
+    /// GetIsOnOrTurningOn() and GetIsOffOrTurningOff() will report whether this tween
+    /// most recently moved towards or away from the On state, regardless of the exact
+    /// current progress of the tween.
+    /// 
+    /// Calling On(), Off(), OnNow(), or OffNow() will deactivate target-drive mode and
+    /// the TweenSwitch will act like a normal IPropertySwitch again.
+    /// </summary>
+    public void SetTweenTarget(float targetValue) {
+      targetValue = Mathf.Clamp01(targetValue);
+
+      _tweenTarget = targetValue;
+
+      if (Application.isPlaying) {
+        var updater = Updater.singleton;
+        updater.OnUpdate -= updateSwitch_TargetValueMode;
+        updater.OnUpdate += updateSwitch_TargetValueMode;
+      }
+    }
+
+    private void updateSwitch_TargetValueMode() {
+      if (_tweenInitialized && _switchTween.progress < _tweenTarget.Value) {
+        _backingSwitchTween.direction = Direction.Forward;
+      }
+      if (_tweenInitialized && _switchTween.progress < _tweenTarget.Value) {
+        _backingSwitchTween.direction = Direction.Backward;
+      }
+
+      var tween = _switchTween;
+
+      var lerpCoeffPerSec = 0f;
+      if (_tweenTime < 0.0001f) {
+        lerpCoeffPerSec = 1000f;
+      }
+      else {
+        lerpCoeffPerSec = (1f / _tweenTime) * 2f;
+      }
+      tween.progress = Mathf.Lerp(tween.progress, _tweenTarget.Value, lerpCoeffPerSec * Time.deltaTime);
+    }
+
+    private void cancelTargetedMode() {
+      _tweenTarget = null;
+      if (Application.isPlaying) {
+        Updater.singleton.OnUpdate -= updateSwitch_TargetValueMode;
+      }
     }
 
     #endregion

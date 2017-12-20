@@ -52,6 +52,8 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     [Header("Setting Hand Materials")]
     public Material colorSetMaterial;
+    public Material backOfHandMaterial;
+    public Material backOfHandMaterial2;
     public float colorSetLerpCoeff = 30f;
 
     [Header("Debug")]
@@ -128,7 +130,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
       updateMarblePositions();
 
-      updateSetMaterialColor();
+      updateSetMaterials();
     }
 
     private void updateMarblePositions() {
@@ -256,10 +258,39 @@ namespace Leap.Unity.PhysicalInterfaces {
       return activeMarbleClone;
     }
 
-    private void updateSetMaterialColor() {
+    private void updateSetMaterials() {
+      Color? colorFromColorSetMaterial = null;
       if (colorSetMaterial != null) {
-        colorSetMaterial.color = Color.Lerp(colorSetMaterial.color, _targetSetMaterialColor, colorSetLerpCoeff * Time.deltaTime);
+        colorFromColorSetMaterial = colorSetMaterial.color
+                                  = Color.Lerp(colorSetMaterial.color,
+                                               _targetSetMaterialColor,
+                                               colorSetLerpCoeff * Time.deltaTime);
       }
+      if (backOfHandMaterial != null) {
+        var activeMarbleObj = GetActiveMarbleObj();
+        if (activeMarbleObj != null) {
+          backOfHandMaterial.mainTexture = activeMarbleObj.GetComponentInChildren<Renderer>().sharedMaterial.mainTexture;
+          backOfHandMaterial2.mainTexture = activeMarbleObj.GetComponentInChildren<Renderer>().sharedMaterial.mainTexture;
+
+          // Woops nevermind, we don't care about the color of the texture on the hand!
+          //if (colorFromColorSetMaterial != null) {
+          //  backOfHandMaterial.color = colorFromColorSetMaterial.Value;
+          //}
+          //else {
+          //  backOfHandMaterial.color = Color.Lerp(backOfHandMaterial.color,
+          //                                        _targetSetMaterialColor,
+          //                                        colorSetLerpCoeff * Time.deltaTime);
+          //}
+        }
+      }
+    }
+
+    private GameObject GetActiveMarbleObj() {
+      if (activeMarbleParent != null && activeMarbleParent.childCount != 0) {
+        return activeMarbleParent.GetChild(0).gameObject;
+      }
+
+      return null;
     }
 
     private void fillOpenMarblePositions(Vector3[] marblePositions) {
