@@ -15,6 +15,9 @@
 *.exe
 *_Data/
 
+WinPixEventRuntime.dll
+UnityPlayer.dll
+
 /Library/*
 /Library/FailedAssetImports.txt
 /Library/cache/
