@@ -1,4 +1,4 @@
-﻿Shader "LeapMotion/Examples/Skybox/Simple Gradient Skybox" {
+﻿Shader "Skybox/Simple Gradient Skybox" {
 	Properties {
 		_SkyColor("Sky Color", Color) = (0.37, 0.52, 0.73, 0)
 		_HorizonColor("Horizon Color", Color) = (0.89, 0.96, 1, 0)

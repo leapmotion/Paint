@@ -132,7 +132,7 @@ namespace Leap.Unity {
     }
 
     #endregion
-    
+
     #region Rect Utils
 
     public static Rect PadOuter(this Rect r, float width) {
@@ -152,7 +152,7 @@ namespace Leap.Unity {
     }
 
     #endregion
-    
+
     #region Vector3 Utils
 
     /// <summary>
@@ -170,7 +170,7 @@ namespace Leap.Unity {
     }
 
     #endregion
-    
+
     #region Pose
 
     /// <summary>
@@ -318,9 +318,25 @@ namespace Leap.Unity {
     #endregion
 
     #region Matrix Utils
-    
+
     public static Matrix4x4 CompMul(Matrix4x4 m, float f) {
       return new Matrix4x4(m.GetColumn(0) * f, m.GetColumn(1) * f, m.GetColumn(2) * f, m.GetColumn(3) * f);
+    }
+
+    #endregion
+
+    #region RuntimeGizmoDrawer Utils
+
+    public static void DrawPose(this RuntimeGizmos.RuntimeGizmoDrawer drawer,
+                                Pose pose, float radius = 0.10f) {
+      drawer.PushMatrix();
+
+      drawer.matrix = Matrix4x4.TRS(pose.position, pose.rotation, Vector3.one);
+
+      drawer.DrawWireSphere(Vector3.zero, radius);
+      drawer.DrawPosition(Vector3.zero, radius * 2);
+
+      drawer.PopMatrix();
     }
 
     #endregion

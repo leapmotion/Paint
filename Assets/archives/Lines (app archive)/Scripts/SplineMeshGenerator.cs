@@ -10,8 +10,8 @@ namespace Leap.Unity.Examples.Lines {
 
     [OnEditorChange("spline")]
     [SerializeField]
-    private Spline _spline;
-    public Spline spline {
+    private SplineObject _spline;
+    public SplineObject spline {
       get { return _spline; }
       set {
         if (_spline != null) {

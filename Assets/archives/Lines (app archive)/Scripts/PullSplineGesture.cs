@@ -17,7 +17,7 @@ namespace Leap.Unity.Examples.Lines {
     public const float PINCH_DEACTIVATION_STRENGTH = 0.75F;
 
     //private bool _readyToActivate = false;
-    private Spline _targetSpline = null;
+    private SplineObject _targetSpline = null;
     private int _targetSplineClosestSegmentA = 0;
     private int _targetSplineClosestSegmentB = 0;
     private Vector3 _targetSplineClosestPoint;
@@ -79,7 +79,7 @@ namespace Leap.Unity.Examples.Lines {
       else {
         int numCollidersHit = Physics.OverlapSphereNonAlloc(_pinchPos, 0.3F, _possibleSplineColliders);
 
-        Spline closestSpline = null;
+        SplineObject closestSpline = null;
         Vector3 closestPointOnSpline = Vector3.zero;
         int closestSegmentA = 0, closestSegmentB = 0;
         float closestDist = float.PositiveInfinity;
@@ -92,7 +92,7 @@ namespace Leap.Unity.Examples.Lines {
           if (fragmentCapsule == null) continue;
 
           SplineFragment fragment = fragmentCapsule.splineFragment;
-          Spline spline = fragment.spline as Spline;
+          SplineObject spline = fragment.spline as SplineObject;
           Vector3 pinchPosOnFragment = _pinchPos.ConstrainToSegment(fragment.a, fragment.b);
 
           float testDist = Vector3.Distance(pinchPosOnFragment, _pinchPos);

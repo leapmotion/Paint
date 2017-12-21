@@ -12,7 +12,7 @@ namespace Leap.Unity.Examples.Lines {
     // any SplineEditor needs.
     private static Dictionary<SplineControlPointEditor, PrefabPool> s_controlPointEditorPools = new Dictionary<SplineControlPointEditor, PrefabPool>();
 
-    public Spline spline;
+    public SplineObject spline;
 
     [Header("Control Point Prefab (pooled)")]
     [EditTimeOnly]

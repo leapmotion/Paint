@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Leap.Unity.Splines {
 
-  public class Spline : MonoBehaviour, ISpline {
+  public class SplineObject : MonoBehaviour, ISpline {
 
     private const int MAX_CONTROL_POINTS = 64;
 
@@ -70,9 +70,9 @@ namespace Leap.Unity.Splines {
 
     public struct ControlPointEnumerator {
       private int _curPointIdx;
-      private Spline _spline;
+      private SplineObject _spline;
 
-      public ControlPointEnumerator(Spline spline) {
+      public ControlPointEnumerator(SplineObject spline) {
         _curPointIdx = -1;
         _spline = spline;
       }

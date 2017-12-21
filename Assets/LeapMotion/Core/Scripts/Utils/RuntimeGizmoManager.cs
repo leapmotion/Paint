@@ -655,18 +655,26 @@ namespace Leap.Unity.RuntimeGizmos {
     /// scaled relative to the main camera's distance to the target position (for reliable
     /// visibility).
     /// 
+    /// Or, if you provide an override scale, you can enforce a radius size for the gizmo.
+    /// 
     /// You can also provide a color argument and lerp coefficient towards that color from
     /// the axes' default colors (red, green, blue). Colors are lerped in HSV space.
     /// </summary>
-    public void DrawPosition(Vector3 pos, Color lerpColor, float lerpCoeff) {
-      float targetScale = 0.06f; // 6 cm at 1m away.
+    public void DrawPosition(Vector3 pos, Color lerpColor, float lerpCoeff, float? overrideScale = null) {
+      float targetScale;
+      if (overrideScale.HasValue) {
+        targetScale = overrideScale.Value;
+      }
+      else {
+        targetScale = 0.06f; // 6 cm at 1m away.
 
-      var mainCam = Camera.main;
-      var posWorldSpace = matrix * pos;
-      if (mainCam != null) {
-        float camDistance = Vector3.Distance(posWorldSpace, mainCam.transform.position);
+        var mainCam = Camera.main;
+        var posWorldSpace = matrix * pos;
+        if (mainCam != null) {
+          float camDistance = Vector3.Distance(posWorldSpace, mainCam.transform.position);
 
-        targetScale *= camDistance;
+          targetScale *= camDistance;
+        }
       }
 
       float extent = (targetScale / 2f);
@@ -691,6 +699,10 @@ namespace Leap.Unity.RuntimeGizmos {
     /// </summary>
     public void DrawPosition(Vector3 pos) {
       DrawPosition(pos, Color.white, 0f);
+    }
+
+    public void DrawPosition(Vector3 pos, float overrideScale) {
+      DrawPosition(pos, Color.white, 0f, overrideScale);
     }
 
     public void ClearAllGizmos() {
