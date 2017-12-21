@@ -14,35 +14,37 @@ namespace Leap.Unity.PhysicalInterfaces {
 
 
     public void Integrate(float deltaTime) {
-      pose.Integrate(movement, deltaTime);
+      pose = pose.Integrated(movement, deltaTime);
     }
 
     public void Integrate(Vector3 linearAcceleration,
                           float deltaTime) {
       movement.Integrate(linearAcceleration, deltaTime);
-      pose.Integrate(movement, deltaTime);
+      pose = pose.Integrated(movement, deltaTime);
     }
 
     public void Integrate(Vector3 linearAcceleration,
                           Vector3 angularAcceleration,
                           float deltaTime) {
       movement.Integrate(linearAcceleration, angularAcceleration, deltaTime);
-      pose.Integrate(movement, deltaTime);
+      pose = pose.Integrated(movement, deltaTime);
     }
 
   }
 
   public static class PoseExtensions {
 
-    public static void Integrate(this Pose thisPose, Movement movement, float deltaTime) {
+    public static Pose Integrated(this Pose thisPose, Movement movement, float deltaTime) {
       thisPose.position = movement.velocity * deltaTime + thisPose.position;
 
       if (movement.angularVelocity.sqrMagnitude > 0.00001f) {
         var angVelMag = movement.angularVelocity.magnitude;
         thisPose.rotation = Quaternion.AngleAxis(angVelMag * deltaTime,
                                                  movement.angularVelocity / angVelMag)
-                   * thisPose.rotation;
+                            * thisPose.rotation;
       }
+
+      return thisPose;
     }
 
   }

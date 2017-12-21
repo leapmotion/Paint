@@ -10,8 +10,8 @@ namespace Leap.Unity.Examples.Lines {
 
     [OnEditorChange("spline")]
     [SerializeField]
-    private SplineObject _spline;
-    public SplineObject spline {
+    private zzOldSplineObject _spline;
+    public zzOldSplineObject spline {
       get { return _spline; }
       set {
         if (_spline != null) {
@@ -57,7 +57,7 @@ namespace Leap.Unity.Examples.Lines {
       s_verts.Clear();
       s_indices.Clear();
 
-      SplineUtility.MeshGen.GenerateQuadSplineMesh(ref s_verts, ref s_indices,
+      zzOldSplineUtility.MeshGen.GenerateQuadSplineMesh(ref s_verts, ref s_indices,
         spline, thickness, Camera.main.transform.position, (1 - (1 - _spline.smoothness)*(1 - _spline.smoothness)).Map(0F, 1F, 0.85F, 1F));
 
       if (_splineMesh == null) {

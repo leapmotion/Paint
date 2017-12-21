@@ -14,7 +14,7 @@ namespace Leap.Unity.Examples.Lines {
     private static Dictionary<SplineControlPointTangentEditor, PrefabPool> s_tangentEditorPools = new Dictionary<SplineControlPointTangentEditor, PrefabPool>();
 
     /// <summary> The Spline containing the control point this editor edits. </summary>
-    public SplineObject spline;
+    public zzOldSplineObject spline;
 
     /// <summary> The index in the spline of the control point this editor edits. </summary>
     [Tooltip("The index in the spline of the control point this editor edits.")]

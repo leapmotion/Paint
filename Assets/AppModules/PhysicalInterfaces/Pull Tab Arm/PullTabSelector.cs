@@ -72,7 +72,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     private Color _targetSetMaterialColor;
 
-    private Vector3 _lastPullTabEndDir = Vector3.right;
+    //private Vector3 _lastPullTabEndDir = Vector3.right;
 
     private void OnValidate() {
       if (colorSetMaterial != null) {
@@ -259,9 +259,10 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     private void updateSetMaterials() {
-      Color? colorFromColorSetMaterial = null;
+      //Color? colorFromColorSetMaterial = null;
       if (colorSetMaterial != null) {
-        colorFromColorSetMaterial = colorSetMaterial.color
+        //colorFromColorSetMaterial = 
+        colorSetMaterial.color
                                   = Color.Lerp(colorSetMaterial.color,
                                                _targetSetMaterialColor,
                                                colorSetLerpCoeff * Time.deltaTime);
@@ -307,7 +308,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
       var curveLength = estimateCurveLength(curveStart, curveEnd, controlPoint);
 
-      var lengthBetweenMarbles = marbleSpacing;
+      //var lengthBetweenMarbles = marbleSpacing;
       var totalStripLength = marbleSpacing * (marblePositions.Length - 1 + 1);
 
       var beginPoint = curveStart;

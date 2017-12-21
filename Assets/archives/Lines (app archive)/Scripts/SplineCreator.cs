@@ -7,12 +7,12 @@ namespace Leap.Unity.Examples.Lines {
 
   public class SplineCreator : MonoBehaviour, ILineCreator {
 
-    private static Dictionary<SplineObject, PrefabPool> s_splinePrefabPools = new Dictionary<SplineObject, PrefabPool>();
+    private static Dictionary<zzOldSplineObject, PrefabPool> s_splinePrefabPools = new Dictionary<zzOldSplineObject, PrefabPool>();
 
     [Header("Spline Prefab")]
-    public SplineObject splinePrefab;
+    public zzOldSplineObject splinePrefab;
 
-    private SplineObject _curSpline;
+    private zzOldSplineObject _curSpline;
 
     private bool _isCreatingLine = false;
     public bool isCreatingLine { get { return _isCreatingLine; } }
@@ -26,7 +26,7 @@ namespace Leap.Unity.Examples.Lines {
 
     public void BeginLine() {
       _isCreatingLine = true;
-      _curSpline = s_splinePrefabPools[splinePrefab].Spawn<SplineObject>();
+      _curSpline = s_splinePrefabPools[splinePrefab].Spawn<zzOldSplineObject>();
       _curSpline.gameObject.SetActive(true);
       _curSpline.transform.parent = null;
 

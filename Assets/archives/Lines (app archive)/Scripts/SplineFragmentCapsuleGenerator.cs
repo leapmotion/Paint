@@ -6,14 +6,14 @@ using UnityEngine;
 
 namespace Leap.Unity.Examples.Lines {
 
-  [RequireComponent(typeof(SplineObject))]
+  [RequireComponent(typeof(zzOldSplineObject))]
   public class SplineFragmentCapsuleGenerator : MonoBehaviour {
 
     private static Dictionary<SplineFragmentCapsule, PrefabPool> s_fragmentCapsulePools = new Dictionary<SplineFragmentCapsule, PrefabPool>();
 
     public SplineFragmentCapsule fragmentCapsulePrefab;
 
-    private SplineObject _spline;
+    private zzOldSplineObject _spline;
     private bool _splineDirty;
 
     private List<SplineFragmentCapsule> _splineCapsules = new List<SplineFragmentCapsule>();
@@ -28,7 +28,7 @@ namespace Leap.Unity.Examples.Lines {
     }
 
     void Start() {
-      _spline = GetComponent<SplineObject>();
+      _spline = GetComponent<zzOldSplineObject>();
       _spline.OnSplineModified += onSplineModified;
     }
 

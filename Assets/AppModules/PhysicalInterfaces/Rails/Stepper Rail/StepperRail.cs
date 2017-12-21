@@ -16,14 +16,17 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     [Header("Rail Edge Point (Mirrored on X) - child for Velocity")]
     public Transform railEdgePoint;
+    public Transform railEdgePointVelocity;
 
     [Header("Stack Edge Point (Mirrored on X) - child for Velocity")]
     public Transform stackEdgePoint;
+    public Transform stackEdgePointVelocity;
 
     [Header("Panel Objects Test")]
     public Transform panelObjectsParent;
     public float tSpacing = 0.75f;
     public float speedMod = 1f;
+    public float testTCenter = 0f;
 
     private List<Transform> _panelObjectsBuffer = new List<Transform>();
 
@@ -73,7 +76,8 @@ namespace Leap.Unity.PhysicalInterfaces {
         _poseSplinesArr[2] = new HermitePoseSpline(0f, 1f, pose0, pose1, pose0Movement, pose1Movement);
         _poseSplinesArr[3] = new HermitePoseSpline(1f, 2f, pose1, pose2, pose1Movement, pose2Movement);
 
-        maybePoseSplines = new PoseSplineSequence(_poseSplinesArr);
+        maybePoseSplines = new PoseSplineSequence(_poseSplinesArr,
+                                                  allowExtrapolation: true);
 
 
         // Panel Objects Test
@@ -85,12 +89,10 @@ namespace Leap.Unity.PhysicalInterfaces {
           }
 
           var splines = maybePoseSplines.Value;
-          var baseT = -2 + (Time.time * speedMod) % 4;
-          if (!Application.isPlaying) baseT = 0f;
+          var baseT = testTCenter;
+          if (!Application.isPlaying) baseT = testTCenter;
           for (int i = 0; i < _panelObjectsBuffer.Count; i++) {
             var t = baseT + ((-2 + i) * tSpacing);
-            if (t < -2) t += 4;
-            if (t > 2) t -= 4;
             var objPose = splines.PoseAt(t);
             _panelObjectsBuffer[i].transform.SetPose(objPose);
           }
@@ -114,9 +116,12 @@ namespace Leap.Unity.PhysicalInterfaces {
   [Serializable]
   public struct PoseSplineSequence : IIndexable<HermitePoseSpline> {
     public HermitePoseSpline[] splines;
+    public bool allowExtrapolation;
 
-    public PoseSplineSequence(HermitePoseSpline[] splines) {
+    public PoseSplineSequence(HermitePoseSpline[] splines,
+                              bool allowExtrapolation = false) {
       this.splines = splines;
+      this.allowExtrapolation = allowExtrapolation;
     }
 
     public HermitePoseSpline this[int idx] {
@@ -126,12 +131,39 @@ namespace Leap.Unity.PhysicalInterfaces {
     public int Count { get { return splines.Length; } }
 
     public Pose PoseAt(float t) {
+      var minT = splines[0].t0;
+      var maxT = splines[splines.Length - 1].t1;
+
+      var dt = 0f;
+      Pose poseOrigin; Movement extrapMovement;
+      if (t < minT) {
+        if (allowExtrapolation) {
+          splines[0].PoseAndMovementAt(minT, out poseOrigin, out extrapMovement);
+          dt = t - minT;
+          return poseOrigin.Integrated(extrapMovement, dt);
+        }
+        else {
+          t = minT;
+        }
+      }
+      else if (t > maxT) {
+        if (allowExtrapolation) {
+          splines[splines.Length - 1].PoseAndMovementAt(maxT, out poseOrigin, out extrapMovement);
+          dt = t - maxT;
+          return poseOrigin.Integrated(extrapMovement, dt);
+        }
+        else {
+          t = maxT;
+        }
+      }
+      
       foreach (var spline in splines) {
         if (t >= spline.t0 && t <= spline.t1) {
           return spline.PoseAt(t);
         }
       }
-      Debug.LogError("T value " + t + " not found in this spline sequence.");
+
+      Debug.LogError("PoseSplineSequence couldn't evaluate T: " + t);
       return Pose.identity;
     }
   }

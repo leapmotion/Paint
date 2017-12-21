@@ -58,7 +58,7 @@ namespace Leap.Unity.PhysicalInterfaces {
     private float _lerpedPopState = 0f;
 
     // Deadzone
-    private Vector3 _deadzoneOrigin = Vector3.zero;
+    //private Vector3 _deadzoneOrigin = Vector3.zero; // no longer used
     private bool _useDeadzone = true;
     private float _deadzoneCoeff = 0f;
     private float _deadzoneAccumMoveDist = 0f;
@@ -195,7 +195,7 @@ namespace Leap.Unity.PhysicalInterfaces {
       if (_stableFingersDelta.didCentroidAppear) {
         _deadzoneAccumMoveDist = 0f;
         _deadzoneCoeff = 0f;
-        _deadzoneOrigin = _stableFingersDelta.centroid.Value;
+        // deadzoneOrigin = _stableFingersDelta.centroid.Value; // no longer used
       }
 
       if (_stableFingersDelta.isMoving) {
@@ -206,7 +206,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
           _deadzoneCoeff = _deadzoneAccumMoveDist.Map(minDeadzoneWidth, deadzoneWidth, 0f, 1f);
 
-          _deadzoneOrigin = _stableFingersDelta.centroid.Value;
+          //_deadzoneOrigin = _stableFingersDelta.centroid.Value; // no longer used
 
 
           if (_deadzoneCoeff >= 1f) {
@@ -456,18 +456,18 @@ namespace Leap.Unity.PhysicalInterfaces {
     [SerializeField, Disable]
     private int _slideSurfaceGlowOffsetParamId = 0;
 
-    [SerializeField, OnEditorChange("worldToObjectMatrixParamName")]
-    [Tooltip("Shaders that need a world to object matrix can have this parameter specified here.")]
-    private string _worldToObjectMatrixParamName = "_WorldToObjectMatrix";
-    public string worldToObjectMatrixParamName {
-      get { return _slideSurfaceGlowOffsetParamName; }
-      set {
-        _worldToObjectMatrixParamName = value;
-        _worldToObjectMatrixParamId = Shader.PropertyToID(value);
-      }
-    }
-    [SerializeField, Disable]
-    private int _worldToObjectMatrixParamId = 0;
+    //[SerializeField, OnEditorChange("worldToObjectMatrixParamName")]
+    //[Tooltip("Shaders that need a world to object matrix can have this parameter specified here.")]
+    //private string _worldToObjectMatrixParamName = "_WorldToObjectMatrix";
+    //public string worldToObjectMatrixParamName {
+    //  get { return _slideSurfaceGlowOffsetParamName; }
+    //  set {
+    //    _worldToObjectMatrixParamName = value;
+    //    _worldToObjectMatrixParamId = Shader.PropertyToID(value);
+    //  }
+    //}
+    //[SerializeField, Disable]
+    //private int _worldToObjectMatrixParamId = 0;
 
     [SerializeField, Disable]
     private int _colorParamId;
