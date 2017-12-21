@@ -13,6 +13,12 @@ namespace Leap.Unity.MeshGen {
     [SerializeField, HideInInspector]
     private MeshGenerator _meshGenerator;
 
+    /// <summary>
+    /// The name given to the Mesh object this generator handles. This name is reassigned
+    /// every OnValidate.
+    /// </summary>
+    public string generatedMeshName = "Generated Mesh";
+
     [SerializeField]
     private Mesh _mesh;
     /// <summary>
@@ -20,14 +26,8 @@ namespace Leap.Unity.MeshGen {
     /// </summary>
     public Mesh mesh { get { return _mesh; } }
 
-    /// <summary>
-    /// The name given to the Mesh object this generator handles. This name is reassigned
-    /// every OnValidate.
-    /// </summary>
-    public string generatedMeshName = "Generated Mesh";
-
     public void OnValidate() {
-      if (_mesh != null) {
+      if (_mesh != null && _meshGenerator != null) {
         _mesh.name = generatedMeshName;
       }
     }
