@@ -131,6 +131,25 @@ namespace Leap.Unity {
       }
     }
 
+    /// <summary>
+    /// Sets the localPosition, localRotation, and localScale to their default values:
+    /// Vector3.zero, Quaternion.identity, and Vector3.one.
+    /// </summary>
+    public static void ResetLocalTransform(this Transform t) {
+      t.localPosition = Vector3.zero;
+      t.localRotation = Quaternion.identity;
+      t.localScale = Vector3.one;
+    }
+
+    /// <summary>
+    /// Sets the localPosition and localRotation of this Transform to Vector3.zero and
+    /// Quaternion.identity. Doesn't affect localScale.
+    /// </summary>
+    public static void ResetLocalPose(this Transform t) {
+      t.localPosition = Vector3.zero;
+      t.localRotation = Quaternion.identity;
+    }
+
     #endregion
 
     #region Rect Utils
@@ -171,7 +190,7 @@ namespace Leap.Unity {
 
     #endregion
 
-    #region Pose
+    #region Pose Utils
 
     /// <summary>
     /// Returns a pose such that fromPose.Then(thisPose) will have this position
@@ -185,9 +204,27 @@ namespace Leap.Unity {
       return new Pose(rigidbody.position, rigidbody.rotation);
     }
 
-    #endregion
+    /// <summary>
+    /// Returns a Pose that has its position and rotation mirrored on the X axis.
+    /// </summary>
+    public static Pose MirroredX(this Pose pose) {
+      var v = pose.position;
+      var q = pose.rotation;
+      return new Pose(new Vector3(-v.x, v.y, v.z),
+                      new Quaternion(-q.x, q.y, q.z, -q.w));
+    }
 
-    // Newer:
+    /// <summary>
+    /// Returns a Pose that has its position and rotation flipped.
+    /// </summary>
+    public static Pose Negated(this Pose pose) {
+      var v = pose.position;
+      var q = pose.rotation;
+      return new Pose(new Vector3(-v.x, -v.y, -v.z),
+                      new Quaternion(-q.z, -q.y, -q.z, q.w));
+    }
+
+    #endregion
 
     #region Rect Utils
 
@@ -333,8 +370,12 @@ namespace Leap.Unity {
 
       drawer.matrix = Matrix4x4.TRS(pose.position, pose.rotation, Vector3.one);
 
+      var origColor = drawer.color;
+
       drawer.DrawWireSphere(Vector3.zero, radius);
       drawer.DrawPosition(Vector3.zero, radius * 2);
+
+      drawer.color = origColor;
 
       drawer.PopMatrix();
     }
