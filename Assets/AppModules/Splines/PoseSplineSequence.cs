@@ -152,9 +152,13 @@ namespace Leap.Unity.Animation {
 
   public static class PoseSplineSequenceExtensions {
     public static void DrawPoseSplineSequence(this RuntimeGizmoDrawer drawer,
-                                              PoseSplineSequence poseSplines) {
+                                              PoseSplineSequence poseSplines,
+                                              bool drawPoses = true,
+                                              bool drawSegments = true) {
       for (int i = 0; i < poseSplines.Count; i++) {
-        drawer.DrawPoseSpline(poseSplines[i]);
+        drawer.DrawPoseSpline(poseSplines[i],
+                              drawPoses: drawPoses,
+                              drawSegments: drawSegments);
       }
     }
   }

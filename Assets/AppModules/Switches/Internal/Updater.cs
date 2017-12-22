@@ -18,7 +18,7 @@ namespace Leap.Unity.Animation {
       }
     }
 
-    public event Action OnUpdate;
+    public event Action OnUpdate = () => { };
 
     void Update() {
       OnUpdate();

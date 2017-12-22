@@ -8,6 +8,7 @@ namespace Leap.Unity.Animation {
 
   using IPositionSpline = ISpline<Vector3, Vector3>;
 
+  [ExecuteInEditMode]
   public class SimpleSplineMeshGenerator : MonoBehaviour {
 
     [SerializeField, ImplementsInterface(typeof(IPositionSpline))]
@@ -22,6 +23,16 @@ namespace Leap.Unity.Animation {
 
     public float radius = 0.02f;
 
+    public bool useEntireSpline = true;
+
+    [DisableIf("useEntireSpline", isEqualTo: true)]
+    public float minT = 0f;
+    [DisableIf("useEntireSpline", isEqualTo: true)]
+    public float maxT = 1f;
+
+    [Header("Debug")]
+    public bool debugMode = false;
+
     [Header("Mesh Filter Output")]
     [QuickButton("Generate!", "generateIntoMeshFilter")]
     public MeshFilter _meshFilter;
@@ -33,6 +44,12 @@ namespace Leap.Unity.Animation {
           _backingPolyMesh = new PolyMesh(enableEdgeData: false);
         }
         return _backingPolyMesh;
+      }
+    }
+
+    private void Update() {
+      if (debugMode) {
+        generateIntoMeshFilter();
       }
     }
 
@@ -49,11 +66,14 @@ namespace Leap.Unity.Animation {
 
       Matrix4x4? applyTransform = null;
       if (applyInverseSplineTransform) {
-        applyTransform = _spline.transform.localToWorldMatrix;
+        applyTransform = _spline.transform.worldToLocalMatrix;
       }
       SplineUtil.FillPolyMesh(spline, _polyMesh,
                               applyTransform: applyTransform,
-                              radius: radius);
+                              radius: radius,
+                              startT: useEntireSpline ? (float?)null : minT,
+                              endT: useEntireSpline ? (float?)null : maxT,
+                              drawDebug: debugMode);
 
       if (_meshFilter.sharedMesh == null) {
         _meshFilter.sharedMesh = new Mesh();

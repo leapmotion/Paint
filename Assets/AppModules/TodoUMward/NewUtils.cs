@@ -384,6 +384,11 @@ namespace Leap.Unity {
       drawer.PopMatrix();
     }
 
+    public static void DrawRay(this RuntimeGizmos.RuntimeGizmoDrawer drawer,
+                               Vector3 position, Vector3 direction) {
+      drawer.DrawLine(position, position + direction);
+    }
+
     #endregion
 
     #region Quaternion Utils
@@ -398,6 +403,10 @@ namespace Leap.Unity {
 
     public static Vector3 GetForward(this Quaternion q) {
       return q * Vector3.forward;
+    }
+
+    public static Quaternion Flipped(this Quaternion q) {
+      return new Quaternion(-q.x, -q.y, -q.z, -q.w);
     }
 
     #endregion

@@ -27,9 +27,16 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     [Header("Panel Objects Test")]
     public Transform panelObjectsParent;
+
     public float tSpacing = 0.75f;
     public float speedMod = 1f;
     public float testTCenter = 0f;
+
+    [Header("Debug")]
+
+    public bool drawSegments = false;
+    public bool drawPoses = false;
+    public bool organizeEditTime = false;
 
     private List<Transform> _panelObjectsBuffer = new List<Transform>();
 
@@ -85,23 +92,61 @@ namespace Leap.Unity.PhysicalInterfaces {
 
         // Panel Objects Test
 
-        if (panelObjectsParent != null && panelObjectsParent.childCount > 0) {
-          _panelObjectsBuffer.Clear();
-          foreach (var panelObject in panelObjectsParent.GetChildren()) {
-            _panelObjectsBuffer.Add(panelObject);
-          }
+        if (organizeEditTime || Application.isPlaying) {
+          if (panelObjectsParent != null && panelObjectsParent.childCount > 0) {
+            _panelObjectsBuffer.Clear();
+            foreach (var panelObject in panelObjectsParent.GetChildren()) {
+              _panelObjectsBuffer.Add(panelObject);
+            }
 
-          var splines = maybePoseSplines.Value;
-          var baseT = testTCenter;
-          if (!Application.isPlaying) baseT = testTCenter;
-          for (int i = 0; i < _panelObjectsBuffer.Count; i++) {
-            var t = baseT + ((-2 + i) * tSpacing);
-            var objPose = splines.PoseAt(t);
-            _panelObjectsBuffer[i].transform.SetPose(objPose);
+            if (Application.isPlaying) {
+              testTCenter += _momentumT;
+              _momentumT = Mathf.Lerp(_momentumT, 0f, 5f * Time.deltaTime);
+            }
+
+            var splines = maybePoseSplines.Value;
+            for (int i = 0; i < _panelObjectsBuffer.Count; i++) {
+              var t = testTCenter + ((-2 + i) * tSpacing);
+              var objPose = splines.PoseAt(t);
+              _panelObjectsBuffer[i].transform.SetPose(objPose);
+            }
           }
         }
 
       }
+    }
+
+    public Vector3 FindNearestPosition(Vector3 position, out float tOfPos) {
+      var closestSqrDist = float.PositiveInfinity;
+      float? closestT = null;
+      Vector3? closestPos = null;
+      int numDivisions = 256;
+      var tStep = (maxT - minT) / numDivisions;
+      var spline = maybePoseSplines.Value.AsPositionSpline();
+      for (int i = 0; i <= numDivisions; i++) {
+        var t = minT + tStep * i;
+
+        var testPos = spline.ValueAt(t);
+
+        var testSqrDist = (position - testPos).sqrMagnitude;
+        if (testSqrDist < closestSqrDist) {
+          closestT = t;
+          closestSqrDist = testSqrDist;
+          closestPos = testPos;
+        }
+      }
+
+      tOfPos = closestT.Value;
+      return closestPos.Value;
+    }
+
+    private float _momentumT = 0f;
+
+    public void MoveT(float newT, int handleIdx) {
+      var origT = testTCenter + (-2 + handleIdx) * tSpacing;
+      var finalT = Mathf.Lerp(origT, newT, 15f * Time.deltaTime);
+
+      _momentumT = finalT - origT;
     }
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
@@ -110,7 +155,9 @@ namespace Leap.Unity.PhysicalInterfaces {
       drawer.color = LeapColor.brown;
 
       if (maybePoseSplines != null) {
-        drawer.DrawPoseSplineSequence(maybePoseSplines.Value);
+        drawer.DrawPoseSplineSequence(maybePoseSplines.Value,
+                                      drawPoses: drawPoses,
+                                      drawSegments: drawSegments);
       }
     }
 

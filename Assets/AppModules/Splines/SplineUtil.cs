@@ -62,7 +62,8 @@ namespace Leap.Unity.Animation {
                                     float? startT = null, float? endT = null,
                                     int? numSegments = null,
                                     float[] radii = null,
-                                    float? radius = null) {
+                                    float? radius = null,
+                                    bool drawDebug = false) {
       float minT, maxT;
       int effNumSegments;
       bool useRadiusArr = false;
@@ -70,6 +71,11 @@ namespace Leap.Unity.Animation {
       float effRadius;
       bool useTransform;
       Matrix4x4 transform;
+
+      RuntimeGizmos.RuntimeGizmoDrawer drawer = null;
+      if (drawDebug) {
+        RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer);
+      }
 
       // Assign parameters based on optional inputs
       {
@@ -113,7 +119,7 @@ namespace Leap.Unity.Animation {
       // orientations we need to build the mesh.
       polyMesh.Clear();
       var crossSection = new CircularCrossSection(effRadius, 16);
-      float tStep = (maxT - minT) / (float)(effNumSegments);
+      float tStep = (maxT - minT) / effNumSegments;
       Vector3 position = Vector3.zero;
       Vector3 dPosition = Vector3.zero;
       Vector3? tangent = null;
@@ -137,8 +143,8 @@ namespace Leap.Unity.Animation {
           spline.ValueAndDerivativeAt(t, out position, out dPosition);
 
           if (useTransform) {
-            positions.Add(transform * position);
-            normals.Add(transform * dPosition.normalized);
+            positions.Add(transform.MultiplyPoint3x4(position));
+            normals.Add(transform.MultiplyVector(dPosition).normalized);
           }
           else {
             positions.Add(position);
@@ -146,7 +152,7 @@ namespace Leap.Unity.Animation {
           }
 
           if (!tangent.HasValue && dPosition.sqrMagnitude > 0.001f * 0.001f) {
-            tangent = (transform * dPosition.normalized).ToVector3().Perpendicular();
+            tangent = (transform * dPosition.WithW(1)).ToVector3().normalized.Perpendicular();
           }
         }
 
@@ -221,6 +227,19 @@ namespace Leap.Unity.Animation {
                                Quaternion.LookRotation(normals[i], binormals[i]));
           var pose1 = new Pose(positions[i + 1],
                                Quaternion.LookRotation(normals[i + 1], binormals[i + 1]));
+
+          if (drawDebug) {
+            drawer.PushMatrix();
+            drawer.matrix = transform.inverse;
+
+            drawer.color = LeapColor.blue;
+            drawer.DrawRay(pose0.position, normals[i] * 0.2f);
+
+            drawer.color = LeapColor.red;
+            drawer.DrawRay(pose0.position, binormals[i] * 0.2f);
+
+            drawer.PopMatrix();
+          }
 
           bool addFirstPositions = i == 0;
 

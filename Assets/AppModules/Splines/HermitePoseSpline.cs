@@ -52,6 +52,11 @@ namespace Leap.Unity.Animation {
 
       this.rot0 = pose0.rotation;
       this.rot1 = pose1.rotation;
+
+      //if (Quaternion.Dot(rot0, rot1) < 0f) {
+      //  Debug.Log("Quaternions negative dot product; flipping one.");
+      //  rot1 = new Quaternion(-rot1.x, -rot1.y, -rot1.z, rot1.w);
+      //}
     }
 
     /// <summary>
@@ -73,6 +78,11 @@ namespace Leap.Unity.Animation {
 
       this.rot0 = pose0.rotation;
       this.rot1 = pose1.rotation;
+
+      //if (Quaternion.Dot(rot0, rot1) < 0f) {
+      //  Debug.Log("Quaternions negative dot product; flipping one.");
+      //  rot1 = new Quaternion(-rot1.x, -rot1.y, -rot1.z, rot1.w);
+      //}
     }
 
     /// <summary>
@@ -96,6 +106,11 @@ namespace Leap.Unity.Animation {
 
       this.rot0 = pose0.rotation;
       this.rot1 = pose1.rotation;
+
+      //if (Quaternion.Dot(rot0, rot1) < 0f) {
+      //  Debug.Log("Quaternions negative dot product; flipping one.");
+      //  rot1 = new Quaternion(-rot1.x, -rot1.y, -rot1.z, -rot1.w);
+      //}
     }
 
     /// <summary>
@@ -117,8 +132,17 @@ namespace Leap.Unity.Animation {
       this.pos0 = pose0.position;
       this.pos1 = pose1.position;
 
-      this.rot0 = pose0.rotation;
-      this.rot1 = pose1.rotation;
+      this.rot0 = pose0.rotation.ToNormalized();
+      this.rot1 = pose1.rotation.ToNormalized();
+
+      if (Quaternion.Dot(rot0, rot1) < 0f) {
+        if (Quaternion.Dot(rot0, Quaternion.identity) < 0f) {
+          rot0 = rot0.Flipped();
+        }
+        else if (Quaternion.Dot(rot1, Quaternion.identity) < 0f) {
+          rot1 = rot1.Flipped();
+        }
+      }
     }
 
     /// <summary>
@@ -135,6 +159,11 @@ namespace Leap.Unity.Animation {
       Vector3 h01 = (-2 * i3 + 3 * i2) * pos1;
       Vector3 h11 = (i3 - i2) * (t1 - t0) * vel1;
 
+    //   ( 2*i3 - 3*i2 + 0*i + 1) * A
+    // + ( 1*i3 - 2*i2 + 1*i + 0) * (tWidth) * B
+    // + (-2*i3 + 3*i2 + 0*i + 0) * C
+    // + ( 1*i3 - 1*i2 + 0*i + 0) * (tWidth) * D;
+
       return h00 + h10 + h01 + h11;
     }
 
@@ -144,8 +173,13 @@ namespace Leap.Unity.Animation {
     /// </summary>
     public Quaternion RotationAt(float t) {
       float i = Mathf.Clamp01((t - t0) / (t1 - t0));
-      float i2 = i * i;
-      float i3 = i2 * i;
+
+      return Quaternion.Slerp(rot0, rot1, DefaultCurve.SigmoidUp.Evaluate(i));
+
+      // TODO: This "hermite"-style interpolation of rotations is broken at
+      // ~180 degree angles.
+      //float i2 = i * i;
+      //float i3 = i2 * i;
 
       //Quaternion h00 = (2 * i3 - 3 * i2 + 1) * rot0;
       //Quaternion h10 = (i3 - 2 * i2 + i) * (t1 - t0) * angVel0;
@@ -154,16 +188,19 @@ namespace Leap.Unity.Animation {
       //
       //return h00 + h10 + h01 + h11;
 
-      var identity = Quaternion.identity;
-      var dRot0 = Utils.QuaternionFromAngleAxisVector(angVel0);
-      var dRot1 = Utils.QuaternionFromAngleAxisVector(angVel1);
-
-      Quaternion h00 = Quaternion.SlerpUnclamped(identity, rot0, 2 * i3 - 3 * i2 + 1);
-      Quaternion h10 = Quaternion.SlerpUnclamped(identity, dRot0, (i3 - 2 * i2 + i) * (t1 - t0));
-      Quaternion h01 = Quaternion.SlerpUnclamped(identity, rot1, -2 * i3 + 3 * i2);
-      Quaternion h11 = Quaternion.SlerpUnclamped(identity, dRot1, (i3 - i2) * (t1 - t0));
-
-      return h00.Then(h10).Then(h01).Then(h11);
+      //var identity = Quaternion.identity;
+      //var dRot0 = Utils.QuaternionFromAngleAxisVector(angVel0).ToNormalized();
+      //var dRot1 = Utils.QuaternionFromAngleAxisVector(angVel1).ToNormalized();
+      //
+      //dRot0 = Quaternion.identity;
+      //dRot1 = Quaternion.identity;
+      //
+      //Quaternion h00 = Quaternion.SlerpUnclamped(identity, rot0, 2 * i3 - 3 * i2 + 1);
+      //Quaternion h10 = Quaternion.SlerpUnclamped(identity, dRot0, (i3 - 2 * i2 + i) * (t1 - t0));
+      //Quaternion h01 = Quaternion.SlerpUnclamped(identity, rot1, -2 * i3 + 3 * i2);
+      //Quaternion h11 = Quaternion.SlerpUnclamped(identity, dRot1, (i3 - i2) * (t1 - t0));
+      //
+      //return h00.Then(h10).Then(h01).Then(h11);
     }
 
     /// <summary>
@@ -207,38 +244,41 @@ namespace Leap.Unity.Animation {
     /// t0 - t1 range. Angular velocity is encoded as an angle-axis vector.
     /// </summary>
     public Vector3 AngularVelocityAt(float t) {
-      float C00 = t1 - t0;
-      float C1 = 1.0f / C00;
+      return Vector3.zero;
 
-      float i, i2;
-      float i_, i2_, i3_;
-      {
-        i = Mathf.Clamp01((t - t0) * C1);
-        i_ = C1;
-
-        i2 = i * i;
-        i2_ = 2 * i * i_;
-
-        i3_ = i2_ * i + i_ * i2;
-      }
-
-      //Quaternion h00_ = (i3_ * 2 - i2_ * 3) * rot0;
-      //Quaternion h10_ = (i3_ - 2 * i2_ + i_) * C00 * angVel0;
-      //Quaternion h01_ = (i2_ * 3 - 2 * i3_) * rot1;
-      //Quaternion h11_ = (i3_ - i2_) * C00 * angVel1;
+      // Note: Angular velocity broken.
+      //float C00 = t1 - t0;
+      //float C1 = 1.0f / C00;
       //
-      //return h00_ + h01_ + h10_ + h11_;
-
-      var identity = Quaternion.identity;
-      var dRot0 = Utils.QuaternionFromAngleAxisVector(angVel0);
-      var dRot1 = Utils.QuaternionFromAngleAxisVector(angVel1);
-
-      Quaternion h00_ = Quaternion.SlerpUnclamped(identity, rot0, (i3_ * 2 - i2_ * 3));
-      Quaternion h10_ = Quaternion.SlerpUnclamped(identity, dRot0, (i3_ - 2 * i2_ + i_) * C00);
-      Quaternion h01_ = Quaternion.SlerpUnclamped(identity, rot1, (i2_ * 3 - 2 * i3_));
-      Quaternion h11_ = Quaternion.SlerpUnclamped(identity, dRot1, (i3_ - i2_) * C00);
-
-      return h00_.Then(h01_).Then(h10_).Then(h11_).ToAngleAxisVector();
+      //float i, i2;
+      //float i_, i2_, i3_;
+      //{
+      //  i = Mathf.Clamp01((t - t0) * C1);
+      //  i_ = C1;
+      //
+      //  i2 = i * i;
+      //  i2_ = 2 * i * i_;
+      //
+      //  i3_ = i2_ * i + i_ * i2;
+      //}
+      //
+      ////Quaternion h00_ = (i3_ * 2 - i2_ * 3) * rot0;
+      ////Quaternion h10_ = (i3_ - 2 * i2_ + i_) * C00 * angVel0;
+      ////Quaternion h01_ = (i2_ * 3 - 2 * i3_) * rot1;
+      ////Quaternion h11_ = (i3_ - i2_) * C00 * angVel1;
+      ////
+      ////return h00_ + h01_ + h10_ + h11_;
+      //
+      //var identity = Quaternion.identity;
+      //var dRot0 = Utils.QuaternionFromAngleAxisVector(angVel0).ToNormalized();
+      //var dRot1 = Utils.QuaternionFromAngleAxisVector(angVel1).ToNormalized();
+      //
+      //Quaternion h00_ = Quaternion.SlerpUnclamped(identity, rot0, (i3_ * 2 - i2_ * 3));
+      //Quaternion h10_ = Quaternion.SlerpUnclamped(identity, dRot0, (i3_ - 2 * i2_ + i_) * C00);
+      //Quaternion h01_ = Quaternion.SlerpUnclamped(identity, rot1, (i2_ * 3 - 2 * i3_));
+      //Quaternion h11_ = Quaternion.SlerpUnclamped(identity, dRot1, (i3_ - i2_) * C00);
+      //
+      //return h00_.Then(h01_).Then(h10_).Then(h11_).ToAngleAxisVector();
     }
 
     public Movement MovementAt(float t) {
@@ -289,42 +329,46 @@ namespace Leap.Unity.Animation {
     /// </summary>
     public void RotationAndAngVelAt(float t, out Quaternion rotation,
                                              out Vector3 angularVelocity) {
-      float C00 = t1 - t0;
-      float C1 = 1.0f / C00;
+      float i = Mathf.Clamp01((t - t0) / (t1 - t0));
 
-      float i, i2, i3;
-      float i_, i2_, i3_;
-      {
-        i = Mathf.Clamp01((t - t0) * C1);
-        i_ = C1;
+      rotation = Quaternion.Slerp(rot0, rot1, DefaultCurve.SigmoidUp.Evaluate(i));
+      angularVelocity = Vector3.zero;
 
-        i2 = i * i;
-        i2_ = 2 * i * i_;
-
-        i3 = i2 * i;
-        i3_ = i2_ * i + i_ * i2;
-      }
-
-      var identity = Quaternion.identity;
-      var dRot0 = Utils.QuaternionFromAngleAxisVector(angVel0);
-      var dRot1 = Utils.QuaternionFromAngleAxisVector(angVel1);
-
-
-      Quaternion h00 = Quaternion.SlerpUnclamped(identity, rot0, 2 * i3 - 3 * i2 + 1);
-      Quaternion h00_ = Quaternion.SlerpUnclamped(identity, rot0, (i3_ * 2 - i2_ * 3));
-
-      Quaternion h10 = Quaternion.SlerpUnclamped(identity, dRot0, (i3 - 2 * i2 + i) * C00);
-      Quaternion h10_ = Quaternion.SlerpUnclamped(identity, dRot0, (i3_ - 2 * i2_ + i_) * C00);
-
-      Quaternion h01 = Quaternion.SlerpUnclamped(identity, rot1, -2 * i3 + 3 * i2);
-      Quaternion h01_ = Quaternion.SlerpUnclamped(identity, rot1, (i2_ * 3 - 2 * i3_));
-
-      Quaternion h11 = Quaternion.SlerpUnclamped(identity, dRot1, (i3 - i2) * C00);
-      Quaternion h11_ = Quaternion.SlerpUnclamped(identity, dRot1, (i3_ - i2_) * C00);
-
-
-      rotation = h00.Then(h10).Then(h01).Then(h11);
-      angularVelocity = h00_.Then(h01_).Then(h10_).Then(h11_).ToAngleAxisVector();
+      //float C00 = t1 - t0;
+      //float C1 = 1.0f / C00;
+      //
+      //float i, i2, i3;
+      //float i_, i2_, i3_;
+      //{
+      //  i = Mathf.Clamp01((t - t0) * C1);
+      //  i_ = C1;
+      //
+      //  i2 = i * i;
+      //  i2_ = 2 * i * i_;
+      //
+      //  i3 = i2 * i;
+      //  i3_ = i2_ * i + i_ * i2;
+      //}
+      //
+      //var identity = Quaternion.identity;
+      //var dRot0 = Utils.QuaternionFromAngleAxisVector(angVel0).ToNormalized();
+      //var dRot1 = Utils.QuaternionFromAngleAxisVector(angVel1).ToNormalized();
+      //
+      //
+      //Quaternion h00 = Quaternion.SlerpUnclamped(identity, rot0, 2 * i3 - 3 * i2 + 1);
+      //Quaternion h00_ = Quaternion.SlerpUnclamped(identity, rot0, (i3_ * 2 - i2_ * 3));
+      //
+      //Quaternion h10 = Quaternion.SlerpUnclamped(identity, dRot0, (i3 - 2 * i2 + i) * C00);
+      //Quaternion h10_ = Quaternion.SlerpUnclamped(identity, dRot0, (i3_ - 2 * i2_ + i_) * C00);
+      //
+      //Quaternion h01 = Quaternion.SlerpUnclamped(identity, rot1, -2 * i3 + 3 * i2);
+      //Quaternion h01_ = Quaternion.SlerpUnclamped(identity, rot1, (i2_ * 3 - 2 * i3_));
+      //
+      //Quaternion h11 = Quaternion.SlerpUnclamped(identity, dRot1, (i3 - i2) * C00);
+      //Quaternion h11_ = Quaternion.SlerpUnclamped(identity, dRot1, (i3_ - i2_) * C00);
+      //
+      //rotation = h00.Then(h10).Then(h01).Then(h11);
+      //angularVelocity = h00_.Then(h01_).Then(h10_).Then(h11_).ToAngleAxisVector();
     }
 
 
@@ -379,7 +423,6 @@ namespace Leap.Unity.Animation {
       Vector3 h11 = (i3 - i2) * C00 * vel1;
       Quaternion R_h11 = Quaternion.SlerpUnclamped(identity, dRot1, (i3 - i2) * C00);
       Quaternion R_h11_ = Quaternion.SlerpUnclamped(identity, dRot1, (i3_ - i2_) * C00);
-
 
       var position = h00 + h01 + h10 + h11;
       var velocity = h00_ + h01_ + h10_ + h11_;
@@ -447,7 +490,9 @@ namespace Leap.Unity.Animation {
                                       Color? color = null,
                                       float poseGizmoScale = 0.02f,
                                       int splineResolution = 32,
-                                      int drawPosePeriod = 8) {
+                                      int drawPosePeriod = 8,
+                                      bool drawPoses = true,
+                                      bool drawSegments = true) {
       if (!color.HasValue) {
         color = LeapColor.brown.WithAlpha(0.4f);
       }
@@ -461,11 +506,11 @@ namespace Leap.Unity.Animation {
       for (float t = spline.t0; t <= spline.t0 + tWidth; t += tStep) {
         var pose = spline.PoseAt(t);
 
-        if (counter % drawPosePeriod == 0) {
+        if (counter % drawPosePeriod == 0 && drawPoses) {
           drawer.DrawPose(pose, 0.02f);
         }
 
-        if (prevPos.HasValue) {
+        if (prevPos.HasValue && drawSegments) {
           drawer.DrawLine(prevPos.Value, pose.position);
         }
 

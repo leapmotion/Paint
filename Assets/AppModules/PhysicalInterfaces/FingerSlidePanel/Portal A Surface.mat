@@ -66,16 +66,18 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _PortalMask: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.6666667, g: 0.98823535, b: 0.73333335, a: 1}
+    - _Color: {r: 0.6666667, g: 0.98823535, b: 0.73333335, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridSizeAndRowColCount: {r: 0.35, g: 0.5, b: 16, a: 11}
     - _HoverFingertipBlendShape_LocalOffset: {r: 0, g: 0, b: -0.01, a: 0}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _OffsetAndPopState: {r: 0, g: 0, b: 0, a: 0}
+    - _OffsetAndPopState: {r: 0.000014761895, g: -0.000018239036, b: 0, a: 0}
+    - _PopStateBackup: {r: 0, g: 0, b: 0, a: 0}
     - _SurfaceGlowOffset: {r: 0, g: 0, b: 0.01, a: 0}
