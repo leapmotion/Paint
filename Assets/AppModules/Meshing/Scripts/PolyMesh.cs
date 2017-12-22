@@ -70,6 +70,10 @@ namespace Leap.Unity.Meshing {
     /// know where it is in world-space; this is optional, but important if you intend
     /// to perform operations on this PolyMesh with respect to other PolyMeshes that
     /// correspond to Unity transforms in a scene.
+    /// 
+    /// Warning: By default, PolyMeshes track edge/face adjacency data, which is
+    /// expensive. Pass enableEdgeData: false if you don't need PolyMesh ops other than
+    /// AddPosition/AddPolygon!
     /// </summary>
     public PolyMesh() {
       _positions = new List<Vector3>();
@@ -85,6 +89,10 @@ namespace Leap.Unity.Meshing {
     /// know where it is in world-space; this is optional, but important if you intend
     /// to perform operations on this PolyMesh with respect to other PolyMeshes that
     /// correspond to Unity transforms in a scene.
+    /// 
+    /// Warning: By default, PolyMeshes track edge/face adjacency data, which is
+    /// expensive. Pass enableEdgeData: false if you don't need PolyMesh ops other than
+    /// AddPosition/AddPolygon!
     /// </summary>
     public PolyMesh(bool enableEdgeData = true) 
       : this() {
@@ -96,6 +104,10 @@ namespace Leap.Unity.Meshing {
     /// know where it is in world-space; this is optional, but important if you intend
     /// to perform operations on this PolyMesh with respect to other PolyMeshes that
     /// correspond to Unity transforms in a scene.
+    /// 
+    /// Warning: By default, PolyMeshes track edge/face adjacency data, which is
+    /// expensive. Pass enableEdgeData: false if you don't need PolyMesh ops other than
+    /// AddPosition/AddPolygon!
     /// </summary>
     public PolyMesh(Transform useTransform, bool enableEdgeData = true)
     : this(enableEdgeData) {
@@ -143,10 +155,15 @@ namespace Leap.Unity.Meshing {
     /// edge-adjacent Polygon lists sent to Pool-List-Polygon, and Polygon-adjacent
     /// edge lists will be sent to Pool-List-Edge.
     /// 
-    /// Newly-constructed PolyMesh objects always spawn their lists from the relevant
-    /// Pool. Warning: PolyMeshes don't construct their own Polygons, so be sure to use
-    /// a Pool-List-int when creating your own Polygons. It's also consequently very
-    /// dangerous to hold onto a reference to any Polygon vertex index List!
+    /// PolyMesh objects pool their resources appropriately when you call operations on
+    /// PolyMeshes, so it's safe to Clear() a PolyMesh and then immediately start
+    /// calling, e.g., AddPosition() and AddPolygon() methods. One important caveat
+    /// is that you have to construct your OWN Polygons when you add new Polygons to a
+    /// PolyMesh, so you MUST use a Pool-List-int to spawn indices for vertex storage
+    /// when you construct these Polygons!
+    /// 
+    /// (Consequently, it's also very dangerous to hold onto a reference to any Polygon
+    /// vertex index List.)
     /// </summary>
     public void Clear(bool clearTransform = true) {
       _positions.Clear(); // We simply hold onto this List, there's nothing to pool.

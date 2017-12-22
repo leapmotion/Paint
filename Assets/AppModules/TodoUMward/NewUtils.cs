@@ -188,6 +188,10 @@ namespace Leap.Unity {
       return thisPosition + delta;
     }
 
+    public static Vector3 ToVector3(this Vector4 v4) {
+      return new Vector3(v4.x, v4.y, v4.z);
+    }
+
     #endregion
 
     #region Pose Utils
@@ -378,6 +382,22 @@ namespace Leap.Unity {
       drawer.color = origColor;
 
       drawer.PopMatrix();
+    }
+
+    #endregion
+
+    #region Quaternion Utils
+
+    public static Vector3 GetRight(this Quaternion q) {
+      return q * Vector3.right;
+    }
+
+    public static Vector3 GetUp(this Quaternion q) {
+      return q * Vector3.up;
+    }
+
+    public static Vector3 GetForward(this Quaternion q) {
+      return q * Vector3.forward;
     }
 
     #endregion

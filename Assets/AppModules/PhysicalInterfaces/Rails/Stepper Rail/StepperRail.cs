@@ -8,8 +8,11 @@ using System;
 
 namespace Leap.Unity.PhysicalInterfaces {
 
+  using IPositionSpline = ISpline<Vector3, Vector3>;
+
   [ExecuteInEditMode]
-  public class StepperRail : MonoBehaviour, IRuntimeGizmoComponent {
+  public class StepperRail : MonoBehaviour, IRuntimeGizmoComponent,
+                                            IPositionSpline {
 
     [Header("Center Point Velocity Source")]
     public Transform centerPointVelocity;
@@ -111,70 +114,42 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
     }
 
-  }
+    #region IPositionSpline - ISpline<Vector3, Vector3>
 
-  [Serializable]
-  public struct PoseSplineSequence : IIndexable<HermitePoseSpline> {
-    public HermitePoseSpline[] splines;
-    public bool allowExtrapolation;
-
-    public PoseSplineSequence(HermitePoseSpline[] splines,
-                              bool allowExtrapolation = false) {
-      this.splines = splines;
-      this.allowExtrapolation = allowExtrapolation;
+    public float minT {
+      get { return maybePoseSplines.HasValue ? maybePoseSplines.Value.minT : 0f; }
     }
 
-    public HermitePoseSpline this[int idx] {
-      get { return splines[idx]; }
+    public float maxT {
+      get { return maybePoseSplines.HasValue ? maybePoseSplines.Value.maxT : 0f; }
     }
 
-    public int Count { get { return splines.Length; } }
-
-    public Pose PoseAt(float t) {
-      var minT = splines[0].t0;
-      var maxT = splines[splines.Length - 1].t1;
-
-      var dt = 0f;
-      Pose poseOrigin; Movement extrapMovement;
-      if (t < minT) {
-        if (allowExtrapolation) {
-          splines[0].PoseAndMovementAt(minT, out poseOrigin, out extrapMovement);
-          dt = t - minT;
-          return poseOrigin.Integrated(extrapMovement, dt);
-        }
-        else {
-          t = minT;
-        }
-      }
-      else if (t > maxT) {
-        if (allowExtrapolation) {
-          splines[splines.Length - 1].PoseAndMovementAt(maxT, out poseOrigin, out extrapMovement);
-          dt = t - maxT;
-          return poseOrigin.Integrated(extrapMovement, dt);
-        }
-        else {
-          t = maxT;
-        }
-      }
-      
-      foreach (var spline in splines) {
-        if (t >= spline.t0 && t <= spline.t1) {
-          return spline.PoseAt(t);
-        }
-      }
-
-      Debug.LogError("PoseSplineSequence couldn't evaluate T: " + t);
-      return Pose.identity;
+    public Vector3 ValueAt(float t) {
+      return maybePoseSplines.HasValue ? maybePoseSplines.Value.ValueAt(t).position
+                                       : Vector3.zero;
     }
-  }
 
-  public static class PoseSplineSequenceExtensions {
-    public static void DrawPoseSplineSequence(this RuntimeGizmoDrawer drawer,
-                                              PoseSplineSequence poseSplines) {
-      for (int i = 0; i < poseSplines.Count; i++) {
-        drawer.DrawPoseSpline(poseSplines[i]);
+    public Vector3 DerivativeAt(float t) {
+      return maybePoseSplines.HasValue ? maybePoseSplines.Value.DerivativeAt(t).velocity
+                                       : Vector3.zero;
+    }
+
+    public void ValueAndDerivativeAt(float t, out Vector3 value, out Vector3 deltaValuePerT) {
+      value = Vector3.zero;
+      deltaValuePerT = Vector3.zero;
+
+      if (maybePoseSplines.HasValue) {
+        Pose pose;
+        Movement movement;
+        maybePoseSplines.Value.ValueAndDerivativeAt(t, out pose, out movement);
+
+        value = pose.position;
+        deltaValuePerT = movement.velocity;
       }
     }
+
+    #endregion
+
   }
 
   public static class StepperRailExtensions {

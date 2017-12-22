@@ -23,7 +23,9 @@ namespace Leap.Unity.Animation {
   /// along the spline's duration.
   /// </summary>
   [Serializable]
-  public struct HermitePoseSpline {
+  public struct HermitePoseSpline : ISpline<Pose, Movement>,
+                                    ISpline<Vector3, Vector3> {
+
     public float t0, t1;
     public Vector3 pos0, pos1;
     public Vector3 vel0, vel1;
@@ -378,16 +380,64 @@ namespace Leap.Unity.Animation {
       Quaternion R_h11 = Quaternion.SlerpUnclamped(identity, dRot1, (i3 - i2) * C00);
       Quaternion R_h11_ = Quaternion.SlerpUnclamped(identity, dRot1, (i3_ - i2_) * C00);
 
-      
+
       var position = h00 + h01 + h10 + h11;
       var velocity = h00_ + h01_ + h10_ + h11_;
-      
+
       var rotation = R_h00.Then(R_h10).Then(R_h01).Then(R_h11);
       var angularVelocity = R_h00_.Then(R_h01_).Then(R_h10_).Then(R_h11_).ToAngleAxisVector();
 
       pose = new Pose(position, rotation);
       movement = new Movement(velocity, angularVelocity);
     }
+
+    #region ISpline<Pose, Movement>
+
+    public float minT { get { return t0; } }
+
+    public float maxT { get { return t1; } }
+
+    public Pose ValueAt(float t) {
+      return PoseAt(t);
+    }
+
+    public Movement DerivativeAt(float t) {
+      return MovementAt(t);
+    }
+
+    public void ValueAndDerivativeAt(float t, out Pose value, out Movement deltaValuePerSec) {
+      PoseAndMovementAt(t, out value, out deltaValuePerSec);
+    }
+
+    #endregion
+
+    #region ISpline<Vector3, Vector3>
+    
+    float ISpline<Vector3, Vector3>.minT { get { return t0; } }
+
+    float ISpline<Vector3, Vector3>.maxT { get { return t1; } }
+
+    Vector3 ISpline<Vector3, Vector3>.ValueAt(float t) {
+      return PoseAt(t).position;
+    }
+
+    Vector3 ISpline<Vector3, Vector3>.DerivativeAt(float t) {
+      return MovementAt(t).velocity;
+    }
+
+    void ISpline<Vector3, Vector3>.ValueAndDerivativeAt(float t, 
+                                                        out Vector3 value,
+                                                        out Vector3 deltaValuePerT) {
+      Pose pose;
+      Movement movement;
+      PoseAndMovementAt(t, out pose, out movement);
+
+      value = pose.position;
+      deltaValuePerT = movement.velocity;
+    }
+
+    #endregion
+
   }
 
   public static class HermitePoseSplineExtensions {
