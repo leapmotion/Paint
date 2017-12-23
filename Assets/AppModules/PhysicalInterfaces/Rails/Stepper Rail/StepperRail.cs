@@ -19,11 +19,12 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     [Header("Rail Edge Point (Mirrored on X) - child for Velocity")]
     public Transform railEdgePoint;
-    public Transform railEdgePointVelocity;
 
     [Header("Stack Edge Point (Mirrored on X) - child for Velocity")]
     public Transform stackEdgePoint;
-    public Transform stackEdgePointVelocity;
+
+    [Header("Stack Edge Point 2 (Mirrored on X) - child for Velocity")]
+    public Transform stackEdgePoint2;
 
     [Header("Panel Objects Test")]
     public Transform panelObjectsParent;
@@ -31,6 +32,8 @@ namespace Leap.Unity.PhysicalInterfaces {
     public float tSpacing = 0.75f;
     public float speedMod = 1f;
     public float testTCenter = 0f;
+
+    public float targetTCenter = 0f;
 
     [Header("Debug")]
 
@@ -49,8 +52,8 @@ namespace Leap.Unity.PhysicalInterfaces {
     private HermitePoseSpline[] _backingPoseSplinesArr = null;
     private HermitePoseSpline[] _poseSplinesArr {
       get {
-        if (_backingPoseSplinesArr == null) {
-          _backingPoseSplinesArr = new HermitePoseSpline[4];
+        if (_backingPoseSplinesArr == null || _backingPoseSplinesArr.Length != 6) {
+          _backingPoseSplinesArr = new HermitePoseSpline[6];
         }
         return _backingPoseSplinesArr;
       }
@@ -58,14 +61,17 @@ namespace Leap.Unity.PhysicalInterfaces {
 
     private void Update() {
       if (stackEdgePoint != null && railEdgePoint != null) {
+        var poseN3 = stackEdgePoint2.parent.transform.ToPose().Then(stackEdgePoint2.ToLocalPose().MirroredX());
         var poseN2 = stackEdgePoint.parent.transform.ToPose().Then(stackEdgePoint.ToLocalPose().MirroredX());
         var poseN1 = railEdgePoint.parent.transform.ToPose().Then(railEdgePoint.ToLocalPose().MirroredX());
         var pose0 = this.transform.ToPose();
         var pose1 = railEdgePoint.ToPose();
         var pose2 = stackEdgePoint.ToPose();
+        var pose3 = stackEdgePoint2.ToPose();
 
         var pose1Child = railEdgePoint.transform.GetFirstChild();
         var pose2Child = stackEdgePoint.transform.GetFirstChild();
+        var pose3Child = stackEdgePoint2.transform.GetFirstChild();
 
         var pose0Movement = new Movement(transform.ToPose(), centerPointVelocity.ToPose(), 0.1f);
         Movement pose1Movement = Movement.identity;
@@ -80,11 +86,24 @@ namespace Leap.Unity.PhysicalInterfaces {
           pose2Movement = new Movement(pose2, pose2Child.ToPose(), 0.1f);
           poseN2Movement = new Movement(poseN2, poseN2.Then(pose2Child.ToLocalPose().Negated().MirroredX()), 0.1f);
         }
+        Movement pose3Movement = Movement.identity;
+        Movement poseN3Movement = Movement.identity;
+        if (pose3Child != null) {
+          pose3Movement = new Movement(pose3, pose3Child.ToPose(), 0.1f);
+          poseN3Movement = new Movement(poseN3, poseN3.Then(pose3Child.ToLocalPose().Negated().MirroredX()), 0.1f);
+        }
 
-        _poseSplinesArr[0] = new HermitePoseSpline(-2f, -1f, poseN2, poseN1, poseN2Movement, poseN1Movement);
-        _poseSplinesArr[1] = new HermitePoseSpline(-1f, 0f, poseN1, pose0, poseN1Movement, pose0Movement);
-        _poseSplinesArr[2] = new HermitePoseSpline(0f, 1f, pose0, pose1, pose0Movement, pose1Movement);
-        _poseSplinesArr[3] = new HermitePoseSpline(1f, 2f, pose1, pose2, pose1Movement, pose2Movement);
+        var time0 = 0;
+        var time1 = railEdgePoint.transform.localScale.x;
+        var time2 = time1 + stackEdgePoint.transform.localScale.x;
+        var time3 = time2 + stackEdgePoint2.transform.localScale.x;
+
+        _poseSplinesArr[0] = new HermitePoseSpline(-time3, -time2, poseN3, poseN2, poseN3Movement, poseN2Movement);
+        _poseSplinesArr[1] = new HermitePoseSpline(-time2, -time1, poseN2, poseN1, poseN2Movement, poseN1Movement);
+        _poseSplinesArr[2] = new HermitePoseSpline(-time1,  time0, poseN1,  pose0, poseN1Movement,  pose0Movement);
+        _poseSplinesArr[3] = new HermitePoseSpline( time0,  time1,  pose0,  pose1,  pose0Movement,  pose1Movement);
+        _poseSplinesArr[4] = new HermitePoseSpline( time1,  time2,  pose1,  pose2,  pose1Movement,  pose2Movement);
+        _poseSplinesArr[5] = new HermitePoseSpline( time2,  time3,  pose2,  pose3,  pose2Movement,  pose3Movement);
 
         maybePoseSplines = new PoseSplineSequence(_poseSplinesArr,
                                                   allowExtrapolation: true);
@@ -102,6 +121,10 @@ namespace Leap.Unity.PhysicalInterfaces {
             if (Application.isPlaying) {
               testTCenter += _momentumT;
               _momentumT = Mathf.Lerp(_momentumT, 0f, 5f * Time.deltaTime);
+            }
+
+            if (Application.isPlaying) {
+              testTCenter = Mathf.Lerp(testTCenter, targetTCenter, 5f * Time.deltaTime);
             }
 
             var splines = maybePoseSplines.Value;

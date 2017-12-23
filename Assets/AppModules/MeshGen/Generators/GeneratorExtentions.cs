@@ -21,6 +21,21 @@ namespace Leap.Unity.MeshGen {
       verts.Add(new Vector3(x, y, z));
     }
 
+    public static void AddQuad(this List<int> indices,
+                               int idx0, int idx1, int idx2, int idx3,
+                               bool flipFacing = false) {
+      indices.AddTri(idx0, idx1, idx2, flipFacing);
+      indices.AddTri(idx0, idx2, idx3, flipFacing);
+    }
+
+    public static void AddQuad(this List<int> indices,
+                               int vertexOffset,
+                               int idx0, int idx1, int idx2, int idx3,
+                               bool flipFacing = false) {
+      indices.AddTri(idx0 + vertexOffset, idx1 + vertexOffset, idx2 + vertexOffset, flipFacing);
+      indices.AddTri(idx0 + vertexOffset, idx2 + vertexOffset, idx3 + vertexOffset, flipFacing);
+    }
+
   }
 
 }

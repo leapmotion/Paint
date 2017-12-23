@@ -8,7 +8,9 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     void Start() {
       for (int i = 0; i < _gameObjectsToEnable.Length; i++) {
-        _gameObjectsToEnable[i].SetActive(true);
+        if (_gameObjectsToEnable[i] != null) {
+          _gameObjectsToEnable[i].SetActive(true);
+        }
       }
     }
 

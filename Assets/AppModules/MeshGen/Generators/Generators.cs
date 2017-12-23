@@ -99,6 +99,17 @@ namespace Leap.Unity.MeshGen {
       returnGeneratorResources(verts, indices, normals);
     }
 
+    public static void GenerateCubeFrame(Mesh mesh, Vector2 frameSize, float thickness) {
+      Vecs verts; Ints indices; Vecs normals;
+      borrowGeneratorResources(out verts, out indices, out normals);
+
+      CubeFrameSupport.AddIndices(indices, verts.Count);
+      CubeFrameSupport.AddVerts(verts, normals, frameSize.x, frameSize.y, thickness);
+
+      apply(mesh, verts, indices, normals);
+      returnGeneratorResources(verts, indices, normals);
+    }
+
     #endregion
 
   }

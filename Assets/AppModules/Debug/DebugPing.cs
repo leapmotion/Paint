@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Leap.Unity {
 
+  [ExecuteInEditMode]
   public class DebugPing : MonoBehaviour, IRuntimeGizmoComponent {
 
     public const string PING_OBJECT_NAME = "__Debug Ping Runner__";
@@ -192,8 +193,11 @@ namespace Leap.Unity {
 
     private static void ensurePingRunnerExists() {
       if (s_instance == null) {
-        s_instance = new GameObject(PING_OBJECT_NAME).AddComponent<DebugPing>();
+        s_instance = Utils.FindObjectInHierarchy<DebugPing>();
 
+        if (s_instance == null) {
+          s_instance = new GameObject(PING_OBJECT_NAME).AddComponent<DebugPing>();
+        }
       }
     }
 

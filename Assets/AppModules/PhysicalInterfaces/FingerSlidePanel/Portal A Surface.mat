@@ -78,6 +78,6 @@ Material:
     - _GridSizeAndRowColCount: {r: 0.35, g: 0.5, b: 16, a: 11}
     - _HoverFingertipBlendShape_LocalOffset: {r: 0, g: 0, b: -0.01, a: 0}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _OffsetAndPopState: {r: 0.000014761895, g: -0.000018239036, b: 0, a: 0}
+    - _OffsetAndPopState: {r: 0, g: 0, b: 0, a: 0}
     - _PopStateBackup: {r: 0, g: 0, b: 0, a: 0}
     - _SurfaceGlowOffset: {r: 0, g: 0, b: 0.01, a: 0}

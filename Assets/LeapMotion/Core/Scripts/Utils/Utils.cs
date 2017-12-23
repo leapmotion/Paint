@@ -1168,13 +1168,40 @@ namespace Leap.Unity {
       }
     }
 
+    public static float GetEffectiveRadius(this CapsuleCollider capsule) {
+      return capsule.radius * capsule.GetEffectiveRadiusMultiplier();
+    }
+
+    public static float GetEffectiveRadiusMultiplier(this CapsuleCollider capsule) {
+      var effRadiusMult = 0f;
+      switch (capsule.direction) {
+        case 0:
+          effRadiusMult = Swizzle.Swizzle.yz(capsule.transform.lossyScale).CompMax();
+          break;
+        case 1:
+          effRadiusMult = Swizzle.Swizzle.xz(capsule.transform.lossyScale).CompMax();
+          break;
+        case 2:
+        default:
+          effRadiusMult = Swizzle.Swizzle.xy(capsule.transform.lossyScale).CompMax();
+          break;
+      }
+      return effRadiusMult;
+    }
+
     public static void GetCapsulePoints(this CapsuleCollider capsule, out Vector3 a,
                                                                       out Vector3 b) {
-      a = capsule.GetDirection() * ((capsule.height * 0.5f) - capsule.radius);
+      var effRadiusMult = capsule.GetEffectiveRadiusMultiplier();
+      var capsuleDir = capsule.GetDirection();
+
+      a = capsuleDir * (capsule.height / 2f);
       b = -a;
 
       a = capsule.transform.TransformPoint(a);
       b = capsule.transform.TransformPoint(b);
+
+      a -= capsuleDir * effRadiusMult * capsule.radius;
+      b += capsuleDir * effRadiusMult * capsule.radius;
     }
 
     /// <summary>
