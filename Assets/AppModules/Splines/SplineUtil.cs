@@ -66,8 +66,8 @@ namespace Leap.Unity.Animation {
                                     bool drawDebug = false) {
       float minT, maxT;
       int effNumSegments;
-      bool useRadiusArr = false;
-      float[] effRadii;
+      //bool useRadiusArr = false;
+      //float[] effRadii;
       float effRadius;
       bool useTransform;
       Matrix4x4 transform;
@@ -95,17 +95,17 @@ namespace Leap.Unity.Animation {
           effNumSegments = Mathf.Max(1, effNumSegments);
         }
 
-        useRadiusArr = false;
+        //useRadiusArr = false;
         effRadius = 0.02f;
         if (radius.HasValue) {
           effRadius = radius.Value;
         }
 
-        effRadii = null;
-        if (radii != null) {
-          useRadiusArr = true;
-          effRadii = radii;
-        }
+        //effRadii = null;
+        //if (radii != null) {
+        //  useRadiusArr = true;
+        //  effRadii = radii;
+        //}
 
         useTransform = false;
         transform = Matrix4x4.identity;

@@ -58,7 +58,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     public Renderer _indexTipColorRenderer;
 
     [HideInInspector]
-    public IHandModel _handModel;
+    public HandModelBase _handModel;
 
     private float _thicknessMult = 1.5F;
     private float _radius = 0F;
@@ -117,7 +117,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected virtual void Start() {
-      _handModel = pinchDetector.GetComponentInParent<IHandModel>();
+      _handModel = pinchDetector.GetComponentInParent<HandModelBase>();
       _minRadius = pinchDetector.ActivateDistance / 2F;
     }
 

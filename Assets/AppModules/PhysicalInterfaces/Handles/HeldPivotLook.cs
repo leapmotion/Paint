@@ -26,7 +26,9 @@ namespace Leap.Unity.PhysicalInterfaces {
     }
 
     void OnValidate() {
-      _handleToPanelPose = lookFrom.ToPose().From(intObj.transform.ToPose());
+      if (lookFrom != null) {
+        _handleToPanelPose = lookFrom.ToPose().From(intObj.transform.ToPose());
+      }
     }
 
     void OnEnable() {

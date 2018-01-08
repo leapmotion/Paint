@@ -6,7 +6,7 @@ using Leap.Unity;
 public class UIActivator : MonoBehaviour, IRuntimeGizmoComponent {
 
   public float _radius = 1F;
-  public IHandModel _handModel;
+  public HandModelBase _handModel;
 
   public float WorldRadius {
     get { return _radius * this.transform.lossyScale.x; }

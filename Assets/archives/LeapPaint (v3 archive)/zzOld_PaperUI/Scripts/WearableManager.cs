@@ -14,10 +14,10 @@ namespace Leap.Unity.LeapPaint_v3 {
     public Transform _centerEyeAnchor;
 
     [Header("Hand State Tracking")]
-    public IHandModel _leftHand;
+    public HandModelBase _leftHand;
     public PalmDirectionDetector _leftPalmFacingDetector;
     public PinchDetector _leftPinchDetector;
-    public IHandModel _rightHand;
+    public HandModelBase _rightHand;
     public PalmDirectionDetector _rightPalmFacingDetector;
     public PinchDetector _rightPinchDetector;
 

@@ -32,7 +32,7 @@ namespace Leap.Unity.PhysicalInterfaces {
                                    List<InteractionController> controllers) {
 
       var tOfPos = 0f;
-      var newPoseOnRail = stepperRail.FindNearestPosition(newPos, out tOfPos);
+      //var newPoseOnRail = stepperRail.FindNearestPosition(newPos, out tOfPos);
 
       intObj.rigidbody.position = oldPos;
       intObj.rigidbody.rotation = oldRot;

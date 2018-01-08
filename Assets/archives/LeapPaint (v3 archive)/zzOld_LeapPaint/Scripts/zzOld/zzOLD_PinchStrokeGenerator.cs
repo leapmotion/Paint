@@ -90,7 +90,7 @@ public class PinchStrokeGenerator : MonoBehaviour, IRuntimeGizmoComponent {
 
   private void BeginStroke(int pinchIdx) {
     // TODO HACK FIXME
-    this.CurrentColor = _pinchDetectors[pinchIdx].GetComponentInParent<IHandModel>().GetComponentInChildren<IndexTipColor>().GetColor();
+    this.CurrentColor = _pinchDetectors[pinchIdx].GetComponentInParent<HandModelBase>().GetComponentInChildren<IndexTipColor>().GetColor();
     _liveStrokeMeshGenerators[pinchIdx].BeginStrokeMesh();
   }
 
