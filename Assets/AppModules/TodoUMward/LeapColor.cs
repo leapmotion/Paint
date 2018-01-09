@@ -81,6 +81,10 @@ namespace Leap.Unity {
       get { return new Color(0x22 / 255f, 0x8B / 255f, 0x22 / 255f); }
     }
 
+    public static Color lime {
+      get { return new Color(158f / 255f, 253f / 255f, 56f / 255f); }
+    }
+
     public static Color mint {
       get { return new Color(0x98 / 255f, 0xFB / 255f, 0x98 / 255f); }
     }

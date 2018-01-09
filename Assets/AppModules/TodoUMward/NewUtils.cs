@@ -356,6 +356,26 @@ namespace Leap.Unity {
       return Vector3.Dot(a, b);
     }
 
+    public static float Angle(this Vector3 a, Vector3 b) {
+      return Vector3.Angle(a, b);
+    }
+
+    public static float SignedAngle(this Vector3 a, Vector3 b, Vector3 axis) {
+      return Vector3.SignedAngle(a, b, axis);
+    }
+
+    #endregion
+
+    #region Float Utils
+
+    public static float Clamped01(this float f) {
+      return Mathf.Clamp01(f);
+    }
+
+    public static float Clamped(this float f, float min, float max) {
+      return Mathf.Clamp(f, min, max);
+    }
+
     #endregion
 
     #region Matrix Utils
