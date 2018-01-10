@@ -34,7 +34,7 @@ namespace Leap.Unity.Gestures {
       }
 
       var areThumbsParallel = Vector3.Angle(leftHand.RadialAxis(),
-                                            rightHand.RadialAxis()) < 40f;
+                                            rightHand.RadialAxis()) < MAX_ALIGNED_ANGLE;
 
       var leftMiddleTip = leftHand.Fingers[2].TipPosition.ToVector3();
       var rightMiddleTip = rightHand.Fingers[2].TipPosition.ToVector3();

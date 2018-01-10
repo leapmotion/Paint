@@ -5,9 +5,11 @@ using UnityEngine;
 namespace Leap.Unity.Gestures {
 
   public abstract class TwoHandedHeldGesture : TwoHandedGesture {
-
-    // Convenience for children to have a common distance for determining when
-    // two points (e.g. fingertips) are "touching"
+    
+    /// <summary>
+    /// Convenience for children to have a common distance for determining when
+    /// two points (e.g. fingertips) are "touching". Use _SQR to check squared distances.
+    /// </summary>
     protected const float MAX_TOUCHING_DISTANCE = 0.03f;
     protected const float MAX_TOUCHING_DISTANCE_SQR = MAX_TOUCHING_DISTANCE
                                                        * MAX_TOUCHING_DISTANCE;
@@ -15,6 +17,12 @@ namespace Leap.Unity.Gestures {
     private const float MAX_HAND_BODY_VELOCITY = 2f; // m/s
     private const float MAX_RELATIVE_HAND_VELOCITY_SQR = MAX_HAND_BODY_VELOCITY
                                                      * MAX_HAND_BODY_VELOCITY;
+
+    /// <summary>
+    /// Convenience for children to have a common angle for determinine when two vectors
+    /// (e.g. finger directions) are aligned.
+    /// </summary>
+    protected const float MAX_ALIGNED_ANGLE = 40f;
 
     private DeltaBuffer leftMinusRightHandPosBuffer = new DeltaBuffer(5);
 
