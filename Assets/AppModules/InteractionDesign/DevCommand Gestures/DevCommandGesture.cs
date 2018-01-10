@@ -6,6 +6,14 @@ namespace Leap.Unity.Gestures {
 
   public class DevCommandGesture : TwoHandedHeldGesture {
 
+    #region Static API
+
+
+
+    #endregion
+
+    #region Gesture Implementation
+
     public override bool IsGesturePoseHeld(Hand leftHand, Hand rightHand,
                                           out Vector3 positionOfInterest) {
 
@@ -87,6 +95,8 @@ namespace Leap.Unity.Gestures {
 
       return isGesturePoseHeld;
     }
+
+    #endregion
 
   }
 
