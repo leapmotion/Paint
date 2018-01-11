@@ -10,6 +10,8 @@ namespace Leap.Unity {
   /// </summary>
   public static class LeapColor {
 
+    #region Grayscale
+
     public static Color black {
       get { return Color.black; }
     }
@@ -21,6 +23,10 @@ namespace Leap.Unity {
     public static Color white {
       get { return Color.white; }
     }
+
+    #endregion
+
+    #region Warm Colors & Browns
 
     public static Color pink {
       get { return new Color(255f / 255f, 0xC0 / 255f, 0xCB / 255f); }
@@ -73,6 +79,10 @@ namespace Leap.Unity {
       get { return new Color(0xD4 / 255f, 0xAF / 255f, 0x37 / 255f); }
     }
 
+    #endregion
+
+    #region Cool Colors
+
     public static Color green {
       get { return Color.green; }
     }
@@ -101,12 +111,12 @@ namespace Leap.Unity {
       get { return new Color(0x00 / 255f, 0x80 / 255f, 0x80 / 255f); }
     }
 
-    public static Color turquoise {
-      get { return new Color(0x40 / 255f, 0xE0 / 255f, 0xD0 / 255f); }
-    }
-
     public static Color veridian {
       get { return new Color(0x40 / 255f, 0x82 / 255f, 0x6D / 255f); }
+    }
+
+    public static Color turquoise {
+      get { return new Color(0x40 / 255f, 0xE0 / 255f, 0xD0 / 255f); }
     }
 
     public static Color cyan {
@@ -115,6 +125,10 @@ namespace Leap.Unity {
 
     public static Color cerulean {
       get { return new Color(0x00 / 255f, 0x7B / 255f, 0xA7 / 255f); }
+    }
+
+    public static Color aqua {
+      get { return new Color(143f / 255f, 224f / 255f, 247f / 255f); }
     }
 
     public static Color electricBlue {
@@ -144,6 +158,8 @@ namespace Leap.Unity {
     public static Color lavender {
       get { return new Color(0xB5 / 255f, 0x7E / 255f, 0xDC / 255f); }
     }
+
+    #endregion
 
     #region Shorthand
 

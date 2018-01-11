@@ -19,7 +19,9 @@ namespace Leap.Unity.LiveUI {
       var rThumbTip = rThumb.TipPosition.ToVector3();
 
       var thumbsTouching = (lThumbTip - rThumbTip).sqrMagnitude < MAX_TOUCHING_DISTANCE_SQR;
-      var thumbsAligned = Vector3.Angle(lThumbDir, -rThumbDir) < MAX_ALIGNED_ANGLE;
+
+      // Align thumbs; they tend to track at incorrect angles so be more lenient than usual.
+      var thumbsAligned = Vector3.Angle(lThumbDir, -rThumbDir) < 150f;
 
       var lIndex = leftHand.GetIndex();
       var lIndexDir = lIndex.Direction.ToVector3();

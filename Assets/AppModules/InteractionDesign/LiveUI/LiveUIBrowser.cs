@@ -1,5 +1,5 @@
 ﻿using Leap.Unity;
-using Leap.Unity.Promises;
+using Leap.Unity.Gestures;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,32 +17,45 @@ namespace Leap.Unity.LiveUI {
     private static void RuntimeInitializeOnLoad() {
 
       // Register the LiveUIBrowserGesture with the associated name and action.
-      DevCommandGesture.Register(LAUNCH_COMMAND_NAME,
-                                 typeof(LiveUIBrowserGesture),
-                                 LaunchNew);
+      DevCommandGesture.Register<LiveUIBrowserGesture>(LAUNCH_COMMAND_NAME,
+                                                       LaunchNew);
 
     }
 
     #endregion
 
-    public static Promise<Browser> LaunchNew(Vector3 atPosition) {
-      return Promise.ToReturn<Browser>(constructBrowser)
-                    .WithArgs(atPosition)
-                    .OnThread(ThreadType.UnityThread)
-                    .Otherwise(notifyBrowserLaunchException);
+    public static void LaunchNew(Vector3 atPosition) {
+
+      GameObject newObj = new GameObject("New Browser");
+      newObj.transform.position = atPosition;
+      Debug.Log("Spawned cube given position: " + atPosition.ToString("R"));
+
+      GameObject cubeObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+      cubeObj.transform.parent = newObj.transform;
+      cubeObj.transform.ResetLocalPose();
+      cubeObj.transform.localScale = Vector3.one * 0.05f;
+
+      //return Promise.ToReturn<Browser>()
+      //              .WithArgs<Vector3>(atPosition)
+      //              .OnThread(ThreadType.UnityThread)
+      //              .Otherwise(notifyBrowserLaunchException);
     }
 
-    private static Browser constructBrowser() {
-      return new Browser();
-    }
+    //private static Browser constructBrowser() {
+    //  return new Browser();
+    //}
 
-    private static void notifyBrowserLaunchException(Exception e) {
-      throw e;
-    }
+    //private static Browser constructBrowserAtPosition(Vector3 atPosition) {
 
-    private Browser() {
+    //}
+
+    //private static void notifyBrowserLaunchException(Exception e) {
+    //  throw e;
+    //}
+
+    //private Browser() {
       
-    }
+    //}
 
   }
 

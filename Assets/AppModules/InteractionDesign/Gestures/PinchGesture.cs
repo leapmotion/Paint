@@ -8,7 +8,9 @@ namespace Leap.Unity.Gestures {
     //[Header("Intention System")]
     //[SerializeField]
     //private bool _requireIntent = true;
-    
+
+    #region Inspector
+
     public bool requireSafetyPinch = false;
 
     [Tooltip("Higher = pinky must be opened further out to begin a pinch")]
@@ -35,6 +37,8 @@ namespace Leap.Unity.Gestures {
     public Material feedbackMaterial = null;
     
     private Pose _lastPinchPose = Pose.identity;
+
+    #endregion
 
     #region Custom Pinch Strength
 
@@ -146,11 +150,11 @@ namespace Leap.Unity.Gestures {
 
     #region Safety Pinch
 
-    private float _middleSafetyAmt = 0f;
-    private float _ringSafetyAmt   = 0f;
+    //private float _middleSafetyAmt = 0f;
+    //private float _ringSafetyAmt   = 0f;
     private float _pinkySafetyAmt  = 0f;
 
-    private float _safetySum = 0f;
+    //private float _safetySum = 0f;
 
     private void updateSafetyPinch(Hand hand) {
       var knuckleDir = hand.DistalAxis();
@@ -166,7 +170,7 @@ namespace Leap.Unity.Gestures {
         _pinkySafetyAmt = 1f;
       }
 
-      _safetySum = _middleSafetyAmt + _ringSafetyAmt + _pinkySafetyAmt;
+      //_safetySum = _middleSafetyAmt + _ringSafetyAmt + _pinkySafetyAmt;
     }
 
     private bool isSafetyActivationSatisfied() {
@@ -291,7 +295,7 @@ namespace Leap.Unity.Gestures {
 
             var pinkyCurlSample = _pinkyCurlBuffer.GetLatest();
             if (_pinkyCurlBuffer.IsFull) {
-              var pinkyCurlVelocity = _pinkyCurlBuffer.Delta();
+              //var pinkyCurlVelocity = _pinkyCurlBuffer.Delta();
             }
 
             var indexMinusPinkyCurlVel = 10f;
@@ -419,7 +423,7 @@ namespace Leap.Unity.Gestures {
 
     #region IPoseGesture
 
-    public Pose currentPose {
+    public Pose pose {
       get {
         return _lastPinchPose;
       }

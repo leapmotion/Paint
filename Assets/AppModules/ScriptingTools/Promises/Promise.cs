@@ -1,156 +1,152 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
-using System.Reflection;
-using Leap.Unity.LiveUI;
+﻿//using UnityEngine;
+//using System.Collections;
+//using System;
+//using System.Reflection;
+//using Leap.Unity.LiveUI;
 
-namespace Leap.Unity.Promises {
+//namespace Leap.Unity.Promises {
 
-  public class Promise : PromiseBase {
+//  //public class Promise {
 
-    private static PromiseUnderConstruction spawnPUC() {
-      var promiseUnderConstruction = Pool<PromiseUnderConstruction>.Spawn();
-      promiseUnderConstruction.Clear();
+//  //  private Promise() { }
 
-      return promiseUnderConstruction;
-    }
+//  //}
 
-    public static PromiseUnderConstruction To(Action somethingCallable) {
-      var puc = spawnPUC();
+//  public class Promise<R> : PromiseBase {
 
-      puc._promiseMethodInfo = somethingCallable.Method;
+//    public static PromiseUnderConstruction<R> ToReturn(Func<R> somethingCallable) {
+//      var puc = spawnPUC<R>();
 
-      return puc;
-    }
-    public static PromiseUnderConstruction To<R>(Func<R> somethingCallable) {
-      var puc = spawnPUC();
+//      puc._promiseMethodInfo = somethingCallable.Method;
 
-      puc._promiseMethodInfo = somethingCallable.Method;
+//      return puc;
+//    }
+//    public static PromiseUnderConstruction To<R>(Func<A1, R> somethingCallable) {
+//      var puc = spawnPUC();
 
-      return puc;
-    }
+//      puc._promiseMethodInfo = somethingCallable.Method;
 
-    internal object To(Func<Browser> constructBrowser) {
-      throw new NotImplementedException();
-    }
+//      return puc;
+//    }
 
-    public static PromiseUnderConstruction To<A1, R>(Func<A1, R> somethingCallable) {
-      var puc = spawnPUC();
+//    private static PromiseUnderConstruction spawnPUC<R>() {
+//      var promiseUnderConstruction = Pool<PromiseUnderConstruction<R>>.Spawn();
+//      promiseUnderConstruction.Clear();
 
-      puc._promiseMethodInfo = somethingCallable.Method;
+//      return promiseUnderConstruction;
+//    }
+    
+    
 
-      return puc;
-    }
+//    public class PromiseUnderConstruction<R> : Promise<T> {
 
-    public class PromiseUnderConstruction : Promise<T> {
+//      public PromiseUnderConstruction() { }
 
-      public PromiseUnderConstruction() { }
+//      public PromiseUnderConstruction WithArgs(params object[] args) {
+//        _promiseArgs = args;
 
-      public PromiseUnderConstruction WithArgs(params object[] args) {
-        _promiseArgs = args;
+//        return this;
+//      }
 
-        return this;
-      }
+//      public PromiseUnderConstruction OnThread(ThreadType threadType) {
+//        _promiseThreadType = threadType;
 
-      public PromiseUnderConstruction OnThread(ThreadType threadType) {
-        _promiseThreadType = threadType;
+//        return this;
+//      }
 
-        return this;
-      }
+//      public PromiseUnderConstruction Otherwise(Action<Exception> exceptionReceiver) {
+//        _exceptionReceiver = exceptionReceiver;
 
-      public PromiseUnderConstruction Otherwise(Action<Exception> exceptionReceiver) {
-        _exceptionReceiver = exceptionReceiver;
+//        return this;
+//      }
 
-        return this;
-      }
+//      //public static implicit operator Promise(PromiseUnderConstruction promiseUnderConstruction) {
+//      //  var promise = Pool<Promise>.Spawn();
 
-      //public static implicit operator Promise(PromiseUnderConstruction promiseUnderConstruction) {
-      //  var promise = Pool<Promise>.Spawn();
+//      //  promise._promiseArgs = promiseUnderConstruction._promiseArgs;
+//      //  promise._promiseThreadType = promiseUnderConstruction._promiseThreadType;
+//      //  promise._exceptionReceiver = promiseUnderConstruction._exceptionReceiver;
 
-      //  promise._promiseArgs = promiseUnderConstruction._promiseArgs;
-      //  promise._promiseThreadType = promiseUnderConstruction._promiseThreadType;
-      //  promise._exceptionReceiver = promiseUnderConstruction._exceptionReceiver;
+//      //  promiseUnderConstruction.Clear();
+//      //  Pool<PromiseUnderConstruction>.Recycle(promiseUnderConstruction);
 
-      //  promiseUnderConstruction.Clear();
-      //  Pool<PromiseUnderConstruction>.Recycle(promiseUnderConstruction);
+//      //  return promise;
+//      //}
 
-      //  return promise;
-      //}
+//      public void Clear() {
+//        _promiseArgs = null;
+//        _promiseThreadType = default(ThreadType);
+//        _exceptionReceiver = null;
+//        _promiseMethodInfo = null;
+//      }
 
-      public void Clear() {
-        _promiseArgs = null;
-        _promiseThreadType = default(ThreadType);
-        _exceptionReceiver = null;
-        _promiseMethodInfo = null;
-      }
+//    }
 
-    }
+//  }
 
-  }
+//  public abstract class PromiseBase {
 
-  public abstract class PromiseBase {
+//    protected MethodInfo _promiseMethodInfo;
 
-    protected MethodInfo _promiseMethodInfo;
+//    protected object[] _promiseArgs;
+//    protected ThreadType _promiseThreadType;
+//    protected Action<Exception> _exceptionReceiver;
 
-    protected object[] _promiseArgs;
-    protected ThreadType _promiseThreadType;
-    protected Action<Exception> _exceptionReceiver;
-
-  }
+//  }
 
 
-  public enum ThreadType {
-    UnityThread,
-    // UnityRenderThread, // not yet implemented
-    NonUnityThread
-  }
+//  public enum ThreadType {
+//    UnityThread,
+//    // UnityRenderThread, // not yet implemented
+//    NonUnityThread
+//  }
 
-  //public class Promise<T> {
+//  //public class Promise<T> {
 
-  //  private Promise() { }
+//  //  private Promise() { }
 
-  //  public static Promise<T> New(Func<T> tReturningFunc,
-  //                               ThreadType workThreadType = ThreadType.UnityThread) {
-  //    var promise = new Promise<T>();
+//  //  public static Promise<T> New(Func<T> tReturningFunc,
+//  //                               ThreadType workThreadType = ThreadType.UnityThread) {
+//  //    var promise = new Promise<T>();
 
-  //    promise._returnType = typeof(T);
-  //    promise._promiseId = PromiseRunner.UNSCHEDULED_PROMISE_ID;
-  //    promise._fulfillFunc = tReturningFunc;
-  //    promise._workThreadType = workThreadType;
+//  //    promise._returnType = typeof(T);
+//  //    promise._promiseId = PromiseRunner.UNSCHEDULED_PROMISE_ID;
+//  //    promise._fulfillFunc = tReturningFunc;
+//  //    promise._workThreadType = workThreadType;
 
-  //    return promise;
-  //  }
+//  //    return promise;
+//  //  }
 
-  //  private Type _returnType;
-  //  public Type resultType { get { return _returnType; } }
+//  //  private Type _returnType;
+//  //  public Type resultType { get { return _returnType; } }
 
-  //  private int _promiseId;
-  //  public int promiseId { get { return _promiseId; } }
+//  //  private int _promiseId;
+//  //  public int promiseId { get { return _promiseId; } }
 
-  //  public bool isReady { get { return PromiseRunner.IsResultReady(promiseId); } }
+//  //  public bool isReady { get { return PromiseRunner.IsResultReady(promiseId); } }
 
-  //  private Func<T> _fulfillFunc;
-  //  public Func<T> fulfillFunc { get { return _fulfillFunc; } }
+//  //  private Func<T> _fulfillFunc;
+//  //  public Func<T> fulfillFunc { get { return _fulfillFunc; } }
 
-  //  private ThreadType _workThreadType;
-  //  public ThreadType workThreadType { get { return _workThreadType; } }
+//  //  private ThreadType _workThreadType;
+//  //  public ThreadType workThreadType { get { return _workThreadType; } }
 
-  //  public T Fulfill() {
-  //    if (!isReady) {
-  //      throw new System.InvalidOperationException(
-  //        "Cannot fulfill promise for " + resultType.ToString() + " yet; the result isn't "
-  //      + "ready.");
-  //    }
-  //    else {
-  //      return PromiseRunner.GetFulfilled<T>(this);
-  //    }
-  //  }
+//  //  public T Fulfill() {
+//  //    if (!isReady) {
+//  //      throw new System.InvalidOperationException(
+//  //        "Cannot fulfill promise for " + resultType.ToString() + " yet; the result isn't "
+//  //      + "ready.");
+//  //    }
+//  //    else {
+//  //      return PromiseRunner.GetFulfilled<T>(this);
+//  //    }
+//  //  }
 
-  //  public void NotifyPromiseId(int promiseId) {
-  //    this._promiseId = promiseId;
-  //  }
+//  //  public void NotifyPromiseId(int promiseId) {
+//  //    this._promiseId = promiseId;
+//  //  }
 
-  //}
+//  //}
 
-}
+//}
 

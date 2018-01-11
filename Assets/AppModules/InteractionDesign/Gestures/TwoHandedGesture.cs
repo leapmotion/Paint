@@ -352,7 +352,7 @@ namespace Leap.Unity.Gestures {
     #region Unity Events
 
     [SerializeField]
-    private EnumEventTable _eventTable;
+    private EnumEventTable _eventTable = new EnumEventTable();
 
     public enum EventType {
       GestureActivated = 100,

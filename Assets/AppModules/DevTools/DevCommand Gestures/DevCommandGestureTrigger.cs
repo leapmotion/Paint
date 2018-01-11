@@ -1,5 +1,4 @@
 ﻿using Leap.Unity.Attributes;
-using Leap.Unity.DevCommands;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +14,7 @@ namespace Leap.Unity.Gestures {
       set { _gesture = value as MonoBehaviour; }
     }
 
-    public DevCommandType devCommand;
+    public string devCommandName = "Recenter";
 
     void Reset() {
       if (gesture == null) {
@@ -25,7 +24,7 @@ namespace Leap.Unity.Gestures {
 
     void Update() {
       if (gesture.wasFinished) {
-        DevCommand.Invoke(devCommand);
+        DevCommand.Invoke(devCommandName);
       }
     }
 

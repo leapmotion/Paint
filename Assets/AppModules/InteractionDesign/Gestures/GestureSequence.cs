@@ -5,7 +5,13 @@ using UnityEngine;
 
 namespace Leap.Unity.Gestures {
 
-  public class GestureSequence : Gesture {
+  public class GestureSequence : Gesture, IPoseGesture {
+
+    #region Constants
+
+    public const float DEFAULT_GESTURE_HOLD_DURATION = 1f;
+
+    #endregion
 
     #region Inspector
 
@@ -54,6 +60,20 @@ namespace Leap.Unity.Gestures {
 
     #endregion
 
+    #region IPoseGesture
+
+    private Pose _latestGesturePose = Pose.identity;
+    /// <summary>
+    /// If there is an IPoseGesture somewhere in this GestureSequence, the sequence's
+    /// pose will be the latest pose returned by the latest IPoseGesture in the sequence.
+    /// Otherwise, the pose will simply be the identity pose.
+    /// </summary>
+    public Pose pose {
+      get { return _latestGesturePose; }
+    }
+
+    #endregion
+
     #region Unity Events
 
     int _curSequenceIdx = 0;
@@ -77,6 +97,12 @@ namespace Leap.Unity.Gestures {
         // active.
         if (curGestureNode.gesture.isActive) {
           shouldActivate = true;
+
+          // Check if the current gesture is an IPoseGesture, in which case, inherit its
+          // pose.
+          if (curGestureNode.gesture is IPoseGesture) {
+            this._latestGesturePose = (curGestureNode.gesture as IPoseGesture).pose;
+          }
         }
         
         if (curGestureNode.gesture.wasFinished) {
@@ -96,7 +122,6 @@ namespace Leap.Unity.Gestures {
           if (_curSequenceIdx == sequenceGraph.Length) {
             // We hit the end of the sequence successfully!
             shouldFinish = true;
-
             if (drawDebug) {
               DebugPing.Ping(Camera.main.transform.position
                              + Camera.main.transform.forward * 0.5f,
@@ -111,12 +136,30 @@ namespace Leap.Unity.Gestures {
           // Wait for the gesture to begin, or cancel this sequence if the
           // current gesture in the sequence was cancelled.
           if (curGestureNode.gesture.wasCancelled) {
+            if (drawDebug) {
+              DebugPing.Ping(Camera.main.transform.position
+                             + Camera.main.transform.forward * 0.5f,
+                             LeapColor.black, 0.11f * _curSequenceIdx);
+              DebugPing.Ping(Camera.main.transform.position
+                             + Camera.main.transform.forward * 0.5f,
+                             LeapColor.red, 0.105f * _curSequenceIdx);
+            }
+
             shouldCancel = true;
           }
           else if (!curGestureNode.gesture.isActive) {
             _nextGestureTimer += Time.deltaTime;
 
             if (_nextGestureTimer > curGestureNode.waitDuration) {
+              if (drawDebug) {
+                DebugPing.Ping(Camera.main.transform.position
+                               + Camera.main.transform.forward * 0.5f,
+                               LeapColor.black, 0.11f * _curSequenceIdx);
+                DebugPing.Ping(Camera.main.transform.position
+                               + Camera.main.transform.forward * 0.5f,
+                               LeapColor.black, 0.105f * _curSequenceIdx);
+              }
+
               shouldCancel = true;
             }
           }

@@ -1,12 +1,8 @@
 ﻿namespace Leap.Unity.Gestures {
 
-  public interface IPoseGesture {
+  public interface IPoseGesture : IGesture {
 
-    Pose currentPose { get; }
-
-    bool wasActivated { get; }
-    bool isActive { get; }
-    bool wasDeactivated { get; }
+    Pose pose { get; }
 
   }
 

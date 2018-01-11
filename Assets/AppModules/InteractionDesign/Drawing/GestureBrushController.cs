@@ -25,7 +25,7 @@ namespace Leap.Unity.LeapPaint {
     }
 
     void Update() {
-      brush.Move(poseGesture.currentPose);
+      brush.Move(poseGesture.pose);
 
       if (poseGesture.isActive && !brush.isBrushing) {
         brush.Begin();

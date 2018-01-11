@@ -6,6 +6,21 @@ namespace Leap.Unity.Gestures {
 
   public class DevCommandGesture_Recenter : TwoHandedHeldGesture {
 
+    #region Static Gesture Registration
+
+    /// <summary>
+    /// The DevCommand "Recenter" is included by default; for simplicity, we'll also
+    /// register the gesture defined in this file with the DevCommandGesture system.
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod]
+    private static void RuntimeInitializeOnLoad() {
+      DevCommandGesture.Register<DevCommandGesture_Recenter>("Recenter");
+    }
+
+    #endregion
+
+    #region TwoHandedHeldGesture
+
     public override bool IsGesturePoseHeld(Hand leftHand, Hand rightHand,
                                            out Vector3 positionOfInterest) {
 
@@ -59,6 +74,8 @@ namespace Leap.Unity.Gestures {
       return isGesturePoseHeld;
 
     }
+
+    #endregion
 
   }
 

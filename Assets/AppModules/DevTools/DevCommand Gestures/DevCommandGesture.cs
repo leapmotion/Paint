@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,40 @@ namespace Leap.Unity.Gestures {
 
     #region Static API
 
+    /// <summary>
+    /// Only use this method if there is already a DevCommand action associated with the 
+    /// provided command name. (By default, only the "Recenter" command exists in the
+    /// DevCommand system.) Otherwise, supply an Action to take as well.
+    /// </summary>
+    public static void Register<GestureType>(string commandName)
+                         where GestureType : IGesture {
+      DevCommandGesturesManager.RegisterCommand<GestureType>(commandName);
+    }
 
+    /// <summary>
+    /// Registers the command name and the associated Action in the DevCommand system,
+    /// and also handles gesture detection for the provided GestureType in the
+    /// DevCommandGesture system.
+    /// </summary>
+    public static void Register<GestureType>(string commandName,
+                                             Action commandAction)
+                         where GestureType : IGesture {
+      DevCommand.Register(commandName, commandAction);
+      DevCommandGesturesManager.RegisterCommand<GestureType>(commandName);
+    }
+
+    /// <summary>
+    /// Registers the command name and the associated Action in the DevCommand system,
+    /// and also handles gesture detection for the provided GestureType in the
+    /// DevCommandGesture system. TwoHandedHeldGestures provide position data, so
+    /// you can provide a command Action that takes a Vector3 as input.
+    /// </summary>
+    public static void Register<GestureType>(string commandName,
+                                             Action<Vector3> actionWithGesturePosition)
+                         where GestureType : TwoHandedHeldGesture {
+      DevCommand.Register(commandName, actionWithGesturePosition);
+      DevCommandGesturesManager.RegisterPositionCommand<GestureType>(commandName);
+    }
 
     #endregion
 
@@ -99,5 +133,30 @@ namespace Leap.Unity.Gestures {
     #endregion
 
   }
+
+  #region Hand Extensions
+
+  public static class HandExtensions {
+
+    //public static float GetFistAmount(this Hand hand, int fingerId) {
+    //  return Vector3.Dot(hand.Fingers[fingerId].Direction.ToVector3(),
+    //                     -hand.DistalAxis()).Map(-1, 1, 0, 1);
+    //}
+
+    public static float GetIndexPointAmount(this Hand hand) {
+      return Vector3.Dot(hand.Fingers[1].Direction.ToVector3(),
+                         hand.DistalAxis()).Map(-1, 1, 0, 1)
+             * ((Vector3.Dot(hand.Fingers[2].Direction.ToVector3(),
+                            -hand.DistalAxis())
+                 + Vector3.Dot(hand.Fingers[3].Direction.ToVector3(),
+                              -hand.DistalAxis())
+                 + Vector3.Dot(hand.Fingers[4].Direction.ToVector3(),
+                              -hand.DistalAxis()))
+                / 3).Map(-1, 1, 0, 1);
+    }
+
+  }
+
+  #endregion
 
 }

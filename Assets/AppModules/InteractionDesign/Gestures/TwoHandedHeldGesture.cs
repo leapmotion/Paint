@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace Leap.Unity.Gestures {
 
-  public abstract class TwoHandedHeldGesture : TwoHandedGesture {
-    
+  public abstract class TwoHandedHeldGesture : TwoHandedGesture, IPoseGesture {
+
+    #region Constants
+
     /// <summary>
     /// Convenience for children to have a common distance for determining when
     /// two points (e.g. fingertips) are "touching". Use _SQR to check squared distances.
@@ -24,18 +26,11 @@ namespace Leap.Unity.Gestures {
     /// </summary>
     protected const float MAX_ALIGNED_ANGLE = 40f;
 
+    #endregion
+
+    #region Private Memory
+
     private DeltaBuffer leftMinusRightHandPosBuffer = new DeltaBuffer(5);
-
-    [Header("Held Gesture")]
-    public float holdActivationDuration = 0.25f;
-
-    public bool drawHeldPoseDebug  = false;
-
-
-    public abstract bool IsGesturePoseHeld(Hand leftHand, Hand rightHand,
-                                           out Vector3 positionOfInterest);
-
-
 
     /// <summary>
     /// Set to true when the gesture finishes; this gesture won't be able to activate
@@ -44,10 +39,44 @@ namespace Leap.Unity.Gestures {
     /// </summary>
     private bool _gestureReady = true;
 
+    private float _gestureActiveTime = 0f;
+
+    private Vector3 _lastKnownPositionOfInterest = Vector3.zero;
+
+    #endregion
+
+    #region Inspector
+
+    [Header("Held Gesture")]
+    public float holdActivationDuration = 0.25f;
+
+    public bool drawHeldPoseDebug  = false;
+
+    #endregion
+
+    #region Abstract
+
+    public abstract bool IsGesturePoseHeld(Hand leftHand, Hand rightHand,
+                                           out Vector3 positionOfInterest);
+
+    #endregion
+
+    #region IPoseGesture
+
+    public Pose pose {
+      get {
+        return new Pose(_lastKnownPositionOfInterest, Quaternion.identity);
+      }
+    }
+
+    #endregion
+
+    #region TwoHandedGesture Implementation
 
     protected override bool ShouldGestureActivate(Hand leftHand, Hand rightHand) {
-      Vector3 spawnPosition;
-      bool isGesturePoseHeld = IsGesturePoseHeld(leftHand, rightHand, out spawnPosition);
+      Vector3 positionOfInterest;
+      bool isGesturePoseHeld = IsGesturePoseHeld(leftHand, rightHand, out positionOfInterest);
+      _lastKnownPositionOfInterest = positionOfInterest;
 
       if (!isGesturePoseHeld && !_gestureReady) {
         _gestureReady = true;
@@ -59,7 +88,7 @@ namespace Leap.Unity.Gestures {
       if (isRelativeHandVelocityLow && isGesturePoseHeld && _gestureReady) {
 
         if (drawHeldPoseDebug) {
-          DebugPing.Ping(spawnPosition, LeapColor.red, 0.10f);
+          DebugPing.Ping(positionOfInterest, LeapColor.red, 0.10f);
         }
 
         return true;
@@ -105,15 +134,16 @@ namespace Leap.Unity.Gestures {
     protected override bool ShouldGestureDeactivate(Hand leftHand, Hand rightHand,
         out DeactivationReason? deactivationReason) {
 
-      Vector3 spawnPosition;
-      bool isGesturePoseHeld = IsGesturePoseHeld(leftHand, rightHand, out spawnPosition);
+      Vector3 positionOfInterest;
+      bool isGesturePoseHeld = IsGesturePoseHeld(leftHand, rightHand, out positionOfInterest);
+      _lastKnownPositionOfInterest = positionOfInterest;
 
       if (updateIsRelativeHandVelocityLow(leftHand, rightHand)
           && isGesturePoseHeld) {
         if (_gestureActiveTime > holdActivationDuration) {
           // Gesture finished successfully.
           if (drawHeldPoseDebug) {
-            DebugPing.Ping(spawnPosition, LeapColor.cerulean, 0.20f);
+            DebugPing.Ping(positionOfInterest, LeapColor.cerulean, 0.20f);
           }
 
           deactivationReason = DeactivationReason.FinishedGesture;
@@ -149,8 +179,6 @@ namespace Leap.Unity.Gestures {
       leftMinusRightHandPosBuffer.Clear();
     }
 
-    private float _gestureActiveTime = 0f;
-
     protected override void WhileGestureActive(Hand leftHand, Hand rightHand) {
       base.WhileGestureActive(leftHand, rightHand);
 
@@ -163,26 +191,7 @@ namespace Leap.Unity.Gestures {
       _gestureActiveTime = 0f;
     }
 
-  }
-
-  public static class HandExtensions {
-
-    public static float GetFistAmount(this Hand hand, int fingerId) {
-      return Vector3.Dot(hand.Fingers[fingerId].Direction.ToVector3(),
-                         -hand.DistalAxis()).Map(-1, 1, 0, 1);
-    }
-
-    public static float GetIndexPointAmount(this Hand hand) {
-      return Vector3.Dot(hand.Fingers[1].Direction.ToVector3(),
-                         hand.DistalAxis()).Map(-1, 1, 0, 1)
-             * ((Vector3.Dot(hand.Fingers[2].Direction.ToVector3(),
-                            -hand.DistalAxis())
-                 + Vector3.Dot(hand.Fingers[3].Direction.ToVector3(),
-                              -hand.DistalAxis())
-                 + Vector3.Dot(hand.Fingers[4].Direction.ToVector3(),
-                              -hand.DistalAxis()))
-                / 3).Map(-1, 1, 0, 1);
-    }
+    #endregion
 
   }
 
