@@ -7,13 +7,24 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-namespace Leap.Unity.Recording {
+namespace Leap.Unity.Encoding {
 
+  /// <summary>
+  /// A Vector-based encoding of a Leap Hand.
+  /// 
+  /// The VectorHand static methods facilitate encoding and decoding between VectorHands,
+  /// Leap Hand objects, and byte-array representations suitable for storing or streaming
+  /// hand data. This is useful for recording and playing back hand data or in networking
+  /// scenarios.
+  /// 
+  /// Also see CurlHand for a more compressed but slightly less articulated encoding.
+  /// </summary>
   public struct VectorHand {
+
+    #region Data
 
     public const int NUM_JOINT_POSITIONS = 25;
 
@@ -34,6 +45,8 @@ namespace Leap.Unity.Recording {
       }
     }
 
+    #endregion
+
     /// <summary>
     /// Constructs a VectorHand representation from a Leap hand using VectorHand.Encode.
     /// </summary>
@@ -50,7 +63,9 @@ namespace Leap.Unity.Recording {
       toVectorHand.isLeft = hand.IsLeft;
       toVectorHand.palmPos = hand.PalmPosition.ToVector3();
       toVectorHand.palmRot = hand.Rotation.ToQuaternion();
-      if (toVectorHand.jointPositions == null || toVectorHand.jointPositions.Length != NUM_JOINT_POSITIONS) {
+
+      if (toVectorHand.jointPositions == null
+          || toVectorHand.jointPositions.Length != NUM_JOINT_POSITIONS) {
         toVectorHand.jointPositions = new Vector3[NUM_JOINT_POSITIONS];
       }
 
@@ -93,11 +108,12 @@ namespace Leap.Unity.Recording {
             boneRot = Quaternion.identity;
           }
           else {
-            boneRot = Quaternion.LookRotation((nextJoint - prevJoint).normalized,
-                                              Vector3.Cross((nextJoint - prevJoint).normalized,
-                                                (fingerIdx == 0 ?
-                                                  (isLeft ? -Vector3.up : Vector3.up) 
-                                                 : Vector3.right)));
+            boneRot = Quaternion.LookRotation(
+                        (nextJoint - prevJoint).normalized,
+                        Vector3.Cross((nextJoint - prevJoint).normalized,
+                                      (fingerIdx == 0 ?
+                                        (isLeft ? -Vector3.up : Vector3.up) 
+                                       : Vector3.right)));
           }
         
           // Convert to world space from palm space.
@@ -105,27 +121,29 @@ namespace Leap.Unity.Recording {
           prevJoint = ToWorld(prevJoint, palmPos, palmRot);
           boneRot = palmRot * boneRot;
 
-          toHand.GetBone(boneIdx).Fill(prevJoint: prevJoint.ToVector(),
-                                       nextJoint: nextJoint.ToVector(),
-                                       center:    ((nextJoint + prevJoint) / 2f).ToVector(),
-                                       direction: (palmRot * Vector3.forward).ToVector(),
-                                       length:    (prevJoint - nextJoint).magnitude,
-                                       width:     0.01f,
-                                       type:      (Bone.BoneType)jointIdx,
-                                       rotation:  boneRot.ToLeapQuaternion());
+          toHand.GetBone(boneIdx).Fill(
+            prevJoint: prevJoint.ToVector(),
+            nextJoint: nextJoint.ToVector(),
+            center: ((nextJoint + prevJoint) / 2f).ToVector(),
+            direction: (palmRot * Vector3.forward).ToVector(),
+            length: (prevJoint - nextJoint).magnitude,
+            width: 0.01f,
+            type: (Bone.BoneType)jointIdx,
+            rotation: boneRot.ToLeapQuaternion());
         }
-        toHand.Fingers[fingerIdx].Fill(frameId:                -1,
-                                       handId:                 (isLeft ? 0 : 1),
-                                       fingerId:               fingerIdx,
-                                       timeVisible:            Time.time,
-                                       tipPosition:            nextJoint.ToVector(),
-                                       tipVelocity:            Vector.Zero,
-                                       direction:              (boneRot * Vector3.forward).ToVector(),
-                                       stabilizedTipPosition:  nextJoint.ToVector(),
-                                       width:                  1f,
-                                       length:                 1f,
-                                       isExtended:             true,
-                                       type:                   (Finger.FingerType)fingerIdx);
+        toHand.Fingers[fingerIdx].Fill(
+          frameId: -1,
+          handId: (isLeft ? 0 : 1),
+          fingerId: fingerIdx,
+          timeVisible: Time.time,
+          tipPosition: nextJoint.ToVector(),
+          tipVelocity: Vector.Zero,
+          direction: (boneRot * Vector3.forward).ToVector(),
+          stabilizedTipPosition: nextJoint.ToVector(),
+          width: 1f,
+          length: 1f,
+          isExtended: true,
+          type: (Finger.FingerType)fingerIdx);
       }
 
       // Fill arm data.
@@ -155,7 +173,99 @@ namespace Leap.Unity.Recording {
                   palmNormal:             (palmRot * Vector3.down).ToVector(),
                   rotation:               (palmRot.ToLeapQuaternion()),
                   direction:              (palmRot * Vector3.forward).ToVector(),
-                  wristPosition:          ToWorld(new Vector3(0f, 0f, -0.055f), palmPos, palmRot).ToVector());
+                  wristPosition:          ToWorld(new Vector3(0f, 0f, -0.055f),
+                                                  palmPos,
+                                                  palmRot).ToVector());
+    }
+
+    #endregion
+
+    #region Byte Encoding & Decoding
+
+    /// <summary>
+    /// The number of bytes required to encode a VectorHand. The byte representation is
+    /// compressed to 86 bytes.
+    /// 
+    /// The first byte determines chirality, the camera-local hand position uses 6 bytes,
+    /// the camera-local hand rotation uses 4 bytes, and each joint position component is
+    /// encoded in hand-local space using 3 bytes.
+    /// </summary>
+    public const int BYTE_ENCODING_SIZE = 86;
+    
+    /// <summary>
+    /// Fills the provided byte array with a compressed, 86-byte form of this VectorHand,
+    /// starting at the provided offset.
+    /// 
+    /// Throws an IndexOutOfRangeException if the provided byte array doesn't have enough
+    /// space (starting from the offset) to write the number of bytes required.
+    /// </summary>
+    public void FillBytes(byte[] bytesToFill, ref int offset) {
+      if (bytesToFill.Length - offset < BYTE_ENCODING_SIZE) {
+        throw new System.IndexOutOfRangeException(
+          "Not enough room to fill bytes for VectorHand encoding starting at offset "
+        + offset + " for array of size " + bytesToFill.Length + "; need at least "
+        + BYTE_ENCODING_SIZE + " bytes from the offset position.");
+      }
+
+      // Chirality.
+      bytesToFill[offset++] = isLeft ? (byte)0x00 : (byte)0x01;
+      
+      // Palm position, each component compressed 
+      for (int i = 0; i < 3; i++) {
+        BitConverterNonAlloc.GetBytes(Convert.ToInt16(palmPos[i] * 4096f),
+                                      bytesToFill,
+                                      ref offset);
+      }
+
+      // Palm rotation.
+      Utils.CompressQuatToBytes(palmRot, bytesToFill, ref offset);
+
+      // Joint positions.
+      for (int j = 0; j < NUM_JOINT_POSITIONS; j++) {
+        for (int i = 0; i < 3; i++) {
+          bytesToFill[offset++] =
+            VectorHandUtilityExtensions.FloatToByte(_backingJointPositions[j][i]);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Fills the provided byte array with a compressed, 86-byte form of this VectorHand.
+    /// 
+    /// Throws an IndexOutOfRangeException if the provided byte array doesn't have enough
+    /// space to write the number of bytes required (see VectorHand.BYTE_ENCODING_SIZE).
+    /// </summary>
+    public void FillBytes(byte[] bytesToFill) {
+      int unusedOffset = 0;
+      FillBytes(bytesToFill, ref unusedOffset);
+    }
+
+    /// <summary>
+    /// Fills this VectorHand with data read from the provided byte array, starting at
+    /// the provided offset.
+    /// </summary>
+    public void FromBytes(byte[] bytesToRead, ref int offset) {
+      if (bytesToRead.Length - offset < BYTE_ENCODING_SIZE) {
+        throw new System.IndexOutOfRangeException(
+          "Not enough room to read bytes for VectorHand encoding starting at offset "
+          + offset + " for array of size " + bytesToRead + "; need at least "
+          + BYTE_ENCODING_SIZE + " bytes from the offset position.");
+      }
+
+      for (int i = 0; i < 3; i++) {
+        palmPos[i] = Convert.ToSingle(
+                       BitConverterNonAlloc.ToUInt16(bytesToRead, ref offset))
+                     / 4096f;
+      }
+
+      palmRot = Utils.DecompressBytesToQuat(bytesToRead, ref offset);
+
+      for (int i = 0; i < NUM_JOINT_POSITIONS; i++) {
+        for (int j = 0; j < 3; j++) {
+          _backingJointPositions[i][j] =
+            VectorHandUtilityExtensions.ByteToFloat(bytesToRead[offset++]);
+        }
+      }
     }
 
     #endregion
@@ -195,6 +305,29 @@ namespace Leap.Unity.Recording {
     /// </summary>
     public static Bone GetBone(this Hand hand, int boneIdx) {
       return hand.Fingers[boneIdx / 4].bones[boneIdx % 4];
+    }
+
+    /// <summary>
+    /// Compresses a float into a byte based on the desired movement range.
+    /// </summary>
+    public static byte FloatToByte(float inFloat, float movementRange = 0.3f) {
+      float clamped = Mathf.Clamp(inFloat, -movementRange / 2f, movementRange / 2f);
+      clamped += movementRange / 2f;
+      clamped /= movementRange;
+      clamped *= 255f;
+      clamped = Mathf.Floor(clamped);
+      return (byte)clamped;
+    }
+
+    /// <summary>
+    /// Expands a byte back into a float based on the desired movement range.
+    /// </summary>
+    public static float ByteToFloat(byte inByte, float movementRange = 0.3f) {
+      float clamped = (float)inByte;
+      clamped /= 255f;
+      clamped *= movementRange;
+      clamped -= movementRange / 2f;
+      return clamped;
     }
 
   }

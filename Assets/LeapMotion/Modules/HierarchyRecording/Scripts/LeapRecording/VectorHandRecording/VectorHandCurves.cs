@@ -7,6 +7,7 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
+using Leap.Unity.Encoding;
 using UnityEngine;
 
 namespace Leap.Unity.Recording {
