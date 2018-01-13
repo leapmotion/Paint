@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Launcher/Prototyping v1 Rails.unity
-    guid: 0c6dad2bd17f9a049ae3a5c410cb4936
+    path: Assets/archives/LeapPaint (v3 archive)/zzOld_LeapPaint/Scenes/LeapPaint.unity
+    guid: f94697f2b06bef4468ddf5104a43dd74

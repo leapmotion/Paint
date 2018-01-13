@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 using Vecs = System.Collections.Generic.List<UnityEngine.Vector3>;
+using Vec2s = System.Collections.Generic.List<UnityEngine.Vector2>;
 using Ints = System.Collections.Generic.List<int>;
 using Cols = System.Collections.Generic.List<UnityEngine.Color>;
 
@@ -18,6 +19,15 @@ namespace Leap.Unity.MeshGen {
       normals = Pool<Vecs>.Spawn();
     }
 
+    private static void borrowGeneratorResources(out Vecs verts,
+                                                 out Ints indices,
+                                                 out Vecs normals,
+                                                 out Vec2s uvs) {
+      borrowGeneratorResources(out verts, out indices, out normals);
+
+      uvs = Pool<Vec2s>.Spawn();
+    }
+
     private static void returnGeneratorResources(Vecs verts,
                                                  Ints indices,
                                                  Vecs normals) {
@@ -31,6 +41,16 @@ namespace Leap.Unity.MeshGen {
       Pool<Vecs>.Recycle(normals);
     }
 
+    private static void returnGeneratorResources(Vecs verts,
+                                                 Ints indices,
+                                                 Vecs normals,
+                                                 Vec2s uvs) {
+      returnGeneratorResources(verts, indices, normals);
+
+      uvs.Clear();
+      Pool<Vec2s>.Recycle(uvs);
+    }
+
     #endregion
 
     #region Apply Resources to Mesh
@@ -38,7 +58,8 @@ namespace Leap.Unity.MeshGen {
     private static void apply(Mesh mesh, Vecs verts,
                                          Ints indices,
                                          Vecs normals = null,
-                                         Cols colors = null) {
+                                         Cols colors = null,
+                                         Vec2s uvs = null) {
       mesh.Clear();
 
       mesh.SetVertices(verts);
@@ -53,6 +74,13 @@ namespace Leap.Unity.MeshGen {
       
       if (colors != null) {
         mesh.SetColors(colors);
+      }
+
+      if (uvs != null) {
+        mesh.SetUVs(0, uvs);
+        #if UNITY_EDITOR
+        UnityEditor.Unwrapping.GenerateSecondaryUVSet(mesh);
+        #endif
       }
     }
 
@@ -108,6 +136,17 @@ namespace Leap.Unity.MeshGen {
 
       apply(mesh, verts, indices, normals);
       returnGeneratorResources(verts, indices, normals);
+    }
+
+    public static void GenerateCircle(Mesh mesh, float radius, int numDivisions = 32) {
+      Vecs verts; Ints indices; Vecs normals; Vec2s uvs;
+      borrowGeneratorResources(out verts, out indices, out normals, out uvs);
+
+      CircleSupport.AddIndices(indices, verts.Count, numDivisions);
+      CircleSupport.AddVerts(verts, normals, uvs, radius, numDivisions);
+
+      apply(mesh, verts, indices, normals, null, uvs);
+      returnGeneratorResources(verts, indices, normals, uvs);
     }
 
     #endregion

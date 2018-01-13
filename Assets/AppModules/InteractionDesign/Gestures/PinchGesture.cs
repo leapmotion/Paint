@@ -15,13 +15,19 @@ namespace Leap.Unity.Gestures {
 
     [Tooltip("Higher = pinky must be opened further out to begin a pinch")]
     [Range(0f, 1f)]
+    [DevGui.DevCategory("Safety Pinch")]
+    [DevGui.DevValue]
     public float maxPinkyCurl = 0.2f;
 
     [Tooltip("Higher = index must curl faster relative to pinky curl velocity to pinch")]
     [Range(-1f, 7f)]
+    [DevGui.DevCategory("Safety Pinch")]
+    [DevGui.DevValue]
     public float minIndexMinusPinkyCurlVel = 1.5f;
 
     [Range(0f, 5f)]
+    [DevGui.DevCategory("Safety Pinch")]
+    [DevGui.DevValue]
     public float minIndexCurlVel = 0.5f;
 
     [Range(0f, 1f)]
