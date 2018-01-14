@@ -44,6 +44,17 @@ namespace Leap.Unity.Meshing {
 
     #endregion
 
+    #region Standard Construction (Pooled Verts)
+
+    public static Polygon SpawnWithPooledVerts() {
+      Polygon polygon = new Polygon();
+      polygon.verts = Pool<List<int>>.Spawn();
+      polygon.verts.Clear();
+      return polygon;
+    }
+
+    #endregion
+
     #region Operations
 
     /// <summary>

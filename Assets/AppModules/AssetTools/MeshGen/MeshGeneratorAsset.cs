@@ -10,7 +10,7 @@ namespace Leap.Unity.MeshGen {
 
   public class MeshGeneratorAsset : ScriptableObject {
 
-    [SerializeField, HideInInspector]
+    [SerializeField]
     private MeshGenerator _meshGenerator;
 
     /// <summary>
@@ -47,8 +47,8 @@ namespace Leap.Unity.MeshGen {
     #region Mesh Generator Asset Creation
 
 #if UNITY_EDITOR
-    private const string DEFAULT_ASSET_NAME = "Mesh Generator";
-    private const string DEFAULT_MESH_NAME  = "Generated Mesh";
+    public const string DEFAULT_ASSET_NAME = "Mesh Generator";
+    public const string DEFAULT_MESH_NAME  = "Generated Mesh";
 
     [MenuItem("Assets/Create/Mesh Generator", priority = 306)]
     private static void createNewMeshGeneratorAsset(MenuCommand command) {

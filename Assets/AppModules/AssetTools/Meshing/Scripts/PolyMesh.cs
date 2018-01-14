@@ -218,6 +218,33 @@ namespace Leap.Unity.Meshing {
     }
 
     /// <summary>
+    /// Appends polygon data from the argument PolyMesh into this PolyMesh.
+    /// 
+    /// The Polygons in the original PolyMesh are deep-copied into this PolyMesh, so the
+    /// original polygon in the argument PolyMesh remain unchanged.
+    /// </summary>
+    public void Append(PolyMesh otherPolyMesh) {
+      int origPositionCount = _positions.Count;
+
+      AddPositions(otherPolyMesh.positions);
+
+      var deepCopyPolygons = Pool<List<Polygon>>.Spawn();
+      try {
+        foreach (var polygon in otherPolyMesh.polygons) {
+          deepCopyPolygons.Add(polygon.Copy());
+        }
+        
+        foreach (var polygon in deepCopyPolygons) {
+          AddPolygon(polygon.IncrementIndices(origPositionCount));
+        }
+      }
+      finally {
+        deepCopyPolygons.Clear();
+        Pool<List<Polygon>>.Recycle(deepCopyPolygons);
+      }
+    }
+
+    /// <summary>
     /// Fills this PolyMesh with data from the other PolyMesh (via deep copy). The result
     /// is an identical but independent mesh.
     /// </summary>
@@ -3076,6 +3103,76 @@ namespace Leap.Unity.Meshing {
           Pool<List<Vector3>>.Recycle(normals);
         }
       }
+    }
+
+    /// <summary>
+    /// Clears and fills this PolyMesh with data from the provided Unity mesh object.
+    /// 
+    /// This conversion is not one-to-one. PolyMesh data reconstructs normals from
+    /// polygons, so converting a Unity mesh to a PolyMesh and back will result in a mesh
+    /// with flat shading.
+    /// </summary>
+    public void FromUnityMesh(Mesh mesh, int submesh = 0) {
+      using (new ProfilerSample("PolyMesh: FromUnityMesh")) {
+        this.Clear();
+        
+        var positions = Pool<List<Vector3>>.Spawn();
+        positions.Clear();
+        var triangles = Pool<List<int>>.Spawn();
+        triangles.Clear();
+        try {
+          mesh.GetVertices(positions);
+          mesh.GetTriangles(triangles, submesh);
+
+          using (new ProfilerSample("PolyMesh: FromUnityMesh: Add Positions")) {
+            this.AddPositions(positions);
+          }
+
+          using (new ProfilerSample("PolyMesh: FromUnityMesh: Add Polygons")) {
+            for (int i = 0; i + 2 < triangles.Count; i += 3) {
+              var newPoly = Polygon.SpawnWithPooledVerts();
+              newPoly.verts.Add(triangles[i + 0]);
+              newPoly.verts.Add(triangles[i + 1]);
+              newPoly.verts.Add(triangles[i + 2]);
+              this.AddPolygon(newPoly);
+            }
+          }
+        }
+        finally {
+          positions.Clear();
+          Pool<List<Vector3>>.Recycle(positions);
+
+          triangles.Clear();
+          Pool<List<int>>.Recycle(triangles);
+        }
+      }
+    }
+
+    #endregion
+
+    #region Unity Mesh Utilities
+
+    [System.ThreadStatic]
+    private static PolyMesh _backingRoundTripBuffer = null;
+    private static PolyMesh _roundTripBuffer {
+      get {
+        if (_backingRoundTripBuffer == null) {
+          _backingRoundTripBuffer = new PolyMesh(enableEdgeData: false);
+        }
+        return _backingRoundTripBuffer;
+      }
+    }
+
+    /// <summary>
+    /// Converts the unityMesh into a PolyMesh, then back.
+    /// 
+    /// This will convert a smooth shaded Unity mesh (with shared vertices) into a
+    /// flat-shaded Unity mesh.
+    /// </summary>
+    public static void RoundTrip(Mesh unityMesh) {
+      _roundTripBuffer.FromUnityMesh(unityMesh);
+      unityMesh.Clear();
+      _roundTripBuffer.FillUnityMesh(unityMesh);
     }
 
     #endregion

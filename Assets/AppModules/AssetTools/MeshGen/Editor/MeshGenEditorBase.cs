@@ -67,7 +67,7 @@ namespace Leap.Unity.MeshGen {
           var generatorType = _generatorTypes[value];
           generator = (MeshGenerator)CreateInstance(generatorType);
           generator.name = generatorType.Name;
-          generator.hideFlags = HideFlags.HideInHierarchy;
+          //generator.hideFlags = HideFlags.HideInHierarchy;
 
           // Assign the new generator (delegated to implementation, which may store
           // as an asset or in a MonoBehaviour.)

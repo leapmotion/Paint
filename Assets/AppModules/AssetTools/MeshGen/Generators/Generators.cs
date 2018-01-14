@@ -82,6 +82,7 @@ namespace Leap.Unity.MeshGen {
         UnityEditor.Unwrapping.GenerateSecondaryUVSet(mesh);
         #endif
       }
+
     }
 
     #endregion
@@ -90,15 +91,32 @@ namespace Leap.Unity.MeshGen {
 
     public static void GenerateTorus(Mesh mesh,
                                      float majorRadius, int numMajorSegments,
-                                     float minorRadius, int numMinorSegments) {
-      Vecs verts; Ints indices; Vecs normals;
-      borrowGeneratorResources(out verts, out indices, out normals);
+                                     float minorRadius, int numMinorSegments,
+                                     float minorStartAngle = 0f,
+                                     float maxMinorArcAngle = 360f,
+                                     bool shadeFlat = false) {
+      Vecs verts; Ints indices; Vecs normals; Vec2s uvs;
+      borrowGeneratorResources(out verts, out indices, out normals, out uvs);
 
-      TorusSupport.AddIndices(indices, verts.Count, numMajorSegments, numMinorSegments);
-      TorusSupport.AddVerts(verts, normals, majorRadius, numMajorSegments, minorRadius, numMinorSegments);
+      TorusSupport.AddIndices(indices, verts.Count,
+                              numMajorSegments,
+                              numMinorSegments,
+                              maxMinorArcAngle);
+      TorusSupport.AddVerts(verts, normals, uvs,
+                            majorRadius, numMajorSegments,
+                            minorRadius, numMinorSegments,
+                            minorStartAngle: minorStartAngle,
+                            maxMinorArcAngle: maxMinorArcAngle);
 
-      apply(mesh, verts, indices, normals);
-      returnGeneratorResources(verts, indices, normals);
+
+
+      apply(mesh, verts, indices, normals, uvs: uvs);
+
+      returnGeneratorResources(verts, indices, normals, uvs);
+
+      if (shadeFlat) {
+        Meshing.PolyMesh.RoundTrip(mesh);
+      }
     }
 
     public static void GenerateRoundedRectPrism(Mesh mesh,
