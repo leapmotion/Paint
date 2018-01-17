@@ -32,6 +32,7 @@ ExportedObj/
 Temp/
 Build/
 
+.vs/
 .vscode/
 .leu
 
