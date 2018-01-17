@@ -19,8 +19,10 @@ namespace Leap.Unity.MeshGen {
           actualNumMinorSegments += 1;
           totalAngle += anglePerMinorStep;
         }
+
         if (maxMinorArcAngle < 360f) shouldCloseLoop = false;
-        else shouldCloseLoop = true;
+        else                         shouldCloseLoop = true;
+
         return actualNumMinorSegments;
       }
 
@@ -30,7 +32,7 @@ namespace Leap.Unity.MeshGen {
         List<int> i = outIndices;
         int v0 = startingVertCount;
 
-        // Apply maxMinorArcAngle to get the actual numbert of minor segments to use.
+        // Apply maxMinorArcAngle to get the actual number of minor segments to use.
         bool closeLoop;
         int maxNumMinorSegments = getMaxNumMinorSegments(numMinorSegments,
                                                          maxMinorArcAngle,
@@ -38,24 +40,27 @@ namespace Leap.Unity.MeshGen {
         if (maxNumMinorSegments == 0) return;
         int maybeMinusOneSegment = closeLoop ? 0 : -1;
 
-        int totalNumVerts = maxNumMinorSegments * numMajorSegments;
+        int totalNumVerts = (maxNumMinorSegments + 1) * numMajorSegments;
 
-
+        
         int ring0StartIdx = 0;
-        int ring1StartIdx = maxNumMinorSegments;
+        int ring1StartIdx = maxNumMinorSegments + 1;
         for (int m = 0; m < numMajorSegments; m++) {
           for (int n = 0; n < maxNumMinorSegments + maybeMinusOneSegment; n++) {
             int a = ring0StartIdx + n;
             int b = ring0StartIdx + n + 1;
             int c = ring1StartIdx + n;
             int d = ring1StartIdx + n + 1;
+            a %= totalNumVerts;
+            b %= totalNumVerts;
+            c %= totalNumVerts;
+            d %= totalNumVerts;
             i.AddTri(v0, a, c, b);
             i.AddTri(v0, b, c, d);
           }
 
-          ring0StartIdx += maxNumMinorSegments;
-          ring1StartIdx += maxNumMinorSegments;
-          ring1StartIdx %= totalNumVerts;
+          ring0StartIdx += (maxNumMinorSegments + 1);
+          ring1StartIdx += (maxNumMinorSegments + 1);
         }
       }
 
@@ -68,11 +73,11 @@ namespace Leap.Unity.MeshGen {
         List<Vector3> v = outVerts;
 
         // Apply maxMinorArcAngle to get the actual numbert of minor segments to use.
-        bool closeLoop;
+        bool unused_closeLoop;
         int maxNumMinorSegments = getMaxNumMinorSegments(numMinorSegments,
                                                          maxMinorArcAngle,
-                                                         out closeLoop);
-        int maybeMinusOneSegment = closeLoop ? 0 : -1;
+                                                         out unused_closeLoop);
+        //int maybeMinusOneSegment = closeLoop ? 0 : -1;
 
         Vector3 majorNormal = Vector3.up;
         Vector3 majorRadialDir = Vector3.right;
@@ -82,18 +87,25 @@ namespace Leap.Unity.MeshGen {
 
         Quaternion majorRotation = Quaternion.AngleAxis(majorTheta, majorNormal);
         for (int i = 0; i < numMajorSegments; i++) {
-          for (int j = 0; j < maxNumMinorSegments + 1 + maybeMinusOneSegment; j++) {
-            Vector3 minorRadial = Quaternion.AngleAxis(minorTheta * j + minorStartAngle,
+          for (int j = 0; j < maxNumMinorSegments + 1; j++) {
+
+            var effRadialJ = j;
+            if (j == maxNumMinorSegments) effRadialJ = 0;
+            Vector3 minorRadial = Quaternion.AngleAxis(minorTheta
+                                                       * effRadialJ + minorStartAngle,
                                                        minorNormal)
                                   * (majorRadialDir * minorRadius);
+
             v.Add((majorRadialDir * majorRadius) + minorRadial);
+
             outNormals.Add(minorRadial.normalized);
 
             outUVs.Add(Swizzle.Swizzle.xz(majorRadialDir * 0.2f
-                                          + ((float)j).Map(0, maxNumMinorSegments,
+                                          + ((float)j).Map(0, numMinorSegments,
                                                            0f, 0.8f)
                                             * majorRadialDir));
           }
+
           majorRadialDir = majorRotation * majorRadialDir;
           minorNormal = majorRotation * minorNormal;
         }

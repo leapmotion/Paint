@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Launcher Outline Hand L
+  m_Name: Paint v6 Hand Left
   m_Shader: {fileID: 4800000, guid: 98144af7172bb8d4f87db4c8db6a426b, type: 3}
   m_ShaderKeywords: _ISLEFTHAND_ON
   m_LightmapFlags: 4
@@ -70,10 +70,10 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _Width: 0.002
+    - _Width: 0.0015
     - _ZWrite: 1
     - _isLeftHand: 1
     m_Colors:
-    - _Color: {r: 1, g: 0.4852941, b: 0.4852941, a: 1}
+    - _Color: {r: 0.55606616, g: 0.8897059, b: 0.57217294, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Outline: {r: 1, g: 1, b: 1, a: 1}
