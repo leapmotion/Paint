@@ -169,8 +169,10 @@ namespace Leap.Unity {
     protected Vector3    warpedPosition = Vector3.zero;
     protected Quaternion warpedRotation = Quaternion.identity;
     protected Matrix4x4[] _transformArray = new Matrix4x4[2];
+    private Pose? _trackingBaseDeltaPose = null;
 
     private Camera _cachedCamera;
+
 
     [NonSerialized]
     public long imageTimeStamp = 0;
@@ -211,10 +213,20 @@ namespace Leap.Unity {
       }
       #endif
 
-      transformHistory.UpdateDelay(
-        InputTracking.GetLocalPosition(XRNode.CenterEye),
-        InputTracking.GetLocalRotation(XRNode.CenterEye),
-        _leapController.Now());
+      // Get most recent tracked pose.
+      var trackedPose = new Pose(InputTracking.GetLocalPosition(XRNode.CenterEye),
+                                 InputTracking.GetLocalRotation(XRNode.CenterEye));
+
+      // If we don't know of any pose offset yet, account for it by finding the pose
+      // delta from the "local" tracked pose to the actual camera pose.
+      if (!_trackingBaseDeltaPose.HasValue) {
+        _trackingBaseDeltaPose = _cachedCamera.transform.ToWorldPose().From(trackedPose);
+      }
+      
+      // This way, we always track a scene-space tracked pose.
+      var effTransformPose = trackedPose.Then(_trackingBaseDeltaPose.Value);
+
+      transformHistory.UpdateDelay(effTransformPose, _leapController.Now());
 
       OnPreCullHandTransforms(_cachedCamera);
     }
