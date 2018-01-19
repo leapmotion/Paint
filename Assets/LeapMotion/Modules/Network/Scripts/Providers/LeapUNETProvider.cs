@@ -8,10 +8,10 @@ namespace Leap.Unity.Networking {
   public class LeapUNETProvider : NetworkBehaviour {
     public const string F_N = "LeapUNETProvider";
 
-    public FrameEncodingEnum FrameEncodingType;
-    public Transform HandController;
-    LeapServiceProvider LeapDataProvider;
-    LeapStreamingProvider NetworkDataProvider;
+    public FrameEncodingEnum frameEncodingType;
+    public Transform handController;
+    LeapServiceProvider leapDataProvider;
+    LeapStreamingProvider networkDataProvider;
     float lastUpdate = 0f;
     float interval = 0.035f;
     byte[] handData;
@@ -22,7 +22,7 @@ namespace Leap.Unity.Networking {
     void Start() {
       //Application.targetFrameRate = 60;
       if (isLocalPlayer) {
-        switch (FrameEncodingType) {
+        switch (frameEncodingType) {
           case FrameEncodingEnum.VectorHand:
             playerState = new VectorFrameEncoding();
             break;
@@ -33,37 +33,38 @@ namespace Leap.Unity.Networking {
             playerState = new VectorFrameEncoding();
             break;
         }
-        LeapDataProvider = HandController.gameObject.AddComponent<LeapServiceProvider>();
+        //LeapDataProvider = HandController.gameObject.AddComponent<LeapServiceProvider>();
+        leapDataProvider = handController.gameObject.AddComponent<LeapXRServiceProvider>();
         //ENABLE THESE AGAIN ONCE THE SERVICE HAS THESE EXPOSED SOMEHOW
         //LeapDataProvider._temporalWarping = HandController.parent.GetComponent<LeapVRTemporalWarping>();
         //LeapDataProvider._temporalWarping.provider = LeapDataProvider;
         //LeapDataProvider._isHeadMounted = true;
-        LeapDataProvider.UpdateHandInPrecull = true;
+        //LeapDataProvider.UpdateHandInPrecull = true;
       } else {
-        NetworkDataProvider = HandController.gameObject.AddComponent<LeapStreamingProvider>();
-        Destroy(HandController.parent.GetComponent<LeapVRTemporalWarping>());
-        switch (FrameEncodingType) {
+        networkDataProvider = handController.gameObject.AddComponent<LeapStreamingProvider>();
+        //Destroy(handController.parent.GetComponent<LeapXRTemporalWarping>());
+        switch (frameEncodingType) {
           case FrameEncodingEnum.VectorHand:
             playerState = new VectorFrameEncoding();
-            NetworkDataProvider.lerpState = new VectorFrameEncoding();
-            NetworkDataProvider.prevState = new VectorFrameEncoding();
-            NetworkDataProvider.currentState = new VectorFrameEncoding();
+            networkDataProvider.lerpState = new VectorFrameEncoding();
+            networkDataProvider.prevState = new VectorFrameEncoding();
+            networkDataProvider.currentState = new VectorFrameEncoding();
             break;
           case FrameEncodingEnum.CurlHand:
             playerState = new CurlFrameEncoding();
-            NetworkDataProvider.lerpState = new CurlFrameEncoding();
-            NetworkDataProvider.prevState = new CurlFrameEncoding();
-            NetworkDataProvider.currentState = new CurlFrameEncoding();
+            networkDataProvider.lerpState = new CurlFrameEncoding();
+            networkDataProvider.prevState = new CurlFrameEncoding();
+            networkDataProvider.currentState = new CurlFrameEncoding();
             break;
           default:
             playerState = new VectorFrameEncoding();
-            NetworkDataProvider.lerpState = new VectorFrameEncoding();
-            NetworkDataProvider.prevState = new VectorFrameEncoding();
-            NetworkDataProvider.currentState = new VectorFrameEncoding();
+            networkDataProvider.lerpState = new VectorFrameEncoding();
+            networkDataProvider.prevState = new VectorFrameEncoding();
+            networkDataProvider.currentState = new VectorFrameEncoding();
             break;
         }
       }
-      HandController.gameObject.AddComponent<LeapHandController>();
+      //handController.gameObject.AddComponent<LeapHandController>();
       playerState.fillEncoding(null);
     }
 
@@ -73,8 +74,8 @@ namespace Leap.Unity.Networking {
         handData = data;
         if (playerState != null && handData != null) {
           playerState.fillEncoding(handData);
-          if (NetworkDataProvider) {
-            NetworkDataProvider.AddFrameState(playerState); //Enqueue new tracking data on an interval for everyone else
+          if (networkDataProvider) {
+            networkDataProvider.AddFrameState(playerState); //Enqueue new tracking data on an interval for everyone else
           }
         }
       }
@@ -93,7 +94,7 @@ namespace Leap.Unity.Networking {
         if (isLocalPlayer && (!isServer || (isServer && NetworkManager.singleton.numPlayers > 1))) {
           if (Time.realtimeSinceStartup > lastUpdate + interval) {
             lastUpdate = Time.realtimeSinceStartup;
-            playerState.fillEncoding(LeapDataProvider.CurrentFrame, HandController);
+            playerState.fillEncoding(leapDataProvider.CurrentFrame, handController);
             CmdsetState(playerState.data);
           }
         }
