@@ -7,6 +7,7 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
+using Leap.Unity.Encoding;
 using UnityEngine;
 
 namespace Leap.Unity.Recording {
@@ -71,7 +72,7 @@ namespace Leap.Unity.Recording {
       if (isTracked) {
         VectorHand vectorHand = Pool<VectorHand>.Spawn();
         try {
-          VectorHand.Encode(hand, ref vectorHand);
+          vectorHand.Encode(hand);
 
           palmPosCurves.AddKeyframes(time, vectorHand.palmPos);
           palmRotCurves.AddKeyframes(time, vectorHand.palmRot);
@@ -120,8 +121,8 @@ namespace Leap.Unity.Recording {
         for (int i = 0; i < VectorHand.NUM_JOINT_POSITIONS; i++) {
           vectorHand.jointPositions[i] = jointPositionCurves[i].Evaluate(time);
         }
-
-        VectorHand.Decode(ref vectorHand, intoHand);
+        
+        vectorHand.Decode(intoHand);
 
         // Fill temporal data if we have a hand from the previous sampling.
         if (_lastHand != null) {

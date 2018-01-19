@@ -3179,7 +3179,7 @@ Transform:
   m_PrefabParentObject: {fileID: 400028, guid: 8771af37c62650f4db3aad7a7c6f2ca1, type: 3}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1001489567}
-  m_LocalRotation: {x: 0.07399499, y: 0.009242229, z: 0.0752779, w: -0.9943704}
+  m_LocalRotation: {x: 0.073994994, y: 0.00924223, z: 0.07527791, w: -0.99437046}
   m_LocalPosition: {x: 0.009395302, y: 0.009582735, z: 0.007939848}
   m_LocalScale: {x: 1.0000006, y: 0.9999996, z: 0.9999994}
   m_Children:
@@ -3262,7 +3262,7 @@ Transform:
   - {fileID: 1755990374}
   m_Father: {fileID: 1314673909}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 67.727005, y: -56.464005, z: -36.146}
 --- !u!114 &1001489580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3335,7 +3335,7 @@ MonoBehaviour:
   forearm: {fileID: 0}
   wristJoint: {fileID: 0}
   elbowJoint: {fileID: 0}
-  setEditorLeapPose: 1
+  setEditorLeapPose: 0
   DeformPositionsInFingers: 1
   deformPositionsState: 1
   ModelPalmAtLeapWrist: 1
