@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Paint v6 Hand Left
-  m_Shader: {fileID: 4800000, guid: 98144af7172bb8d4f87db4c8db6a426b, type: 3}
+  m_Shader: {fileID: 4800000, guid: 6237aa93ad8f8d447911a2622e968d82, type: 3}
   m_ShaderKeywords: _ISLEFTHAND_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -62,15 +62,17 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _LitCoeff: 0.25
     - _Metallic: 0
     - _Mode: 0
+    - _ModelWidth: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _Width: 0.0015
+    - _Width: 0.001
     - _ZWrite: 1
     - _isLeftHand: 1
     m_Colors:

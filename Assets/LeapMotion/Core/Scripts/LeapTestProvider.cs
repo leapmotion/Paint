@@ -1,14 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Leap.Unity.Attributes;
+using Leap.Unity.Query;
+using Leap.Unity.Recording;
+using System.IO;
 using UnityEngine;
 
 namespace Leap.Unity {
 
+  [ExecuteInEditMode]
   public class LeapTestProvider : LeapProvider {
 
-    public Frame frame;
-    public override Frame CurrentFrame { get { return frame; } }
-    public override Frame CurrentFixedFrame { get { return frame; } }
+    #region Inspector
 
     [Header("Runtime Basis Transforms")]
 
@@ -28,6 +29,16 @@ namespace Leap.Unity {
     private Hand _rightHand = null;
     private Hand _cachedRightHand = null;
 
+    #endregion
+
+    #region LeapProvider Implementation
+
+    public Frame frame;
+    public override Frame CurrentFrame { get { return frame; } }
+    public override Frame CurrentFixedFrame { get { return frame; } }
+
+    #endregion
+    
     void Awake() {
       _cachedLeftHand  = TestHandFactory.MakeTestHand(isLeft: true,
                                            unitType: TestHandFactory.UnitType.UnityUnits);
@@ -60,12 +71,78 @@ namespace Leap.Unity {
         _rightHand.SetTransform(rightHandBasis.position, rightHandBasis.rotation);
       }
 
-      DispatchUpdateFrameEvent(frame);
+      if (Application.isPlaying) {
+        DispatchUpdateFrameEvent(frame);
+      }
+
+      // Test Pose
+      updateTestPose();
     }
 
     void FixedUpdate() {
-      DispatchFixedFrameEvent(frame);
+      if (Application.isPlaying) {
+        DispatchFixedFrameEvent(frame);
+      }
     }
+
+    #region Test Pose
+
+    #region Inspector
+
+    [Header("Test Pose")]
+
+    public TestPoseMode testPoseMode;
+    public enum TestPoseMode { EditTimePose, CapturedPose }
+
+    public StreamingFolder poseFolder;
+    public string poseName;
+
+    public bool captureModeEnabled = false;
+
+    [DisableIf("captureModeEnabled", isEqualTo: false)]
+    public LeapProvider poseCaptureSource;
+
+    [DisableIf("captureModeEnabled", isEqualTo: false)]
+    public KeyCode captureKey = KeyCode.C;
+
+    #endregion
+
+    #region Unity Events
+
+    private void updateTestPose() {
+
+      // Capturing
+      if (captureModeEnabled && Input.GetKeyDown(captureKey)) {
+        if (Application.isPlaying) {
+          Debug.Log("Can only capture during playmode.");
+        }
+        else {
+          if (poseCaptureSource == null) {
+            Debug.Log("Null capture source; can't capture pose.");
+          }
+          else {
+            var hand = poseCaptureSource.CurrentFrame
+                                         .Hands.Query()
+                                         .FirstOrDefault(h => !h.IsLeft);
+            if (hand == null) {
+              Debug.Log("Null hand, no capture.");
+            }
+            else {
+              var vectorHand = new VectorHand(hand);
+              //var bytes = null;
+              // NEED TO GET the WIP networking module up in here!!!!
+              var filePath = Path.Combine(poseFolder.Path,
+                                          Path.ChangeExtension(poseName, ".vectorhand"));
+              //File.WriteAllBytes(filePath, )
+            }
+          }
+        }
+      }
+    }
+
+    #endregion
+
+    #endregion
 
   }
 

@@ -287,7 +287,7 @@ namespace Leap.Unity {
         deformPositionsState = DeformPositionsInFingers;
       }
       if (setEditorLeapPose == false) {
-        RestoreJointsStartPose();
+        //RestoreJointsStartPose();
       }
     }
   }

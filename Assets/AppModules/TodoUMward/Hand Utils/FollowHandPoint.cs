@@ -1,4 +1,5 @@
 ﻿using Leap.Unity.Attributes;
+using Leap.Unity.Query;
 using UnityEngine;
 
 namespace Leap.Unity.Attachments {
@@ -54,12 +55,9 @@ namespace Leap.Unity.Attachments {
     private void onUpdateFrame(Frame frame) {
       if (frame == null) Debug.Log("Frame null");
 
-      var hand = Hands.Get(whichHand);
-
-      if (hand == null) {
-        
-      }
-
+      var hand = frame.Hands.Query()
+                            .FirstOrDefault(h => h.IsLeft == (whichHand == Chirality.Left));
+      
       if (hand != null) {
         _isHandTracked = true;
 
@@ -68,6 +66,14 @@ namespace Leap.Unity.Attachments {
           AttachmentPointBehaviour.GetLeapHandPointData(hand, attachmentPoint,
                                                         out pointPosition,
                                                         out pointRotation);
+
+          // Replace wrist rotation data with that from the palm for now.
+          if (attachmentPoint == AttachmentPointFlags.Wrist) {
+            Vector3 unusedPos;
+            AttachmentPointBehaviour.GetLeapHandPointData(hand, AttachmentPointFlags.Palm,
+                                                          out unusedPos,
+                                                          out pointRotation);
+          }
 
           this.transform.position = pointPosition;
           this.transform.rotation = pointRotation;
@@ -82,8 +88,10 @@ namespace Leap.Unity.Attachments {
 
     #region Frame Subscription
 
+    private LeapProvider _provider;
+
     private void unsubscribeFrameCallback() {
-      if (Hands.Provider != null) {
+      if (_provider != null) {
         switch (_followMode) {
           case FollowMode.Update:
             Hands.Provider.OnUpdateFrame -= onUpdateFrame;
@@ -96,7 +104,9 @@ namespace Leap.Unity.Attachments {
     }
 
     private void subscribeFrameCallback() {
-      if (Hands.Provider != null) {
+      if (_provider == null) _provider = Hands.Provider;
+
+      if (_provider != null) {
         switch (_followMode) {
           case FollowMode.Update:
             Hands.Provider.OnUpdateFrame += onUpdateFrame;
@@ -113,9 +123,7 @@ namespace Leap.Unity.Attachments {
     #region Editor Methods
 
     private void moveToAttachmentPointNow() {
-      Debug.Log("Trying to move via frame now");
-
-      //onUpdateFrame(TestHandFactory.Hands.Provider.editTimePose);
+      onUpdateFrame(Hands.Provider.CurrentFrame);
     }
 
     #endregion
