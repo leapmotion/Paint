@@ -154,10 +154,12 @@ namespace Leap.Unity.Animation {
       float i2 = i * i;
       float i3 = i2 * i;
 
+      float dt = t1 - t0;
+
       Vector3 h00 = (2 * i3 - 3 * i2 + 1) * pos0;
-      Vector3 h10 = (i3 - 2 * i2 + i) * (t1 - t0) * vel0;
+      Vector3 h10 = (i3 - 2 * i2 + i) * dt * vel0;
       Vector3 h01 = (-2 * i3 + 3 * i2) * pos1;
-      Vector3 h11 = (i3 - i2) * (t1 - t0) * vel1;
+      Vector3 h11 = (i3 - i2) * dt * vel1;
 
     //   ( 2*i3 - 3*i2 + 0*i + 1) * A
     // + ( 1*i3 - 2*i2 + 1*i + 0) * (tWidth) * B
@@ -167,14 +169,82 @@ namespace Leap.Unity.Animation {
       return h00 + h10 + h01 + h11;
     }
 
+    private Quaternion QuatFromAngleAxis(Vector3 angleAxisVector) {
+      var angle = angleAxisVector.magnitude;
+      var axis = angleAxisVector / angle;
+      return Quaternion.AngleAxis(angle, axis);
+    }
+
     /// <summary>
     /// Gets the rotation at time t along this spline. The time is clamped within the
     /// t0 - t1 range.
     /// </summary>
     public Quaternion RotationAt(float t) {
       float i = Mathf.Clamp01((t - t0) / (t1 - t0));
+      float i2 = i * i;
+      float i3 = i2 * i;
 
-      return Quaternion.Slerp(rot0, rot1, DefaultCurve.SigmoidUp.Evaluate(i));
+      float dt = t1 - t0;
+
+      var oneThird = 1 / 3f;
+
+      var w1 = Quaternion.Inverse(rot0) * angVel0 * dt * oneThird;
+      var w2 = (QuatFromAngleAxis(-angVel0)
+                * Quaternion.Inverse(rot0)
+                * rot1
+                * QuatFromAngleAxis(-angVel1)).ToAngleAxisVector();
+      var w3 = Quaternion.Inverse(rot1) * angVel1 * dt * oneThird;
+
+      var beta1 = i3 - (3 * i2) + (3 * i);
+      var beta2 = -2 * i3 + 3 * i2;
+      var beta3 = i3;
+
+      return rot0 * QuatFromAngleAxis(w1 * beta1)
+                  * QuatFromAngleAxis(w2 * beta2)
+                  * QuatFromAngleAxis(w3 * beta3);
+
+      // A cubic Bezier quaternion curve can be used to define a Hermite quaternion curve
+      // which interpolates two end unit quaternions, q_a and q_b, and two angular
+      // velocities omega_a and omega_b.
+      //
+      // var q_at_t = q_0 * PRODUCT(i = 1, i < 3, exp(omega_i * beta_q(i, t))
+      // "where beta_q(i, t) is beta_q(i, 3, t) for i = 1, 2, 3."
+      // 
+      // q coefficients:
+      // q_0 = q_a
+      // q_1 = q_a * exp(omega_a / 3)
+      // q_2 = q_b * exp(omega_b / 3)^-1
+      // q_3 = q_b
+      //
+      // omega coefficients:
+      // omega_1 = omega_a / 3
+      // omega_2 = log(exp(omega_a / 3)^-1 * q_a^-1 * q_b * exp(omega_b / 3)^-1)
+      // omega_3 = omega_b / 3
+      //
+      // Dependencies/definitions:
+      // "Bernstein basis", referred to as "beta"
+      // beta(i, n, t) = (n Choose i) * (1 - t)^(n - i) * t^i
+      // The form used in the formula above is 
+      // beta_q = SUM...
+      //
+      // The Exponential Mapping exp(v) and its Inverse
+      // "The exponential map can be interpreted as a mapping from the angular velocity
+      // vector (measured in S^3) into the unit quaternion which represents the rotation."
+      // ...
+      // "Given a vector v = theta * v_norm (in R^3), the exponential:
+      // exp(v) = SUM(i = 0, i -> inf, v^i) = (cos(theta), v_norm * sin(theta)) in S^3
+      // becomes the unit quaternion which represents the rotation by angle 2*theta
+      // about the axis v_norm, where v^i is computed using the quaternion multiplication."
+      // 
+      // In other words... The Exponential converts a VECTOR represented by an ANGLE
+      // and a normalized AXIS to a quaternion. A Unity function for this:
+      // exp(v) -> Q := Quaternion.AngleAxis(v.magnitude, v.normalized);
+      //
+      // Its inverse map, log, would thus be the conversion from a Quaternion to an
+      // Angle-Axis representation. Quaternion.ToAngleAxisVector():
+      // log(Q) -> v := Q.ToAngleAxisVector() -> v
+
+      //return Quaternion.Slerp(rot0, rot1, DefaultCurve.SigmoidUp.Evaluate(i));
 
       // TODO: This "hermite"-style interpolation of rotations is broken at
       // ~180 degree angles.
