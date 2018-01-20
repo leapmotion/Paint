@@ -594,6 +594,80 @@ MonoBehaviour:
         m_Calls: []
       m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
         PublicKeyToken=null
+--- !u!1 &885301104
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 885301106}
+  - component: {fileID: 885301105}
+  m_Layer: 0
+  m_Name: Leap Test Provider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &885301105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 885301104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb03ddd22a96bb141a8bd612a3b5afa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  editTimePose: 0
+  leftHandBasis: {fileID: 0}
+  rightHandBasis: {fileID: 0}
+  frame:
+    Id: 0
+    Timestamp: 0
+    CurrentFramesPerSecond: 0
+    Hands: []
+    InteractionBox:
+      Center:
+        x: 0
+        y: 0
+        z: 0
+      Size:
+        x: 0
+        y: 0
+        z: 0
+    HeadPosition:
+      x: 0
+      y: 0
+      z: 0
+    HeadOrientation:
+      x: 0
+      y: 0
+      z: 0
+      w: 0
+  testPoseMode: 0
+  poseFolder:
+    _assetFolder: {fileID: 102900000, guid: 3a8a5d13b9a11dc4b9428085133043e4, type: 3}
+    _relativePath: Poses
+  poseName: testpose
+  captureModeEnabled: 1
+  poseCaptureSource: {fileID: 1440997456}
+  captureKey: 99
+--- !u!4 &885301106
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 885301104}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0299557, y: 1.5426649, z: 0.2837978}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1053825971
 Prefab:
   m_ObjectHideFlags: 0

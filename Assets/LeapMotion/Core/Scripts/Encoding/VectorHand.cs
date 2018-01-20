@@ -21,6 +21,7 @@ namespace Leap.Unity.Encoding {
   /// 
   /// Also see CurlHand for a more compressed but slightly less articulated encoding.
   /// </summary>
+  [Serializable]
   public class VectorHand : IEncoding<Leap.Hand>,
                             IByteEncoding,
                             IByteCodec<Leap.Hand> {
@@ -33,6 +34,7 @@ namespace Leap.Unity.Encoding {
     public Vector3    palmPos;
     public Quaternion palmRot;
     
+    [SerializeField]
     private Vector3[]  _backingJointPositions;
     public Vector3[] jointPositions {
       get {
@@ -40,9 +42,6 @@ namespace Leap.Unity.Encoding {
           _backingJointPositions = new Vector3[NUM_JOINT_POSITIONS];
         }
         return _backingJointPositions;
-      }
-      set {
-        _backingJointPositions = value;
       }
     }
 
@@ -66,11 +65,6 @@ namespace Leap.Unity.Encoding {
       isLeft = fromHand.IsLeft;
       palmPos = fromHand.PalmPosition.ToVector3();
       palmRot = fromHand.Rotation.ToQuaternion();
-
-      if (jointPositions == null
-          || jointPositions.Length != NUM_JOINT_POSITIONS) {
-        jointPositions = new Vector3[NUM_JOINT_POSITIONS];
-      }
 
       int boneIdx = 0;
       for (int i = 0; i < 5; i++) {
@@ -209,8 +203,7 @@ namespace Leap.Unity.Encoding {
 
       for (int i = 0; i < NUM_JOINT_POSITIONS; i++) {
         for (int j = 0; j < 3; j++) {
-          _backingJointPositions[i][j] =
-            VectorHandExtensions.ByteToFloat(bytes[offset++]);
+          jointPositions[i][j] = VectorHandExtensions.ByteToFloat(bytes[offset++]);
         }
       }
     }
@@ -223,6 +216,12 @@ namespace Leap.Unity.Encoding {
     /// space (starting from the offset) to write the number of bytes required.
     /// </summary>
     public void FillBytes(byte[] bytesToFill, ref int offset) {
+      if (_backingJointPositions == null) {
+        throw new System.InvalidOperationException(
+          "Joint positions array is null. You must fill a VectorHand with data before "
+        + "you can use it to fill byte representations.");
+      }
+
       if (bytesToFill.Length - offset < numBytesRequired) {
         throw new System.IndexOutOfRangeException(
           "Not enough room to fill bytes for VectorHand encoding starting at offset "
@@ -247,7 +246,7 @@ namespace Leap.Unity.Encoding {
       for (int j = 0; j < NUM_JOINT_POSITIONS; j++) {
         for (int i = 0; i < 3; i++) {
           bytesToFill[offset++] =
-            VectorHandExtensions.FloatToByte(_backingJointPositions[j][i]);
+            VectorHandExtensions.FloatToByte(jointPositions[j][i]);
         }
       }
     }

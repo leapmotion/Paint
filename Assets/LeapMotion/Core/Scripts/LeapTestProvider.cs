@@ -1,7 +1,9 @@
 ﻿using Leap.Unity.Attributes;
+using Leap.Unity.Encoding;
 using Leap.Unity.Query;
 using Leap.Unity.Recording;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 namespace Leap.Unity {
@@ -38,7 +40,9 @@ namespace Leap.Unity {
     public override Frame CurrentFixedFrame { get { return frame; } }
 
     #endregion
-    
+
+    #region Unity Events
+
     void Awake() {
       _cachedLeftHand  = TestHandFactory.MakeTestHand(isLeft: true,
                                            unitType: TestHandFactory.UnitType.UnityUnits);
@@ -85,6 +89,8 @@ namespace Leap.Unity {
       }
     }
 
+    #endregion
+
     #region Test Pose
 
     #region Inspector
@@ -93,7 +99,7 @@ namespace Leap.Unity {
 
     public TestPoseMode testPoseMode;
     public enum TestPoseMode { EditTimePose, CapturedPose }
-
+    
     public StreamingFolder poseFolder;
     public string poseName;
 
@@ -113,7 +119,7 @@ namespace Leap.Unity {
 
       // Capturing
       if (captureModeEnabled && Input.GetKeyDown(captureKey)) {
-        if (Application.isPlaying) {
+        if (!Application.isPlaying) {
           Debug.Log("Can only capture during playmode.");
         }
         else {
@@ -124,16 +130,60 @@ namespace Leap.Unity {
             var hand = poseCaptureSource.CurrentFrame
                                          .Hands.Query()
                                          .FirstOrDefault(h => !h.IsLeft);
+            capturedHand.CopyFrom(hand);
             if (hand == null) {
               Debug.Log("Null hand, no capture.");
             }
             else {
-              var vectorHand = new VectorHand(hand);
-              //var bytes = null;
-              // NEED TO GET the WIP networking module up in here!!!!
-              var filePath = Path.Combine(poseFolder.Path,
-                                          Path.ChangeExtension(poseName, ".vectorhand"));
-              //File.WriteAllBytes(filePath, )
+              var vectorHand = Pool<VectorHand>.Spawn();
+              try {
+                var bytes = new byte[vectorHand.numBytesRequired];
+                vectorHand.FillBytes(bytes, from: hand);
+
+                var filePath = Path.Combine(poseFolder.Path,
+                                            Path.ChangeExtension(poseName, ".vectorhand"));
+                File.WriteAllBytes(filePath, bytes);
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("thumb_0: " + vectorHand.jointPositions[ 0].ToString("R") + "\n");
+                sb.Append("thumb_1: " + vectorHand.jointPositions[ 1].ToString("R") + "\n");
+                sb.Append("thumb_2: " + vectorHand.jointPositions[ 2].ToString("R") + "\n");
+                sb.Append("thumb_3: " + vectorHand.jointPositions[ 3].ToString("R") + "\n");
+                sb.Append("thumb_4: " + vectorHand.jointPositions[ 4].ToString("R") + "\n");
+
+                sb.Append("index_0: " + vectorHand.jointPositions[ 5].ToString("R") + "\n");
+                sb.Append("index_1: " + vectorHand.jointPositions[ 6].ToString("R") + "\n");
+                sb.Append("index_2: " + vectorHand.jointPositions[ 7].ToString("R") + "\n");
+                sb.Append("index_3: " + vectorHand.jointPositions[ 8].ToString("R") + "\n");
+                sb.Append("index_4: " + vectorHand.jointPositions[ 9].ToString("R") + "\n");
+
+                sb.Append("middle_0: " + vectorHand.jointPositions[10].ToString("R") + "\n");
+                sb.Append("middle_1: " + vectorHand.jointPositions[11].ToString("R") + "\n");
+                sb.Append("middle_2: " + vectorHand.jointPositions[12].ToString("R") + "\n");
+                sb.Append("middle_3: " + vectorHand.jointPositions[13].ToString("R") + "\n");
+                sb.Append("middle_4: " + vectorHand.jointPositions[14].ToString("R") + "\n");
+
+                sb.Append("ring_0: " + vectorHand.jointPositions[15].ToString("R") + "\n");
+                sb.Append("ring_1: " + vectorHand.jointPositions[16].ToString("R") + "\n");
+                sb.Append("ring_2: " + vectorHand.jointPositions[17].ToString("R") + "\n");
+                sb.Append("ring_3: " + vectorHand.jointPositions[18].ToString("R") + "\n");
+                sb.Append("ring_4: " + vectorHand.jointPositions[19].ToString("R") + "\n");
+
+                sb.Append("pinky_0: " + vectorHand.jointPositions[20].ToString("R") + "\n");
+                sb.Append("pinky_1: " + vectorHand.jointPositions[21].ToString("R") + "\n");
+                sb.Append("pinky_2: " + vectorHand.jointPositions[22].ToString("R") + "\n");
+                sb.Append("pinky_3: " + vectorHand.jointPositions[23].ToString("R") + "\n");
+                sb.Append("pinky_4: " + vectorHand.jointPositions[24].ToString("R") + "\n");
+
+                sb.Append("palm: " + hand.WristPosition.ToVector3().From(hand.PalmPosition.ToVector3()).ToString("R") + "\n");
+
+                var textPath = Path.Combine(poseFolder.Path,
+                                            Path.ChangeExtension(poseName, ".vhtextdesc"));
+                File.WriteAllText(textPath, sb.ToString());
+              }
+              finally {
+                Pool<VectorHand>.Recycle(vectorHand);
+              }
             }
           }
         }
