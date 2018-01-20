@@ -11,6 +11,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -24,6 +25,7 @@ namespace Leap.Unity.Recording {
     public static Action OnPreRecordFrame;
 
     public bool recordOnStart = false;
+    public bool recordOnHDMPresence = false;
     public string recordingName;
     public AssetFolder targetFolder;
 
@@ -71,8 +73,7 @@ namespace Leap.Unity.Recording {
     protected Dictionary<EditorCurveBinding, AnimationCurve> _curves;
     protected Dictionary<AudioSource, RecordedAudio> _audioData;
     protected Dictionary<Transform, List<TransformData>> _transformData;
-    protected Dictionary<Transform, TransformData> _initialTransformData;
-    protected Dictionary<Component, bool> _initialActivityData;
+    protected Dictionary<Component, SerializedObject> _initialComponentData;
     protected Dictionary<Component, List<ActivityData>> _behaviourActivity;
 
     public bool isRecording {
@@ -90,6 +91,10 @@ namespace Leap.Unity.Recording {
     }
 
     protected void LateUpdate() {
+      if (XRDevice.isPresent && XRDevice.userPresence == UserPresenceState.Present && !_isRecording) {
+        BeginRecording();
+      }
+
       if (Input.GetKeyDown(beginRecordingKey)) {
         BeginRecording();
       }
@@ -123,8 +128,7 @@ namespace Leap.Unity.Recording {
       _curves = new Dictionary<EditorCurveBinding, AnimationCurve>();
       _audioData = new Dictionary<AudioSource, RecordedAudio>();
       _transformData = new Dictionary<Transform, List<TransformData>>();
-      _initialTransformData = new Dictionary<Transform, TransformData>();
-      _initialActivityData = new Dictionary<Component, bool>();
+      _initialComponentData = new Dictionary<Component, SerializedObject>();
       _behaviourActivity = new Dictionary<Component, List<ActivityData>>();
     }
 
@@ -146,15 +150,41 @@ namespace Leap.Unity.Recording {
         }
 
         progress.Begin(1, "", "Reverting Scene State", () => {
-          foreach (var pair in _initialTransformData) {
-            pair.Key.localPosition = pair.Value.localPosition;
-            pair.Key.localRotation = pair.Value.localRotation;
-            pair.Key.localScale = pair.Value.localScale;
-            pair.Key.gameObject.SetActive(pair.Value.enabled);
+          //For all of our transform data, revert to the first piece recorded
+          foreach (var pair in _transformData) {
+            var transform = pair.Key;
+            var data = pair.Value;
+
+            if (transform == null || data.Count == 0) {
+              continue;
+            }
+
+            data[0].ApplyTo(transform);
           }
 
-          foreach (var pair in _initialActivityData) {
-            EditorUtility.SetObjectEnabled(pair.Key, pair.Value);
+          foreach (var pair in _initialComponentData) {
+            var component = pair.Key;
+            var sobj = pair.Value;
+
+            if (component == null) {
+              continue;
+            }
+
+            var flags = sobj.FindProperty("m_ObjectHideFlags");
+            if (flags == null) {
+              Debug.LogError("Could not find hide flags for " + component);
+              continue;
+            }
+
+            //We have to dirty the serialized object somehow
+            //apparently there is no api to do this
+            //all objects have hide flags so we just touch them and revert them
+            int originalFlags = flags.intValue;
+            flags.intValue = ~originalFlags;
+            flags.intValue = originalFlags;
+
+            //Applies previous state of entire component
+            sobj.ApplyModifiedProperties();
           }
         });
 
@@ -382,7 +412,7 @@ namespace Leap.Unity.Recording {
         AssetDatabase.Refresh();
 
         postProcessComponent.recordingName = recordingName;
-        postProcessComponent.assetFolder.Path = finalSubFolder;
+        postProcessComponent.assetFolder = new AssetFolder(finalSubFolder);
         postProcessComponent.leapData = _leapData;
 
         string prefabPath = Path.Combine(finalSubFolder, recordingName + " Raw.prefab");
@@ -410,6 +440,10 @@ namespace Leap.Unity.Recording {
         for (int i = 0; i < _components.Count; i++) {
           var component = _components[i];
 
+          if (!_initialComponentData.ContainsKey(component)) {
+            _initialComponentData[component] = new SerializedObject(component);
+          }
+
           if (component is Transform) _transforms.Add(component as Transform);
           if (component is AudioSource) _audioSources.Add(component as AudioSource);
           if (component is PropertyRecorder) _recorders.Add(component as PropertyRecorder);
@@ -418,23 +452,6 @@ namespace Leap.Unity.Recording {
           if (component is Renderer) _behaviours.Add(component);
           if (component is Collider) _behaviours.Add(component);
           if (component is IValueProxy) (component as IValueProxy).OnPullValue();
-        }
-
-        foreach (var transform in _transforms) {
-          if (!_initialTransformData.ContainsKey(transform)) {
-            _initialTransformData[transform] = new TransformData() {
-              localPosition = transform.localPosition,
-              localRotation = transform.localRotation,
-              localScale = transform.localScale,
-              enabled = transform.gameObject.activeSelf
-            };
-          }
-        }
-
-        foreach (var behaviour in _behaviours) {
-          if (!_initialActivityData.ContainsKey(behaviour)) {
-            _initialActivityData[behaviour] = EditorUtility.GetObjectEnabled(behaviour) == 1;
-          }
         }
 
         switch (audioSourceMode) {
@@ -553,7 +570,7 @@ namespace Leap.Unity.Recording {
 
           pair.Value.Add(new TransformData() {
             time = Time.time - _startTime,
-            enabled = pair.Key.gameObject.activeInHierarchy,
+            enabled = pair.Key.gameObject.activeSelf,
             localPosition = pair.Key.localPosition,
             localRotation = pair.Key.localRotation,
             localScale = pair.Key.localScale
@@ -681,6 +698,13 @@ namespace Leap.Unity.Recording {
             return TransformDataType.Activity;
         }
         throw new Exception();
+      }
+
+      public void ApplyTo(Transform transform) {
+        transform.localPosition = localPosition;
+        transform.localRotation = localRotation;
+        transform.localScale = localScale;
+        transform.gameObject.SetActive(enabled);
       }
     }
 
