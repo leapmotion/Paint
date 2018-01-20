@@ -128,7 +128,7 @@ namespace Leap.Unity {
               Debug.Log("Null hand, no capture.");
             }
             else {
-              var vectorHand = new VectorHand(hand);
+              //var vectorHand = new VectorHand(hand);
               //var bytes = null;
               // NEED TO GET the WIP networking module up in here!!!!
               var filePath = Path.Combine(poseFolder.Path,

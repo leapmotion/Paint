@@ -41,6 +41,7 @@ ModelImporter:
     100066: R_Wrist
     100068: Camera
     100070: Lamp
+    100072: LoPoly_Hand_Mesh_Right
     400000: Armature
     400002: //RootNode
     400004: MedPoly_Hand_Mesh_Right
@@ -77,12 +78,16 @@ ModelImporter:
     400066: R_Wrist
     400068: Camera
     400070: Lamp
+    400072: LoPoly_Hand_Mesh_Right
     2000000: Camera
     2100000: Lamb_LoPolyHand.001
+    2100002: Lamb_LoPolyHand
     4300000: MedPoly_Hand_Mesh_Right
+    4300002: LoPoly_Hand_Mesh_Right
     9500000: //RootNode
     10800000: Lamp
     13700000: MedPoly_Hand_Mesh_Right
+    13700002: LoPoly_Hand_Mesh_Right
   externalObjects: {}
   materials:
     importMaterials: 1
