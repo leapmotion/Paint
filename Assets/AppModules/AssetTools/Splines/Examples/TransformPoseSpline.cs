@@ -18,6 +18,10 @@ namespace Leap.Unity.Animation.Examples {
     [QuickButton("Spawn Default", "spawnDefaultSource1")]
     public Transform pose1Source;
 
+    [Header("Debug View")]
+    [Range(0f, 1f)]
+    public float renderPoseAtT = 0f;
+
     private HermitePoseSpline? maybePoseSpline;
 
     private void Update() {
@@ -79,6 +83,18 @@ namespace Leap.Unity.Animation.Examples {
           prevPos = pose.position;
           counter++;
         }
+
+        var renderPose = spline.PoseAt(renderPoseAtT);
+        var len = 0.06f;
+        var thick = 0.01f;
+        drawer.PushMatrix();
+        drawer.matrix = Matrix4x4.TRS(renderPose.position, renderPose.rotation, Vector3.one);
+        drawer.color = Color.red;
+        drawer.DrawCube(Vector3.right * ((len / 2f) + (thick / 2f)), new Vector3(len, thick, thick));
+        drawer.color = Color.green;
+        drawer.DrawCube(Vector3.up * ((len / 2f) + (thick / 2f)), new Vector3(thick, len, thick));
+        drawer.color = Color.blue;
+        drawer.DrawCube(Vector3.forward * ((len / 2f) + (thick / 2f)), new Vector3(thick, thick, len));
       }
     }
   }

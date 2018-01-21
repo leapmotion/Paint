@@ -135,14 +135,14 @@ namespace Leap.Unity.Animation {
       this.rot0 = pose0.rotation.ToNormalized();
       this.rot1 = pose1.rotation.ToNormalized();
 
-      if (Quaternion.Dot(rot0, rot1) < 0f) {
-        if (Quaternion.Dot(rot0, Quaternion.identity) < 0f) {
-          rot0 = rot0.Flipped();
-        }
-        else if (Quaternion.Dot(rot1, Quaternion.identity) < 0f) {
-          rot1 = rot1.Flipped();
-        }
-      }
+      //if (Quaternion.Dot(rot0, rot1) < 0f) {
+      //  if (Quaternion.Dot(rot0, Quaternion.identity) < 0f) {
+      //    rot0 = rot0.Flipped();
+      //  }
+      //  else if (Quaternion.Dot(rot1, Quaternion.identity) < 0f) {
+      //    rot1 = rot1.Flipped();
+      //  }
+      //}
     }
 
     /// <summary>
@@ -175,6 +175,12 @@ namespace Leap.Unity.Animation {
       return Quaternion.AngleAxis(angle, axis);
     }
 
+    // Quaternion CHS reference:
+    // Kim, Kim, and Shin, 1995.
+    // A General Construction Scheme for Unit Quaternion Curves with Simple High Order
+    // Derivatives.
+    // http://graphics.cs.cmu.edu/nsp/course/15-464/Fall05/papers/kimKimShin.pdf
+
     /// <summary>
     /// Gets the rotation at time t along this spline. The time is clamped within the
     /// t0 - t1 range.
@@ -189,11 +195,11 @@ namespace Leap.Unity.Animation {
       var oneThird = 1 / 3f;
 
       var w1 = Quaternion.Inverse(rot0) * angVel0 * dt * oneThird;
-      var w2 = (QuatFromAngleAxis(-angVel0)
+      var w3 = Quaternion.Inverse(rot1) * angVel1 * dt * oneThird;
+      var w2 = (QuatFromAngleAxis(-w1)
                 * Quaternion.Inverse(rot0)
                 * rot1
-                * QuatFromAngleAxis(-angVel1)).ToAngleAxisVector();
-      var w3 = Quaternion.Inverse(rot1) * angVel1 * dt * oneThird;
+                * QuatFromAngleAxis(-w3)).ToAngleAxisVector();
 
       var beta1 = i3 - (3 * i2) + (3 * i);
       var beta2 = -2 * i3 + 3 * i2;
@@ -224,8 +230,8 @@ namespace Leap.Unity.Animation {
       // Dependencies/definitions:
       // "Bernstein basis", referred to as "beta"
       // beta(i, n, t) = (n Choose i) * (1 - t)^(n - i) * t^i
-      // The form used in the formula above is 
-      // beta_q = SUM...
+      // The form used in the formula are the cumulative basis functions:
+      // beta_q(i, n, t) = SUM(j = i, n, beta(i, n, t))
       //
       // The Exponential Mapping exp(v) and its Inverse
       // "The exponential map can be interpreted as a mapping from the angular velocity
@@ -243,34 +249,6 @@ namespace Leap.Unity.Animation {
       // Its inverse map, log, would thus be the conversion from a Quaternion to an
       // Angle-Axis representation. Quaternion.ToAngleAxisVector():
       // log(Q) -> v := Q.ToAngleAxisVector() -> v
-
-      //return Quaternion.Slerp(rot0, rot1, DefaultCurve.SigmoidUp.Evaluate(i));
-
-      // TODO: This "hermite"-style interpolation of rotations is broken at
-      // ~180 degree angles.
-      //float i2 = i * i;
-      //float i3 = i2 * i;
-
-      //Quaternion h00 = (2 * i3 - 3 * i2 + 1) * rot0;
-      //Quaternion h10 = (i3 - 2 * i2 + i) * (t1 - t0) * angVel0;
-      //Quaternion h01 = (-2 * i3 + 3 * i2) * rot1;
-      //Quaternion h11 = (i3 - i2) * (t1 - t0) * angVel1;
-      //
-      //return h00 + h10 + h01 + h11;
-
-      //var identity = Quaternion.identity;
-      //var dRot0 = Utils.QuaternionFromAngleAxisVector(angVel0).ToNormalized();
-      //var dRot1 = Utils.QuaternionFromAngleAxisVector(angVel1).ToNormalized();
-      //
-      //dRot0 = Quaternion.identity;
-      //dRot1 = Quaternion.identity;
-      //
-      //Quaternion h00 = Quaternion.SlerpUnclamped(identity, rot0, 2 * i3 - 3 * i2 + 1);
-      //Quaternion h10 = Quaternion.SlerpUnclamped(identity, dRot0, (i3 - 2 * i2 + i) * (t1 - t0));
-      //Quaternion h01 = Quaternion.SlerpUnclamped(identity, rot1, -2 * i3 + 3 * i2);
-      //Quaternion h11 = Quaternion.SlerpUnclamped(identity, dRot1, (i3 - i2) * (t1 - t0));
-      //
-      //return h00.Then(h10).Then(h01).Then(h11);
     }
 
     /// <summary>
@@ -314,41 +292,38 @@ namespace Leap.Unity.Animation {
     /// t0 - t1 range. Angular velocity is encoded as an angle-axis vector.
     /// </summary>
     public Vector3 AngularVelocityAt(float t) {
-      return Vector3.zero;
+      //return Vector3.zero;
 
-      // Note: Angular velocity broken.
-      //float C00 = t1 - t0;
-      //float C1 = 1.0f / C00;
-      //
-      //float i, i2;
-      //float i_, i2_, i3_;
-      //{
-      //  i = Mathf.Clamp01((t - t0) * C1);
-      //  i_ = C1;
-      //
-      //  i2 = i * i;
-      //  i2_ = 2 * i * i_;
-      //
-      //  i3_ = i2_ * i + i_ * i2;
-      //}
-      //
-      ////Quaternion h00_ = (i3_ * 2 - i2_ * 3) * rot0;
-      ////Quaternion h10_ = (i3_ - 2 * i2_ + i_) * C00 * angVel0;
-      ////Quaternion h01_ = (i2_ * 3 - 2 * i3_) * rot1;
-      ////Quaternion h11_ = (i3_ - i2_) * C00 * angVel1;
-      ////
-      ////return h00_ + h01_ + h10_ + h11_;
-      //
-      //var identity = Quaternion.identity;
-      //var dRot0 = Utils.QuaternionFromAngleAxisVector(angVel0).ToNormalized();
-      //var dRot1 = Utils.QuaternionFromAngleAxisVector(angVel1).ToNormalized();
-      //
-      //Quaternion h00_ = Quaternion.SlerpUnclamped(identity, rot0, (i3_ * 2 - i2_ * 3));
-      //Quaternion h10_ = Quaternion.SlerpUnclamped(identity, dRot0, (i3_ - 2 * i2_ + i_) * C00);
-      //Quaternion h01_ = Quaternion.SlerpUnclamped(identity, rot1, (i2_ * 3 - 2 * i3_));
-      //Quaternion h11_ = Quaternion.SlerpUnclamped(identity, dRot1, (i3_ - i2_) * C00);
-      //
-      //return h00_.Then(h01_).Then(h10_).Then(h11_).ToAngleAxisVector();
+      float i = Mathf.Clamp01((t - t0) / (t1 - t0));
+      float i2 = i * i;
+      float i3 = i2 * i;
+
+      float dt = t1 - t0;
+
+      var oneThird = 1 / 3f;
+
+      var w1 = Quaternion.Inverse(rot0) * angVel0 * dt * oneThird;
+      var w3 = Quaternion.Inverse(rot1) * angVel1 * dt * oneThird;
+      var w2 = (QuatFromAngleAxis(-w1)
+                * Quaternion.Inverse(rot0)
+                * rot1
+                * QuatFromAngleAxis(-w3)).ToAngleAxisVector();
+
+      var beta1 = i3 - (3 * i2) + (3 * i);
+      var beta2 = -2 * i3 + 3 * i2;
+      //var beta3 = i3;
+
+      // Derivatives of beta1, beta2, beta3
+      var dotBeta1 = 3 * i2 - 5 * i + 3;
+      var dotBeta2 = -6 * i2 + 6 * i;
+      var dotBeta3 = 3 * i2;
+
+      var rot0_times_w1beta1 = rot0 * QuatFromAngleAxis(w1 * beta1);
+
+      return
+        rot0 * w1 * dotBeta1 +
+        rot0_times_w1beta1 * w2 * dotBeta2 +
+        rot0_times_w1beta1 * QuatFromAngleAxis(w2 * beta2) * w3 * dotBeta3;
     }
 
     public Movement MovementAt(float t) {

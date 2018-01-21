@@ -215,7 +215,7 @@ namespace Leap.Unity {
       var v = pose.position;
       var q = pose.rotation;
       return new Pose(new Vector3(-v.x, v.y, v.z),
-                      new Quaternion(-q.x, q.y, q.z, -q.w));
+                      new Quaternion(-q.x, q.y, q.z, -q.w).Flipped());
     }
 
     /// <summary>
