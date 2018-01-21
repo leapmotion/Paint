@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Paint v6 Hand Left
+  m_Name: Solid Paint Hand Right
   m_Shader: {fileID: 4800000, guid: 6237aa93ad8f8d447911a2622e968d82, type: 3}
-  m_ShaderKeywords: _ISLEFTHAND_ON
+  m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -74,7 +74,8 @@ Material:
     - _UVSec: 0
     - _Width: 0.001
     - _ZWrite: 1
-    - _isLeftHand: 1
+    - _isLeftHand: 0
+    - _reverseNormals: 0
     m_Colors:
     - _Color: {r: 0.6475995, g: 0.8308824, b: 0.65644765, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
