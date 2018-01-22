@@ -1602,6 +1602,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 538450446}
+  - component: {fileID: 538450448}
   - component: {fileID: 538450447}
   m_Layer: 0
   m_Name: Interaction Manager
@@ -1658,6 +1659,30 @@ MonoBehaviour:
   _contactBoneLayer:
     layerIndex: 10
   _drawControllerRuntimeGizmos: 0
+--- !u!114 &538450448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 538450445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: 'We want the tutorial bot to interface with the tutorial button in exactly
+    the same way that the user interfaces, and so both the user and the tutorial bot
+    must be part of the same interaction system, and so subscribe to the same interaction
+    manager.
+
+
+    There are 4 interaction controller objects connected to the interaction manager,
+    two for the user, and two for the tutorial bot.  The controllers for the user
+    are specifically connected to the service provider, and the controllers for the
+    tutorial bot are specifically connected to the playback provider.  The playback
+    provider is dormant most of the time, but begins dispatching frames whenever the
+    tutorial bot wants to interact with the world using the interaction manager.'
+  _isEditing: 0
 --- !u!1 &567548370
 GameObject:
   m_ObjectHideFlags: 0
@@ -2156,6 +2181,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 846555156}
+  - component: {fileID: 846555157}
   m_Layer: 0
   m_Name: User World
   m_TagString: Untagged
@@ -2178,6 +2204,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &846555157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 846555155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: This collection of gameObjects contains everything that the user can interact
+    with.  It contains the user rig, the service provider, the interaction manager,
+    and everything else that is something NOT driven by the tutorial bot.
+  _isEditing: 0
 --- !u!1 &903135347
 GameObject:
   m_ObjectHideFlags: 0
@@ -2288,6 +2329,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 991497923}
+  - component: {fileID: 991497926}
   - component: {fileID: 991497924}
   - component: {fileID: 991497925}
   m_Layer: 0
@@ -2364,6 +2406,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destination: {fileID: 1963253813}
   transitionState: {fileID: 0}
+--- !u!114 &991497926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 991497922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: 'The OnUnityCallback component simply gives you the ability to dispatch
+    a UnityEvent during any of the normal callbacks a MonoBehaviour normally gets
+    (OnEnable/Awake/Update...)
+
+
+    A state will recieve an OnEnable callback when the state is entered, and an OnDisable
+    callback when the state is left.'
+  _isEditing: 0
 --- !u!1001 &1020218976
 Prefab:
   m_ObjectHideFlags: 0
@@ -3777,6 +3838,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1164092777}
+  - component: {fileID: 1164092775}
   - component: {fileID: 1164092774}
   m_Layer: 0
   m_Name: Main Camera
@@ -3797,6 +3859,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   editTimePose: 1
+--- !u!114 &1164092775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1164092773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: The tutorial rig looks similar to the normal user rig, with a few exceptions.  Instead
+    of a LeapServiceProvider, we instead have a LeapPlayableProvider.  This provider
+    is capable of providing frames from a recorded source, like a timeline.  This
+    allows recorded data to be fed into a system like the InteractionEngine with ease.
+  _isEditing: 0
 --- !u!4 &1164092777
 Transform:
   m_ObjectHideFlags: 0
@@ -3822,6 +3900,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1166940340}
+  - component: {fileID: 1166940342}
   - component: {fileID: 1166940341}
   m_Layer: 0
   m_Name: Tutorial State Machine
@@ -3871,6 +3950,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe37572ae69fd0a47b30b649bd407204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1166940342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1166940339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: 'This collection of gameObjects represents the state machine that drives
+    the entire tutorial experience.  Each child object represents a single state.  A
+    state contains transition components that specify when to transition, and where
+    to transition to.  You can add components to a state object to perform work while
+    the state is active.
+
+
+    In this case, each state manages the animation of the tutorial bot, as well as
+    the exact conditions that the user must meet to continue the tutorial.'
+  _isEditing: 0
 --- !u!1 &1241294070
 GameObject:
   m_ObjectHideFlags: 0
@@ -4358,6 +4458,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1479490407}
+  - component: {fileID: 1479490410}
   - component: {fileID: 1479490408}
   - component: {fileID: 1479490409}
   m_Layer: 0
@@ -4408,6 +4509,20 @@ MonoBehaviour:
   destination: {fileID: 86567784}
   transitionState: {fileID: 0}
   _director: {fileID: 1987123751}
+--- !u!114 &1479490410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1479490406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: The TransitionAfterPlayable component gives an easy way to transition
+    to a new state after a director has finished with a given timeline.
+  _isEditing: 0
 --- !u!1 &1532551844
 GameObject:
   m_ObjectHideFlags: 0
@@ -4702,6 +4817,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1759075043}
+  - component: {fileID: 1759075046}
   - component: {fileID: 1759075044}
   - component: {fileID: 1759075045}
   m_Layer: 0
@@ -4751,6 +4867,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destination: {fileID: 1479490406}
   transitionState: {fileID: 428762407}
+--- !u!114 &1759075046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1759075042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: 'Most states follow roughly this pattern.  They set up some animation
+    or timeline to play, and they include at least one transition component so specify
+    when a new state should be entered.
+
+
+    In this case, the object plays the ''Thumbs up to begin'' timeline, and waits
+    until the user gives a thumbs up gesture before moving on to the next state.'
+  _isEditing: 0
 --- !u!1 &1762043793
 GameObject:
   m_ObjectHideFlags: 0
@@ -4759,6 +4894,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1762043798}
+  - component: {fileID: 1762043800}
   - component: {fileID: 1762043797}
   - component: {fileID: 1762043796}
   - component: {fileID: 1762043795}
@@ -4876,6 +5012,35 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1762043800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1762043793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: 'Due to the way the Unity animation system works, we have to be a little
+    tricky when the tutorial bot passes an object over to the user.  When the animation
+    system drives an object, that object becomes driven by the animation system permenently,
+    without any easy way to detatch it.
+
+
+    For this reason, the tutorial system will drive an empty transform instead of
+    the cube itself.  This empty transform is free to be driven by the system for
+    all time.  This Cube that exists in the User World will match the position of
+    that empty transform exactly, using correct Rigidbody.MovePosition/MoveRotation
+    calls to give correct physics movement.
+
+
+    The timeline will then trigger this box to ''detatch'' from the empty transform.  It
+    will add an InteractionBehaviour component and will stop matching the transform
+    of the empty, freeing it from the control of the timeline so the user can play
+    with it freely.'
+  _isEditing: 0
 --- !u!1 &1788301308
 GameObject:
   m_ObjectHideFlags: 0
@@ -5957,6 +6122,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1987123750}
+  - component: {fileID: 1987123752}
   - component: {fileID: 1987123751}
   - component: {fileID: 1987123749}
   m_Layer: 0
@@ -6111,6 +6277,28 @@ PlayableDirector:
     - e7af7c92aee99354bbcae9bea101005f: {fileID: 1598590611}
     - 3b1502efda3689f41a614fbd62563d0b: {fileID: 1598590611}
     - 9e30132eeb9a68b42846b2ce70e13fb1: {fileID: 1598590611}
+--- !u!114 &1987123752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1987123748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e933f13d48c681d48b14750922ac906d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: 'This collection of gameObjects represent all of the objects that are
+    driven by the playback system.  The animator and the director both cooperate to
+    animate the transforms, behaviours, or other properties of these objects according
+    to the currently playing animation or timeline.
+
+
+    For this example, the PlayableDirector is used to play pre-recorded sequences
+    where the tutorial bot performs specific actions, such as introducing a block,
+    or pushing a button.  The Animator provides the idle animation that is used whenever
+    the PlayableDirector is not doing anything.'
+  _isEditing: 0
 --- !u!1 &2002435865
 GameObject:
   m_ObjectHideFlags: 0
