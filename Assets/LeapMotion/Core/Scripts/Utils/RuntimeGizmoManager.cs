@@ -525,8 +525,65 @@ namespace Leap.Unity.RuntimeGizmos {
     /// <summary>
     /// Draws a wire gizmo sphere at the given position with the given radius.
     /// </summary>
-    public void DrawWireSphere(Vector3 center, float radius) {
-      DrawWireMesh(wireSphereMesh, center, Quaternion.identity, Vector3.one * radius * 2);
+    public void DrawWireSphere(Vector3 center, float radius, int numSegments = 32) {
+      //DrawWireMesh(wireSphereMesh, center, Quaternion.identity, Vector3.one * radius * 2);
+      DrawWireCircle(center, radius);
+
+      PushMatrix();
+
+      matrix = Matrix4x4.TRS(center, Quaternion.identity, Vector3.one)
+               * matrix;
+
+      var x = Vector3.right;
+      var y = Vector3.up;
+      var z = Vector3.forward;
+
+      DrawCameraAwareWireCircle(radius, y, x);
+      DrawCameraAwareWireCircle(radius, z, y);
+      DrawCameraAwareWireCircle(radius, x, z);
+
+      PopMatrix();
+    }
+
+    public void DrawCameraAwareWireCircle(float radius,
+                                          Vector3 normal, Vector3 radialStartDir,
+                                          int numSegments = 32) {
+
+      var origColor = this.color;
+
+      var camPos = matrix.inverse.GetPose().Then(Camera.main.transform.ToPose()).position;
+      Vector3 dirToCamera = camPos.normalized;
+      var v = dirToCamera;
+
+      var frontAlpha = 1f * origColor.a;
+      var backAlpha = 0.1f * origColor.a;
+
+      var xCam = v.Cross(normal);
+      var Q = Quaternion.AngleAxis(360f / numSegments, normal);
+      var r = radialStartDir * radius;
+      for (int i = 0; i < numSegments + 1; i++) {
+        var nextR = Q * r;
+        var xCamAngle = Vector3.SignedAngle(r, xCam, normal);
+        var nextXCamAngle = Vector3.SignedAngle(nextR, xCam, normal);
+        var front = xCamAngle < 0;
+        var nextFront = nextXCamAngle < 0;
+
+        if (front != nextFront) {
+          this.color = origColor.WithAlpha((frontAlpha + backAlpha) / 2f);
+        }
+        else if (front) {
+          this.color = origColor.WithAlpha(frontAlpha);
+        }
+        else {
+          this.color = origColor.WithAlpha(backAlpha);
+        }
+
+        DrawLine(r, nextR);
+
+        r = nextR;
+      }
+
+      this.color = origColor;
     }
 
     /// <summary>
@@ -538,6 +595,21 @@ namespace Leap.Unity.RuntimeGizmos {
                matrix *
                Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1, 1, 0));
       DrawWireSphere(Vector3.zero, radius);
+      PopMatrix();
+    }
+
+    /// <summary>
+    /// Draws a wire gizmo circle at the given position, with the given radius;
+    /// the normal is assumed to be towards Camera.main.
+    /// </summary>
+    public void DrawWireCircle(Vector3 center, float radius) {
+      PushMatrix();
+
+      var camPos = matrix.inverse.GetPose().Then(Camera.main.transform.ToPose()).position;
+      Vector3 dirToCamera = (camPos - center).normalized;
+
+      DrawWireArc(center, dirToCamera, dirToCamera.Perpendicular(), radius, 1, 32);
+
       PopMatrix();
     }
 
@@ -681,15 +753,24 @@ namespace Leap.Unity.RuntimeGizmos {
 
       color = Color.red;
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
-      DrawLine(pos - Vector3.right * extent, pos + Vector3.right * extent);
+      DrawLine(pos, pos + Vector3.right * extent);
+      color = Color.Lerp(color, Color.gray, 0.75f).WithAlpha(0.4f);
+      if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
+      DrawLine(pos, pos - Vector3.right * extent);
 
       color = Color.green;
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
-      DrawLine(pos - Vector3.up * extent, pos + Vector3.up * extent);
+      DrawLine(pos, pos + Vector3.up * extent);
+      color = Color.Lerp(color, Color.gray, 0.75f).WithAlpha(0.4f);
+      if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
+      DrawLine(pos, pos - Vector3.up * extent);
 
       color = Color.blue;
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
-      DrawLine(pos - Vector3.forward * extent, pos + Vector3.forward * extent);
+      DrawLine(pos, pos + Vector3.forward * extent);
+      color = Color.Lerp(color, Color.gray, 0.75f).WithAlpha(0.4f);
+      if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
+      DrawLine(pos, pos - Vector3.forward * extent);
     }
 
     /// <summary>

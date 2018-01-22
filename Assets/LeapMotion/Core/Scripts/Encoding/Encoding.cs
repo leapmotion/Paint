@@ -43,7 +43,7 @@ namespace Leap.Unity.Encoding {
 
     public static void FillBytes<T>(this IByteCodec<T> byteCodec, byte[] bytes, T from) {
       int offset = 0;
-      byteCodec.ReadBytes(bytes, ref offset, from);
+      byteCodec.FillBytes(bytes, ref offset, from);
     }
 
   }

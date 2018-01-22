@@ -356,6 +356,10 @@ namespace Leap.Unity {
       return Vector3.Dot(a, b);
     }
 
+    public static Vector3 Cross(this Vector3 a, Vector3 b) {
+      return Vector3.Cross(a, b);
+    }
+
     public static float Angle(this Vector3 a, Vector3 b) {
       return Vector3.Angle(a, b);
     }

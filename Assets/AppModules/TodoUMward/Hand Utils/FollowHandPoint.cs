@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Leap.Unity.Attachments {
   
+  [ExecuteInEditMode]
   public class FollowHandPoint : MonoBehaviour {
 
     #region Inspector
@@ -35,6 +36,16 @@ namespace Leap.Unity.Attachments {
     private bool _isHandTracked = false;
     public bool isHandTracked { get { return _isHandTracked; } }
 
+    private LeapProvider _backingProvider = null;
+    private LeapProvider _provider {
+      get {
+        if (_backingProvider == null) {
+          _backingProvider = Hands.Provider;
+        }
+        return _backingProvider;
+      }
+    }
+
     #endregion
 
     #region Unity Events
@@ -48,10 +59,16 @@ namespace Leap.Unity.Attachments {
       unsubscribeFrameCallback();
     }
 
+    private void Update() {
+      if (!Application.isPlaying) {
+        moveToAttachmentPointNow();
+      }
+    }
+
     #endregion
 
     #region On Frame Event
-    
+
     private void onUpdateFrame(Frame frame) {
       if (frame == null) Debug.Log("Frame null");
 
@@ -75,6 +92,13 @@ namespace Leap.Unity.Attachments {
                                                           out pointRotation);
           }
 
+          // Hand data will be in the provider's parent's coordinate frame.
+          //var providerParent = Hands.Provider.transform.parent;
+          //if (providerParent != null) {
+          //  pointPosition = providerParent.TransformVector(pointPosition);
+          //  pointRotation = providerParent.TransformRotation(pointRotation);
+          //}
+
           this.transform.position = pointPosition;
           this.transform.rotation = pointRotation;
         }
@@ -87,8 +111,6 @@ namespace Leap.Unity.Attachments {
     #endregion
 
     #region Frame Subscription
-
-    private LeapProvider _provider;
 
     private void unsubscribeFrameCallback() {
       if (_provider != null) {
@@ -104,8 +126,6 @@ namespace Leap.Unity.Attachments {
     }
 
     private void subscribeFrameCallback() {
-      if (_provider == null) _provider = Hands.Provider;
-
       if (_provider != null) {
         switch (_followMode) {
           case FollowMode.Update:
@@ -123,7 +143,7 @@ namespace Leap.Unity.Attachments {
     #region Editor Methods
 
     private void moveToAttachmentPointNow() {
-      onUpdateFrame(Hands.Provider.CurrentFrame);
+      onUpdateFrame(_provider.CurrentFrame);
     }
 
     #endregion
