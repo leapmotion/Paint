@@ -8,20 +8,22 @@ public class CreateInteractionBehaviour : MonoBehaviour {
   public Transform toFollow;
 
   private Rigidbody _rigidbody;
+  private InteractionBehaviour _ie;
 
   private void Start() {
     _rigidbody = GetComponent<Rigidbody>();
+    _ie = GetComponent<InteractionBehaviour>();
+    _ie.OnGraspEnd += () => _rigidbody.isKinematic = false;
     _rigidbody.isKinematic = true;
   }
 
   void FixedUpdate() {
     _rigidbody.MovePosition(toFollow.position);
     _rigidbody.MoveRotation(toFollow.rotation);
-  }
 
-  public void Create() {
-    _rigidbody.isKinematic = false;
-    gameObject.AddComponent<InteractionBehaviour>();
-    Destroy(this);
+    if (_ie.isGrasped) {
+      Destroy(this);
+      _rigidbody.isKinematic = false;
+    }
   }
 }

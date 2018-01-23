@@ -11,8 +11,13 @@ namespace Leap.Unity.Recording {
 
     public TimelineAsset[] assets = new TimelineAsset[0];
     public string headPositionPath = "Leap Rig/Main Camera";
+
+    public bool lerpStartingPosition = true;
     public Vector3 startHeadPosition;
+    public bool lerpEndingPosition = true;
     public Vector3 endHeadPosition;
+
+    public bool cropAnimation = false;
 
     public string[] allBindings;
 
@@ -26,12 +31,16 @@ namespace Leap.Unity.Recording {
 
     [ContextMenu("Perform Post Process")]
     public void PerformPostProcess() {
-
       Dictionary<AnimationClip, TimeRange> ranges = new Dictionary<AnimationClip, TimeRange>();
+
+      float total = allClips.Count();
+      int index = 0;
 
       foreach (var pair in allClips) {
         var clip = pair.Key;
         var animClip = pair.Value;
+
+        EditorUtility.DisplayCancelableProgressBar("Post processing clips", "Processing " + animClip.name, index / total);
 
         TimeRange range;
         if (!ranges.TryGetValue(animClip, out range)) {
@@ -47,16 +56,26 @@ namespace Leap.Unity.Recording {
         ranges[animClip] = range;
       }
 
-      foreach (var pair in allClips) {
-        var clip = pair.Key;
-        var animClip = pair.Value;
+      try {
+        foreach (var pair in allClips) {
+          var clip = pair.Key;
+          var animClip = pair.Value;
 
-        CropAnimation(animClip, (float)clip.clipIn, (float)(clip.clipIn + clip.duration));
-        BlendHeadPosition(clip, animClip);
+          index++;
+          EditorUtility.DisplayCancelableProgressBar("Post-processing clips", "Processing " + animClip.name, index / total);
+
+          BlendHeadPosition(clip, animClip);
+
+          if (cropAnimation) {
+            CropAnimation(animClip, (float)clip.clipIn, (float)(clip.clipIn + clip.duration));
+          }
+        }
+
+        AssetDatabase.Refresh();
+        AssetDatabase.SaveAssets();
+      } finally {
+        EditorUtility.ClearProgressBar();
       }
-
-      AssetDatabase.Refresh();
-      AssetDatabase.SaveAssets();
     }
 
     public void CropAnimation(AnimationClip clip, float start, float end) {
@@ -64,7 +83,7 @@ namespace Leap.Unity.Recording {
 
       foreach (var binding in bindings) {
         var curve = AnimationUtility.GetEditorCurve(clip, binding);
-        var cropped = AnimationCurveUtil.GetCropped(curve, start, end, slideToStart: false);
+        var cropped = AnimationCurveUtil.GetCropped(curve, start, end, slideToStart: true);
         AnimationUtility.SetEditorCurve(clip, binding, cropped);
       }
     }
@@ -101,12 +120,15 @@ namespace Leap.Unity.Recording {
         float startOffset = startHeadPosition[i] - startPos;
         float endOffset = endHeadPosition[i] - endPos;
 
+        if (!lerpStartingPosition) startOffset = 0;
+        if (!lerpEndingPosition) endOffset = 0;
+
         var keys = curve.keys;
         for (int j = 0; j < keys.Length; j++) {
           var key = keys[j];
 
-          float percent = Mathf.InverseLerp(startTime, endTime, key.time);
-          float offset = Mathf.Lerp(startOffset, endOffset, percent);
+          float percent = (key.time - startTime) / (endTime - startTime);
+          float offset = Mathf.LerpUnclamped(startOffset, endOffset, percent);
           key.value += offset;
 
           curve.MoveKey(j, key);
@@ -125,7 +147,7 @@ namespace Leap.Unity.Recording {
             var animTrack = track as AnimationTrack;
             if (animTrack != null) {
               foreach (var clip in animTrack.GetClips()) {
-                var animClip = clip.underlyingAsset as AnimationClip;
+                var animClip = clip.animationClip;
                 yield return new KeyValuePair<TimelineClip, AnimationClip>(clip, animClip);
               }
             }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 
 namespace Leap.Unity.Recording {
+  using Animation;
 
   public class SetPlayableDirector : MonoBehaviour {
 
@@ -19,6 +20,14 @@ namespace Leap.Unity.Recording {
     private void OnEnable() {
       _director.extrapolationMode = _wrapMode;
       _director.Play(_playable);
+    }
+
+    public void PauseAndHold() {
+      _director.playableGraph.GetRootPlayable(0).SetSpeed(0);
+    }
+
+    public void ResumeFromPauseAndHold() {
+      _director.playableGraph.GetRootPlayable(0).SetSpeed(1);
     }
   }
 }

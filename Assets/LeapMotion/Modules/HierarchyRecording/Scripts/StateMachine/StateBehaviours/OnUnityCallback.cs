@@ -39,6 +39,10 @@ namespace Leap.Unity.Recording {
       _table.Invoke((int)CallbackType.LateUpdate);
     }
 
+    public void GenericCallback() {
+      _table.Invoke((int)CallbackType.GenericCallback);
+    }
+
     public enum CallbackType {
       Awake,
       Start,
@@ -47,7 +51,8 @@ namespace Leap.Unity.Recording {
       OnDestroy,
       FixedUpdate,
       Update,
-      LateUpdate
+      LateUpdate,
+      GenericCallback
     }
   }
 }

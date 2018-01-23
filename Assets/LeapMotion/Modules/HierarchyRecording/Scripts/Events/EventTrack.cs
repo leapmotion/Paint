@@ -21,7 +21,7 @@ namespace Leap.Unity.Recording {
 
     public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount) {
       var eventMixerPlayable = ScriptPlayable<EventPlayableMixerBehaviour>.Create(graph, inputCount);
-
+      
       eventMixerPlayable.GetBehaviour().eventTrack = this;
 
       return eventMixerPlayable;
