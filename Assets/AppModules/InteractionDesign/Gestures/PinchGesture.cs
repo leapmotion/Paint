@@ -70,7 +70,7 @@ namespace Leap.Unity.Gestures {
 
     #endregion
 
-    [Header("Pinky Feedback")]
+    [Header("Feedback")]
     public Color activeColor = LeapColor.lime;
     public Color readyColor = Color.Lerp(LeapColor.lime, LeapColor.red, 0.3f);
     public Color inactiveColor = LeapColor.red;
@@ -397,6 +397,16 @@ namespace Leap.Unity.Gestures {
                                                              hand.RadialAxis());
             if (hand.IsLeft) { signedMiddleIndexAngle *= -1f; }
 
+            #region Middle Safety Feedback
+            if (requireMiddleFingerAngle) {
+              if (signedMiddleIndexAngle >= minSignedMiddleIndexAngle) {
+                if (feedbackMaterial != null) {
+                  feedbackMaterial.color = readyColor;
+                }
+              }
+            }
+            #endregion
+
             //var isMiddleCurlVelocityLow = true;
             //if (_middleCurlBuffer.IsFull) {
             //  var middleCurlVel = _middleCurlBuffer.Delta();
@@ -426,6 +436,10 @@ namespace Leap.Unity.Gestures {
                 && (handWithinFOV)
                 && (!requiresRepinch)) {
               shouldActivate = true;
+
+              if (feedbackMaterial != null) {
+                feedbackMaterial.color = activeColor;
+              }
 
               if (_drawDebug) {
                 DebugPing.Ping(hand.GetPredictedPinchPosition(), Color.red, 0.20f);
@@ -473,6 +487,10 @@ namespace Leap.Unity.Gestures {
 
         if (pinchDistance > 0.06f) {
           shouldDeactivate = true;
+
+          if (feedbackMaterial != null) {
+            feedbackMaterial.color = inactiveColor;
+          }
 
           if (_drawDebug) {
             DebugPing.Ping(hand.GetPredictedPinchPosition(), Color.black, 0.20f);
