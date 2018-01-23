@@ -13,6 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_NextId: 0
   m_Tracks:
+  - {fileID: 114406200046167034}
   - {fileID: 114800979809261506}
   - {fileID: 114481146597791042}
   - {fileID: 114802724844930900}
@@ -5517,6 +5518,82 @@ MonoBehaviour:
   vector4Arg: {x: 0, y: 0, z: 0, w: 0}
   _eventScrubType: 0
   _userSetScrubType: 0
+--- !u!114 &114406200046167034
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3027493109e45d6498989b5bed7dce25, type: 3}
+  m_Name: Head Control Track
+  m_EditorClassIdentifier: 
+  m_Locked: 0
+  m_Muted: 0
+  m_CustomPlayableFullTypename: 
+  m_AnimClip: {fileID: 0}
+  m_Parent: {fileID: 11400000}
+  m_Children: []
+  m_Clips:
+  - m_Start: 0
+    m_ClipIn: 0
+    m_Asset: {fileID: 114513880783021646}
+    m_UnderlyingAsset: {fileID: 114513880783021646}
+    m_Duration: 11.116666666666667
+    m_TimeScale: 1
+    m_ParentTrack: {fileID: 114406200046167034}
+    m_EaseInDuration: 0
+    m_EaseOutDuration: 0
+    m_BlendInDuration: 0
+    m_BlendOutDuration: 0
+    m_MixInCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 2
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - serializedVersion: 2
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_MixOutCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 2
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - serializedVersion: 2
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_BlendInCurveMode: 0
+    m_BlendOutCurveMode: 0
+    m_ExposedParameterNames: []
+    m_AnimationCurves: {fileID: 0}
+    m_Recordable: 0
+    m_PostExtrapolationMode: 0
+    m_PreExtrapolationMode: 0
+    m_PostExtrapolationTime: 0
+    m_PreExtrapolationTime: 0
+    m_DisplayName: HeadControlClip
+    m_Version: 1
 --- !u!114 &114407803859240306
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -67105,6 +67182,25 @@ MonoBehaviour:
   vector4Arg: {x: 0, y: 0, z: 0, w: 0}
   _eventScrubType: 0
   _userSetScrubType: 0
+--- !u!114 &114513880783021646
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ae9f2ba673cd584f8041c839ae43829, type: 3}
+  m_Name: HeadControlClip
+  m_EditorClassIdentifier: 
+  sourceTransform:
+    exposedName: 77ec1ae9f7611654b9b39bdf97e75a26
+    defaultValue: {fileID: 0}
+  targetTransform:
+    exposedName: da6e7c08121913642acb4abae2124e8e
+    defaultValue: {fileID: 0}
+  startOffset: {x: -0.021305917, y: 0.046244025, z: 0.031374943}
+  endOffset: {x: 0.00000030191586, y: 0.099999785, z: -0.0000036233105}
 --- !u!114 &114770046292264212
 MonoBehaviour:
   m_ObjectHideFlags: 1

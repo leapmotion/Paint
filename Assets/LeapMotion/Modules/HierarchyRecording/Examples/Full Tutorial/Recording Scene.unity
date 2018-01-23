@@ -2259,11 +2259,11 @@ MonoBehaviour:
   _templateLayer:
     layerIndex: 0
   _interactionLayer:
-    layerIndex: 8
+    layerIndex: 11
   _interactionNoContactLayer:
-    layerIndex: 9
+    layerIndex: 12
   _contactBoneLayer:
-    layerIndex: 10
+    layerIndex: 13
   _drawControllerRuntimeGizmos: 0
 --- !u!114 &1153788857
 MonoBehaviour:
@@ -3363,7 +3363,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recordOnStart: 0
   recordOnHDMPresence: 1
-  recordingName: Introduce button
+  recordingName: Idle
   targetFolder:
     _assetFolder: {fileID: 102900000, guid: 4c6ab97ebe25c334d8faadabb57b11b6, type: 3}
   transformMode: 0
@@ -3371,7 +3371,7 @@ MonoBehaviour:
   audioSourceMode: 0
   specificAudioSources: []
   provider: {fileID: 638058351}
-  recordLeapData: 1
+  recordLeapData: 0
   beginRecordingKey: 286
   finishRecordingKey: 287
 --- !u!1 &1981765861

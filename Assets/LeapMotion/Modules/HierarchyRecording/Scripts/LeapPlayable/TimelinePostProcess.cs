@@ -11,7 +11,10 @@ namespace Leap.Unity.Recording {
 
     public TimelineAsset[] assets = new TimelineAsset[0];
     public string headPositionPath = "Leap Rig/Main Camera";
+
+    public bool lerpStartingPosition = true;
     public Vector3 startHeadPosition;
+    public bool lerpEndingPosition = true;
     public Vector3 endHeadPosition;
 
     public string[] allBindings;
@@ -26,7 +29,6 @@ namespace Leap.Unity.Recording {
 
     [ContextMenu("Perform Post Process")]
     public void PerformPostProcess() {
-
       Dictionary<AnimationClip, TimeRange> ranges = new Dictionary<AnimationClip, TimeRange>();
 
       foreach (var pair in allClips) {
@@ -51,7 +53,7 @@ namespace Leap.Unity.Recording {
         var clip = pair.Key;
         var animClip = pair.Value;
 
-        CropAnimation(animClip, (float)clip.clipIn, (float)(clip.clipIn + clip.duration));
+        //CropAnimation(animClip, (float)clip.clipIn, (float)(clip.clipIn + clip.duration));
         BlendHeadPosition(clip, animClip);
       }
 
@@ -101,12 +103,15 @@ namespace Leap.Unity.Recording {
         float startOffset = startHeadPosition[i] - startPos;
         float endOffset = endHeadPosition[i] - endPos;
 
+        if (!lerpStartingPosition) startOffset = 0;
+        if (!lerpEndingPosition) endOffset = 0;
+
         var keys = curve.keys;
         for (int j = 0; j < keys.Length; j++) {
           var key = keys[j];
 
-          float percent = Mathf.InverseLerp(startTime, endTime, key.time);
-          float offset = Mathf.Lerp(startOffset, endOffset, percent);
+          float percent = (key.time - endTime) / (startTime - endTime);
+          float offset = Mathf.LerpUnclamped(startOffset, endOffset, percent);
           key.value += offset;
 
           curve.MoveKey(j, key);
