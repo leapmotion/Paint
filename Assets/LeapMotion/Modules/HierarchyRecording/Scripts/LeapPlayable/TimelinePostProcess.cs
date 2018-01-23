@@ -122,7 +122,7 @@ namespace Leap.Unity.Recording {
         for (int j = 0; j < keys.Length; j++) {
           var key = keys[j];
 
-          float percent = (key.time - endTime) / (startTime - endTime);
+          float percent = (key.time - startTime) / (endTime - startTime);
           float offset = Mathf.LerpUnclamped(startOffset, endOffset, percent);
           key.value += offset;
 

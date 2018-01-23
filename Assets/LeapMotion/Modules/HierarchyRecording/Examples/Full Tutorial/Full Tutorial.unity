@@ -2953,22 +2953,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   assets:
-  - {fileID: 11400000, guid: a76677dbbe87753438efc12e67f70a2b, type: 2}
-  - {fileID: 11400000, guid: 38b38b8a0209ba34592be24fe79e0117, type: 2}
-  - {fileID: 11400000, guid: 8198d00ddbf15be46bd51cf88d12eb6a, type: 2}
-  - {fileID: 11400000, guid: 81ec29f9999a0c04b894cf12208aee4b, type: 2}
-  - {fileID: 11400000, guid: bd54f555a7ad51d4b9bf232ef787dd56, type: 2}
-  - {fileID: 11400000, guid: 4ad42735a8c2cf74197014334c85c0c9, type: 2}
-  - {fileID: 11400000, guid: cd2a271242b03b3448d6af819f59cdda, type: 2}
-  - {fileID: 11400000, guid: 05b739e20d8a44e45879c3e3a46741a0, type: 2}
-  - {fileID: 11400000, guid: 128beb7a041404c4c8b766e5d9fa0815, type: 2}
-  - {fileID: 11400000, guid: 43d7b1895870d4a4abf949469de8ee18, type: 2}
   - {fileID: 11400000, guid: b81d166fd91ece447b253ce2ce2d9274, type: 2}
   headPositionPath: Leap Rig/Main Camera
   lerpStartingPosition: 1
-  startHeadPosition: {x: 0, y: 1.7, z: 0}
+  startHeadPosition: {x: 0.3, y: 1.7, z: 0}
   lerpEndingPosition: 1
-  endHeadPosition: {x: 0, y: 1.7, z: 0}
+  endHeadPosition: {x: 0, y: 1.3, z: 0.9}
   allBindings:
   - Cube
   - Leap Rig/Hand Models/LoPoly Rigged Hand Left
@@ -6329,6 +6319,8 @@ PlayableDirector:
     value: {fileID: 1987123748}
   - key: {fileID: 114930710260386844, guid: b14e815614d1e434490cf327450337eb, type: 2}
     value: {fileID: 1987123748}
+  - key: {fileID: 114927287504957318, guid: b81d166fd91ece447b253ce2ce2d9274, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References:
     - 574ced88a00c48a4796700fcd19766d4: {fileID: 1598590611}
