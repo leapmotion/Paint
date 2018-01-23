@@ -108,6 +108,24 @@ namespace Leap.Unity {
 
     private Quickboard() { }
 
+    private Dictionary<string, object> _typedBoards = new Dictionary<string, object>();
+
+    /// <summary>
+    /// Returns a cached Quickboard for a generic type T. For internal use only.
+    /// </summary>
+    public Quickboard<T> ForType<T>() {
+      object typedBoardObj;
+      var typeName = typeof(T).FullName;
+      if (_typedBoards.TryGetValue(typeName, out typedBoardObj)) {
+        return typedBoardObj as Quickboard<T>;
+      }
+      else {
+        var newTypedBoard = Quickboard<T>.CreateTypedQuickboard();
+        _typedBoards.Add(typeName, newTypedBoard);
+        return newTypedBoard;
+      }
+    }
+
     #endregion
 
     #region Static API
@@ -410,11 +428,126 @@ namespace Leap.Unity {
 
   }
 
+  public class Quickboard<T> {
+
+    #region Instances
+
+    private Dictionary<string, T> _strTs = new Dictionary<string, T>();
+
+    private Quickboard() { }
+
+    /// <summary>
+    /// Returns a new typed Quickboard. Internal use only.
+    /// </summary>
+    public static Quickboard<T> CreateTypedQuickboard() {
+      return new Quickboard<T>();
+    }
+
+    #endregion
+
+    #region Static API
+
+    #region Set
+
+    public void Instance_Set(string key, T value) {
+      _strTs[key] = value;
+    }
+
+    /// <summary>
+    /// Sets a named value on the static Quickboard.
+    /// </summary>
+    public static void Set(string key, T value) {
+      Quickboard.staticBoard.ForType<T>().Instance_Set(key, value);
+    }
+
+    #endregion
+
+    #region Get
+
+    public T Instance_Get(string key) {
+      T value;
+      if (_strTs.TryGetValue(key, out value)) {
+        return value;
+      }
+      else {
+        return default(T);
+      }
+    }
+
+    /// <summary>
+    /// Gets the last value that was Set using the specified key.
+    /// 
+    /// If no key has been set, the value will be the default value. Use "Has" methods to
+    /// check if a key has ever been added to a Quickboard.
+    /// </summary>
+    public static T Get(string key) {
+      return Quickboard.staticBoard.ForType<T>().Instance_Get(key);
+    }
+
+    #endregion
+
+    #region Has
+
+    public bool Instance_Has(string key) {
+      return _strTs.ContainsKey(key);
+    }
+
+    /// <summary>
+    /// Returns whether the static Quickboard has a value with the argument key.
+    /// </summary>
+    public static bool Has(string key) {
+      return Quickboard.staticBoard.ForType<T>().Instance_Has(key);
+    }
+
+    #endregion
+
+    #region Remove
+
+    public bool Instance_Remove(string key) {
+      return _strTs.Remove(key);
+    }
+
+    /// <summary>
+    /// Removes the value at the specified key from the static Quickboard.
+    /// 
+    /// Returns false if there was no value at the specified key.
+    /// </summary>
+    public static bool Remove(string key) {
+      return Quickboard.staticBoard.ForType<T>().Instance_Remove(key);
+    }
+
+    #endregion
+
+    #region Clear
+
+    public void Instance_Clear() {
+      _strTs.Clear();
+    }
+
+    // Note: It's probably NEVER a good idea to "clear" things from the static Quickboard,
+    // since it's intended for quick use across multiple systems.
+    // As a result, there are no static Clear methods.
+
+    #endregion
+
+    #endregion
+
+  }
+
   public static class QuickboardExtensions {
 
     #region Instance API
 
     #region Set
+
+    /// <summary>
+    /// Sets a named value on this Quickboard context. The same name can be used with
+    /// different type arguments without any name collision.
+    /// </summary>
+    public static void Set<T>(this Quickboard.IQuickboardContext context,
+                              string key, T value) {
+      context.QB().ForType<T>().Instance_Set(key, value);
+    }
 
     /// <summary>
     /// Sets a named integer value on this Quickboard context.
@@ -451,6 +584,18 @@ namespace Leap.Unity {
     #endregion
 
     #region Get
+
+    /// <summary>
+    /// Gets the last value that was Set using the specified key. The value must have
+    /// been Set with the same type argument used for this Get.
+    /// 
+    /// If no key has been set, the value will be the default value. Use "Has" methods to
+    /// check if a key has ever been added to a Quickboard.
+    /// </summary>
+    public static T Get<T>(this Quickboard.IQuickboardContext context,
+                           string key) {
+      return context.QB().ForType<T>().Instance_Get(key);
+    }
 
     /// <summary>
     /// Gets the last integer value that was Set using the specified key.
@@ -502,6 +647,18 @@ namespace Leap.Unity {
     #region Has
 
     /// <summary>
+    /// Returns whether this Quickboard context has a value at the specified key and the
+    /// provided type argument.
+    /// 
+    /// If there is no value at the specified key/type combination, Get methods return
+    /// the default value for the type argument.
+    /// </summary>
+    public static bool Has<T>(this Quickboard.IQuickboardContext context,
+                              string key) {
+      return context.QB().ForType<T>().Instance_Has(key);
+    }
+
+    /// <summary>
     /// Returns whether this Quickboard context has an integer value at the specified key.
     /// 
     /// If there is no value at the specified key, Get methods return the default value.
@@ -545,7 +702,17 @@ namespace Leap.Unity {
     #endregion
 
     #region Remove
-    
+
+    /// <summary>
+    /// Removes the value at the specified key and type argument from this Quickboard.
+    /// 
+    /// Returns false if there was no value at the specified key and type argument.
+    /// </summary>
+    public static bool Remove<T>(this Quickboard.IQuickboardContext context,
+                                 string key) {
+      return context.QB().ForType<T>().Instance_Remove(key);
+    }
+
     /// <summary>
     /// Removes the integer value at the specified key from this Quickboard.
     /// 
@@ -591,8 +758,19 @@ namespace Leap.Unity {
     #region Clear
 
     /// <summary>
+    /// Clears all key/value pairs from this Quickboard that correspond to the type
+    /// argument.
+    /// </summary>
+    public static void Clear<T>(this Quickboard.IQuickboardContext context) {
+      context.QB().ForType<T>().Instance_Clear();
+    }
+
+    /// <summary>
     /// Clears the keys for all integers, floats, strings, and object references from
     /// this Quickboard.
+    /// 
+    /// Does not clear typed quickboard arguments. TODO: Also remove typed quickboard
+    /// data with this context.
     /// </summary>
     public static void ClearAll(this Quickboard.IQuickboardContext context) {
       context.QB().Instance_ClearAll();

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace Leap.Unity.Gestures {
 
@@ -44,6 +45,11 @@ namespace Leap.Unity.Gestures {
     
     private Pose _lastPinchPose = Pose.identity;
 
+    [Header("General Feedback")]
+
+    public FloatEvent OnPinchStrengthEvent;
+    [System.Serializable] public class FloatEvent : UnityEvent<float> { }
+
     #endregion
 
     #region Custom Pinch Strength
@@ -60,7 +66,7 @@ namespace Leap.Unity.Gestures {
     public static float GetCustomPinchStrength(Hand h) {
       var pinchDistance = PinchSegment2SegmentDisplacement(h).magnitude;
 
-      pinchDistance -= 0.04f;
+      pinchDistance -= 0.01f;
       pinchDistance = pinchDistance.Clamped01();
 
       if (Input.GetKeyDown(KeyCode.C)) {
@@ -269,7 +275,7 @@ namespace Leap.Unity.Gestures {
         if (minReactivateSinceDegenerateConditionsTimer
             > MIN_REACTIVATE_TIME_SINCE_DEGENERATE_CONDITIONS) {
           var latestPinchStrength = GetCustomPinchStrength(hand);
-          
+          OnPinchStrengthEvent.Invoke(latestPinchStrength);
 
           pinchStrengthBuffer.Add(latestPinchStrength, Time.time);
           handPositionBuffer.Add(hand.PalmPosition.ToVector3(), Time.time);
@@ -375,6 +381,8 @@ namespace Leap.Unity.Gestures {
       deactivationReason = DeactivationReason.FinishedGesture;
 
       bool shouldDeactivate = false;
+
+      OnPinchStrengthEvent.Invoke(1f);
 
       if (minDeactivateTimer > MIN_DEACTIVATE_TIME) {
         var pinchDistance = PinchSegment2SegmentDisplacement(hand).magnitude;
