@@ -1376,6 +1376,56 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1 &481781906
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 481781908}
+  - component: {fileID: 481781907}
+  m_Layer: 0
+  m_Name: Generate idle anim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &481781907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 481781906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3028267c9de6d214d9a3a7290e0cfdc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  assets:
+  - {fileID: 11400000, guid: a76677dbbe87753438efc12e67f70a2b, type: 2}
+  headPositionPath: Leap Rig/Main Camera
+  lerpStartingPosition: 1
+  startHeadPosition: {x: 0, y: 1.7, z: 0}
+  lerpEndingPosition: 1
+  endHeadPosition: {x: 0, y: 1.7, z: 0}
+  cropAnimation: 1
+  allBindings:
+  - Leap Rig/Main Camera
+--- !u!4 &481781908
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 481781906}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.2747917, y: -2.829459, z: 2.2095656}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &522932042
 GameObject:
   m_ObjectHideFlags: 0
@@ -2311,8 +2361,8 @@ MonoBehaviour:
       callback:
         m_PersistentCalls:
           m_Calls:
-          - m_Target: {fileID: 1987123751}
-            m_MethodName: Play
+          - m_Target: {fileID: 1479490408}
+            m_MethodName: ResumeFromPauseAndHold
             m_Mode: 1
             m_Arguments:
               m_ObjectArgument: {fileID: 0}
@@ -2525,19 +2575,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalRotation.x
-      value: -0.07399496
+      value: -0.07399495
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalRotation.y
-      value: -0.009242251
+      value: -0.00924225
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0.075277805
+      value: -0.0752778
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 0.99437046
+      value: 0.9943704
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalPosition.x
@@ -2954,7 +3004,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   assets:
   - {fileID: 11400000, guid: b81d166fd91ece447b253ce2ce2d9274, type: 2}
-  - {fileID: 11400000, guid: a76677dbbe87753438efc12e67f70a2b, type: 2}
   - {fileID: 11400000, guid: 38b38b8a0209ba34592be24fe79e0117, type: 2}
   - {fileID: 11400000, guid: 8198d00ddbf15be46bd51cf88d12eb6a, type: 2}
   - {fileID: 11400000, guid: 81ec29f9999a0c04b894cf12208aee4b, type: 2}
@@ -2969,6 +3018,7 @@ MonoBehaviour:
   startHeadPosition: {x: 0, y: 1.7, z: 0}
   lerpEndingPosition: 1
   endHeadPosition: {x: 0, y: 1.7, z: 0}
+  cropAnimation: 0
   allBindings:
   - Cube
   - Leap Rig/Hand Models/LoPoly Rigged Hand Left
@@ -3916,7 +3966,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1164092773}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.6, z: 0}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2108283984}
@@ -6235,7 +6285,7 @@ PlayableDirector:
   m_GameObject: {fileID: 1987123748}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: b81d166fd91ece447b253ce2ce2d9274, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: a76677dbbe87753438efc12e67f70a2b, type: 2}
   m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -6347,7 +6397,7 @@ PlayableDirector:
     - 7ddaf172b01fce843810f4562c43ac16: {fileID: 1598590611}
     - 85de46872065bd9488e5bbfdb1e89041: {fileID: 0}
     - fd89766b2cc670342b3298659ba52334: {fileID: 1598590611}
-    - 8d5a111b6a13da646a5baf4e85c71a2e: {fileID: 1987123748}
+    - 8d5a111b6a13da646a5baf4e85c71a2e: {fileID: 1479490406}
     - 31f47d4d7f1fa4942a315c35a5a99ab3: {fileID: 1598590611}
     - da6e7c08121913642acb4abae2124e8e: {fileID: 0}
     - 89cef2224b0cd4f4ab49d8c0c63c6e63: {fileID: 1598590611}

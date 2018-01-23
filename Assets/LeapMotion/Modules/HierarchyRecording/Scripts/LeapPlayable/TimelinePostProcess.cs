@@ -17,6 +17,8 @@ namespace Leap.Unity.Recording {
     public bool lerpEndingPosition = true;
     public Vector3 endHeadPosition;
 
+    public bool cropAnimation = false;
+
     public string[] allBindings;
 
     private void OnValidate() {
@@ -62,8 +64,11 @@ namespace Leap.Unity.Recording {
           index++;
           EditorUtility.DisplayCancelableProgressBar("Post-processing clips", "Processing " + animClip.name, index / total);
 
-          //CropAnimation(animClip, (float)clip.clipIn, (float)(clip.clipIn + clip.duration));
           BlendHeadPosition(clip, animClip);
+
+          if (cropAnimation) {
+            CropAnimation(animClip, (float)clip.clipIn, (float)(clip.clipIn + clip.duration));
+          }
         }
 
         AssetDatabase.Refresh();
@@ -78,7 +83,7 @@ namespace Leap.Unity.Recording {
 
       foreach (var binding in bindings) {
         var curve = AnimationUtility.GetEditorCurve(clip, binding);
-        var cropped = AnimationCurveUtil.GetCropped(curve, start, end, slideToStart: false);
+        var cropped = AnimationCurveUtil.GetCropped(curve, start, end, slideToStart: true);
         AnimationUtility.SetEditorCurve(clip, binding, cropped);
       }
     }
@@ -142,7 +147,7 @@ namespace Leap.Unity.Recording {
             var animTrack = track as AnimationTrack;
             if (animTrack != null) {
               foreach (var clip in animTrack.GetClips()) {
-                var animClip = clip.underlyingAsset as AnimationClip;
+                var animClip = clip.animationClip;
                 yield return new KeyValuePair<TimelineClip, AnimationClip>(clip, animClip);
               }
             }
