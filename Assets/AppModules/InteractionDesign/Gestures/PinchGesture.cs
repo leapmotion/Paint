@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Leap.Unity.Attributes;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Leap.Unity.Gestures {
@@ -12,30 +13,62 @@ namespace Leap.Unity.Gestures {
 
     #region Inspector
 
-    public bool requireSafetyPinch = false;
 
+    [DevGui.DevCategory("Pinch Heuristic")]
+    [DevGui.DevValue]
+    public bool useVelocities = true;
+
+    #region Safety Checks (Pinky Checks)
+
+    private const string PINKY_SAFETY_CATEGORY = "Pinky Safety Pinch";
+
+    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevValue]
+    public bool requirePinkySafetyPinch = false;
+
+    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevValue]
+    [Range(0f, 1f)]
+    [DisableIf("requirePinkySafetyPinch", isEqualTo: false)]
+    public float minPinkySafetyProduct = 0.50f;
+
+    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevValue]
     [Tooltip("Higher = pinky must be opened further out to begin a pinch")]
     [Range(0f, 1f)]
-    [DevGui.DevCategory("Safety Pinch")]
-    [DevGui.DevValue]
+    [DisableIf("requirePinkySafetyPinch", isEqualTo: false)]
     public float maxPinkyCurl = 0.2f;
 
+    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevValue]
     [Tooltip("Higher = index must curl faster relative to pinky curl velocity to pinch")]
     [Range(-1f, 7f)]
-    [DevGui.DevCategory("Safety Pinch")]
-    [DevGui.DevValue]
+    [DisableIf("requirePinkySafetyPinch", isEqualTo: false)]
     public float minIndexMinusPinkyCurlVel = 1.5f;
 
-    [Range(0f, 5f)]
-    [DevGui.DevCategory("Safety Pinch")]
+    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
     [DevGui.DevValue]
+    [Range(0f, 5f)]
+    [DisableIf("requirePinkySafetyPinch", isEqualTo: false)]
     public float minIndexCurlVel = 0.5f;
 
-    [Range(0f, 1f)]
-    public float minSafetyProduct = 0.50f;
+    #endregion
 
-    [Range(0f, 2f)]
-    public float activationVelocityMult = 1f;
+    #region Safety Checks (Middle Finger Checks)
+
+    private const string MIDDLE_SAFETY_CATEGORY = "Middle Finger Safety Pinch";
+
+    [DevGui.DevCategory(MIDDLE_SAFETY_CATEGORY)]
+    [DevGui.DevValue]
+    public bool requireMiddleFingerAngle = true;
+
+    [DevGui.DevCategory(MIDDLE_SAFETY_CATEGORY)]
+    [DevGui.DevValue]
+    [Range(-20f, 30f)]
+    [DisableIf("requireMiddleFingerAngle", isEqualTo: false)]
+    public float minSignedMiddleIndexAngle = 5f;
+
+    #endregion
 
     [Header("Pinky Feedback")]
     public Color activeColor = LeapColor.lime;
@@ -160,7 +193,7 @@ namespace Leap.Unity.Gestures {
 
     #endregion
 
-    #region Safety Pinch
+    #region Safety Pinch (Pinky)
 
     //private float _middleSafetyAmt = 0f;
     //private float _ringSafetyAmt   = 0f;
@@ -186,15 +219,16 @@ namespace Leap.Unity.Gestures {
     }
 
     private bool isSafetyActivationSatisfied() {
-      return _pinkySafetyAmt > minSafetyProduct;
+      return _pinkySafetyAmt > minPinkySafetyProduct;
     }
 
     #endregion
 
-    #region Index & Pinky Curl
+    #region Finger Curl Buffers
 
     private DeltaFloatBuffer _pinkyCurlBuffer = new DeltaFloatBuffer(5);
     private DeltaFloatBuffer _indexCurlBuffer = new DeltaFloatBuffer(5);
+    private DeltaFloatBuffer _middleCurlBuffer = new DeltaFloatBuffer(5);
 
     private void updatePinkyCurl(Hand h) {
       var pinky = h.GetPinky();
@@ -210,8 +244,16 @@ namespace Leap.Unity.Gestures {
       _indexCurlBuffer.Add(indexCurl, Time.time);
     }
 
+    private void updateMiddleCurl(Hand h) {
+      var middle = h.GetMiddle();
+      var middleCurl = getCurl(h, middle);
+
+      _middleCurlBuffer.Add(middleCurl, Time.time);
+    }
+
     private float getCurl(Hand h, Finger f) {
-      return (getBaseCurl(h, f) + getGripCurl(h, f)) / 2f;
+      //return (getBaseCurl(h, f) + getGripCurl(h, f)) / 2f;
+      return getBaseCurl(h, f);
     }
 
     private float getBaseCurl(Hand h, Finger f) {
@@ -262,6 +304,8 @@ namespace Leap.Unity.Gestures {
     private const int MIN_REACTIVATE_TIME_SINCE_DEGENERATE_CONDITIONS = 6;
     private int minReactivateSinceDegenerateConditionsTimer = 0;
 
+    private bool requiresRepinch = false;
+
     protected override bool ShouldGestureActivate(Hand hand) {
       bool shouldActivate = false;
 
@@ -269,6 +313,7 @@ namespace Leap.Unity.Gestures {
 
       updatePinkyCurl(hand);
       updateIndexCurl(hand);
+      updateMiddleCurl(hand);
 
       if (minReactivateTimer > MIN_REACTIVATE_TIME) {
 
@@ -302,8 +347,6 @@ namespace Leap.Unity.Gestures {
 
             pinchActivateVelocity *= pinchDist.Map(0f, 0.02f, 0f, 1f);
 
-            pinchActivateVelocity *= activationVelocityMult;
-
 
             var pinkyCurlSample = _pinkyCurlBuffer.GetLatest();
             if (_pinkyCurlBuffer.IsFull) {
@@ -319,13 +362,16 @@ namespace Leap.Unity.Gestures {
               indexMinusPinkyCurlVel = indexCurlVel - pinkyCurlVel;
             }
 
+            #region Pinky (safety pinch) feedback
             if (feedbackMaterial != null) {
-              if ((pinkyCurlSample < maxPinkyCurl)
+              if (requirePinkySafetyPinch
+                  && (pinkyCurlSample < maxPinkyCurl)
                   && (indexMinusPinkyCurlVel > minIndexMinusPinkyCurlVel)
                   && (indexCurlVel > minIndexCurlVel)) {
                 feedbackMaterial.color = activeColor;
               }
-              else if ((pinkyCurlSample < maxPinkyCurl)) {
+              else if (requirePinkySafetyPinch
+                       && (pinkyCurlSample < maxPinkyCurl)) {
                 feedbackMaterial.color = readyColor;
 
                 RuntimeGizmos.RuntimeGizmoDrawer drawer;
@@ -340,19 +386,57 @@ namespace Leap.Unity.Gestures {
                 feedbackMaterial.color = inactiveColor;
               }
             }
+            #endregion
 
-            if ((pinchStrengthVelocity > pinchActivateVelocity)
-                && latestPinchStrength > 1.0f
-                && (!requireSafetyPinch || isSafetyActivationSatisfied())
-                && (pinkyCurlSample < maxPinkyCurl)
-                && (indexMinusPinkyCurlVel > minIndexMinusPinkyCurlVel)
-                && (indexCurlVel > minIndexCurlVel)
-                && handWithinFOV) {
+            #region Middle Finger Safety
+
+            var middleDir = hand.GetMiddle().bones[1].Direction.ToVector3();
+            var indexDir = hand.GetIndex().bones[1].Direction.ToVector3();
+            var signedMiddleIndexAngle = Vector3.SignedAngle(indexDir,
+                                                             middleDir,
+                                                             hand.RadialAxis());
+            if (hand.IsLeft) { signedMiddleIndexAngle *= -1f; }
+
+            //var isMiddleCurlVelocityLow = true;
+            //if (_middleCurlBuffer.IsFull) {
+            //  var middleCurlVel = _middleCurlBuffer.Delta();
+            //  //if (Mathf.Abs(middleCurlVel) <
+            //  // WOULDN'T IT BE NICE IF THIS WOULD JUST WORK
+            //  // DebugPing.PingReadout("middleCurlVel",
+            //  //                       Mathf.Abs(middleCurlVel),
+            //  //                       hand.GetMiddle().bones[1].PrevJoint.ToVector3());
+            //  if (Input.GetKeyDown(KeyCode.D)) { Debug.Log(Mathf.Abs(middleCurlVel)); }
+            //}
+
+            #endregion
+
+            if (   (latestPinchStrength > 0.8f)
+                && ((pinchStrengthVelocity > pinchActivateVelocity)
+                    || !useVelocities)
+                && (isSafetyActivationSatisfied()
+                    || !requirePinkySafetyPinch)
+                && (pinkyCurlSample < maxPinkyCurl
+                    || !requirePinkySafetyPinch)
+                && (indexMinusPinkyCurlVel > minIndexMinusPinkyCurlVel
+                    || !useVelocities || !requirePinkySafetyPinch)
+                && (indexCurlVel > minIndexCurlVel
+                    || !useVelocities || !requirePinkySafetyPinch)
+                && (signedMiddleIndexAngle >= minSignedMiddleIndexAngle
+                    || !requireMiddleFingerAngle)
+                && (handWithinFOV)
+                && (!requiresRepinch)) {
               shouldActivate = true;
 
               if (_drawDebug) {
                 DebugPing.Ping(hand.GetPredictedPinchPosition(), Color.red, 0.20f);
               }
+            }
+
+            if (latestPinchStrength > 0.8f && !shouldActivate) {
+              requiresRepinch = true;
+            }
+            if (requiresRepinch && latestPinchStrength < 0.8f) {
+              requiresRepinch = false;
             }
           }
         }
