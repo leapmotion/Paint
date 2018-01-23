@@ -2525,19 +2525,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalRotation.x
-      value: -0.07399495
+      value: -0.07399496
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalRotation.y
-      value: -0.00924225
+      value: -0.009242251
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0.0752778
+      value: -0.075277805
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 0.9943704
+      value: 0.99437046
       objectReference: {fileID: 0}
     - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
       propertyPath: m_LocalPosition.x
@@ -2954,11 +2954,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   assets:
   - {fileID: 11400000, guid: b81d166fd91ece447b253ce2ce2d9274, type: 2}
+  - {fileID: 11400000, guid: a76677dbbe87753438efc12e67f70a2b, type: 2}
+  - {fileID: 11400000, guid: 38b38b8a0209ba34592be24fe79e0117, type: 2}
+  - {fileID: 11400000, guid: 8198d00ddbf15be46bd51cf88d12eb6a, type: 2}
+  - {fileID: 11400000, guid: 81ec29f9999a0c04b894cf12208aee4b, type: 2}
+  - {fileID: 11400000, guid: bd54f555a7ad51d4b9bf232ef787dd56, type: 2}
+  - {fileID: 11400000, guid: 4ad42735a8c2cf74197014334c85c0c9, type: 2}
+  - {fileID: 11400000, guid: cd2a271242b03b3448d6af819f59cdda, type: 2}
+  - {fileID: 11400000, guid: 05b739e20d8a44e45879c3e3a46741a0, type: 2}
+  - {fileID: 11400000, guid: 128beb7a041404c4c8b766e5d9fa0815, type: 2}
+  - {fileID: 11400000, guid: 43d7b1895870d4a4abf949469de8ee18, type: 2}
   headPositionPath: Leap Rig/Main Camera
   lerpStartingPosition: 1
-  startHeadPosition: {x: 0.3, y: 1.7, z: 0}
+  startHeadPosition: {x: 0, y: 1.7, z: 0}
   lerpEndingPosition: 1
-  endHeadPosition: {x: 0, y: 1.3, z: 0.9}
+  endHeadPosition: {x: 0, y: 1.7, z: 0}
   allBindings:
   - Cube
   - Leap Rig/Hand Models/LoPoly Rigged Hand Left
