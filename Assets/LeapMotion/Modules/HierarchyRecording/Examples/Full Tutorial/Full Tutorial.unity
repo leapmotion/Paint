@@ -1595,11 +1595,11 @@ MonoBehaviour:
   _templateLayer:
     layerIndex: 0
   _interactionLayer:
-    layerIndex: 11
+    layerIndex: 8
   _interactionNoContactLayer:
-    layerIndex: 12
+    layerIndex: 9
   _contactBoneLayer:
-    layerIndex: 13
+    layerIndex: 10
   _drawControllerRuntimeGizmos: 0
 --- !u!114 &538450448
 MonoBehaviour:
@@ -2968,7 +2968,7 @@ MonoBehaviour:
   lerpStartingPosition: 1
   startHeadPosition: {x: 0, y: 1.7, z: 0}
   lerpEndingPosition: 1
-  endHeadPosition: {x: 0, y: 0, z: 0}
+  endHeadPosition: {x: 0, y: 1.7, z: 0}
   allBindings:
   - Cube
   - Leap Rig/Hand Models/LoPoly Rigged Hand Left
