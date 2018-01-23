@@ -31,9 +31,14 @@ namespace Leap.Unity.Recording {
     public void PerformPostProcess() {
       Dictionary<AnimationClip, TimeRange> ranges = new Dictionary<AnimationClip, TimeRange>();
 
+      float total = allClips.Count();
+      int index = 0;
+
       foreach (var pair in allClips) {
         var clip = pair.Key;
         var animClip = pair.Value;
+
+        EditorUtility.DisplayCancelableProgressBar("Post processing clips", "Processing " + animClip.name, index / total);
 
         TimeRange range;
         if (!ranges.TryGetValue(animClip, out range)) {
@@ -49,16 +54,23 @@ namespace Leap.Unity.Recording {
         ranges[animClip] = range;
       }
 
-      foreach (var pair in allClips) {
-        var clip = pair.Key;
-        var animClip = pair.Value;
+      try {
+        foreach (var pair in allClips) {
+          var clip = pair.Key;
+          var animClip = pair.Value;
 
-        //CropAnimation(animClip, (float)clip.clipIn, (float)(clip.clipIn + clip.duration));
-        BlendHeadPosition(clip, animClip);
+          index++;
+          EditorUtility.DisplayCancelableProgressBar("Post-processing clips", "Processing " + animClip.name, index / total);
+
+          //CropAnimation(animClip, (float)clip.clipIn, (float)(clip.clipIn + clip.duration));
+          BlendHeadPosition(clip, animClip);
+        }
+
+        AssetDatabase.Refresh();
+        AssetDatabase.SaveAssets();
+      } finally {
+        EditorUtility.ClearProgressBar();
       }
-
-      AssetDatabase.Refresh();
-      AssetDatabase.SaveAssets();
     }
 
     public void CropAnimation(AnimationClip clip, float start, float end) {
