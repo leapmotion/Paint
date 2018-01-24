@@ -108,7 +108,7 @@ namespace Leap.Unity {
           // mark the edge between the two quads as smooth.
           polyMesh.MarkEdgeSmooth(new Edge(2, 3));
 
-          //polyMesh.FillUnityMesh(mesh, true);
+          polyMesh.FillUnityMesh(mesh, true);
         }
 
       }

@@ -3105,7 +3105,7 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     private List<int> _cachedUnityMeshFacesList = new List<int>(4096);
 
-    private Vector3[] _vertIndexNormalBuffer = new Vector3[65536];
+    private Vector4[] _accumNormalsBuffer = new Vector4[65536];
 
     /// <summary>
     /// Clears and fills the provided Unity mesh object with data from this PolyMesh.
@@ -3125,8 +3125,11 @@ namespace Leap.Unity.Meshing {
         normals.Clear();
         var smoothEdgeVertexIndices = Pool<Dictionary<Edge, Pair<int, int>>>.Spawn();
         smoothEdgeVertexIndices.Clear();
+        var smoothEdgeVertexNormals = Pool<Dictionary<int, Vector4>>.Spawn();
+        smoothEdgeVertexNormals.Clear();
         try {
           if (this.smoothEdges.Count == 0) {
+            #region Mesh Conversion Without Any Smooth Edges (Fast)
             using (new ProfilerSample("Fill faces, verts, normals lists (no smooth edges)")) {
               foreach (var poly in polygons) {
                 Vector3 normal;
@@ -3161,96 +3164,122 @@ namespace Leap.Unity.Meshing {
                 }
               }
             }
+            #endregion
           }
           else {
             using (new ProfilerSample("Fill faces, verts, normals lists (some smooth edges)")) {
 
+              #region Old Strategy
               int numVertsSkippedDueToSmoothness = 0;
 
               foreach (var poly in polygons) {
-                Vector3 normal;
+                Vector3 curPolyNormal2;
                 using (new ProfilerSample("Get polygon normal")) {
-                  normal = poly.GetNormal();
+                  curPolyNormal2 = poly.GetNormal();
+
                   using (new ProfilerSample("Foreach through poly tris...")) {
                     foreach (var polyTri in poly.polyTris) {
 
                       int triBeginIdx = vertsCount;
-                      int a = triBeginIdx + 0;
-                      int b = triBeginIdx + 1;
-                      int c = triBeginIdx + 2;
+                      int nextIdxToAdd = triBeginIdx;
+                      int a;
+                      int b;
+                      int c;
+
+                      bool aOnSmoothEdge;
+                      bool bOnSmoothEdge;
+                      bool cOnSmoothEdge;
 
                       // Edge 0: A-B
                       bool abAlreadyExist = false;
                       Pair<int, int> alreadyAddedVertexIndicesAB = default(Pair<int, int>);
-                      var polyEdge0 = polyTri.polyEdge0;
-                      if (polyEdge0.HasValue) {
-                        var edge0 = polyEdge0.Value;
-                        if (smoothEdges.Contains(edge0)) {
-                          if (smoothEdgeVertexIndices.TryGetValue(edge0,
-                                                        out alreadyAddedVertexIndicesAB)) {
-                            abAlreadyExist = true;
+                      var edge0 = new Edge(polyTri.a, polyTri.b);
+                      if (smoothEdges.Contains(edge0)) {
+                        if (smoothEdgeVertexIndices.TryGetValue(edge0,
+                                                      out alreadyAddedVertexIndicesAB)) {
+                          abAlreadyExist = true;
+                          aOnSmoothEdge = true;
+                          bOnSmoothEdge = true;
 
-                            // A shared "smooth" edge will have opposite winding
-                            // directions. Detect opposite edge directions here.
-                            if (alreadyAddedVertexIndicesAB.a == edge0.b) {
-                              Utils.Swap(ref alreadyAddedVertexIndicesAB.a,
-                                         ref alreadyAddedVertexIndicesAB.b);
-                            }
+                          // A shared "smooth" edge will have opposite winding
+                          // directions. Detect opposite edge directions here.
+                          if (alreadyAddedVertexIndicesAB.a == edge0.b) {
+                            Utils.Swap(ref alreadyAddedVertexIndicesAB.a,
+                                       ref alreadyAddedVertexIndicesAB.b);
                           }
-                          else {
-                            alreadyAddedVertexIndicesAB = new Pair<int, int>(a, b);
-                            smoothEdgeVertexIndices[edge0] = alreadyAddedVertexIndicesAB;
-                          }
+
+                          a = alreadyAddedVertexIndicesAB.a;
+                          b = alreadyAddedVertexIndicesAB.b;
                         }
+                        else {
+                          a = nextIdxToAdd++;
+                          b = nextIdxToAdd++;
+                          aOnSmoothEdge = true;
+                          bOnSmoothEdge = true;
+
+                          alreadyAddedVertexIndicesAB = new Pair<int, int>(a, b);
+                          smoothEdgeVertexIndices[edge0] = alreadyAddedVertexIndicesAB;
+                        }
+                      }
+                      else {
+                        a = nextIdxToAdd++;
+                        b = nextIdxToAdd++;
+                        aOnSmoothEdge = false;
+                        bOnSmoothEdge = false;
                       }
 
                       // Edge 1: B-C
                       bool bcAlreadyExist = false;
                       Pair<int, int> alreadyAddedVertexIndicesBC = default(Pair<int, int>);
-                      var polyEdge1 = polyTri.polyEdge1;
-                      if (polyEdge1.HasValue) {
-                        var edge1 = polyEdge1.Value;
-                        if (smoothEdges.Contains(edge1)) {
-                          if (smoothEdgeVertexIndices.TryGetValue(edge1,
-                                                        out alreadyAddedVertexIndicesBC)) {
-                            bcAlreadyExist = true;
+                      var edge1 = new Edge(polyTri.b, polyTri.c);
+                      if (smoothEdges.Contains(edge1)) {
+                        if (smoothEdgeVertexIndices.TryGetValue(edge1,
+                                                      out alreadyAddedVertexIndicesBC)) {
+                          bcAlreadyExist = true;
 
-                            // A shared "smooth" edge will have opposite winding
-                            // directions. Detect opposite edge directions here.
-                            if (alreadyAddedVertexIndicesBC.a == edge1.b) {
-                              Utils.Swap(ref alreadyAddedVertexIndicesBC.a,
-                                         ref alreadyAddedVertexIndicesBC.b);
-                            }
+                          // A shared "smooth" edge will have opposite winding
+                          // directions. Detect opposite edge directions here.
+                          if (alreadyAddedVertexIndicesBC.a == edge1.b) {
+                            Utils.Swap(ref alreadyAddedVertexIndicesBC.a,
+                                       ref alreadyAddedVertexIndicesBC.b);
                           }
-                          else {
-                            alreadyAddedVertexIndicesBC = new Pair<int, int>(b, c);
-                            smoothEdgeVertexIndices[edge1] = alreadyAddedVertexIndicesBC;
-                          }
+
+                          b = alreadyAddedVertexIndicesBC.a;
+                          c = alreadyAddedVertexIndicesBC.b;
                         }
+                        else {
+                          c = nextIdxToAdd++;
+
+                          alreadyAddedVertexIndicesBC = new Pair<int, int>(b, c);
+                          smoothEdgeVertexIndices[edge1] = alreadyAddedVertexIndicesBC;
+                        }
+                      }
+                      else {
+                        c = nextIdxToAdd++;
                       }
 
                       // Edge 2: C-A
                       bool caAlreadyExist = false;
                       Pair<int, int> alreadyAddedVertexIndicesCA = default(Pair<int, int>);
-                      var polyEdge2 = polyTri.polyEdge2;
-                      if (polyEdge2.HasValue) {
-                        var edge2 = polyEdge2.Value;
-                        if (smoothEdges.Contains(edge2)) {
-                          if (smoothEdgeVertexIndices.TryGetValue(edge2,
-                                                        out alreadyAddedVertexIndicesCA)) {
-                            caAlreadyExist = true;
+                      var edge2 = new Edge(polyTri.c, polyTri.a);
+                      if (smoothEdges.Contains(edge2)) {
+                        if (smoothEdgeVertexIndices.TryGetValue(edge2,
+                                                      out alreadyAddedVertexIndicesCA)) {
+                          caAlreadyExist = true;
 
-                            // A shared "smooth" edge will have opposite winding
-                            // directions. Detect opposite edge directions here.
-                            if (alreadyAddedVertexIndicesCA.a == edge2.b) {
-                              Utils.Swap(ref alreadyAddedVertexIndicesCA.a,
-                                         ref alreadyAddedVertexIndicesCA.b);
-                            }
+                          // A shared "smooth" edge will have opposite winding
+                          // directions. Detect opposite edge directions here.
+                          if (alreadyAddedVertexIndicesCA.a == edge2.b) {
+                            Utils.Swap(ref alreadyAddedVertexIndicesCA.a,
+                                       ref alreadyAddedVertexIndicesCA.b);
                           }
-                          else {
-                            alreadyAddedVertexIndicesCA = new Pair<int, int>(c, a);
-                            smoothEdgeVertexIndices[edge2] = alreadyAddedVertexIndicesBC;
-                          }
+
+                          c = alreadyAddedVertexIndicesCA.a;
+                          a = alreadyAddedVertexIndicesCA.b;
+                        }
+                        else {
+                          alreadyAddedVertexIndicesCA = new Pair<int, int>(c, a);
+                          smoothEdgeVertexIndices[edge2] = alreadyAddedVertexIndicesCA;
                         }
                       }
 
@@ -3260,19 +3289,6 @@ namespace Leap.Unity.Meshing {
                       bool didCExistAlready = bcAlreadyExist || caAlreadyExist;
 
                       using (new ProfilerSample("Add PolyTriangle")) {
-
-                        if (abAlreadyExist) {
-                          a = alreadyAddedVertexIndicesAB.a;
-                          b = alreadyAddedVertexIndicesAB.b;
-                        }
-                        if (bcAlreadyExist) {
-                          b = alreadyAddedVertexIndicesBC.a;
-                          c = alreadyAddedVertexIndicesBC.b;
-                        }
-                        if (caAlreadyExist) {
-                          c = alreadyAddedVertexIndicesCA.a;
-                          a = alreadyAddedVertexIndicesCA.b;
-                        }
 
                         _cachedUnityMeshFacesList.Add(a);
                         _cachedUnityMeshFacesList.Add(b);
@@ -3290,54 +3306,116 @@ namespace Leap.Unity.Meshing {
                           numVertsSkippedDueToSmoothness += 1;
 
                           // Average with normal that already existed.
-                          _vertIndexNormalBuffer[a] = (_vertIndexNormalBuffer[a] + normal) * 0.5f;
+                          _accumNormalsBuffer[a] = V4((V3(_accumNormalsBuffer[a]) + curPolyNormal2) * 0.5f, 0f);
                         }
                         else {
                           verts.Add(GetLocalPosition(polyTri.a));
                           vertsCount += 1;
 
                           // Add an entry for this vertex's normal.
-                          _vertIndexNormalBuffer[a] = normal;
+                          _accumNormalsBuffer[a] = curPolyNormal2;
                         }
 
                         if (didBExistAlready) {
                           numVertsSkippedDueToSmoothness += 1;
 
                           // Average with normal that already existed.
-                          _vertIndexNormalBuffer[b] = (_vertIndexNormalBuffer[b] + normal) * 0.5f;
+                          _accumNormalsBuffer[b] = V4((V3(_accumNormalsBuffer[b]) + curPolyNormal2) * 0.5f, 0f);
                         }
                         else {
                           verts.Add(GetLocalPosition(polyTri.b));
                           vertsCount += 1;
 
                           // Add an entry for this vertex's normal.
-                          _vertIndexNormalBuffer[b] = normal;
+                          _accumNormalsBuffer[b] = curPolyNormal2;
                         }
 
                         if (didCExistAlready) {
                           numVertsSkippedDueToSmoothness += 1;
 
                           // Average with normal that already existed.
-                          _vertIndexNormalBuffer[c] = (_vertIndexNormalBuffer[c] + normal) * 0.5f;
+                          _accumNormalsBuffer[c] = V4((V3(_accumNormalsBuffer[c]) + curPolyNormal2) * 0.5f, 0f);
                         }
                         else {
                           verts.Add(GetLocalPosition(polyTri.c));
                           vertsCount += 1;
 
                           // Add an entry for this vertex's normal.
-                          _vertIndexNormalBuffer[c] = normal;
+                          _accumNormalsBuffer[c] = curPolyNormal2;
                         }
                       }
-                    }
-
-                    // Go through and assign normals after accumulating them.
-                    // (Edges marked smooth had their normals averaged.)
-                    for (int i = 0; i < vertsCount; i++) {
-                      normals.Add(_vertIndexNormalBuffer[i]);
                     }
                   }
                 }
               }
+
+              // Go through and assign normals after accumulating them.
+              // (Edges marked smooth had their normals averaged.)
+              for (int i = 0; i < vertsCount; i++) {
+                normals.Add(_accumNormalsBuffer[i]);
+              }
+              #endregion
+
+              #region New Strategy
+
+              // Clear working normal buffer.
+              //
+              // The W component of the buffer contains data to handle smooth edges.
+              // -1 => The normal was written to with the vertex of a sharp edge.
+              //       Such writes are overwritten by smooth edge writes, and won't be
+              //       written unless the buffer was unwritten at that index (W == 0).
+              // 0 => The normal hasn't been written for this vertex.
+              // N => (Positive N) The number of times the normal has been written from
+              //      a vertex on a smooth edge.
+              //
+              for (int i = 0; i < positions.Count; i++) {
+                _accumNormalsBuffer[i] = Vector4.zero;
+              }
+
+
+
+              int vertWriteIdx = 0;
+              Vector3 curPolyNormal;
+              foreach (var poly in polygons) {
+                curPolyNormal = poly.GetNormal();
+
+                foreach (var polyTri in poly.polyTris) {
+
+                  int a, b, c;
+
+                }
+
+                foreach (var edge in poly.edges) {
+                  if (smoothEdges.Contains(edge)) {
+                    // Edge Vertex A
+                    var accumNormal = _accumNormalsBuffer[edge.a];
+
+                    if (accumNormal.w == -1) {
+                      accumNormal = Vector4.zero;
+                    }
+                    _accumNormalsBuffer[edge.a] = V4(V3(accumNormal) + curPolyNormal,
+                                                     accumNormal.w + 1);
+
+                    // Edge Vertex B
+                    accumNormal = _accumNormalsBuffer[edge.b];
+
+                    if (accumNormal.w == -1) {
+                      accumNormal = Vector4.zero;
+                    }
+                    _accumNormalsBuffer[edge.b] = V4(V3(accumNormal) + curPolyNormal,
+                                                     accumNormal.w + 1);
+                  }
+                }
+              }
+
+
+              foreach (var smoothEdge in smoothEdges) {
+                // Compute final normal for this smooth edge.
+
+                // Write this final normal for this vertex.
+              }
+              #endregion
+
             }
           }
 
@@ -3355,8 +3433,24 @@ namespace Leap.Unity.Meshing {
           Pool<List<Vector3>>.Recycle(normals);
           smoothEdgeVertexIndices.Clear();
           Pool<Dictionary<Edge, Pair<int, int>>>.Recycle(smoothEdgeVertexIndices);
+          smoothEdgeVertexNormals.Clear();
+          Pool<Dictionary<int, Vector4>>.Recycle(smoothEdgeVertexNormals);
         }
       }
+    }
+
+    /// <summary>
+    /// Returns X, Y, Z from the Vector4.
+    /// </summary>
+    private Vector3 V3(Vector4 v4) {
+      return Swizzle.Swizzle.xyz(v4);
+    }
+
+    /// <summary>
+    /// Appends W to the Vector3 to produce a Vector4.
+    /// </summary>
+    private Vector4 V4(Vector3 xyz, float w) {
+      return new Vector4(xyz.x, xyz.y, xyz.z, w);
     }
 
     /// <summary>
