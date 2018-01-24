@@ -42,6 +42,7 @@ namespace Leap.Unity {
         poses.Add(pose0); poses.Add(pose1); poses.Add(pose2);
 
         if (!usePolyMeshMethod) {
+          #region Non-PolyMesh Method
           var verts = Pool<List<Vector3>>.Spawn(); verts.Clear();
           var indices = Pool<List<int>>.Spawn(); indices.Clear();
           try {
@@ -87,6 +88,7 @@ namespace Leap.Unity {
             verts.Clear(); Pool<List<Vector3>>.Recycle(verts);
             indices.Clear(); Pool<List<int>>.Recycle(indices);
           }
+          #endregion
         }
         else {
           polyMesh.Clear();
@@ -96,7 +98,7 @@ namespace Leap.Unity {
           polyMesh.AddPosition(right(pose0));
           polyMesh.AddPosition(left(pose1));
           polyMesh.AddPosition(right(pose1));
-          var newPoly = Polygon.SpawnQuad(0, 1, 3, 2);
+          var newPoly = Polygon.SpawnQuad(1, 0, 2, 3);
           polyMesh.AddPolygon(newPoly);
 
           // quad 1
@@ -108,7 +110,7 @@ namespace Leap.Unity {
           // mark the edge between the two quads as smooth.
           polyMesh.MarkEdgeSmooth(new Edge(2, 3));
 
-          polyMesh.FillUnityMesh(mesh, true);
+          polyMesh.FillUnityMesh(mesh, doubleSided: true);
         }
 
       }

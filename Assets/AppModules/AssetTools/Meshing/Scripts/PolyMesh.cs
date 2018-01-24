@@ -218,10 +218,14 @@ namespace Leap.Unity.Meshing {
     /// positions directly. The polygons have their vertex indices incremented by the
     /// the current position count of the PolyMesh before being added to this PolyMesh.
     /// The vertex index list of each Polygon is also modified by this method.
+    /// 
+    /// You may also provide a newSmoothEdges list of edges to be marked smooth, whose
+    /// Edges' indices also are expected to index the newPositions list directly.
     /// </summary>
     public void Append(List<Vector3> newPositions, List<Polygon> newPolygons,
                        List<int> outNewPositionIndices,
-                       List<int> outNewPolygonIndices) {
+                       List<int> outNewPolygonIndices,
+                       List<Edge> newSmoothEdges = null) {
       int origPositionCount = _positions.Count;
 
       AddPositions(newPositions, outNewPositionIndices);
@@ -230,6 +234,14 @@ namespace Leap.Unity.Meshing {
       foreach (var polygon in newPolygons) {
         AddPolygon(polygon.IncrementIndices(origPositionCount), out newPolyIdx);
         outNewPolygonIndices.Add(newPolyIdx);
+      }
+
+      if (newSmoothEdges != null) {
+        foreach (var smoothEdge in newSmoothEdges) {
+          var incrementedEdge = new Edge(smoothEdge.a + origPositionCount,
+                                         smoothEdge.b + origPositionCount);
+          MarkEdgeSmooth(incrementedEdge);
+        }
       }
     }
 
@@ -700,6 +712,10 @@ namespace Leap.Unity.Meshing {
         + "Edge vertex " + edge.b + " is out-of-bounds for this PolyMesh.");
       }
 
+      if (edge.mesh == null) {
+        edge.mesh = this;
+      }
+
       _smoothEdges.Add(edge);
     }
 
@@ -718,6 +734,10 @@ namespace Leap.Unity.Meshing {
         throw new System.InvalidOperationException(
           "Cannot mark " + edge + " sharp. "
         + "Edge vertex " + edge.b + " is out-of-bounds for this PolyMesh.");
+      }
+
+      if (edge.mesh == null) {
+        edge.mesh = this;
       }
 
       _smoothEdges.Remove(edge);
@@ -3103,9 +3123,7 @@ namespace Leap.Unity.Meshing {
     /// int lists from the Pool and constantly growing them, we'll use a single list
     /// with a large capacity.
     /// </summary>
-    private List<int> _cachedUnityMeshFacesList = new List<int>(4096);
-
-    private Vector4[] _accumNormalsBuffer = new Vector4[65536];
+    private List<int> _cachedUnityMeshFaceIndicesList = new List<int>(4096);
 
     /// <summary>
     /// Clears and fills the provided Unity mesh object with data from this PolyMesh.
@@ -3117,16 +3135,16 @@ namespace Leap.Unity.Meshing {
       using (new ProfilerSample("PolyMesh: FillUnityMesh")) {
         mesh.Clear();
 
-        _cachedUnityMeshFacesList.Clear();
+        _cachedUnityMeshFaceIndicesList.Clear();
         var verts   = Pool<List<Vector3>>.Spawn();
         verts.Clear();
         int vertsCount = 0;
         var normals = Pool<List<Vector3>>.Spawn();
         normals.Clear();
-        var smoothEdgeVertexIndices = Pool<Dictionary<Edge, Pair<int, int>>>.Spawn();
-        smoothEdgeVertexIndices.Clear();
-        var smoothEdgeVertexNormals = Pool<Dictionary<int, Vector4>>.Spawn();
-        smoothEdgeVertexNormals.Clear();
+        var polyMeshIdxToSharedIdxMap = Pool<Dictionary<int, int>>.Spawn();
+        polyMeshIdxToSharedIdxMap.Clear();
+        var sharedSmoothVertNormals = Pool<Dictionary<int, Vector4>>.Spawn();
+        sharedSmoothVertNormals.Clear();
         try {
           if (this.smoothEdges.Count == 0) {
             #region Mesh Conversion Without Any Smooth Edges (Fast)
@@ -3139,13 +3157,13 @@ namespace Leap.Unity.Meshing {
                     foreach (var tri in poly.tris) {
                       using (new ProfilerSample("Add triangle")) {
                         int triBeginIdx = vertsCount;
-                        _cachedUnityMeshFacesList.Add(triBeginIdx + 0);
-                        _cachedUnityMeshFacesList.Add(triBeginIdx + 1);
-                        _cachedUnityMeshFacesList.Add(triBeginIdx + 2);
+                        _cachedUnityMeshFaceIndicesList.Add(triBeginIdx + 0);
+                        _cachedUnityMeshFaceIndicesList.Add(triBeginIdx + 1);
+                        _cachedUnityMeshFaceIndicesList.Add(triBeginIdx + 2);
                         if (doubleSided) {
-                          _cachedUnityMeshFacesList.Add(triBeginIdx + 0);
-                          _cachedUnityMeshFacesList.Add(triBeginIdx + 2);
-                          _cachedUnityMeshFacesList.Add(triBeginIdx + 1);
+                          _cachedUnityMeshFaceIndicesList.Add(triBeginIdx + 3);
+                          _cachedUnityMeshFaceIndicesList.Add(triBeginIdx + 4);
+                          _cachedUnityMeshFaceIndicesList.Add(triBeginIdx + 5);
                         }
                       }
                       using (new ProfilerSample("Add local positions from tri")) {
@@ -3153,11 +3171,22 @@ namespace Leap.Unity.Meshing {
                         verts.Add(GetLocalPosition(tri.b));
                         verts.Add(GetLocalPosition(tri.c));
                         vertsCount += 3;
+                        if (doubleSided) {
+                          verts.Add(GetLocalPosition(tri.a));
+                          verts.Add(GetLocalPosition(tri.b));
+                          verts.Add(GetLocalPosition(tri.c));
+                          vertsCount += 3;
+                        }
                       }
                       using (new ProfilerSample("Add normals")) {
                         normals.Add(normal);
                         normals.Add(normal);
                         normals.Add(normal);
+                        if (doubleSided) {
+                          normals.Add(-normal);
+                          normals.Add(-normal);
+                          normals.Add(-normal);
+                        }
                       }
                     }
                   }
@@ -3167,267 +3196,148 @@ namespace Leap.Unity.Meshing {
             #endregion
           }
           else {
-            using (new ProfilerSample("Fill faces, verts, normals lists (some smooth edges)")) {
+            using (new ProfilerSample("Fill faces, verts, normals lists (some smooth "
+                                      + "edges)")) {
+              #region Mesh Conversion With Smooth/Shared Edges
 
-              #region Old Strategy
-              int numVertsSkippedDueToSmoothness = 0;
+              // "Mesh" means Unity Mesh; specifically only "PolyMesh" means PolyMesh.
+              int meshVertWriteIdx = 0;
 
+              // Assign positions for all vertex indices on shared edges.
+              // Write them to the shared, smooth edge vertex memory.
+              // Also accumulate shared normal data.
+              Vector3 curPolyNormal;
               foreach (var poly in polygons) {
-                Vector3 curPolyNormal2;
-                using (new ProfilerSample("Get polygon normal")) {
-                  curPolyNormal2 = poly.GetNormal();
+                curPolyNormal = poly.GetNormal();
+                foreach (var edge in poly.edges) {
+                  if (smoothEdges.Contains(edge)) {
+                    var polyMeshIdx = edge.a;
+                    for (int i = 0; i < 2; i++) {
 
-                  using (new ProfilerSample("Foreach through poly tris...")) {
-                    foreach (var polyTri in poly.polyTris) {
+                      int sharedIdx;
+                      if (!polyMeshIdxToSharedIdxMap.TryGetValue(polyMeshIdx,
+                                                                 out sharedIdx)) {
+                        sharedIdx = meshVertWriteIdx++;
+                        polyMeshIdxToSharedIdxMap[polyMeshIdx] = sharedIdx;
+                        verts.Add(_positions[polyMeshIdx]); // position at sharedIdx.
+                      }
 
-                      int triBeginIdx = vertsCount;
-                      int nextIdxToAdd = triBeginIdx;
-                      int a;
-                      int b;
-                      int c;
-
-                      bool aOnSmoothEdge;
-                      bool bOnSmoothEdge;
-                      bool cOnSmoothEdge;
-
-                      // Edge 0: A-B
-                      bool abAlreadyExist = false;
-                      Pair<int, int> alreadyAddedVertexIndicesAB = default(Pair<int, int>);
-                      var edge0 = new Edge(polyTri.a, polyTri.b);
-                      if (smoothEdges.Contains(edge0)) {
-                        if (smoothEdgeVertexIndices.TryGetValue(edge0,
-                                                      out alreadyAddedVertexIndicesAB)) {
-                          abAlreadyExist = true;
-                          aOnSmoothEdge = true;
-                          bOnSmoothEdge = true;
-
-                          // A shared "smooth" edge will have opposite winding
-                          // directions. Detect opposite edge directions here.
-                          if (alreadyAddedVertexIndicesAB.a == edge0.b) {
-                            Utils.Swap(ref alreadyAddedVertexIndicesAB.a,
-                                       ref alreadyAddedVertexIndicesAB.b);
-                          }
-
-                          a = alreadyAddedVertexIndicesAB.a;
-                          b = alreadyAddedVertexIndicesAB.b;
-                        }
-                        else {
-                          a = nextIdxToAdd++;
-                          b = nextIdxToAdd++;
-                          aOnSmoothEdge = true;
-                          bOnSmoothEdge = true;
-
-                          alreadyAddedVertexIndicesAB = new Pair<int, int>(a, b);
-                          smoothEdgeVertexIndices[edge0] = alreadyAddedVertexIndicesAB;
-                        }
+                      Vector4 accumNormal;
+                      if (!sharedSmoothVertNormals.TryGetValue(sharedIdx,
+                                                               out accumNormal)) {
+                        sharedSmoothVertNormals[sharedIdx] = V4(curPolyNormal, 1);
                       }
                       else {
-                        a = nextIdxToAdd++;
-                        b = nextIdxToAdd++;
-                        aOnSmoothEdge = false;
-                        bOnSmoothEdge = false;
+                        sharedSmoothVertNormals[sharedIdx] = V4(V3(accumNormal)
+                                                                  + curPolyNormal,
+                                                                w: accumNormal.w + 1);
                       }
 
-                      // Edge 1: B-C
-                      bool bcAlreadyExist = false;
-                      Pair<int, int> alreadyAddedVertexIndicesBC = default(Pair<int, int>);
-                      var edge1 = new Edge(polyTri.b, polyTri.c);
-                      if (smoothEdges.Contains(edge1)) {
-                        if (smoothEdgeVertexIndices.TryGetValue(edge1,
-                                                      out alreadyAddedVertexIndicesBC)) {
-                          bcAlreadyExist = true;
-
-                          // A shared "smooth" edge will have opposite winding
-                          // directions. Detect opposite edge directions here.
-                          if (alreadyAddedVertexIndicesBC.a == edge1.b) {
-                            Utils.Swap(ref alreadyAddedVertexIndicesBC.a,
-                                       ref alreadyAddedVertexIndicesBC.b);
-                          }
-
-                          b = alreadyAddedVertexIndicesBC.a;
-                          c = alreadyAddedVertexIndicesBC.b;
-                        }
-                        else {
-                          c = nextIdxToAdd++;
-
-                          alreadyAddedVertexIndicesBC = new Pair<int, int>(b, c);
-                          smoothEdgeVertexIndices[edge1] = alreadyAddedVertexIndicesBC;
-                        }
-                      }
-                      else {
-                        c = nextIdxToAdd++;
-                      }
-
-                      // Edge 2: C-A
-                      bool caAlreadyExist = false;
-                      Pair<int, int> alreadyAddedVertexIndicesCA = default(Pair<int, int>);
-                      var edge2 = new Edge(polyTri.c, polyTri.a);
-                      if (smoothEdges.Contains(edge2)) {
-                        if (smoothEdgeVertexIndices.TryGetValue(edge2,
-                                                      out alreadyAddedVertexIndicesCA)) {
-                          caAlreadyExist = true;
-
-                          // A shared "smooth" edge will have opposite winding
-                          // directions. Detect opposite edge directions here.
-                          if (alreadyAddedVertexIndicesCA.a == edge2.b) {
-                            Utils.Swap(ref alreadyAddedVertexIndicesCA.a,
-                                       ref alreadyAddedVertexIndicesCA.b);
-                          }
-
-                          c = alreadyAddedVertexIndicesCA.a;
-                          a = alreadyAddedVertexIndicesCA.b;
-                        }
-                        else {
-                          alreadyAddedVertexIndicesCA = new Pair<int, int>(c, a);
-                          smoothEdgeVertexIndices[edge2] = alreadyAddedVertexIndicesCA;
-                        }
-                      }
-
-                      // Determine which vertices already existed.
-                      bool didAExistAlready = abAlreadyExist || caAlreadyExist;
-                      bool didBExistAlready = abAlreadyExist || bcAlreadyExist;
-                      bool didCExistAlready = bcAlreadyExist || caAlreadyExist;
-
-                      using (new ProfilerSample("Add PolyTriangle")) {
-
-                        _cachedUnityMeshFacesList.Add(a);
-                        _cachedUnityMeshFacesList.Add(b);
-                        _cachedUnityMeshFacesList.Add(c);
-                        if (doubleSided) {
-                          _cachedUnityMeshFacesList.Add(a);
-                          _cachedUnityMeshFacesList.Add(c);
-                          _cachedUnityMeshFacesList.Add(b);
-                        }
-                      }
-
-                      using (new ProfilerSample("Add local positions from tri")) {
-                        // Only add positions that didn't exist.
-                        if (didAExistAlready) {
-                          numVertsSkippedDueToSmoothness += 1;
-
-                          // Average with normal that already existed.
-                          _accumNormalsBuffer[a] = V4((V3(_accumNormalsBuffer[a]) + curPolyNormal2) * 0.5f, 0f);
-                        }
-                        else {
-                          verts.Add(GetLocalPosition(polyTri.a));
-                          vertsCount += 1;
-
-                          // Add an entry for this vertex's normal.
-                          _accumNormalsBuffer[a] = curPolyNormal2;
-                        }
-
-                        if (didBExistAlready) {
-                          numVertsSkippedDueToSmoothness += 1;
-
-                          // Average with normal that already existed.
-                          _accumNormalsBuffer[b] = V4((V3(_accumNormalsBuffer[b]) + curPolyNormal2) * 0.5f, 0f);
-                        }
-                        else {
-                          verts.Add(GetLocalPosition(polyTri.b));
-                          vertsCount += 1;
-
-                          // Add an entry for this vertex's normal.
-                          _accumNormalsBuffer[b] = curPolyNormal2;
-                        }
-
-                        if (didCExistAlready) {
-                          numVertsSkippedDueToSmoothness += 1;
-
-                          // Average with normal that already existed.
-                          _accumNormalsBuffer[c] = V4((V3(_accumNormalsBuffer[c]) + curPolyNormal2) * 0.5f, 0f);
-                        }
-                        else {
-                          verts.Add(GetLocalPosition(polyTri.c));
-                          vertsCount += 1;
-
-                          // Add an entry for this vertex's normal.
-                          _accumNormalsBuffer[c] = curPolyNormal2;
-                        }
-                      }
+                      polyMeshIdx = edge.b;
                     }
                   }
                 }
               }
 
-              // Go through and assign normals after accumulating them.
-              // (Edges marked smooth had their normals averaged.)
-              for (int i = 0; i < vertsCount; i++) {
-                normals.Add(_accumNormalsBuffer[i]);
+              // Write accumulated normals for shared vertices.
+              for (int i = 0; i < verts.Count; i++) {
+                normals.Add(Vector3.zero);
               }
-              #endregion
-
-              #region New Strategy
-
-              // Clear working normal buffer.
-              //
-              // The W component of the buffer contains data to handle smooth edges.
-              // -1 => The normal was written to with the vertex of a sharp edge.
-              //       Such writes are overwritten by smooth edge writes, and won't be
-              //       written unless the buffer was unwritten at that index (W == 0).
-              // 0 => The normal hasn't been written for this vertex.
-              // N => (Positive N) The number of times the normal has been written from
-              //      a vertex on a smooth edge.
-              //
-              for (int i = 0; i < positions.Count; i++) {
-                _accumNormalsBuffer[i] = Vector4.zero;
+              foreach (var sharedIdxNormalPair in sharedSmoothVertNormals) {
+                var accumNormal = sharedIdxNormalPair.Value;
+                var finalNormal = V3(accumNormal) / accumNormal.w;
+                var sharedIdx = sharedIdxNormalPair.Key;
+                normals[sharedIdx] = finalNormal;
               }
-
-
-              // Assign positions for all vertex indices on shared edges.
-              // Write them to the shared, smooth edge vertex memory.
+              
+              // Final pass: Write triangle indices, adding non-shared vertices and
+              // normals as we go.
+              RingBuffer<int> triBuffer = new RingBuffer<int>(3);
               foreach (var poly in polygons) {
-                foreach (var edge in poly.edges) {
-                  if (smoothEdges.Contains(edge)) {
-                    // TODO: HERE
-                    //var normalSoFar = 
-                    //smoothedEdgeVerts[edge.a] = 
+                curPolyNormal = poly.GetNormal();
+
+                triBuffer.Clear();
+                for (int pv = 0; pv < poly.verts.Count; pv++) {
+
+                  // Collect "actual indices", which might be shared from the earlier
+                  // pass or might be newly constructed, into a triangle buffer.
+                  int actualIdx;
+
+                  // A vertex is shared/smooth if it on a smooth edge AND that edge is
+                  // on this polygon.
+                  bool onSmoothPolyEdge = false;
+                  var prevEdge = new Edge(this, poly[pv - 1], poly[pv]);
+                  var nextEdge = new Edge(this, poly[pv], poly[pv + 1]);
+                  onSmoothPolyEdge = smoothEdges.Contains(prevEdge)
+                                     || smoothEdges.Contains(nextEdge);
+                  if (onSmoothPolyEdge) {
+                    // Shared vertex; access via map, already have position and normal,
+                    // only need to write tri.
+                    actualIdx = polyMeshIdxToSharedIdxMap[poly[pv]];
+                  }
+                  else {
+                    // Non-shared vertex: Add new index, write vert position and normal.
+                    actualIdx = meshVertWriteIdx++;
+                    verts.Add(_positions[poly[pv]]);
+                    normals.Add(curPolyNormal);
+                  }
+
+                  // Accumulate a single triangle or shift buffer across the polygon.
+                  if (!triBuffer.IsFull) {
+                    triBuffer.Add(actualIdx);
+                  }
+                  else {
+                    triBuffer.Set(1, triBuffer.Get(2));
+                    triBuffer.Set(2, actualIdx);
+                  }
+                  
+                  if (triBuffer.IsFull) {
+                    // 3 vertices in buffer, write dat triangle!
+                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(0));
+                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(1));
+                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(2));
                   }
                 }
               }
 
-              int vertWriteIdx = 0;
-              Vector3 curPolyNormal;
-              foreach (var poly in polygons) {
-                curPolyNormal = poly.GetNormal();
-
-                foreach (var polyTri in poly.polyTris) {
-
-                  // Is this vertex on a smoothed edge?
-                  //if (smoothedEdgeVerts.Contains(polyTri.a)) {
-                  //  // 
-                  //}
-
+              // Okay ONE more thing if we want a double-sided mesh.
+              if (doubleSided) {
+                int doubleSidedStartIdx = verts.Count;
+                for (int v = 0; v < doubleSidedStartIdx; v++) {
+                  verts.Add(verts[v]);
+                  normals.Add(-normals[v]);
                 }
-
-              }
-
-
-              foreach (var smoothEdge in smoothEdges) {
-                // Compute final normal for this smooth edge.
-
-                // Write this final normal for this vertex.
+                int origIndexCount = _cachedUnityMeshFaceIndicesList.Count;
+                for (int i = 0; i < origIndexCount; i += 3) {
+                  _cachedUnityMeshFaceIndicesList.Add(
+                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 0]);
+                  _cachedUnityMeshFaceIndicesList.Add(
+                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 2]);
+                  _cachedUnityMeshFaceIndicesList.Add(
+                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 1]);
+                }
               }
               #endregion
-
             }
           }
 
           using (new ProfilerSample("Upload mesh data")) {
             mesh.SetVertices(verts);
-            mesh.SetTriangles(_cachedUnityMeshFacesList, 0, true);
+            mesh.SetTriangles(_cachedUnityMeshFaceIndicesList,
+                              submesh: 0, calculateBounds: true);
             mesh.SetNormals(normals);
           }
         }
         finally {
-          _cachedUnityMeshFacesList.Clear();
+          _cachedUnityMeshFaceIndicesList.Clear();
           verts.Clear();
           Pool<List<Vector3>>.Recycle(verts);
           normals.Clear();
           Pool<List<Vector3>>.Recycle(normals);
-          smoothEdgeVertexIndices.Clear();
-          Pool<Dictionary<Edge, Pair<int, int>>>.Recycle(smoothEdgeVertexIndices);
-          smoothEdgeVertexNormals.Clear();
-          Pool<Dictionary<int, Vector4>>.Recycle(smoothEdgeVertexNormals);
+          polyMeshIdxToSharedIdxMap.Clear();
+          Pool<Dictionary<int, int>>.Recycle(polyMeshIdxToSharedIdxMap);
+          sharedSmoothVertNormals.Clear();
+          Pool<Dictionary<int, Vector4>>.Recycle(sharedSmoothVertNormals);
         }
       }
     }
@@ -3505,7 +3415,7 @@ namespace Leap.Unity.Meshing {
     }
 
     /// <summary>
-    /// Converts the unityMesh into a PolyMesh, then back.
+    /// Converts the Unity Mesh into a PolyMesh, then back.
     /// 
     /// This will convert a smooth shaded Unity mesh (with shared vertices) into a
     /// flat-shaded Unity mesh.

@@ -73,7 +73,8 @@ namespace Leap.Unity.Meshing {
     /// Unity mesh representation).
     /// </summary>
     public void AddDataFor(object key, List<Vector3> newPositions,
-                                       List<Polygon> newPolygons) {
+                                       List<Polygon> newPolygons,
+                                       List<Edge>    newSmoothEdges) {
       PolygonData polygonData;
       if (objectPolygonData.TryGetValue(key, out polygonData)) {
         throw new System.InvalidOperationException(
@@ -87,7 +88,8 @@ namespace Leap.Unity.Meshing {
       polyMesh.Append(newPositions,
                       newPolygons,
                       newPositionIndices,
-                      newPolygonIndices);
+                      newPolygonIndices,
+                      newSmoothEdges: newSmoothEdges);
       
       objectPolygonData[key] = new PolygonData() {
         a = newPositionIndices,

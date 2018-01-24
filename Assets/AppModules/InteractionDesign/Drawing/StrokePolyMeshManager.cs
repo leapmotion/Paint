@@ -50,8 +50,12 @@ namespace Leap.Unity.Drawing {
           strokeMeshPolygons.Clear();
           var strokeMeshPositions = Pool<List<Vector3>>.Spawn();
           strokeMeshPositions.Clear();
+          var strokeSmoothEdges = Pool<List<Edge>>.Spawn();
+          strokeSmoothEdges.Clear();
           try {
-            getStrokePolygons(stroke, strokeMeshPositions, strokeMeshPolygons);
+            getStrokePolygons(stroke, strokeMeshPositions,
+                                      strokeMeshPolygons,
+                                      strokeSmoothEdges);
 
             // If the current one is full, create a new LivePolyMeshObject for this
             // stroke's polygon data.
@@ -64,7 +68,9 @@ namespace Leap.Unity.Drawing {
             }
 
             addStrokePolygonData(_curPolyMeshObj, stroke,
-                                 strokeMeshPositions, strokeMeshPolygons);
+                                 strokeMeshPositions,
+                                 strokeMeshPolygons,
+                                 strokeSmoothEdges);
             
             _strokeMeshes[stroke] = _curPolyMeshObj;
 
@@ -83,6 +89,8 @@ namespace Leap.Unity.Drawing {
             Pool<List<Polygon>>.Recycle(strokeMeshPolygons);
             strokeMeshPositions.Clear();
             Pool<List<Vector3>>.Recycle(strokeMeshPositions);
+            strokeSmoothEdges.Clear();
+            Pool<List<Edge>>.Recycle(strokeSmoothEdges);
           }
         }
       }
@@ -96,7 +104,8 @@ namespace Leap.Unity.Drawing {
     // to get it some actual customizability.
     private void getStrokePolygons(StrokeObject stroke,
                                    List<Vector3> outStrokePositions,
-                                   List<Polygon> outStrokePolygons) {
+                                   List<Polygon> outStrokePolygons,
+                                   List<Edge> outStrokeSmoothEdges) {
       if (stroke.Count == 1) {
         // nothing for now.
       }
@@ -111,7 +120,7 @@ namespace Leap.Unity.Drawing {
           var b = Vector3.Cross(t, n).normalized;         // binormal
           n = Vector3.Cross(b, t).normalized;
 
-          // Modulate birnormal thickness based on stroke curvature.
+          // Modulate binormal thickness based on stroke curvature.
           // This is a look-backward modification.
           var bMult = 1f;
           if (i > 0) {
@@ -135,21 +144,40 @@ namespace Leap.Unity.Drawing {
           }
           prevBinormal = b;
 
-
-          outStrokePositions.Add(aP.position - prevB * aP.size * bMult);
-          outStrokePositions.Add(aP.position + prevB * aP.size * bMult);
+          // Add positions.
+          if (i == 0) {
+            outStrokePositions.Add(aP.position - prevB * aP.size * bMult);
+            outStrokePositions.Add(aP.position + prevB * aP.size * bMult);
+          }
           outStrokePositions.Add(bP.position + b * aP.size);
           outStrokePositions.Add(bP.position - b * aP.size);
 
+          // Add polygon.
           var polyVerts = Pool<List<int>>.Spawn();
-          polyVerts.Add((i * 4) + 0);
-          polyVerts.Add((i * 4) + 1);
-          polyVerts.Add((i * 4) + 2);
-          polyVerts.Add((i * 4) + 3);
+          if (i == 0) {
+            polyVerts.Add((i * 4) + 0);
+            polyVerts.Add((i * 4) + 1);
+            polyVerts.Add((i * 4) + 2);
+            polyVerts.Add((i * 4) + 3);
+          }
+          else {
+            polyVerts.Add(4 + (i - 1) * 2 - 1);
+            polyVerts.Add(4 + (i - 1) * 2 - 2);
+            polyVerts.Add(4 + (i - 1) * 2 + 0);
+            polyVerts.Add(4 + (i - 1) * 2 + 1);
+          }
           outStrokePolygons.Add(new Polygon() {
             mesh = null,      // meshless Polygon
             verts = polyVerts
           });
+
+          // Mark the joining edges of the stroke as smooth.
+          if (i == 0) {
+            outStrokeSmoothEdges.Add(new Edge((i * 4) + 2, (i * 4) + 3));
+          }
+          else {
+            outStrokeSmoothEdges.Add(new Edge((4 + (i - 1) * 2 + 0), (4 + (i - 1) * 2 + 1)));
+          }
         }
       }
     }
@@ -174,8 +202,11 @@ namespace Leap.Unity.Drawing {
     private void addStrokePolygonData(KeyedPolyMeshObject polyMeshObj,
                                       StrokeObject strokeObj,
                                       List<Vector3> strokeMeshPositions,
-                                      List<Polygon> strokeMeshPolygons) {
-      polyMeshObj.AddDataFor(strokeObj, strokeMeshPositions, strokeMeshPolygons);
+                                      List<Polygon> strokeMeshPolygons,
+                                      List<Edge>    strokeSmoothEdges) {
+      polyMeshObj.AddDataFor(strokeObj, strokeMeshPositions,
+                                        strokeMeshPolygons,
+                                        strokeSmoothEdges);
 
       // TODO: This counting is hacky and not-robust :(
       foreach (var polygon in strokeMeshPolygons) {
@@ -215,6 +246,8 @@ namespace Leap.Unity.Drawing {
           newStrokeMeshPolygons.Clear();
           var newStrokeMeshPositions = Pool<List<Vector3>>.Spawn();
           newStrokeMeshPositions.Clear();
+          var newStrokeSmoothEdges   = Pool<List<Edge>>.Spawn();
+          newStrokeSmoothEdges.Clear();
           var addedStrokeMeshPositionIndices = Pool<List<int>>.Spawn();
           addedStrokeMeshPositionIndices.Clear();
           var addedStrokeMeshPolygonIndices = Pool<List<int>>.Spawn();
@@ -225,7 +258,10 @@ namespace Leap.Unity.Drawing {
 
             using (new ProfilerSample("getStrokePolygons")) {
               // Get polygon data for the entirety of the stroke.
-              getStrokePolygons(strokeObj, newStrokeMeshPositions, newStrokeMeshPolygons);
+              // TODO: _Removing_ smooth edges is not supported.
+              getStrokePolygons(strokeObj, newStrokeMeshPositions,
+                                           newStrokeMeshPolygons,
+                                           newStrokeSmoothEdges);
             }
 
             using (new ProfilerSample("Add/modify PolyMesh stroke positions")) {
@@ -288,10 +324,19 @@ namespace Leap.Unity.Drawing {
                   polyMesh.AddPolygon(newStrokeMeshPolygon, out addedPolygonIdx);
 
                   addedTriangleCount += (newStrokeMeshPolygon.Count - 2) * 2;
-                  // (double-sided tris, also TODO: this is SUPER HACKY :( )
+                  // (double-sided tris, also TODO: this is SUPER HACKY D: )
 
                   addedStrokeMeshPolygonIndices.Add(addedPolygonIdx);
                 }
+              }
+            }
+
+            using (new ProfilerSample("Mark new PolyMesh edges smooth")) {
+              foreach (var newStrokeSmoothEdge in newStrokeSmoothEdges) {
+                // Re-index the edge to refer to final positions in the PolyMesh.
+                var finalSmoothEdge = new Edge(finalPositionIndices[newStrokeSmoothEdge.a],
+                                               finalPositionIndices[newStrokeSmoothEdge.b]);
+                polyMesh.MarkEdgeSmooth(finalSmoothEdge);
               }
             }
 
@@ -308,6 +353,8 @@ namespace Leap.Unity.Drawing {
             Pool<List<Polygon>>.Recycle(newStrokeMeshPolygons);
             newStrokeMeshPolygons.Clear();
             Pool<List<Vector3>>.Recycle(newStrokeMeshPositions);
+            newStrokeSmoothEdges.Clear();
+            Pool<List<Edge>>.Recycle(newStrokeSmoothEdges);
             addedStrokeMeshPositionIndices.Clear();
             Pool<List<int>>.Recycle(addedStrokeMeshPositionIndices);
             addedStrokeMeshPolygonIndices.Clear();
