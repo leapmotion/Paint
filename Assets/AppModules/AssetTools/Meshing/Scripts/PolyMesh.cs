@@ -3373,6 +3373,17 @@ namespace Leap.Unity.Meshing {
               }
 
 
+              // Assign positions for all vertex indices on shared edges.
+              // Write them to the shared, smooth edge vertex memory.
+              foreach (var poly in polygons) {
+                foreach (var edge in poly.edges) {
+                  if (smoothEdges.Contains(edge)) {
+                    // TODO: HERE
+                    //var normalSoFar = 
+                    //smoothedEdgeVerts[edge.a] = 
+                  }
+                }
+              }
 
               int vertWriteIdx = 0;
               Vector3 curPolyNormal;
@@ -3381,31 +3392,13 @@ namespace Leap.Unity.Meshing {
 
                 foreach (var polyTri in poly.polyTris) {
 
-                  int a, b, c;
+                  // Is this vertex on a smoothed edge?
+                  //if (smoothedEdgeVerts.Contains(polyTri.a)) {
+                  //  // 
+                  //}
 
                 }
 
-                foreach (var edge in poly.edges) {
-                  if (smoothEdges.Contains(edge)) {
-                    // Edge Vertex A
-                    var accumNormal = _accumNormalsBuffer[edge.a];
-
-                    if (accumNormal.w == -1) {
-                      accumNormal = Vector4.zero;
-                    }
-                    _accumNormalsBuffer[edge.a] = V4(V3(accumNormal) + curPolyNormal,
-                                                     accumNormal.w + 1);
-
-                    // Edge Vertex B
-                    accumNormal = _accumNormalsBuffer[edge.b];
-
-                    if (accumNormal.w == -1) {
-                      accumNormal = Vector4.zero;
-                    }
-                    _accumNormalsBuffer[edge.b] = V4(V3(accumNormal) + curPolyNormal,
-                                                     accumNormal.w + 1);
-                  }
-                }
               }
 
 

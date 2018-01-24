@@ -4006,7 +4006,7 @@ MonoBehaviour:
   poseSource1: {fileID: 1468566074}
   poseSource2: {fileID: 1413643109}
   outputToFilter: {fileID: 930924484}
-  usePolyMeshMethod: 0
+  usePolyMeshMethod: 1
   thickness: 0.1
 --- !u!4 &930924486
 Transform:
@@ -5861,11 +5861,11 @@ Mesh:
   m_SubMeshes:
   - serializedVersion: 2
     firstByte: 0
-    indexCount: 12
+    indexCount: 24
     topology: 0
     baseVertex: 0
     firstVertex: 0
-    vertexCount: 6
+    vertexCount: 10
     localAABB:
       m_Center: {x: -0.0004712604, y: 0.0563, z: 0.16065}
       m_Extent: {x: 0.05047126, y: 0.0563, z: 0.16065}
@@ -5882,11 +5882,11 @@ Mesh:
   m_KeepVertices: 1
   m_KeepIndices: 1
   m_IndexFormat: 0
-  m_IndexBuffer: 000002000300000003000100020004000500020005000300
+  m_IndexBuffer: 000001000200000002000100030004000500030005000400040005000600040006000500070008000900070009000800
   m_Skin: []
   m_VertexData:
     m_CurrentChannels: 3
-    m_VertexCount: 6
+    m_VertexCount: 10
     m_Channels:
     - stream: 0
       offset: 0
@@ -5920,8 +5920,8 @@ Mesh:
       offset: 0
       format: 0
       dimension: 0
-    m_DataSize: 144
-    _typelessdata: cdcc4cbd0000000000000000d7fec23c14197e3f2b5ff4bdcdcc4c3d000000000000000000000000b19e7e3fd15ed4bd1ba950bd6145a63cd044183ec536eb3cfe896b3f8608c8bef577483d52017e3cd044183ea932013dee38763f8d378bbecdcc4cbdd49ae63d6f81a43e0000000019bf613f3273f1becdcc4c3dd49ae63d6f81a43e8c2fac3cec5f603fcb46f6be
+    m_DataSize: 240
+    _typelessdata: cdcc4cbd000000000000000000000000b29e7ebfd25ed43dcdcc4c3d000000000000000000000000b29e7ebfd25ed43df577483d52017e3cd044183e00000000b29e7ebfd25ed43dcdcc4cbd000000000000000000000000b29e7ebfd25ed43df577483d52017e3cd044183e0e2aad3c78cc68bdc23b3cbe1ba950bd6145a63cd044183e0e2aad3c78cc68bdc23b3cbecdcc4cbdd49ae63d6f81a43e0e2a2d3d2385613f7653f1bef577483d52017e3cd044183e0e2a2d3d2385613f7653f1becdcc4cbdd49ae63d6f81a43e0e2a2d3d2385613f7653f1becdcc4c3dd49ae63d6f81a43e0e2a2d3d2385613f7653f1be
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
