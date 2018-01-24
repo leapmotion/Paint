@@ -44,7 +44,6 @@ namespace Leap.Unity {
     /// to make a copy.
     /// </summary>
     public abstract Frame CurrentFixedFrame { get; }
-    public object Hands { get; internal set; }
 
     protected void DispatchUpdateFrameEvent(Frame frame) {
       if (OnUpdateFrame != null) {
