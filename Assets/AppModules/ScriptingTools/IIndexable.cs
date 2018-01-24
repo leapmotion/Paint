@@ -38,18 +38,21 @@ namespace Leap.Unity {
 
     public bool MoveNext() { index++; return index < indexable.Count; }
 
-    public bool TryGetNext(out T t) {
-      if (MoveNext()) {
-        t = Current;
-        return true;
-      }
-      else {
+    bool IQueryOp<T>.TryGetNext(out T t) {
+      var hasNext = MoveNext();
+      if (!hasNext) {
         t = default(T);
         return false;
       }
+      else {
+        t = Current;
+        return true;
+      }
     }
 
-    public void Reset() { index = -1; }
+    void IQueryOp<T>.Reset() {
+      index = -1;
+    }
 
     public T Current { get { return indexable[index]; } }
 
