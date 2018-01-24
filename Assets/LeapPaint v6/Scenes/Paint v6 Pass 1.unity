@@ -1007,7 +1007,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 259844159}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81dc33a21758b384586807f3656587d1, type: 3}
   m_Name: 
@@ -5861,11 +5861,11 @@ Mesh:
   m_SubMeshes:
   - serializedVersion: 2
     firstByte: 0
-    indexCount: 12
+    indexCount: 24
     topology: 0
     baseVertex: 0
     firstVertex: 0
-    vertexCount: 6
+    vertexCount: 12
     localAABB:
       m_Center: {x: -0.00049999915, y: 0.0491, z: 0.1039}
       m_Extent: {x: 0.050499998, y: 0.0491, z: 0.1039}
@@ -5882,11 +5882,11 @@ Mesh:
   m_KeepVertices: 1
   m_KeepIndices: 1
   m_IndexFormat: 0
-  m_IndexBuffer: 020003000000020000000100010000000400010004000500
+  m_IndexBuffer: 02000300000002000000010001000000040001000400050008000600090008000700060007000a00060007000b000a00
   m_Skin: []
   m_VertexData:
     m_CurrentChannels: 3
-    m_VertexCount: 6
+    m_VertexCount: 12
     m_Channels:
     - stream: 0
       offset: 0
@@ -5920,8 +5920,8 @@ Mesh:
       offset: 0
       format: 0
       dimension: 0
-    m_DataSize: 144
-    _typelessdata: 60e550bd05a3923cd044183e0000000082f44a3f10c6ecbe3ab4483d05a3923cd044183e0000000082f44a3f10c6ecbecdcc4c3d000000000000000000000000462a7e3fa7c3f4bdcdcc4cbd000000000000000000000000462a7e3fa7c3f4bdcdcc4cbd151dc93d86c9543e00000000bdbe173f9b2d4ebfcdcc4c3d151dc93d86c9543e00000000bdbe173f9b2d4ebf
+    m_DataSize: 288
+    _typelessdata: 60e550bd05a3923cd044183e0000000082f44a3f10c6ecbe3ab4483d05a3923cd044183e0000000082f44a3f10c6ecbecdcc4c3d000000000000000000000000462a7e3fa7c3f4bdcdcc4cbd000000000000000000000000462a7e3fa7c3f4bdcdcc4cbd151dc93d86c9543e00000000bdbe173f9b2d4ebfcdcc4c3d151dc93d86c9543e00000000bdbe173f9b2d4ebf60e550bd05a3923cd044183e0000008082f44abf10c6ec3e3ab4483d05a3923cd044183e0000008082f44abf10c6ec3ecdcc4c3d000000000000000000000080462a7ebfa7c3f43dcdcc4cbd000000000000000000000080462a7ebfa7c3f43dcdcc4cbd151dc93d86c9543e00000080bdbe17bf9b2d4e3fcdcc4c3d151dc93d86c9543e00000080bdbe17bf9b2d4e3f
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
