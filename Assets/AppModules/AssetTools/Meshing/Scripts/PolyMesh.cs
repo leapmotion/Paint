@@ -18,16 +18,18 @@ namespace Leap.Unity.Meshing {
       get { return _polygons; }
     }
 
-    private bool _edgeDataEnabled = true;
-    public bool isEdgeDataEnabled {
-      get { return _edgeDataEnabled; }
+    #region Edge Adjacency
+
+    private bool _edgeAdjacencyDataEnabled = true;
+    public bool isEdgeAdjacencyDataEnabled {
+      get { return _edgeAdjacencyDataEnabled; }
     }
 
     /// <summary> Updated when AddPolygon or RemovePolygon is called. </summary>
     private Dictionary<Edge, List<Polygon>> _edgeFaces;
     public Dictionary<Edge, List<Polygon>> edgeAdjFaces {
       get {
-        if (!_edgeDataEnabled) {
+        if (!_edgeAdjacencyDataEnabled) {
           Debug.LogError("Edge data is not enabled for this PolyMesh. Call EnableEdgeData "
                          + "before requesting edge data or set the enableEdgeData "
                          + "property to true when creating the PolyMesh.");
@@ -41,7 +43,7 @@ namespace Leap.Unity.Meshing {
     private Dictionary<Polygon, List<Edge>> _faceEdges;
     public Dictionary<Polygon, List<Edge>> faceAdjEdges {
       get {
-        if (!_edgeDataEnabled) {
+        if (!_edgeAdjacencyDataEnabled) {
           Debug.LogError("Edge data is not enabled for this PolyMesh. Call EnableEdgeData "
                          + "before requesting edge data or set the enableEdgeData "
                          + "property to true when creating the PolyMesh.");
@@ -50,6 +52,17 @@ namespace Leap.Unity.Meshing {
         return _faceEdges;
       }
     }
+
+    #endregion
+
+    #region Edge Smoothing
+
+    private HashSet<Edge> _smoothEdges;
+    public ReadonlyHashSet<Edge> smoothEdges {
+      get { return _smoothEdges; }
+    }
+
+    #endregion
 
     #endregion
 
@@ -80,8 +93,9 @@ namespace Leap.Unity.Meshing {
       _polygons = new List<Polygon>();
       _edgeFaces = new Dictionary<Edge, List<Polygon>>();
       _faceEdges = new Dictionary<Polygon, List<Edge>>();
+      _smoothEdges = new HashSet<Edge>();
 
-      _edgeDataEnabled = true;
+      _edgeAdjacencyDataEnabled = true;
     }
 
     /// <summary>
@@ -96,7 +110,7 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     public PolyMesh(bool enableEdgeData = true) 
       : this() {
-      _edgeDataEnabled = enableEdgeData;
+      _edgeAdjacencyDataEnabled = enableEdgeData;
     }
 
     /// <summary>
@@ -187,6 +201,8 @@ namespace Leap.Unity.Meshing {
       }
       _faceEdges.Clear();
 
+      _smoothEdges.Clear();
+
       if (clearTransform) {
         useTransform = null;
       }
@@ -237,6 +253,11 @@ namespace Leap.Unity.Meshing {
         foreach (var polygon in deepCopyPolygons) {
           AddPolygon(polygon.IncrementIndices(origPositionCount));
         }
+
+        foreach (var smoothEdge in otherPolyMesh.smoothEdges) {
+          MarkEdgeSmooth(new Edge(smoothEdge.a + origPositionCount,
+                                  smoothEdge.b + origPositionCount));
+        }
       }
       finally {
         deepCopyPolygons.Clear();
@@ -255,6 +276,10 @@ namespace Leap.Unity.Meshing {
 
       AddPositions(otherPolyMesh.positions);
       AddPolygons(otherPolyMesh.polygons, copyPolygonVertLists: true);
+
+      foreach (var smoothEdge in otherPolyMesh.smoothEdges) {
+        MarkEdgeSmooth(smoothEdge);
+      }
     }
 
     /// <summary>
@@ -438,9 +463,9 @@ namespace Leap.Unity.Meshing {
         outAddedPolygonIdx = _polygons.Count;
         _polygons.Add(polygon);
 
-        if (_edgeDataEnabled) {
+        if (_edgeAdjacencyDataEnabled) {
           using (new ProfilerSample("Update edges (Poly Added)")) {
-            updateEdges_PolyAdded(polygon);
+            updateEdgeAdjacency_PolyAdded(polygon);
           }
         }
       }
@@ -474,11 +499,11 @@ namespace Leap.Unity.Meshing {
 
         replacedPolygon = _polygons[polyIdx];
 
-        if (_edgeDataEnabled) {
+        if (_edgeAdjacencyDataEnabled) {
           using (new ProfilerSample("Remove and Re-add Edge Data")) {
             // Update edge data.
-            updateEdges_PolyRemoved(replacedPolygon);
-            updateEdges_PolyAdded(newPolygon);
+            updateEdgesAdjacency_PolyRemoved(replacedPolygon);
+            updateEdgeAdjacency_PolyAdded(newPolygon);
           }
         }
 
@@ -491,8 +516,8 @@ namespace Leap.Unity.Meshing {
       foreach (var polygon in toRemove) {
         polyPool.Add(polygon);
 
-        if (_edgeDataEnabled) {
-          updateEdges_PolyRemoved(polygon);
+        if (_edgeAdjacencyDataEnabled) {
+          updateEdgesAdjacency_PolyRemoved(polygon);
         }
       }
 
@@ -502,45 +527,45 @@ namespace Leap.Unity.Meshing {
     public void RemovePolygon(Polygon polygon) {
       _polygons.Remove(polygon);
 
-      if (_edgeDataEnabled) {
-        updateEdges_PolyRemoved(polygon);
+      if (_edgeAdjacencyDataEnabled) {
+        updateEdgesAdjacency_PolyRemoved(polygon);
       }
     }
 
     #endregion
 
-    #region Edge Data
+    #region Edge Adjacency Data
 
-    public void EnableEdgeData() {
-      if (!_edgeDataEnabled) {
-        _edgeDataEnabled = true;
+    public void EnableEdgeAdjacencyData() {
+      if (!_edgeAdjacencyDataEnabled) {
+        _edgeAdjacencyDataEnabled = true;
 
-        initEdgeData();
+        initEdgeAdjacencyData();
       }
     }
 
-    public void DisableEdgeData() {
-      if (_edgeDataEnabled) {
-        clearEdgeData();
+    public void DisableEdgeAdjacencyData() {
+      if (_edgeAdjacencyDataEnabled) {
+        clearEdgeAdjacencyData();
 
-        _edgeDataEnabled = false;
+        _edgeAdjacencyDataEnabled = false;
       }
     }
 
-    private void initEdgeData() {
+    private void initEdgeAdjacencyData() {
       if (_edgeFaces.Count != 0
           || _faceEdges.Count != 0) {
-        clearEdgeData();
+        clearEdgeAdjacencyData();
       }
 
       foreach (var polygon in _polygons) {
-        updateEdges_PolyAdded(polygon);
+        updateEdgeAdjacency_PolyAdded(polygon);
       }
     }
 
-    private void clearEdgeData() {
+    private void clearEdgeAdjacencyData() {
       foreach (var polygon in _polygons) {
-        updateEdges_PolyRemoved(polygon);
+        updateEdgesAdjacency_PolyRemoved(polygon);
       }
     }
 
@@ -550,10 +575,10 @@ namespace Leap.Unity.Meshing {
     /// This should be called right after a polygon is added to the mesh.
     /// (Automatically called by the AddPolygon functions.)
     /// </summary>
-    private void updateEdges_PolyAdded(Polygon poly) {
+    private void updateEdgeAdjacency_PolyAdded(Polygon poly) {
       using (new ProfilerSample(
                    "updateEdges_PolyAdded: Add adjacent faces for each edge")) {
-        if (!_edgeDataEnabled) {
+        if (!_edgeAdjacencyDataEnabled) {
           throw new System.InvalidOperationException(
             "updateEdges_PolyAdded called, but edge data is disabled for this PolyMesh.");
         }
@@ -596,10 +621,10 @@ namespace Leap.Unity.Meshing {
     /// This should be called right after a polygon is removed from the mesh.
     /// (Automatically called by the RemovePolygon functions.)
     /// </summary>
-    private void updateEdges_PolyRemoved(Polygon poly) {
+    private void updateEdgesAdjacency_PolyRemoved(Polygon poly) {
       using (new ProfilerSample(
                    "updateEdges_PolyRemoved: Remove adjacent faces for each edge")) {
-        if (!_edgeDataEnabled) {
+        if (!_edgeAdjacencyDataEnabled) {
           throw new System.InvalidOperationException(
             "updateEdges_PolyRemoved called, but edge data is disabled for this PolyMesh.");
         }
@@ -653,6 +678,49 @@ namespace Leap.Unity.Meshing {
 
     public bool CheckValidEdge(Edge edge) {
       return _edgeFaces.ContainsKey(edge);
+    }
+
+    #endregion
+
+    #region Edge Smooth/Sharp Operations
+
+    /// <summary>
+    /// Marks the argument edge as a smooth edge. This property will be respected when
+    /// the PolyMesh is converted to a Unity mesh.
+    /// </summary>
+    public void MarkEdgeSmooth(Edge edge) {
+      if (edge.a < 0 || edge.a > positions.Count - 1) {
+        throw new System.InvalidOperationException(
+          "Cannot mark " + edge + " as smooth. "
+        + "Edge vertex " + edge.a + " is out-of-bounds for this PolyMesh.");
+      }
+      if (edge.b < 0 || edge.b > positions.Count - 1) {
+        throw new System.InvalidOperationException(
+          "Cannot mark " + edge + " as smooth. "
+        + "Edge vertex " + edge.b + " is out-of-bounds for this PolyMesh.");
+      }
+
+      _smoothEdges.Add(edge);
+    }
+
+    /// <summary>
+    /// Marks the argument edge as a sharp edge. Edges are sharp by default.
+    /// 
+    /// This property will be respected when the PolyMesh is converted to a Unity mesh.
+    /// </summary>
+    public void MarkEdgeSharp(Edge edge) {
+      if (edge.a < 0 || edge.a > positions.Count - 1) {
+        throw new System.InvalidOperationException(
+          "Cannot mark " + edge + " sharp. "
+        + "Edge vertex " + edge.a + " is out-of-bounds for this PolyMesh.");
+      }
+      if (edge.b < 0 || edge.b > positions.Count - 1) {
+        throw new System.InvalidOperationException(
+          "Cannot mark " + edge + " sharp. "
+        + "Edge vertex " + edge.b + " is out-of-bounds for this PolyMesh.");
+      }
+
+      _smoothEdges.Remove(edge);
     }
 
     #endregion
@@ -3037,6 +3105,8 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     private List<int> _cachedUnityMeshFacesList = new List<int>(4096);
 
+    private Vector3[] _vertIndexNormalBuffer = new Vector3[65536];
+
     /// <summary>
     /// Clears and fills the provided Unity mesh object with data from this PolyMesh.
     /// 
@@ -3053,35 +3123,217 @@ namespace Leap.Unity.Meshing {
         int vertsCount = 0;
         var normals = Pool<List<Vector3>>.Spawn();
         normals.Clear();
+        var smoothEdgeVertexIndices = Pool<Dictionary<Edge, Pair<int, int>>>.Spawn();
+        smoothEdgeVertexIndices.Clear();
         try {
-          using (new ProfilerSample("Fill faces, verts, normals lists")) {
-            foreach (var poly in polygons) {
-              Vector3 normal;
-              using (new ProfilerSample("Get polygon normal")) {
-                normal = poly.GetNormal();
-                using (new ProfilerSample("Foreach through poly tris...")) {
-                  foreach (var tri in poly.tris) {
-                    using (new ProfilerSample("Add triangle")) {
-                      int triBeginIdx = vertsCount;
-                      _cachedUnityMeshFacesList.Add(triBeginIdx + 0);
-                      _cachedUnityMeshFacesList.Add(triBeginIdx + 1);
-                      _cachedUnityMeshFacesList.Add(triBeginIdx + 2);
-                      if (doubleSided) {
+          if (this.smoothEdges.Count == 0) {
+            using (new ProfilerSample("Fill faces, verts, normals lists (no smooth edges)")) {
+              foreach (var poly in polygons) {
+                Vector3 normal;
+                using (new ProfilerSample("Get polygon normal")) {
+                  normal = poly.GetNormal();
+                  using (new ProfilerSample("Foreach through poly tris...")) {
+                    foreach (var tri in poly.tris) {
+                      using (new ProfilerSample("Add triangle")) {
+                        int triBeginIdx = vertsCount;
                         _cachedUnityMeshFacesList.Add(triBeginIdx + 0);
-                        _cachedUnityMeshFacesList.Add(triBeginIdx + 2);
                         _cachedUnityMeshFacesList.Add(triBeginIdx + 1);
+                        _cachedUnityMeshFacesList.Add(triBeginIdx + 2);
+                        if (doubleSided) {
+                          _cachedUnityMeshFacesList.Add(triBeginIdx + 0);
+                          _cachedUnityMeshFacesList.Add(triBeginIdx + 2);
+                          _cachedUnityMeshFacesList.Add(triBeginIdx + 1);
+                        }
+                      }
+                      using (new ProfilerSample("Add local positions from tri")) {
+                        verts.Add(GetLocalPosition(tri.a));
+                        verts.Add(GetLocalPosition(tri.b));
+                        verts.Add(GetLocalPosition(tri.c));
+                        vertsCount += 3;
+                      }
+                      using (new ProfilerSample("Add normals")) {
+                        normals.Add(normal);
+                        normals.Add(normal);
+                        normals.Add(normal);
                       }
                     }
-                    using (new ProfilerSample("Add local positions from tri")) {
-                      verts.Add(GetLocalPosition(tri.a));
-                      verts.Add(GetLocalPosition(tri.b));
-                      verts.Add(GetLocalPosition(tri.c));
-                      vertsCount += 3;
+                  }
+                }
+              }
+            }
+          }
+          else {
+            using (new ProfilerSample("Fill faces, verts, normals lists (some smooth edges)")) {
+
+              int numVertsSkippedDueToSmoothness = 0;
+
+              foreach (var poly in polygons) {
+                Vector3 normal;
+                using (new ProfilerSample("Get polygon normal")) {
+                  normal = poly.GetNormal();
+                  using (new ProfilerSample("Foreach through poly tris...")) {
+                    foreach (var polyTri in poly.polyTris) {
+
+                      int triBeginIdx = vertsCount;
+                      int a = triBeginIdx + 0;
+                      int b = triBeginIdx + 1;
+                      int c = triBeginIdx + 2;
+
+                      // Edge 0: A-B
+                      bool abAlreadyExist = false;
+                      Pair<int, int> alreadyAddedVertexIndicesAB = default(Pair<int, int>);
+                      var polyEdge0 = polyTri.polyEdge0;
+                      if (polyEdge0.HasValue) {
+                        var edge0 = polyEdge0.Value;
+                        if (smoothEdges.Contains(edge0)) {
+                          if (smoothEdgeVertexIndices.TryGetValue(edge0,
+                                                        out alreadyAddedVertexIndicesAB)) {
+                            abAlreadyExist = true;
+
+                            // A shared "smooth" edge will have opposite winding
+                            // directions. Detect opposite edge directions here.
+                            if (alreadyAddedVertexIndicesAB.a == edge0.b) {
+                              Utils.Swap(ref alreadyAddedVertexIndicesAB.a,
+                                         ref alreadyAddedVertexIndicesAB.b);
+                            }
+                          }
+                          else {
+                            alreadyAddedVertexIndicesAB = new Pair<int, int>(a, b);
+                            smoothEdgeVertexIndices[edge0] = alreadyAddedVertexIndicesAB;
+                          }
+                        }
+                      }
+
+                      // Edge 1: B-C
+                      bool bcAlreadyExist = false;
+                      Pair<int, int> alreadyAddedVertexIndicesBC = default(Pair<int, int>);
+                      var polyEdge1 = polyTri.polyEdge1;
+                      if (polyEdge1.HasValue) {
+                        var edge1 = polyEdge1.Value;
+                        if (smoothEdges.Contains(edge1)) {
+                          if (smoothEdgeVertexIndices.TryGetValue(edge1,
+                                                        out alreadyAddedVertexIndicesBC)) {
+                            bcAlreadyExist = true;
+
+                            // A shared "smooth" edge will have opposite winding
+                            // directions. Detect opposite edge directions here.
+                            if (alreadyAddedVertexIndicesBC.a == edge1.b) {
+                              Utils.Swap(ref alreadyAddedVertexIndicesBC.a,
+                                         ref alreadyAddedVertexIndicesBC.b);
+                            }
+                          }
+                          else {
+                            alreadyAddedVertexIndicesBC = new Pair<int, int>(b, c);
+                            smoothEdgeVertexIndices[edge1] = alreadyAddedVertexIndicesBC;
+                          }
+                        }
+                      }
+
+                      // Edge 2: C-A
+                      bool caAlreadyExist = false;
+                      Pair<int, int> alreadyAddedVertexIndicesCA = default(Pair<int, int>);
+                      var polyEdge2 = polyTri.polyEdge2;
+                      if (polyEdge2.HasValue) {
+                        var edge2 = polyEdge2.Value;
+                        if (smoothEdges.Contains(edge2)) {
+                          if (smoothEdgeVertexIndices.TryGetValue(edge2,
+                                                        out alreadyAddedVertexIndicesCA)) {
+                            caAlreadyExist = true;
+
+                            // A shared "smooth" edge will have opposite winding
+                            // directions. Detect opposite edge directions here.
+                            if (alreadyAddedVertexIndicesCA.a == edge2.b) {
+                              Utils.Swap(ref alreadyAddedVertexIndicesCA.a,
+                                         ref alreadyAddedVertexIndicesCA.b);
+                            }
+                          }
+                          else {
+                            alreadyAddedVertexIndicesCA = new Pair<int, int>(c, a);
+                            smoothEdgeVertexIndices[edge2] = alreadyAddedVertexIndicesBC;
+                          }
+                        }
+                      }
+
+                      // Determine which vertices already existed.
+                      bool didAExistAlready = abAlreadyExist || caAlreadyExist;
+                      bool didBExistAlready = abAlreadyExist || bcAlreadyExist;
+                      bool didCExistAlready = bcAlreadyExist || caAlreadyExist;
+
+                      using (new ProfilerSample("Add PolyTriangle")) {
+
+                        if (abAlreadyExist) {
+                          a = alreadyAddedVertexIndicesAB.a;
+                          b = alreadyAddedVertexIndicesAB.b;
+                        }
+                        if (bcAlreadyExist) {
+                          b = alreadyAddedVertexIndicesBC.a;
+                          c = alreadyAddedVertexIndicesBC.b;
+                        }
+                        if (caAlreadyExist) {
+                          c = alreadyAddedVertexIndicesCA.a;
+                          a = alreadyAddedVertexIndicesCA.b;
+                        }
+
+                        _cachedUnityMeshFacesList.Add(a);
+                        _cachedUnityMeshFacesList.Add(b);
+                        _cachedUnityMeshFacesList.Add(c);
+                        if (doubleSided) {
+                          _cachedUnityMeshFacesList.Add(a);
+                          _cachedUnityMeshFacesList.Add(c);
+                          _cachedUnityMeshFacesList.Add(b);
+                        }
+                      }
+
+                      using (new ProfilerSample("Add local positions from tri")) {
+                        // Only add positions that didn't exist.
+                        if (didAExistAlready) {
+                          numVertsSkippedDueToSmoothness += 1;
+
+                          // Average with normal that already existed.
+                          _vertIndexNormalBuffer[a] = (_vertIndexNormalBuffer[a] + normal) * 0.5f;
+                        }
+                        else {
+                          verts.Add(GetLocalPosition(polyTri.a));
+                          vertsCount += 1;
+
+                          // Add an entry for this vertex's normal.
+                          _vertIndexNormalBuffer[a] = normal;
+                        }
+
+                        if (didBExistAlready) {
+                          numVertsSkippedDueToSmoothness += 1;
+
+                          // Average with normal that already existed.
+                          _vertIndexNormalBuffer[b] = (_vertIndexNormalBuffer[b] + normal) * 0.5f;
+                        }
+                        else {
+                          verts.Add(GetLocalPosition(polyTri.b));
+                          vertsCount += 1;
+
+                          // Add an entry for this vertex's normal.
+                          _vertIndexNormalBuffer[b] = normal;
+                        }
+
+                        if (didCExistAlready) {
+                          numVertsSkippedDueToSmoothness += 1;
+
+                          // Average with normal that already existed.
+                          _vertIndexNormalBuffer[c] = (_vertIndexNormalBuffer[c] + normal) * 0.5f;
+                        }
+                        else {
+                          verts.Add(GetLocalPosition(polyTri.c));
+                          vertsCount += 1;
+
+                          // Add an entry for this vertex's normal.
+                          _vertIndexNormalBuffer[c] = normal;
+                        }
+                      }
                     }
-                    using (new ProfilerSample("Add normals")) {
-                      normals.Add(normal);
-                      normals.Add(normal);
-                      normals.Add(normal);
+
+                    // Go through and assign normals after accumulating them.
+                    // (Edges marked smooth had their normals averaged.)
+                    for (int i = 0; i < vertsCount; i++) {
+                      normals.Add(_vertIndexNormalBuffer[i]);
                     }
                   }
                 }
@@ -3101,6 +3353,8 @@ namespace Leap.Unity.Meshing {
           Pool<List<Vector3>>.Recycle(verts);
           normals.Clear();
           Pool<List<Vector3>>.Recycle(normals);
+          smoothEdgeVertexIndices.Clear();
+          Pool<Dictionary<Edge, Pair<int, int>>>.Recycle(smoothEdgeVertexIndices);
         }
       }
     }
@@ -3130,7 +3384,7 @@ namespace Leap.Unity.Meshing {
 
           using (new ProfilerSample("PolyMesh: FromUnityMesh: Add Polygons")) {
             for (int i = 0; i + 2 < triangles.Count; i += 3) {
-              var newPoly = Polygon.SpawnWithPooledVerts();
+              var newPoly = Polygon.SpawnEmpty();
               newPoly.verts.Add(triangles[i + 0]);
               newPoly.verts.Add(triangles[i + 1]);
               newPoly.verts.Add(triangles[i + 2]);
@@ -3182,6 +3436,11 @@ namespace Leap.Unity.Meshing {
   public struct Pair<T, U> {
     public T a;
     public U b;
+
+    public Pair(T a, U b) {
+      this.a = a; this.b = b;
+    }
+
   }
 
 }

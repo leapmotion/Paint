@@ -46,10 +46,30 @@ namespace Leap.Unity.Meshing {
 
     #region Standard Construction (Pooled Verts)
 
-    public static Polygon SpawnWithPooledVerts() {
+    /// <summary>
+    /// Creates a new (empty) Polygon with Pooled vertex indices. Add valid indices to
+    /// positions in a PolyMesh, then add the Polygon to that PolyMesh via AddPolygon.
+    /// </summary>
+    public static Polygon SpawnEmpty() {
       Polygon polygon = new Polygon();
       polygon.verts = Pool<List<int>>.Spawn();
       polygon.verts.Clear();
+      return polygon;
+    }
+
+    /// <summary>
+    /// Creates a new quadrilateral Polygon with Pooled vertex indices. Use indices that
+    /// index into the positions of a PolyMesh, then add the Polygon to that PolyMesh via
+    /// AddPolygon.
+    /// </summary>
+    public static Polygon SpawnQuad(int a, int b, int c, int d) {
+      Polygon polygon = new Polygon();
+      polygon.verts = Pool<List<int>>.Spawn();
+      polygon.verts.Clear();
+      polygon.verts.Add(a);
+      polygon.verts.Add(b);
+      polygon.verts.Add(c);
+      polygon.verts.Add(d);
       return polygon;
     }
 
@@ -412,6 +432,48 @@ namespace Leap.Unity.Meshing {
     #endregion
 
     #region Triangulation
+
+    public struct PolyTriangle {
+      public int a, b, c;
+      public Edge? polyEdge0, polyEdge1, polyEdge2;
+    }
+
+    public PolyTriangleEnumerator polyTris {
+      get { return new PolyTriangleEnumerator(this); }
+    }
+
+    public struct PolyTriangleEnumerator {
+      private Polygon _polygon;
+      private int _curIdx;
+
+      public PolyTriangleEnumerator(Polygon polygon) {
+        _polygon = polygon;
+        _curIdx = -1;
+      }
+
+      public PolyTriangle Current {
+        get {
+          int a = _polygon[0];
+          int b = _polygon[_curIdx + 1];
+          int c = _polygon[_curIdx + 2];
+          return new PolyTriangle() {
+            a = a,
+            b = b,
+            c = c,
+            polyEdge0 = (_polygon.HasPolyIdxEdge(a, b)) ? new Edge(a, b) : (Edge?)null,
+            polyEdge1 = (_polygon.HasPolyIdxEdge(b, c)) ? new Edge(b, c) : (Edge?)null,
+            polyEdge2 = (_polygon.HasPolyIdxEdge(c, a)) ? new Edge(c, a) : (Edge?)null,
+          };
+        }
+      }
+
+      public bool MoveNext() {
+        _curIdx += 1;
+        return _curIdx + 2 < _polygon.Count;
+      }
+
+      public PolyTriangleEnumerator GetEnumerator() { return this; }
+    }
 
     public TriangleEnumerator tris {
       get { return new TriangleEnumerator(this); }

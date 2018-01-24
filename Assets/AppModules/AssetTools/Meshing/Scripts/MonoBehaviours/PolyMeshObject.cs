@@ -75,7 +75,7 @@ namespace Leap.Unity.Meshing {
       _meshFilter = GetComponent<MeshFilter>();
 
       _polyMesh = Pool<PolyMesh>.Spawn();
-      _polyMesh.DisableEdgeData();
+      _polyMesh.DisableEdgeAdjacencyData();
       _polyMesh.Clear();
 
       _unityMeshA = Pool<Mesh>.Spawn();
