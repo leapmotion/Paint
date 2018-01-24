@@ -158,8 +158,6 @@ namespace Leap.Unity {
       get {
         #if UNITY_EDITOR
         if (!Application.isPlaying) {
-          //_untransformedEditTimeFrame.Hands.Add(_editTimeLeftHand);
-          //_untransformedEditTimeFrame.Hands.Add(_editTimeRightHand);
           _editTimeFrame.Hands.Clear();
           _untransformedEditTimeFrame.Hands.Clear();
           _untransformedEditTimeFrame.Hands.Add(
@@ -183,8 +181,12 @@ namespace Leap.Unity {
         #if UNITY_EDITOR
         if (!Application.isPlaying) {
           _editTimeFrame.Hands.Clear();
-          _editTimeFrame.Hands.Add(_editTimeLeftHand);
-          _editTimeFrame.Hands.Add(_editTimeRightHand);
+          _untransformedEditTimeFrame.Hands.Clear();
+          _untransformedEditTimeFrame.Hands.Add(
+            TestHandFactory.MakeTestHand(isLeft: true, pose: editTimePose));
+          _untransformedEditTimeFrame.Hands.Add(
+            TestHandFactory.MakeTestHand(isLeft: false, pose: editTimePose));
+          transformFrame(_untransformedEditTimeFrame, _editTimeFrame);
           return _editTimeFrame;
         }
         #endif
