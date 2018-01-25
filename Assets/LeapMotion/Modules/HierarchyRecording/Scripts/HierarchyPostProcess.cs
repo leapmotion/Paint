@@ -134,10 +134,21 @@ namespace Leap.Unity.Recording {
 
       var clip = generateCompressedClip(progress);
 
+      var playableAsset = ScriptableObject.CreateInstance<AnimationPlayableAsset>();
+      playableAsset.clip = clip;
+      playableAsset.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy;
+      playableAsset.name = "Recorded Animation";
+
       var timelineClip = animationTrack.CreateClip(clip);
       timelineClip.duration = clip.length;
-      timelineClip.asset = clip;
-      timelineClip.underlyingAsset = clip;
+      timelineClip.asset = playableAsset;
+      timelineClip.displayName = "Recorded Animation";
+
+      //If a clip is not recordable, it will not show up as editable in the timeline view.
+      //For whatever reason unity decided that imported clips are not recordable, so we hack a
+      //private variable to force them to be!  This seems to have no ill effects but if things go 
+      //wrong we can just revert this line
+      timelineClip.GetType().GetField("m_Recordable", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(timelineClip, true);
 
       //Try to generate a leap recording if we have leap data
       RecordingTrack recordingTrack = null;
@@ -145,6 +156,7 @@ namespace Leap.Unity.Recording {
       if (leapData.Count > 0) {
         leapRecording = ScriptableObject.CreateInstance(_leapRecordingType) as LeapRecording;
         if (leapRecording != null) {
+          leapRecording.name = "Recorded Leap Data";
           leapRecording.LoadFrames(leapData);
         } else {
           Debug.LogError("Unable to create Leap recording: Invalid type specification for "
@@ -154,6 +166,7 @@ namespace Leap.Unity.Recording {
 
       string assetPath = Path.Combine(assetFolder.Path, recordingName + ".asset");
       AssetDatabase.CreateAsset(timeline, assetPath);
+      AssetDatabase.AddObjectToAsset(playableAsset, timeline);
       AssetDatabase.AddObjectToAsset(animationTrack, timeline);
       AssetDatabase.AddObjectToAsset(clip, timeline);
 
@@ -181,9 +194,12 @@ namespace Leap.Unity.Recording {
       var director = gameObject.AddComponent<PlayableDirector>();
       director.playableAsset = timeline;
 
-      //Create the animator and link it to the animation track
-      var animator = gameObject.AddComponent<Animator>();
-      director.SetGenericBinding(animationTrack.outputs.Query().First().sourceObject, animator);
+      //Create the animator
+      gameObject.AddComponent<Animator>();
+
+      //Link the animation track to the animator
+      //(it likes to point to gameobject instead of the animator directly)
+      director.SetGenericBinding(animationTrack.outputs.Query().First().sourceObject, gameObject);
 
       //Destroy existing provider
       var provider = gameObject.GetComponentInChildren<LeapProvider>();
@@ -233,6 +249,7 @@ namespace Leap.Unity.Recording {
 
     private AnimationClip generateCompressedClip(ProgressBar progress) {
       var clip = new AnimationClip();
+      clip.name = "Recorded Animation";
 
       var bindingMap = new Dictionary<EditorCurveBinding, AnimationCurve>();
       var recordings = GetComponentsInChildren<RecordedData>(includeInactive: true);
