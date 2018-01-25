@@ -11,6 +11,8 @@ namespace Leap.Unity.RuntimeGizmos {
     public Color sphereColor = LeapColor.white;
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      if (!this.enabled || !this.gameObject.activeInHierarchy) return;
+
       drawer.color = sphereColor;
       drawer.DrawPose(this.transform.ToWorldPose(), poseRadius);
     }

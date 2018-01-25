@@ -157,7 +157,7 @@ Transform:
   m_GameObject: {fileID: 1600525069382704}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.395, z: 0.498}
-  m_LocalScale: {x: 0.63857865, y: 0.63857865, z: 0.63857865}
+  m_LocalScale: {x: 0.16669214, y: 0.16669214, z: 0.16669214}
   m_Children:
   - {fileID: 4922257995270266}
   m_Father: {fileID: 0}
@@ -369,4 +369,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poseRadius: 0.007
-  sphereColor: {r: 0.7941176, g: 0.7941176, b: 0.7941176, a: 0.334}
+  sphereColor: {r: 0.7941176, g: 0.7941176, b: 0.7941176, a: 0}

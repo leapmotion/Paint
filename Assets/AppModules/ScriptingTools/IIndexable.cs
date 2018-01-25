@@ -18,8 +18,8 @@ namespace Leap.Unity {
       return new IIndexableEnumerator<T>(indexable);
     }
 
-    public static QueryWrapper<T, IQueryOp<T>> Query<T>(this IIndexable<T> indexable) {
-      return new QueryWrapper<T, IQueryOp<T>>(GetEnumerator(indexable));
+    public static QueryWrapper<T, IIndexableEnumerator<T>> Query<T>(this IIndexable<T> indexable) {
+      return new QueryWrapper<T, IIndexableEnumerator<T>>(GetEnumerator(indexable));
     }
 
   }
@@ -38,7 +38,7 @@ namespace Leap.Unity {
 
     public bool MoveNext() { index++; return index < indexable.Count; }
 
-    bool IQueryOp<T>.TryGetNext(out T t) {
+    public bool TryGetNext(out T t) {
       var hasNext = MoveNext();
       if (!hasNext) {
         t = default(T);
@@ -50,7 +50,7 @@ namespace Leap.Unity {
       }
     }
 
-    void IQueryOp<T>.Reset() {
+    public void Reset() {
       index = -1;
     }
 

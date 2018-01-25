@@ -12,13 +12,10 @@ namespace Leap.Unity {
 
     private List<Pose> poses = new List<Pose>();
 
-    public List<Transform> testTransforms = new List<Transform>();
-
     private void Update() {
       var transforms = Pool<List<Transform>>.Spawn();
       transforms.Clear();
       poses.Clear();
-      testTransforms.Clear();
       try {
         this.GetComponentsInChildren<Transform>(transforms);
 
@@ -27,8 +24,6 @@ namespace Leap.Unity {
                                     .Where(t => string.IsNullOrEmpty(nameMustContain)
                                            || t.name.Contains(nameMustContain))) {
           poses.Add(transform.ToWorldPose());
-
-          testTransforms.Add(transform);
         }
       }
       finally {
