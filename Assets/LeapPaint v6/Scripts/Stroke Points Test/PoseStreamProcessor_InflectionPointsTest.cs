@@ -5,22 +5,6 @@ using UnityEngine;
 
 namespace Leap.Unity {
 
-  public interface IStream<T> {
-
-    event Action<T> OnStream;
-
-  }
-
-  public interface IStreamReceiver<T> {
-
-    void Open();
-
-    void Receive(T data);
-
-    void Close();
-
-  }
-
   public class PoseStreamProcessor_InflectionPointsTest : MonoBehaviour,
                                                           IStreamReceiver<Pose> {
 
@@ -31,15 +15,21 @@ namespace Leap.Unity {
     private List<Pose> _skippedPoses = new List<Pose>();
 
     public void Open() {
+      _lastOutputPose = null;
+      _skippedPoses.Clear();
+    }
+
+    public void Receive(Pose pose) {
+      
+      if (!_lastOutputPose.HasValue) {
+
+      }
 
     }
 
     public void Close() {
-
-    }
-
-    public void Receive(Pose pose) {
-
+      _lastOutputPose = null;
+      _skippedPoses.Clear();
     }
 
   }

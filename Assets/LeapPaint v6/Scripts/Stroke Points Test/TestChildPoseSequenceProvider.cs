@@ -1,4 +1,6 @@
-﻿using Leap.Unity.Query;
+﻿using Leap.Unity.Attributes;
+using Leap.Unity.Query;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,10 +8,14 @@ using UnityEngine;
 namespace Leap.Unity {
 
   [ExecuteInEditMode]
-  public class TestChildPoseSequenceProvider : MonoBehaviour, IIndexable<Pose> {
+  public class TestChildPoseSequenceProvider : MonoBehaviour,
+                                               IIndexable<Pose>,
+                                               IStream<Pose> {
 
     public string nameMustContain = "";
-
+    
+    [QuickButton("Send As Stream", "SendAsStream")]
+    [SerializeField]
     private List<Pose> poses = new List<Pose>();
 
     private void Update() {
@@ -39,6 +45,23 @@ namespace Leap.Unity {
     }
 
     public int Count { get { return poses.Count; } }
+
+    public event Action OnOpen = () => { };
+    public event Action<Pose> OnSend = (pose) => { };
+    public event Action OnClose = () => { };
+
+    /// <summary>
+    /// Opens the stream, sends all pose data through it, and closes the stream.
+    /// </summary>
+    public void SendAsStream() {
+      OnOpen();
+
+      foreach (var pose in poses) {
+        OnSend(pose);
+      }
+
+      OnClose();
+    }
 
   }
 
