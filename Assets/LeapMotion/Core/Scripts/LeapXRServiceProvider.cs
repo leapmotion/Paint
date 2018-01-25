@@ -172,7 +172,14 @@ namespace Leap.Unity {
     private Pose? _trackingBaseDeltaPose = null;
 
     private Camera _cachedCamera;
-
+    private Camera cachedCamera {
+      get {
+        if (_cachedCamera == null) {
+          _cachedCamera = GetComponent<Camera>();
+        }
+        return _cachedCamera;
+      }
+    }
 
     [NonSerialized]
     public long imageTimeStamp = 0;
@@ -262,11 +269,12 @@ namespace Leap.Unity {
       // If we don't know of any pose offset yet, account for it by finding the pose
       // delta from the "local" tracked pose to the actual camera pose.
       if (!_trackingBaseDeltaPose.HasValue) {
-        _trackingBaseDeltaPose = _cachedCamera.transform.ToLocalPose().From(trackedPose);
+        _trackingBaseDeltaPose = _cachedCamera.transform.ToLocalPose()
+                                   * trackedPose.inverse;
       }
       
       // This way, we always track a scene-space tracked pose.
-      var effTransformPose = trackedPose.Then(_trackingBaseDeltaPose.Value);
+      var effTransformPose = _trackingBaseDeltaPose.Value * trackedPose;
 
       transformHistory.UpdateDelay(effTransformPose, _leapController.Now());
 
@@ -328,7 +336,9 @@ namespace Leap.Unity {
                                                     bool updateTemporalCompensation = true) {
       LeapTransform leapTransform;
 
-      if (updateTemporalCompensation && transformHistory.history.IsFull) {
+      if (Application.isPlaying
+          && updateTemporalCompensation
+          && transformHistory.history.IsFull) {
         transformHistory.SampleTransform(timestamp
                                          - (long)(warpingAdjustment * 1000f)
                                          - (_temporalWarpingMode ==
@@ -337,15 +347,34 @@ namespace Leap.Unity {
                                          out warpedPosition, out warpedRotation);
       }
 
-      Vector3    currentPosition;
+      Vector3 currentPosition = Vector3.zero;
       Quaternion currentRotation;
-      transformHistory.SampleTransform(timestamp, out currentPosition,
-                                                  out currentRotation);
+      if (!Application.isPlaying) {
+        currentRotation = Quaternion.Euler(deviceTiltXAxis, 0f, 0f)
+                          * Quaternion.Euler(-90f, 180f, 0f);
+        currentPosition = currentRotation * Vector3.forward * -deviceOffsetZAxis;
+
+        var currentPose = new Pose(currentPosition, currentRotation);
+
+        currentPose = this.transform.ToLocalPose().Then(currentPose);
+
+        currentPosition = currentPose.position;
+        currentRotation = currentPose.rotation;
+      }
+      else {
+        transformHistory.SampleTransform(timestamp, out currentPosition,
+                                                    out currentRotation);
+      }
 
       warpedPosition = _temporalWarpingMode != TemporalWarpingMode.Off ?
                                             warpedPosition : currentPosition;
       warpedRotation = _temporalWarpingMode != TemporalWarpingMode.Off ?
                                             warpedRotation : currentRotation;
+
+      if (!Application.isPlaying) {
+        warpedPosition = currentPosition;
+        warpedRotation = currentRotation;
+      }
 
       warpedRotation *= Quaternion.Euler(deviceTiltXAxis, 0f, 0f);
       warpedRotation *= Quaternion.Euler(-90f, 180f, 0f);
