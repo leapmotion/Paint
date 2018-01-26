@@ -513,7 +513,7 @@ namespace Leap.Unity.Recording {
                 _curves.Add(new CurveData() {
                   binding = binding,
                   curve = new AnimationCurve(),
-                  accessor = new PropertyAccessor(gameObject, binding)
+                  accessor = new AnimationPropertyAccessor(gameObject, binding)
                 });
               }
             }
@@ -682,7 +682,7 @@ namespace Leap.Unity.Recording {
     protected struct CurveData {
       public EditorCurveBinding binding;
       public AnimationCurve curve;
-      public PropertyAccessor accessor;
+      public AnimationPropertyAccessor accessor;
 
       public void SampleNow(float time) {
         curve.AddKey(time, accessor.Access());

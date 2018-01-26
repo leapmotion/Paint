@@ -2,17 +2,26 @@
 using System.Reflection;
 using System.Linq.Expressions;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 namespace Leap.Unity.Recording {
   using Query;
 
-  public struct PropertyAccessor {
+#if UNITY_EDITOR
+
+  /// <summary>
+  /// This struct mimics the function of AnimationUtility.GetFloatValue.
+  /// It trades construct time for access time, once the accessor is 
+  /// constructed, access is roughly 25 times faster compared to GetFloatValue.
+  /// </summary>
+  public struct AnimationPropertyAccessor {
     private static MethodInfo GetFloatMethod;
     private static MethodInfo GetColorMethod;
     private static MethodInfo GetVectorMethod;
 
-    static PropertyAccessor() {
+    static AnimationPropertyAccessor() {
       Type[] intArr = new Type[] { typeof(int) };
       GetFloatMethod = typeof(Material).GetMethod("GetFloat", intArr);
       GetColorMethod = typeof(Material).GetMethod("GetColor", intArr);
@@ -21,7 +30,7 @@ namespace Leap.Unity.Recording {
 
     private Func<float> _accessor;
 
-    public PropertyAccessor(GameObject target, EditorCurveBinding binding) {
+    public AnimationPropertyAccessor(GameObject target, EditorCurveBinding binding) {
       string[] names = binding.path.Split('/');
 
       foreach (var name in names) {
@@ -153,4 +162,5 @@ namespace Leap.Unity.Recording {
       return null;
     }
   }
+#endif
 }
