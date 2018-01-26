@@ -142,12 +142,6 @@ namespace Leap.Unity {
         newCurve.AddKey(toInsert);
       }
 
-      //HACK: AnimationUtility.SetEditorCurve sometimes gets sad if there is just 1 key
-      //      so we always add at least one more at the very end of time to make it happy.
-      //var lastKey = newCurve.keys[newCurve.length - 1];
-      //lastKey.time = end;
-      //newCurve.AddKey(lastKey);
-
       return newCurve;
     }
 
