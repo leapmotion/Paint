@@ -30,9 +30,6 @@ namespace Leap.Unity.Recording {
     public override void OnGraphStart(Playable playable) {
       base.OnGraphStart(playable);
 
-      //TEMP HACK:
-      //director = UnityEngine.Object.FindObjectOfType<PlayableDirector>();
-
       if (_clips == null) {
         _clips = Pool<List<TimelineClip>>.Spawn();
       }
