@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 using Leap.Unity.RuntimeGizmos;
 
@@ -9,6 +10,9 @@ namespace Leap.Unity.LeapPaint_v3 {
   [RequireComponent(typeof(MeshFilter))]
   [RequireComponent(typeof(MeshRenderer))]
   public class ThickRibbonRenderer : MonoBehaviour, IStrokeRenderer, IRuntimeGizmoComponent {
+    public Action OnInitializeRenderer;
+    public Action<List<StrokePoint>, int> OnUpdateRenderer;
+    public Action OnFinalizeRenderer;
 
     private const float VERTICAL_THICKNESS_MULTIPLIER = 1 / 40F;
 
@@ -44,6 +48,8 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     public void InitializeRenderer() {
+      if (OnInitializeRenderer != null) OnInitializeRenderer();
+
       _meshFilter.mesh = _mesh = new Mesh();
       _mesh.MarkDynamic();
 
@@ -58,6 +64,8 @@ namespace Leap.Unity.LeapPaint_v3 {
     private List<RibbonSegment> _ribbonSegments = new List<RibbonSegment>();
     public void UpdateRenderer(List<StrokePoint> stroke, int maxChangedFromEnd) {
       if (stroke.Count <= 1 || maxChangedFromEnd == 0) return;
+
+      if (OnUpdateRenderer != null) OnUpdateRenderer(stroke, maxChangedFromEnd);
 
       int startIdx = Mathf.Max(0, (stroke.Count - 1) - maxChangedFromEnd - 1);
       int endIdx = stroke.Count - 1;
@@ -394,7 +402,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     public void FinalizeRenderer() {
-      ;
+      if (OnFinalizeRenderer != null) OnFinalizeRenderer();
 
       // TODO: Add proper history management / other finalization logic
       GameObject meshObj = new GameObject();
