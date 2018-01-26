@@ -513,7 +513,7 @@ namespace Leap.Unity.Recording {
                 _curves.Add(new CurveData() {
                   binding = binding,
                   curve = new AnimationCurve(),
-                  accessor = new PropertyAccessor(gameObject, binding)
+                  accessor = new PropertyAccessor(gameObject, binding, failureIsZero: true)
                 });
               }
             }
