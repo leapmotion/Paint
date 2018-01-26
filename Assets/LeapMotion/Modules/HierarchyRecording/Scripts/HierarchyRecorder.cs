@@ -490,6 +490,23 @@ namespace Leap.Unity.Recording {
           if (!_initialComponentData.ContainsKey(component)) {
             _initialComponentData[component] = new SerializedObject(component);
 
+            //First time experiencing a gameobject
+            if (component is Transform) {
+              var transform = component as Transform;
+              var parent = transform.parent;
+              if (parent != null) {
+                var newName = transform.name;
+
+                for (int j = 0; j < parent.childCount; j++) {
+                  var sibling = parent.GetChild(j);
+                  if (sibling != transform && sibling.name == transform.name) {
+                    transform.name = transform.name + " " + transform.gameObject.GetInstanceID();
+                    break;
+                  }
+                }
+              }
+            }
+
             if (component is PropertyRecorder) {
               var recorder = component as PropertyRecorder;
               foreach (var binding in recorder.GetBindings(gameObject)) {
@@ -551,19 +568,6 @@ namespace Leap.Unity.Recording {
         }
       }
 
-      using (new ProfilerSample("Ensure Names Are Unique")) {
-        foreach (var transform in _transforms) {
-          for (int i = 0; i < transform.childCount; i++) {
-            Transform child = transform.GetChild(i);
-            if (_takenNames.Contains(child.name)) {
-              child.name = child.name + " " + Mathf.Abs(child.GetInstanceID());
-            }
-            _takenNames.Add(child.name);
-          }
-          _takenNames.Clear();
-        }
-      }
-
       using (new ProfilerSample("Discover Audio Sources")) {
         //Update all audio sources
         foreach (var source in _audioSources) {
@@ -599,22 +603,25 @@ namespace Leap.Unity.Recording {
           //on the first frame of recording, this object must have
           //been spawned, make sure to record a frame with it being
           //disabled right before this
-          if (pair.Value.Count == 0 && Time.time > _startTime) {
-            pair.Value.Add(new TransformData() {
+          var list = pair.Value;
+          var transform = pair.Key;
+
+          if (list.Count == 0 && Time.time > _startTime) {
+            list.Add(new TransformData() {
               time = Time.time - _startTime - Time.deltaTime,
               enabled = false,
-              localPosition = pair.Key.localPosition,
-              localRotation = pair.Key.localRotation,
-              localScale = pair.Key.localScale
+              localPosition = transform.localPosition,
+              localRotation = transform.localRotation,
+              localScale = transform.localScale
             });
           }
 
-          pair.Value.Add(new TransformData() {
+          list.Add(new TransformData() {
             time = Time.time - _startTime,
-            enabled = pair.Key.gameObject.activeSelf,
-            localPosition = pair.Key.localPosition,
-            localRotation = pair.Key.localRotation,
-            localScale = pair.Key.localScale
+            enabled = transform.gameObject.activeSelf,
+            localPosition = transform.localPosition,
+            localRotation = transform.localRotation,
+            localScale = transform.localScale
           });
         }
       }
