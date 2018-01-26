@@ -9,12 +9,16 @@
 
 using UnityEngine;
 using UnityEditor;
+using System;
+using System.Linq;
 using Leap.Unity.GraphicalRenderer;
 
 namespace Leap.Unity.Recording {
 
   [CustomEditor(typeof(HierarchyPostProcess))]
   public class HierarchyPostProcessEditor : CustomEditorBase<HierarchyPostProcess> {
+
+    private bool _expandComponentTypes = false;
 
     public override void OnInspectorGUI() {
       base.OnInspectorGUI();
@@ -35,6 +39,39 @@ namespace Leap.Unity.Recording {
       }
 
       EditorGUI.EndDisabledGroup();
+
+      _expandComponentTypes = EditorGUILayout.Foldout(_expandComponentTypes, "Component List");
+      if (_expandComponentTypes) {
+        EditorGUI.indentLevel++;
+
+        var components = target.GetComponentsInChildren<Component>().
+                                Select(c => c.GetType()).
+                                Distinct().
+                                OrderBy(m => m.Name);
+
+        var groups = components.GroupBy(t => t.Namespace).OrderBy(g => g.Key);
+        foreach(var group in groups) {
+          EditorGUILayout.Space();
+          EditorGUILayout.LabelField(group.Key ?? "Dev", EditorStyles.boldLabel);
+          foreach (var type in group) {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(type.Name);
+
+            if (GUILayout.Button("Delete")) {
+              var toDelete = target.GetComponentsInChildren(type);
+              foreach (var t in toDelete) {
+                Undo.DestroyObjectImmediate(t);
+              }
+            }
+
+            EditorGUILayout.EndHorizontal();
+          }
+        }
+      }
+    }
+
+    private void deleteAllOfType(Type type) {
+      
     }
   }
 
