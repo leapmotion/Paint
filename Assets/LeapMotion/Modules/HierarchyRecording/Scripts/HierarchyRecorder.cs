@@ -72,7 +72,7 @@ namespace Leap.Unity.Recording {
 
 #if UNITY_EDITOR
     protected List<Frame> _leapData;
-    protected Dictionary<EditorCurveBinding, AnimationCurve> _curves;
+    protected List<CurveData> _curves;
     protected Dictionary<AudioSource, RecordedAudio> _audioData;
     protected Dictionary<Transform, List<TransformData>> _transformData;
     protected Dictionary<Component, SerializedObject> _initialComponentData;
@@ -133,7 +133,7 @@ namespace Leap.Unity.Recording {
       _audioSources = new List<AudioSource>();
       _leapData = new List<Frame>();
 
-      _curves = new Dictionary<EditorCurveBinding, AnimationCurve>();
+      _curves = new List<CurveData>();
       _audioData = new Dictionary<AudioSource, RecordedAudio>();
       _transformData = new Dictionary<Transform, List<TransformData>>();
       _initialComponentData = new Dictionary<Component, SerializedObject>();
@@ -177,11 +177,8 @@ namespace Leap.Unity.Recording {
           //For all recorded curves, revert to start of curve
           {
             AnimationClip tempClip = new AnimationClip();
-            foreach (var pair in _curves) {
-              var binding = pair.Key;
-              var curve = pair.Value;
-
-              AnimationUtility.SetEditorCurve(tempClip, binding, curve);
+            foreach (var data in _curves) {
+              AnimationUtility.SetEditorCurve(tempClip, data.binding, data.curve);
             }
             tempClip.SampleAnimation(gameObject, 0);
           }
@@ -287,12 +284,16 @@ namespace Leap.Unity.Recording {
 
             var binding = EditorCurveBinding.FloatCurve(path, type, propertyName);
 
-            if (_curves.ContainsKey(binding)) {
+            if (_curves.Query().Any(c => c.binding == binding)) {
               Debug.LogError("Binding already existed?");
               Debug.LogError(binding.path + " : " + binding.propertyName);
               continue;
             }
-            _curves.Add(binding, curve);
+
+            _curves.Add(new CurveData() {
+              binding = binding,
+              curve = curve
+            });
           }
         });
 
@@ -356,20 +357,23 @@ namespace Leap.Unity.Recording {
 
               var binding = EditorCurveBinding.FloatCurve(path, type, propertyName);
 
-              if (_curves.ContainsKey(binding)) {
+              if (_curves.Query().Any(c => c.binding == binding)) {
                 Debug.LogError("Duplicate object was created??");
                 Debug.LogError("Named " + targetTransform.name + " : " + binding.path + " : " + binding.propertyName);
               } else {
-                _curves.Add(binding, curve);
+                _curves.Add(new CurveData() {
+                  binding = binding,
+                  curve = curve
+                });
               }
             }
           }
         });
 
         progress.Begin(_curves.Count, "", "Compressing Data: ", () => {
-          foreach (var pair in _curves) {
-            EditorCurveBinding binding = pair.Key;
-            AnimationCurve curve = pair.Value;
+          foreach (var data in _curves) {
+            EditorCurveBinding binding = data.binding;
+            AnimationCurve curve = data.curve;
 
             progress.Step(binding.propertyName);
 
@@ -392,10 +396,10 @@ namespace Leap.Unity.Recording {
               //Check to make sure there are no other matching curves that are
               //non constant.  If X and Y are constant but Z is not, we need to 
               //keep them all :(
-              if (_curves.Query().Where(p => p.Key.path == binding.path &&
-                                             p.Key.type == binding.type &&
-                                             p.Key.propertyName.TrimEnd(2) == binding.propertyName.TrimEnd(2)).
-                                  All(k => k.Value.IsConstant())) {
+              if (_curves.Query().Where(p => p.binding.path == binding.path &&
+                                             p.binding.type == binding.type &&
+                                             p.binding.propertyName.TrimEnd(2) == binding.propertyName.TrimEnd(2)).
+                                  All(k => k.curve.IsConstant())) {
                 continue;
               }
             }
@@ -488,8 +492,12 @@ namespace Leap.Unity.Recording {
 
             if (component is PropertyRecorder) {
               var recorder = component as PropertyRecorder;
-              foreach (var bindings in recorder.GetBindings(gameObject)) {
-                _curves[bindings] = new AnimationCurve();
+              foreach (var binding in recorder.GetBindings(gameObject)) {
+                _curves.Add(new CurveData() {
+                  binding = binding,
+                  curve = new AnimationCurve(),
+                  accessor = new PropertyAccessor(gameObject, binding)
+                });
               }
             }
           }
@@ -570,14 +578,9 @@ namespace Leap.Unity.Recording {
       }
 
       using (new ProfilerSample("Record Custom Data")) {
-        foreach (var pair in _curves) {
-          float value;
-          bool gotValue = AnimationUtility.GetFloatValue(gameObject, pair.Key, out value);
-          if (gotValue) {
-            pair.Value.AddKey(Time.time - _startTime, value);
-          } else {
-            Debug.Log(pair.Key.path + " : " + pair.Key.propertyName + " : " + pair.Key.type.Name);
-          }
+        float time = Time.time - _startTime;
+        for (int i = 0; i < _curves.Count; i++) {
+          _curves[i].SampleNow(time);
         }
       }
 
@@ -667,6 +670,16 @@ namespace Leap.Unity.Recording {
       Position,
       Rotation,
       Scale
+    }
+
+    protected struct CurveData {
+      public EditorCurveBinding binding;
+      public AnimationCurve curve;
+      public PropertyAccessor accessor;
+
+      public void SampleNow(float time) {
+        curve.AddKey(time, accessor.Access());
+      }
     }
 
     protected struct TransformData {
