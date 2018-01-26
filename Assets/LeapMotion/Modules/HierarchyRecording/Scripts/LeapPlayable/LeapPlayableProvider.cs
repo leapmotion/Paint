@@ -12,7 +12,7 @@ using Leap.Unity.RuntimeGizmos;
 
 namespace Leap.Unity.Recording {
 
-  public class LeapPlayableProvider : LeapProvider, IRuntimeGizmoComponent {
+  public class LeapPlayableProvider : LeapProvider {
 
     private Frame _frame;
 
@@ -32,17 +32,6 @@ namespace Leap.Unity.Recording {
       _frame = frame;
       DispatchUpdateFrameEvent(frame);
       DispatchFixedFrameEvent(frame);
-    }
-
-    public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-      if (_frame != null && !Application.isPlaying) {
-        foreach (var hand in _frame.Hands) {
-          drawer.DrawWireSphere(hand.PalmPosition.ToVector3(), 0.01f);
-          foreach (var finger in hand.Fingers) {
-            drawer.DrawWireSphere(finger.TipPosition.ToVector3(), 0.01f);
-          }
-        }
-      }
     }
   }
 }
