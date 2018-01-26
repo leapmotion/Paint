@@ -384,7 +384,8 @@ namespace Leap.Unity.Recording {
             }
 
             //But if the curve is constant, just get rid of it!
-            if (curve.IsConstant()) {
+            //Except for material curves, which we always need to keep
+            if (curve.IsConstant() && !binding.path.Contains(".Material.")) {
               //Check to make sure there are no other matching curves that are
               //non constant.  If X and Y are constant but Z is not, we need to 
               //keep them all :(
