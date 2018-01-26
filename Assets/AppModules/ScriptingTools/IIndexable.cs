@@ -36,7 +36,8 @@ namespace Leap.Unity {
 
     public IIndexableEnumerator<T> GetEnumerator() { return this; }
 
-    public bool MoveNext() { index++; return index < indexable.Count; }
+    public bool MoveNext() { if (indexable == null) return false;
+                             index++; return index < indexable.Count; }
 
     public bool TryGetNext(out T t) {
       var hasNext = MoveNext();

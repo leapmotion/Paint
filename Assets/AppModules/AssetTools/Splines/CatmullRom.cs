@@ -12,8 +12,22 @@ namespace Leap.Unity.Splines {
     /// spline points and writes evenly-distributed points along the spline into interpolatedPoints.
     /// </summary>
     public static void InterpolatePoints(Vector3[] fourPositions, float[] timeValues, ref Vector3[] outPoints) {
-      for (int i = 0; i < outPoints.Length; i++) {
-        outPoints[i] = Interpolate(fourPositions, timeValues, i * (1F / (outPoints.Length - 1)));
+      InterpolatePoints(fourPositions, timeValues, ref outPoints, numPoints: outPoints.Length);
+    }
+
+    /// <summary>
+    /// Performs centripetal Catmull-Rom interpolation between the second and third
+    /// spline points and writes evenly-distributed points along the spline into
+    /// interpolatedPoints. Use numPoints to specify the number of points to write in
+    /// the output buffer.
+    /// 
+    /// The first point will be the first input position; the last point will be the last
+    /// input position.
+    /// </summary>
+    public static void InterpolatePoints(Vector3[] fourPositions, float[] timeValues,
+                                         ref Vector3[] outPoints, int numPoints) {
+      for (int i = 0; i < numPoints; i++) {
+        outPoints[i] = Interpolate(fourPositions, timeValues, i * (1F / (numPoints - 1)));
       }
     }
 

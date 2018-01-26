@@ -413,6 +413,24 @@ namespace Leap.Unity {
       drawer.DrawLine(position, position + direction);
     }
 
+    public static void DrawDashedLine(this RuntimeGizmos.RuntimeGizmoDrawer drawer, 
+                                      Vector3 a, Vector3 b,
+                                      float segmentsPerMeter = 32f,
+                                      float normalizedPhaseOffset = 0f) {
+      var distance = (b - a).magnitude;
+      var numSegments = distance * segmentsPerMeter;
+      var segmentLength = distance / numSegments;
+
+      var dir = (b - a) / distance;
+
+      for (float i = normalizedPhaseOffset; i < numSegments; i += 2) {
+        var start = a + dir * segmentLength * i;
+        var end   = a + dir * Mathf.Min(segmentLength * (i + 1), distance);
+
+        drawer.DrawLine(start, end);
+      }
+    }
+
     #endregion
 
     #region Quaternion Utils
@@ -431,6 +449,14 @@ namespace Leap.Unity {
 
     public static Quaternion Flipped(this Quaternion q) {
       return new Quaternion(-q.x, -q.y, -q.z, -q.w);
+    }
+
+    #endregion
+
+    #region Color Utils
+
+    public static Color Lerp(this Color a, Color b, float t) {
+      return Color.Lerp(a, b, t);
     }
 
     #endregion

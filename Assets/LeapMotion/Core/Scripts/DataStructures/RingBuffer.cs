@@ -30,6 +30,10 @@ public class RingBuffer<T> {
     }
   }
 
+  public int Capacity {
+    get { return arr.Length; }
+  }
+
   public bool IsFull {
     get { return Length == arr.Length; }
   }

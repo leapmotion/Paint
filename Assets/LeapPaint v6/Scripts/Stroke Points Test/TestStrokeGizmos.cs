@@ -13,7 +13,7 @@ namespace Leap.Unity {
 
   public class TestStrokeGizmos : MonoBehaviour, IRuntimeGizmoComponent {
 
-    public Color rawLinesColor = LeapColor.jade.WithAlpha(0.4f);
+    public Color gizmoColor = LeapColor.jade.WithAlpha(0.4f);
 
     [ImplementsInterface(typeof(IIndexable<Pose>))]
     [SerializeField]
@@ -23,16 +23,15 @@ namespace Leap.Unity {
     }
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-      // Raw Lines
-      drawer.color = rawLinesColor;
+      drawer.color = gizmoColor;
+
       foreach (var prevPair in strokePoses.Query().WithPrevious()) {
         var pose = prevPair.value;
         var prevPose = prevPair.prev;
 
         drawer.DrawLine(prevPose.position, pose.position);
       }
-
-
+      
     }
 
   }
