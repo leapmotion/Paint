@@ -69,11 +69,5 @@ namespace Leap.Unity.Recording {
         }
       }
     }
-
-    private void deleteAllOfType(Type type) {
-      
-    }
   }
-
-
 }
