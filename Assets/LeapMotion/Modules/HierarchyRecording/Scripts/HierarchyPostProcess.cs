@@ -214,6 +214,7 @@ namespace Leap.Unity.Recording {
       }
 
       buildAudioTracks(progress, director, timeline);
+      buildMethodRecordingTracks(progress, director, timeline);
 
       progress.Begin(1, "", "Finalizing Prefab", () => {
         GameObject myGameObject = gameObject;
@@ -222,6 +223,23 @@ namespace Leap.Unity.Recording {
         string prefabPath = Path.Combine(assetFolder.Path, recordingName + ".prefab");
         PrefabUtility.CreatePrefab(prefabPath.Replace('\\', '/'), myGameObject);
       });
+    }
+
+    private void buildMethodRecordingTracks(ProgressBar progress, PlayableDirector director, TimelineAsset timeline) {
+      var recordings = GetComponentsInChildren<MethodRecording>();
+      if (recordings.Length > 0) {
+        progress.Begin(recordings.Length, "", "Building Method Tracks: ", () => {
+          foreach (var recording in recordings) {
+            progress.Step(recording.gameObject.name);
+
+            var track = timeline.CreateTrack<MethodRecordingTrack>(null, recording.gameObject.name);
+            director.SetGenericBinding(track.outputs.Query().First().sourceObject, recording);
+
+            var clip = track.CreateClip<MethodRecordingClip>();
+            clip.duration = recording.GetDuration();
+          }
+        });
+      }
     }
 
     private void buildAudioTracks(ProgressBar progress, PlayableDirector director, TimelineAsset timeline) {
