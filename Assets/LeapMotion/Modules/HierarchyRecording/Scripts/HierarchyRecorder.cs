@@ -23,6 +23,8 @@ namespace Leap.Unity.Recording {
 
   public class HierarchyRecorder : MonoBehaviour {
     public static Action OnPreRecordFrame;
+    public static Action OnBeginRecording;
+    public static HierarchyRecorder instance;
 
     public bool recordOnStart = false;
     public bool recordOnHDMPresence = false;
@@ -80,11 +82,17 @@ namespace Leap.Unity.Recording {
       get { return _isRecording; }
     }
 
+    public float recordingTime {
+      get { return Time.time - _startTime; }
+    }
+
     protected void Reset() {
       recordingName = gameObject.name;
     }
 
     protected void Start() {
+      instance = this;
+
       if (recordOnStart) {
         BeginRecording();
       }
@@ -130,6 +138,10 @@ namespace Leap.Unity.Recording {
       _transformData = new Dictionary<Transform, List<TransformData>>();
       _initialComponentData = new Dictionary<Component, SerializedObject>();
       _behaviourActivity = new Dictionary<Component, List<ActivityData>>();
+
+      if (OnBeginRecording != null) {
+        OnBeginRecording();
+      }
     }
 
     /// <summary>
@@ -167,6 +179,12 @@ namespace Leap.Unity.Recording {
             var sobj = pair.Value;
 
             if (component == null) {
+              continue;
+            }
+
+
+            //We don't want to revert method recordings!
+            if (component is MethodRecording) {
               continue;
             }
 
