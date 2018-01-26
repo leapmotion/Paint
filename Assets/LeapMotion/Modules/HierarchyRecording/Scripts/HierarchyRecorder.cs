@@ -383,9 +383,12 @@ namespace Leap.Unity.Recording {
               }
             }
 
+            bool isMatBinding = binding.propertyName.StartsWith("material.") &&
+                                binding.type.IsSubclassOf(typeof(Renderer));
+
             //But if the curve is constant, just get rid of it!
             //Except for material curves, which we always need to keep
-            if (curve.IsConstant() && !binding.path.Contains(".Material.")) {
+            if (curve.IsConstant() && !isMatBinding) {
               //Check to make sure there are no other matching curves that are
               //non constant.  If X and Y are constant but Z is not, we need to 
               //keep them all :(
@@ -487,7 +490,15 @@ namespace Leap.Unity.Recording {
 
           if (component is Transform) _transforms.Add(component as Transform);
           if (component is AudioSource) _audioSources.Add(component as AudioSource);
-          if (component is PropertyRecorder) _recorders.Add(component as PropertyRecorder);
+
+          if (component is PropertyRecorder) {
+            var recorder = component as PropertyRecorder;
+            foreach (var bindings in recorder.GetBindings(gameObject)) {
+              _curves[bindings] = new AnimationCurve();
+            }
+
+            _recorders.Add(component as PropertyRecorder);
+          }
 
           if (component is Behaviour) _behaviours.Add(component);
           if (component is Renderer) _behaviours.Add(component);
@@ -557,17 +568,6 @@ namespace Leap.Unity.Recording {
             data.target = source;
             data.recordingStartTime = _startTime;
             _audioData[source] = data;
-          }
-        }
-      }
-
-      using (new ProfilerSample("Discover Property Recorders")) {
-        //Record all properties specified by recorders
-        foreach (var recorder in _recorders) {
-          foreach (var bindings in recorder.GetBindings(gameObject)) {
-            if (!_curves.ContainsKey(bindings)) {
-              _curves[bindings] = new AnimationCurve();
-            }
           }
         }
       }
