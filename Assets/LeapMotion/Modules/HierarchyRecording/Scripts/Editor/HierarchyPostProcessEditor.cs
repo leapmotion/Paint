@@ -47,42 +47,31 @@ namespace Leap.Unity.Recording {
         var components = target.GetComponentsInChildren<Component>().
                                 Select(c => c.GetType()).
                                 Distinct().
-                                OrderBy(m => m.GetType().Name);
+                                OrderBy(m => m.Name);
 
-        var monoComponents = components.Where(t => t.IsSubclassOf(typeof(MonoBehaviour))).ToArray();
-        var engineComponents = components.Where(t => !t.IsSubclassOf(typeof(MonoBehaviour))).ToArray();
+        var groups = components.GroupBy(t => t.Namespace).OrderBy(g => g.Key);
+        foreach(var group in groups) {
+          EditorGUILayout.Space();
+          EditorGUILayout.LabelField(group.Key ?? "Dev", EditorStyles.boldLabel);
+          foreach (var type in group) {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(type.Name);
 
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Engine Components", EditorStyles.boldLabel);
-        foreach (var c in engineComponents) {
-          EditorGUILayout.BeginHorizontal();
-          EditorGUILayout.PrefixLabel(c.Name);
-          if (GUILayout.Button("Delete")) {
-            deleteAllOfType(c);
+            if (GUILayout.Button("Delete")) {
+              var toDelete = target.GetComponentsInChildren(type);
+              foreach (var t in toDelete) {
+                Undo.DestroyObjectImmediate(t);
+              }
+            }
+
+            EditorGUILayout.EndHorizontal();
           }
-          EditorGUILayout.EndHorizontal();
         }
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Dev Components", EditorStyles.boldLabel);
-        foreach (var c in monoComponents) {
-          EditorGUILayout.BeginHorizontal();
-          EditorGUILayout.PrefixLabel(c.Name);
-          if (GUILayout.Button("Delete")) {
-            deleteAllOfType(c);
-          }
-          EditorGUILayout.EndHorizontal();
-        }
-
-        EditorGUI.indentLevel--;
       }
     }
 
     private void deleteAllOfType(Type type) {
-      var components = target.GetComponentsInChildren(type);
-      foreach (var c in components) {
-        Undo.DestroyObjectImmediate(c);
-      }
+      
     }
   }
 

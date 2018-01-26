@@ -479,26 +479,23 @@ namespace Leap.Unity.Recording {
 
         _transforms.Clear();
         _audioSources.Clear();
-        _recorders.Clear();
         _behaviours.Clear();
         for (int i = 0; i < _components.Count; i++) {
           var component = _components[i];
 
           if (!_initialComponentData.ContainsKey(component)) {
             _initialComponentData[component] = new SerializedObject(component);
+
+            if (component is PropertyRecorder) {
+              var recorder = component as PropertyRecorder;
+              foreach (var bindings in recorder.GetBindings(gameObject)) {
+                _curves[bindings] = new AnimationCurve();
+              }
+            }
           }
 
           if (component is Transform) _transforms.Add(component as Transform);
           if (component is AudioSource) _audioSources.Add(component as AudioSource);
-
-          if (component is PropertyRecorder) {
-            var recorder = component as PropertyRecorder;
-            foreach (var bindings in recorder.GetBindings(gameObject)) {
-              _curves[bindings] = new AnimationCurve();
-            }
-
-            _recorders.Add(component as PropertyRecorder);
-          }
 
           if (component is Behaviour) _behaviours.Add(component);
           if (component is Renderer) _behaviours.Add(component);
