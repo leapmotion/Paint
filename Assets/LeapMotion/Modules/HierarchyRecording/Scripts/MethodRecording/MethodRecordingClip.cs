@@ -6,6 +6,8 @@ namespace Leap.Unity.Recording {
 
   public class MethodRecordingClip : PlayableAsset, ITimelineClipAsset {
 
+    public bool invokeAtEditTime = false;
+
     public ClipCaps clipCaps {
       get {
         return ClipCaps.ClipIn | ClipCaps.SpeedMultiplier;
@@ -13,7 +15,9 @@ namespace Leap.Unity.Recording {
     }
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner) {
-      return ScriptPlayable<MethodRecordingPlayable>.Create(graph);
+      var playable = ScriptPlayable<MethodRecordingPlayable>.Create(graph);
+      playable.GetBehaviour().invokeAtEditTime = invokeAtEditTime;
+      return playable;
     }
   }
 }

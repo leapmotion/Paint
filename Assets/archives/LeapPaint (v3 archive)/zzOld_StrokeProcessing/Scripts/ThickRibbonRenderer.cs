@@ -45,6 +45,9 @@ namespace Leap.Unity.LeapPaint_v3 {
       _normals = new List<Vector3>();
 
       _historyManager = GameObject.FindObjectOfType<HistoryManager>();
+      transform.position = Vector3.zero;
+      transform.rotation = Quaternion.identity;
+      transform.localScale = Vector3.one;
     }
 
     public void InitializeRenderer() {

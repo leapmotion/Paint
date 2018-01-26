@@ -99,7 +99,7 @@ namespace Leap.Unity.Recording {
     }
 
     protected void LateUpdate() {
-      if (XRDevice.isPresent && XRDevice.userPresence == UserPresenceState.Present && !_isRecording) {
+      if (XRDevice.isPresent && XRDevice.userPresence == UserPresenceState.Present && !_isRecording && recordOnHDMPresence) {
         BeginRecording();
       }
 
@@ -174,11 +174,24 @@ namespace Leap.Unity.Recording {
             data[0].ApplyTo(transform);
           }
 
+          //For all recorded curves, revert to start of curve
+          {
+            AnimationClip tempClip = new AnimationClip();
+            foreach (var pair in _curves) {
+              var binding = pair.Key;
+              var curve = pair.Value;
+
+              AnimationUtility.SetEditorCurve(tempClip, binding, curve);
+            }
+            tempClip.SampleAnimation(gameObject, 0);
+          }
+
+          //For all non-transform components, revert to original serialized values
           foreach (var pair in _initialComponentData) {
             var component = pair.Key;
             var sobj = pair.Value;
 
-            if (component == null) {
+            if (component == null || component is Transform) {
               continue;
             }
 
@@ -201,8 +214,13 @@ namespace Leap.Unity.Recording {
             flags.intValue = ~originalFlags;
             flags.intValue = originalFlags;
 
-            //Applies previous state of entire component
-            sobj.ApplyModifiedProperties();
+            try {
+              //Applies previous state of entire component
+              sobj.ApplyModifiedProperties();
+            } catch (Exception e) {
+              Debug.LogError("Exception when trying to apply properties to " + component);
+              Debug.LogException(e);
+            }
           }
         });
 
@@ -245,6 +263,10 @@ namespace Leap.Unity.Recording {
           foreach (var pair in _behaviourActivity) {
             var targetBehaviour = pair.Key;
             var activityData = pair.Value;
+
+            if (targetBehaviour == null) {
+              continue;
+            }
 
             progress.Step(targetBehaviour.name);
 
@@ -598,6 +620,10 @@ namespace Leap.Unity.Recording {
 
       using (new ProfilerSample("Discover Behaviours")) {
         foreach (var behaviour in _behaviours) {
+          if (behaviour == null || behaviour is PropertyRecorder) {
+            continue;
+          }
+
           if (!_behaviourActivity.ContainsKey(behaviour)) {
             _behaviourActivity[behaviour] = new List<ActivityData>();
           }

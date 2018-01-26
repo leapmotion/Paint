@@ -9,12 +9,16 @@
 
 using UnityEngine;
 using UnityEditor;
+using System;
+using System.Linq;
 using Leap.Unity.GraphicalRenderer;
 
 namespace Leap.Unity.Recording {
 
   [CustomEditor(typeof(HierarchyPostProcess))]
   public class HierarchyPostProcessEditor : CustomEditorBase<HierarchyPostProcess> {
+
+    private bool _expandComponentTypes = false;
 
     public override void OnInspectorGUI() {
       base.OnInspectorGUI();
@@ -35,6 +39,50 @@ namespace Leap.Unity.Recording {
       }
 
       EditorGUI.EndDisabledGroup();
+
+      _expandComponentTypes = EditorGUILayout.Foldout(_expandComponentTypes, "Component List");
+      if (_expandComponentTypes) {
+        EditorGUI.indentLevel++;
+
+        var components = target.GetComponentsInChildren<Component>().
+                                Select(c => c.GetType()).
+                                Distinct().
+                                OrderBy(m => m.GetType().Name);
+
+        var monoComponents = components.Where(t => t.IsSubclassOf(typeof(MonoBehaviour))).ToArray();
+        var engineComponents = components.Where(t => !t.IsSubclassOf(typeof(MonoBehaviour))).ToArray();
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Engine Components", EditorStyles.boldLabel);
+        foreach (var c in engineComponents) {
+          EditorGUILayout.BeginHorizontal();
+          EditorGUILayout.PrefixLabel(c.Name);
+          if (GUILayout.Button("Delete")) {
+            deleteAllOfType(c);
+          }
+          EditorGUILayout.EndHorizontal();
+        }
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Dev Components", EditorStyles.boldLabel);
+        foreach (var c in monoComponents) {
+          EditorGUILayout.BeginHorizontal();
+          EditorGUILayout.PrefixLabel(c.Name);
+          if (GUILayout.Button("Delete")) {
+            deleteAllOfType(c);
+          }
+          EditorGUILayout.EndHorizontal();
+        }
+
+        EditorGUI.indentLevel--;
+      }
+    }
+
+    private void deleteAllOfType(Type type) {
+      var components = target.GetComponentsInChildren(type);
+      foreach (var c in components) {
+        Undo.DestroyObjectImmediate(c);
+      }
     }
   }
 

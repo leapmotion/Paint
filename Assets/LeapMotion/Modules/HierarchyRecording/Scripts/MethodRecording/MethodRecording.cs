@@ -52,8 +52,18 @@ namespace Leap.Unity.Recording {
     }
 
     public override sealed void SweepTime(float from, float to) {
-      int startIndex = Mathf.Abs(_times.BinarySearch(from));
-      int endIndex = Mathf.Abs(_times.BinarySearch(to));
+      int startIndex = _times.BinarySearch(from);
+      int endIndex = _times.BinarySearch(to);
+
+      if (startIndex < 0) {
+        startIndex = ~startIndex;
+      }
+
+      if (endIndex < 0) {
+        endIndex = ~endIndex;
+      }
+
+      Debug.Log("Sweep from " + from + " (" + startIndex + ") to " + to + " (" + endIndex + ")");
 
       for (int i = startIndex; i < endIndex; i++) {
         InvokeArgs(_args[i]);
@@ -61,6 +71,9 @@ namespace Leap.Unity.Recording {
     }
 
     protected void SaveArgs(T state) {
+      if (_times == null) _times = new List<float>();
+      if (_args == null) _args = new List<T>();
+
       _times.Add(HierarchyRecorder.instance.recordingTime);
       _args.Add(state);
     }

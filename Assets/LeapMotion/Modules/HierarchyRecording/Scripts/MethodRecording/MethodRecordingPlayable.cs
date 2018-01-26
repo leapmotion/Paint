@@ -1,11 +1,18 @@
-﻿using UnityEngine.Playables;
+﻿using UnityEngine;
+using UnityEngine.Playables;
 
 namespace Leap.Unity.Recording {
 
   public class MethodRecordingPlayable : PlayableBehaviour {
     private double _prevTime = double.NaN;
 
+    public bool invokeAtEditTime;
+
     public override void ProcessFrame(Playable playable, FrameData info, object playerData) {
+      if (!Application.isPlaying && !invokeAtEditTime) {
+        return;
+      }
+
       var recording = playerData as MethodRecording;
       if (recording == null) {
         return;

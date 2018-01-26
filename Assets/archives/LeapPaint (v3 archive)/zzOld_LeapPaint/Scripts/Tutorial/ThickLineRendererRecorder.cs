@@ -20,7 +20,7 @@ public class ThickLineRendererRecorder : BasicMethodRecording<ThickLineRendererR
 
     _renderer.OnUpdateRenderer += (stroke, max) => SaveArgs(new Args() {
       method = Method.UpdateRenderer,
-      stroke = stroke,
+      stroke = new List<StrokePoint>(stroke),
       maxChangedFromEnd = max
     });
 
