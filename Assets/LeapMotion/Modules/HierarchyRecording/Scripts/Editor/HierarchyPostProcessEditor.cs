@@ -23,9 +23,14 @@ namespace Leap.Unity.Recording {
     public override void OnInspectorGUI() {
       base.OnInspectorGUI();
 
+      if (target == null) {
+        return;
+      }
+
       bool isPrefab = PrefabUtility.GetPrefabType(target) == PrefabType.Prefab;
       EditorGUI.BeginDisabledGroup(isPrefab);
 
+      EditorGUILayout.Space();
       if (GUILayout.Button(new GUIContent("Build Playback Prefab",
                                           isPrefab ? "Draw this object into the scene "
                                                    + "before converting its raw recording "
@@ -36,11 +41,13 @@ namespace Leap.Unity.Recording {
 
       EditorGUI.EndDisabledGroup();
 
+      EditorGUILayout.Space();
       _expandComponentTypes = EditorGUILayout.Foldout(_expandComponentTypes, "Component List");
       if (_expandComponentTypes) {
         EditorGUI.indentLevel++;
 
         var components = target.GetComponentsInChildren<Component>(includeInactive: true).
+                                Where(c => !(c is Transform || c is RectTransform)).
                                 Select(c => c.GetType()).
                                 Distinct().
                                 Where(m => m.Namespace != "Leap.Unity.Recording").
