@@ -542,13 +542,13 @@ namespace Leap.Unity.Recording {
 
       using (new ProfilerSample("Record Transform Data")) {
         foreach (var pair in _transformData) {
+          var list = pair.Value;
+          var transform = pair.Key;
+
           //If we have no data for this object BUT we also are not
           //on the first frame of recording, this object must have
           //been spawned, make sure to record a frame with it being
           //disabled right before this
-          var list = pair.Value;
-          var transform = pair.Key;
-
           if (list.Count == 0 && Time.time > _startTime) {
             list.Add(new TransformData() {
               time = Time.time - _startTime - Time.deltaTime,
