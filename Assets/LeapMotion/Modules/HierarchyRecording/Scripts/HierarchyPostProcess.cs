@@ -60,73 +60,7 @@ namespace Leap.Unity.Recording {
     [MinValue(0)]
     public float genericMaxError = 0.05f;
 
-    [Header("Clear Settings")]
-    [Tooltip("Deletes all scripts not marked as Recording Friendly.")]
-    public bool clearUnfriendlyComponents = true;
-
-    [Tooltip("Deletes all empty transforms that have no interesting children.")]
-    public bool clearLeafEmpties = true;
-
-    [Tooltip("Deletes all transforms that have the identity transformation.")]
-    public bool collapseIdentityTransforms = true;
-
 #if UNITY_EDITOR
-    public void ClearComponents() {
-      Transform[] transforms = GetComponentsInChildren<Transform>(includeInactive: true);
-
-      foreach (var transform in transforms) {
-        if (clearUnfriendlyComponents) {
-          var scripts = transform.GetComponents<Component>().
-                                  Query().
-                                  Where(t => !RecordingFriendlyAttribute.IsRecordingFriendly(t)).
-                                  ToList();
-          do {
-            foreach (var script in scripts) {
-              DestroyImmediate(script);
-            }
-          } while (scripts.Query().ValidUnityObjs().Any());
-        }
-      }
-
-      if (clearLeafEmpties) {
-        while (true) {
-          transforms = GetComponentsInChildren<Transform>(includeInactive: true);
-          var empty = transforms.Query().FirstOrDefault(t => t.childCount == 0 &&
-                                                             t.GetComponents<Component>().Length == 1);
-
-          if (empty == null) {
-            break;
-          }
-
-          DestroyImmediate(empty.gameObject);
-        }
-      }
-
-      if (collapseIdentityTransforms) {
-        while (true) {
-          transforms = GetComponentsInChildren<Transform>(includeInactive: true);
-          var empty = transforms.Query().FirstOrDefault(t => t.GetComponents<Component>().Length == 1 &&
-                                                             t.localPosition == Vector3.zero &&
-                                                             t.localRotation == Quaternion.identity &&
-                                                             t.localScale == Vector3.one);
-          if (empty == null) {
-            break;
-          }
-
-          List<Transform> children = new List<Transform>();
-          for (int i = 0; i < empty.childCount; i++) {
-            children.Add(empty.GetChild(i));
-          }
-
-          foreach (var child in children) {
-            child.SetParent(empty.parent, worldPositionStays: true);
-          }
-
-          DestroyImmediate(empty.gameObject);
-        }
-      }
-    }
-
     public void BuildPlaybackPrefab(ProgressBar progress) {
       var timeline = ScriptableObject.CreateInstance<TimelineAsset>();
 

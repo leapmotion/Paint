@@ -26,10 +26,6 @@ namespace Leap.Unity.Recording {
       bool isPrefab = PrefabUtility.GetPrefabType(target) == PrefabType.Prefab;
       EditorGUI.BeginDisabledGroup(isPrefab);
 
-      if (GUILayout.Button("Clear")) {
-        target.ClearComponents();
-      }
-
       if (GUILayout.Button(new GUIContent("Build Playback Prefab",
                                           isPrefab ? "Draw this object into the scene "
                                                    + "before converting its raw recording "
@@ -47,10 +43,11 @@ namespace Leap.Unity.Recording {
         var components = target.GetComponentsInChildren<Component>(includeInactive: true).
                                 Select(c => c.GetType()).
                                 Distinct().
+                                Where(m => m.Namespace != "Leap.Unity.Recording").
                                 OrderBy(m => m.Name);
 
         var groups = components.GroupBy(t => t.Namespace).OrderBy(g => g.Key);
-        foreach(var group in groups) {
+        foreach (var group in groups) {
           EditorGUILayout.Space();
           EditorGUILayout.LabelField(group.Key ?? "Dev", EditorStyles.boldLabel);
           foreach (var type in group) {
