@@ -22,7 +22,6 @@ using Leap.Unity.GraphicalRenderer;
 
 namespace Leap.Unity.Recording {
 
-  [RecordingFriendly]
   public class HierarchyPostProcess : MonoBehaviour {
 
     [Header("Recording Settings")]

@@ -13,7 +13,6 @@ using UnityEngine;
 
 namespace Leap.Unity.Recording {
 
-  [RecordingFriendly]
   public class RecordedAudio : MonoBehaviour {
 
     public float recordingStartTime;
