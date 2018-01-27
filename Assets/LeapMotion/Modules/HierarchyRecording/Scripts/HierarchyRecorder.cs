@@ -583,7 +583,6 @@ namespace Leap.Unity.Recording {
           if (!_audioData.TryGetValue(source, out data)) {
             data = source.gameObject.AddComponent<RecordedAudio>();
             data.target = source;
-            data.recordingStartTime = _startTime;
             _audioData[source] = data;
           }
         }

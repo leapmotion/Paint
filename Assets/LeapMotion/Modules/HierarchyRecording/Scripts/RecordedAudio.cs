@@ -14,8 +14,7 @@ using UnityEngine;
 namespace Leap.Unity.Recording {
 
   public class RecordedAudio : MonoBehaviour {
-
-    public float recordingStartTime;
+    
     public AudioSource target;
     public List<ClipData> data = new List<ClipData>();
 
@@ -41,7 +40,7 @@ namespace Leap.Unity.Recording {
       if (didStartNewClip) {
         data.Add(new ClipData() {
           clip = target.clip,
-          startTime = Time.time - recordingStartTime,
+          startTime = HierarchyRecorder.instance.recordingTime,
           pitch = target.pitch,
           volume = target.volume
         });
