@@ -358,6 +358,7 @@ namespace Leap.Unity.Recording {
         });
 
         progress.Begin(_curves.Count, "", "Compressing Data: ", () => {
+          _curves.Sort((a, b) => a.binding.propertyName.CompareTo(b.binding.propertyName));
           foreach (var data in _curves) {
             EditorCurveBinding binding = data.binding;
             AnimationCurve curve = data.curve;
@@ -448,10 +449,12 @@ namespace Leap.Unity.Recording {
 
         postProcessComponent.recordingName = recordingName;
         postProcessComponent.assetFolder = new AssetFolder(finalSubFolder);
+        
+        var leapObject = myGameObject;
 
-        var leapObject = myGameObject.GetComponentInChildren<LeapProvider>().gameObject;
-        if (leapObject == null) {
-          leapObject = myGameObject;
+        var provider = myGameObject.GetComponentInChildren<LeapProvider>();
+        if (provider != null) {
+          leapObject = provider.gameObject;
         }
 
         var leapDataComponent = leapObject.AddComponent<RecordedLeapData>();
@@ -580,15 +583,6 @@ namespace Leap.Unity.Recording {
 
       using (new ProfilerSample("Record Behaviour Activity Data")) {
         foreach (var pair in _behaviourActivity) {
-          //Same logic as above, if this is the first frame for a spawned
-          //object make sure to also record a disabled frame previously
-          if (pair.Value.Count == 0 && Time.time > _startTime) {
-            pair.Value.Add(new ActivityData() {
-              time = Time.time - _startTime - Time.deltaTime,
-              enabled = false
-            });
-          }
-
           pair.Value.Add(new ActivityData() {
             time = Time.time - _startTime,
             enabled = EditorUtility.GetObjectEnabled(pair.Key) == 1
