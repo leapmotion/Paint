@@ -31,12 +31,6 @@ namespace Leap.Unity.Recording {
     public string recordingName;
     public AssetFolder targetFolder;
 
-    [Header("Animation Recording Settings")]
-    public RecordingSelection transformMode = RecordingSelection.Everything;
-    public Transform[] specificTransforms = new Transform[0];
-    public RecordingSelection audioSourceMode = RecordingSelection.Everything;
-    public AudioSource[] specificAudioSources = new AudioSource[0];
-
     [Header("Leap Recording Settings")]
     public LeapProvider provider;
     public bool recordLeapData = false;
@@ -48,10 +42,6 @@ namespace Leap.Unity.Recording {
     protected AnimationClip _clip;
 
     protected List<Component> _components;
-
-    protected List<Transform> _transforms;
-    protected List<Component> _behaviours;
-    protected List<AudioSource> _audioSources;
     protected List<PropertyRecorder> _recorders;
 
     protected List<Behaviour> _tempBehaviour = new List<Behaviour>();
@@ -63,12 +53,6 @@ namespace Leap.Unity.Recording {
     protected bool _isRecording = false;
     protected float _startTime = 0;
     protected int _startFrame = 0;
-
-    public enum RecordingSelection {
-      Everything,
-      Nothing,
-      Specific
-    }
 
 #if UNITY_EDITOR
     protected List<Frame> _leapData;
@@ -126,11 +110,7 @@ namespace Leap.Unity.Recording {
       _startFrame = Time.frameCount;
 
       _components = new List<Component>();
-
-      _transforms = new List<Transform>();
-      _behaviours = new List<Component>();
       _recorders = new List<PropertyRecorder>();
-      _audioSources = new List<AudioSource>();
       _leapData = new List<Frame>();
 
       _curves = new List<CurveData>();
@@ -489,9 +469,6 @@ namespace Leap.Unity.Recording {
       using (new ProfilerSample("Get Components In Hierarchy")) {
         GetComponentsInChildren(true, _components);
 
-        _transforms.Clear();
-        _audioSources.Clear();
-        _behaviours.Clear();
         for (int i = 0; i < _components.Count; i++) {
           var component = _components[i];
 
@@ -552,52 +529,7 @@ namespace Leap.Unity.Recording {
             }
           }
 
-          if (component is Transform) _transforms.Add(component as Transform);
-          if (component is AudioSource) _audioSources.Add(component as AudioSource);
-
-          if (component is Behaviour) _behaviours.Add(component);
-          if (component is Renderer) _behaviours.Add(component);
-          if (component is Collider) _behaviours.Add(component);
           if (component is IValueProxy) (component as IValueProxy).OnPullValue();
-        }
-
-        switch (audioSourceMode) {
-          case RecordingSelection.Nothing:
-            _audioSources.Clear();
-            break;
-          case RecordingSelection.Specific:
-            _audioSources.Clear();
-            _audioSources.AddRange(specificAudioSources);
-            break;
-        }
-
-        switch (transformMode) {
-          case RecordingSelection.Nothing:
-            _transforms.Clear();
-            _behaviours.Clear();
-            break;
-          case RecordingSelection.Specific:
-            _transforms.Clear();
-            _transforms.AddRange(specificTransforms);
-
-            _behaviours.Clear();
-
-            foreach (var t in _transforms) {
-              t.GetComponents(_tempBehaviour);
-              t.GetComponents(_tempRenderer);
-              t.GetComponents(_tempCollider);
-
-              foreach (var b in _tempBehaviour) {
-                _behaviours.Add(b);
-              }
-              foreach (var b in _tempRenderer) {
-                _behaviours.Add(b);
-              }
-              foreach (var b in _tempCollider) {
-                _behaviours.Add(b);
-              }
-            }
-            break;
         }
       }
 
