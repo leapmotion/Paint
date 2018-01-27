@@ -29,7 +29,7 @@ namespace Leap.Unity.Recording {
     public AssetFolder assetFolder;
 
     [Header("Leap Data")]
-    public List<Frame> leapData;
+    public RecordedLeapData leapData;
 
     [SerializeField, ImplementsTypeNameDropdown(typeof(LeapRecording))]
     private string _leapRecordingType;
@@ -86,11 +86,11 @@ namespace Leap.Unity.Recording {
       //Try to generate a leap recording if we have leap data
       RecordingTrack recordingTrack = null;
       LeapRecording leapRecording = null;
-      if (leapData.Count > 0) {
+      if (leapData.frames.Count > 0) {
         leapRecording = ScriptableObject.CreateInstance(_leapRecordingType) as LeapRecording;
         if (leapRecording != null) {
           leapRecording.name = "Recorded Leap Data";
-          leapRecording.LoadFrames(leapData);
+          leapRecording.LoadFrames(leapData.frames);
         } else {
           Debug.LogError("Unable to create Leap recording: Invalid type specification for "
                        + "LeapRecording implementation.", this);
@@ -121,6 +121,10 @@ namespace Leap.Unity.Recording {
 
       foreach (var recording in GetComponentsInChildren<RecordedData>(includeInactive: true)) {
         DestroyImmediate(recording);
+      }
+
+      foreach (var leapData in GetComponentsInChildren<RecordedLeapData>(includeInactive: true)) {
+        DestroyImmediate(leapData);
       }
 
       //Create the playable director and link it to the new timeline
