@@ -466,8 +466,10 @@ namespace Leap.Unity.Recording {
         }
       }
 
-      using (new ProfilerSample("Get Components In Hierarchy")) {
-        GetComponentsInChildren(true, _components);
+      using (new ProfilerSample("Search For New Components")) {
+        using (new ProfilerSample("Get Components In Children")) {
+          GetComponentsInChildren(true, _components);
+        }
 
         for (int i = 0; i < _components.Count; i++) {
           var component = _components[i];
