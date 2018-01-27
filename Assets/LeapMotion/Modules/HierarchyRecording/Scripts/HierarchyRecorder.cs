@@ -180,7 +180,9 @@ namespace Leap.Unity.Recording {
 
 
               //We don't want to revert method recordings!
-              if (component is MethodRecording) {
+              if (component is MethodRecording ||
+                  component is RecordedData ||
+                  component is RecordedAudio) {
                 continue;
               }
 
@@ -449,7 +451,7 @@ namespace Leap.Unity.Recording {
 
         postProcessComponent.recordingName = recordingName;
         postProcessComponent.assetFolder = new AssetFolder(finalSubFolder);
-        
+
         var leapObject = myGameObject;
 
         var provider = myGameObject.GetComponentInChildren<LeapProvider>();
