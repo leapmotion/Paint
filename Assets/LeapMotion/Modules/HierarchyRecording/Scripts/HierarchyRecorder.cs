@@ -141,64 +141,71 @@ namespace Leap.Unity.Recording {
           autoProxy.autoPushingEnabled = true;
         }
 
-        progress.Begin(1, "", "Reverting Scene State", () => {
+        progress.Begin(3, "", "Reverting Scene State", () => {
           //For all of our transform data, revert to the first piece recorded
-          foreach (var pair in _transformData) {
-            var transform = pair.Key;
-            var data = pair.Value;
+          progress.Begin(_transformData.Count, "", "", () => {
+            foreach (var pair in _transformData) {
+              progress.Step();
+              var transform = pair.Key;
+              var data = pair.Value;
 
-            if (transform == null || data.Count == 0) {
-              continue;
+              if (transform == null || data.Count == 0) {
+                continue;
+              }
+
+              data[0].ApplyTo(transform);
             }
-
-            data[0].ApplyTo(transform);
-          }
+          });
 
           //For all recorded curves, revert to start of curve
-          {
+          progress.Begin(_curves.Count, "", "", () => {
             AnimationClip tempClip = new AnimationClip();
             foreach (var data in _curves) {
+              progress.Step();
               AnimationUtility.SetEditorCurve(tempClip, data.binding, data.curve);
             }
             tempClip.SampleAnimation(gameObject, 0);
-          }
+          });
 
           //For all non-transform components, revert to original serialized values
-          foreach (var pair in _initialComponentData) {
-            var component = pair.Key;
-            var sobj = pair.Value;
+          progress.Begin(_initialComponentData.Count, "", "", () => {
+            foreach (var pair in _initialComponentData) {
+              progress.Step();
+              var component = pair.Key;
+              var sobj = pair.Value;
 
-            if (component == null || component is Transform) {
-              continue;
+              if (component == null || component is Transform) {
+                continue;
+              }
+
+
+              //We don't want to revert method recordings!
+              if (component is MethodRecording) {
+                continue;
+              }
+
+              var flags = sobj.FindProperty("m_ObjectHideFlags");
+              if (flags == null) {
+                Debug.LogError("Could not find hide flags for " + component);
+                continue;
+              }
+
+              //We have to dirty the serialized object somehow
+              //apparently there is no api to do this
+              //all objects have hide flags so we just touch them and revert them
+              int originalFlags = flags.intValue;
+              flags.intValue = ~originalFlags;
+              flags.intValue = originalFlags;
+
+              try {
+                //Applies previous state of entire component
+                sobj.ApplyModifiedProperties();
+              } catch (Exception e) {
+                Debug.LogError("Exception when trying to apply properties to " + component);
+                Debug.LogException(e);
+              }
             }
-
-
-            //We don't want to revert method recordings!
-            if (component is MethodRecording) {
-              continue;
-            }
-
-            var flags = sobj.FindProperty("m_ObjectHideFlags");
-            if (flags == null) {
-              Debug.LogError("Could not find hide flags for " + component);
-              continue;
-            }
-
-            //We have to dirty the serialized object somehow
-            //apparently there is no api to do this
-            //all objects have hide flags so we just touch them and revert them
-            int originalFlags = flags.intValue;
-            flags.intValue = ~originalFlags;
-            flags.intValue = originalFlags;
-
-            try {
-              //Applies previous state of entire component
-              sobj.ApplyModifiedProperties();
-            } catch (Exception e) {
-              Debug.LogError("Exception when trying to apply properties to " + component);
-              Debug.LogException(e);
-            }
-          }
+          });
         });
 
         progress.Begin(1, "", "Patching Materials: ", () => {
