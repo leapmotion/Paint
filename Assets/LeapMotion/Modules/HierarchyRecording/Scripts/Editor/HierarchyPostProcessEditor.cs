@@ -23,13 +23,14 @@ namespace Leap.Unity.Recording {
     public override void OnInspectorGUI() {
       base.OnInspectorGUI();
 
+      if (target == null) {
+        return;
+      }
+
       bool isPrefab = PrefabUtility.GetPrefabType(target) == PrefabType.Prefab;
       EditorGUI.BeginDisabledGroup(isPrefab);
 
-      if (GUILayout.Button("Clear")) {
-        target.ClearComponents();
-      }
-
+      EditorGUILayout.Space();
       if (GUILayout.Button(new GUIContent("Build Playback Prefab",
                                           isPrefab ? "Draw this object into the scene "
                                                    + "before converting its raw recording "
@@ -40,17 +41,20 @@ namespace Leap.Unity.Recording {
 
       EditorGUI.EndDisabledGroup();
 
+      EditorGUILayout.Space();
       _expandComponentTypes = EditorGUILayout.Foldout(_expandComponentTypes, "Component List");
       if (_expandComponentTypes) {
         EditorGUI.indentLevel++;
 
-        var components = target.GetComponentsInChildren<Component>().
+        var components = target.GetComponentsInChildren<Component>(includeInactive: true).
+                                Where(c => !(c is Transform || c is RectTransform)).
                                 Select(c => c.GetType()).
                                 Distinct().
+                                Where(m => m.Namespace != "Leap.Unity.Recording").
                                 OrderBy(m => m.Name);
 
         var groups = components.GroupBy(t => t.Namespace).OrderBy(g => g.Key);
-        foreach(var group in groups) {
+        foreach (var group in groups) {
           EditorGUILayout.Space();
           EditorGUILayout.LabelField(group.Key ?? "Dev", EditorStyles.boldLabel);
           foreach (var type in group) {
@@ -58,7 +62,7 @@ namespace Leap.Unity.Recording {
             EditorGUILayout.PrefixLabel(type.Name);
 
             if (GUILayout.Button("Delete")) {
-              var toDelete = target.GetComponentsInChildren(type);
+              var toDelete = target.GetComponentsInChildren(type, includeInactive: true);
               foreach (var t in toDelete) {
                 Undo.DestroyObjectImmediate(t);
               }

@@ -31,12 +31,6 @@ namespace Leap.Unity.Recording {
     public string recordingName;
     public AssetFolder targetFolder;
 
-    [Header("Animation Recording Settings")]
-    public RecordingSelection transformMode = RecordingSelection.Everything;
-    public Transform[] specificTransforms = new Transform[0];
-    public RecordingSelection audioSourceMode = RecordingSelection.Everything;
-    public AudioSource[] specificAudioSources = new AudioSource[0];
-
     [Header("Leap Recording Settings")]
     public LeapProvider provider;
     public bool recordLeapData = false;
@@ -48,10 +42,6 @@ namespace Leap.Unity.Recording {
     protected AnimationClip _clip;
 
     protected List<Component> _components;
-
-    protected List<Transform> _transforms;
-    protected List<Component> _behaviours;
-    protected List<AudioSource> _audioSources;
     protected List<PropertyRecorder> _recorders;
 
     protected List<Behaviour> _tempBehaviour = new List<Behaviour>();
@@ -63,12 +53,6 @@ namespace Leap.Unity.Recording {
     protected bool _isRecording = false;
     protected float _startTime = 0;
     protected int _startFrame = 0;
-
-    public enum RecordingSelection {
-      Everything,
-      Nothing,
-      Specific
-    }
 
 #if UNITY_EDITOR
     protected List<Frame> _leapData;
@@ -126,11 +110,7 @@ namespace Leap.Unity.Recording {
       _startFrame = Time.frameCount;
 
       _components = new List<Component>();
-
-      _transforms = new List<Transform>();
-      _behaviours = new List<Component>();
       _recorders = new List<PropertyRecorder>();
-      _audioSources = new List<AudioSource>();
       _leapData = new List<Frame>();
 
       _curves = new List<CurveData>();
@@ -461,7 +441,15 @@ namespace Leap.Unity.Recording {
 
         postProcessComponent.recordingName = recordingName;
         postProcessComponent.assetFolder = new AssetFolder(finalSubFolder);
-        postProcessComponent.leapData = _leapData;
+
+        var leapObject = myGameObject.GetComponentInChildren<LeapProvider>().gameObject;
+        if (leapObject == null) {
+          leapObject = myGameObject;
+        }
+
+        var leapDataComponent = leapObject.AddComponent<RecordedLeapData>();
+        leapDataComponent.frames = _leapData;
+        postProcessComponent.leapData = leapDataComponent;
 
         string prefabPath = Path.Combine(finalSubFolder, recordingName + " Raw.prefab");
         PrefabUtility.CreatePrefab(prefabPath.Replace('\\', '/'), myGameObject);
@@ -481,103 +469,67 @@ namespace Leap.Unity.Recording {
       using (new ProfilerSample("Get Components In Hierarchy")) {
         GetComponentsInChildren(true, _components);
 
-        _transforms.Clear();
-        _audioSources.Clear();
-        _behaviours.Clear();
         for (int i = 0; i < _components.Count; i++) {
           var component = _components[i];
 
           if (!_initialComponentData.ContainsKey(component)) {
-            _initialComponentData[component] = new SerializedObject(component);
+            using (new ProfilerSample("Handle New Component")) {
+              _initialComponentData[component] = new SerializedObject(component);
 
-            //First time experiencing a gameobject
-            if (component is Transform) {
-              var transform = component as Transform;
-              var parent = transform.parent;
-              if (parent != null) {
-                var newName = transform.name;
+              //First time experiencing a gameobject
+              if (component is Transform) {
+                using (new ProfilerSample("Handle New Transform")) {
+                  var transform = component as Transform;
 
-                for (int j = 0; j < parent.childCount; j++) {
-                  var sibling = parent.GetChild(j);
-                  if (sibling != transform && sibling.name == transform.name) {
-                    transform.name = transform.name + " " + transform.gameObject.GetInstanceID();
-                    break;
+                  _transformData[transform] = new List<TransformData>();
+
+                  var parent = transform.parent;
+                  if (parent != null) {
+                    var newName = transform.name;
+
+                    for (int j = 0; j < parent.childCount; j++) {
+                      var sibling = parent.GetChild(j);
+                      if (sibling != transform && sibling.name == transform.name) {
+                        transform.name = transform.name + " " + transform.gameObject.GetInstanceID();
+                        break;
+                      }
+                    }
                   }
                 }
               }
-            }
 
-            if (component is PropertyRecorder) {
-              var recorder = component as PropertyRecorder;
-              foreach (var binding in recorder.GetBindings(gameObject)) {
-                _curves.Add(new CurveData() {
-                  binding = binding,
-                  curve = new AnimationCurve(),
-                  accessor = new PropertyAccessor(gameObject, binding, failureIsZero: true)
-                });
+              if (component is AudioSource) {
+                using (new ProfilerSample("Handle New AudioSource")) {
+                  var source = component as AudioSource;
+                  var data = source.gameObject.AddComponent<RecordedAudio>();
+                  data.target = source;
+                  _audioData[source] = data;
+                }
+              }
+
+              if (component is PropertyRecorder) {
+                using (new ProfilerSample("Handle New PropertyRecorder")) {
+                  var recorder = component as PropertyRecorder;
+                  foreach (var binding in recorder.GetBindings(gameObject)) {
+                    _curves.Add(new CurveData() {
+                      binding = binding,
+                      curve = new AnimationCurve(),
+                      accessor = new PropertyAccessor(gameObject, binding, failureIsZero: true)
+                    });
+                  }
+                }
+              }
+
+              if (((component is Behaviour) || (component is Renderer) || (component is Collider)) &&
+                  !(component is PropertyRecorder)) {
+                using (new ProfilerSample("Handle New Behaviour")) {
+                  _behaviourActivity[component] = new List<ActivityData>();
+                }
               }
             }
           }
 
-          if (component is Transform) _transforms.Add(component as Transform);
-          if (component is AudioSource) _audioSources.Add(component as AudioSource);
-
-          if (component is Behaviour) _behaviours.Add(component);
-          if (component is Renderer) _behaviours.Add(component);
-          if (component is Collider) _behaviours.Add(component);
           if (component is IValueProxy) (component as IValueProxy).OnPullValue();
-        }
-
-        switch (audioSourceMode) {
-          case RecordingSelection.Nothing:
-            _audioSources.Clear();
-            break;
-          case RecordingSelection.Specific:
-            _audioSources.Clear();
-            _audioSources.AddRange(specificAudioSources);
-            break;
-        }
-
-        switch (transformMode) {
-          case RecordingSelection.Nothing:
-            _transforms.Clear();
-            _behaviours.Clear();
-            break;
-          case RecordingSelection.Specific:
-            _transforms.Clear();
-            _transforms.AddRange(specificTransforms);
-
-            _behaviours.Clear();
-
-            foreach (var t in _transforms) {
-              t.GetComponents(_tempBehaviour);
-              t.GetComponents(_tempRenderer);
-              t.GetComponents(_tempCollider);
-
-              foreach (var b in _tempBehaviour) {
-                _behaviours.Add(b);
-              }
-              foreach (var b in _tempRenderer) {
-                _behaviours.Add(b);
-              }
-              foreach (var b in _tempCollider) {
-                _behaviours.Add(b);
-              }
-            }
-            break;
-        }
-      }
-
-      using (new ProfilerSample("Discover Audio Sources")) {
-        //Update all audio sources
-        foreach (var source in _audioSources) {
-          RecordedAudio data;
-          if (!_audioData.TryGetValue(source, out data)) {
-            data = source.gameObject.AddComponent<RecordedAudio>();
-            data.target = source;
-            data.recordingStartTime = _startTime;
-            _audioData[source] = data;
-          }
         }
       }
 
@@ -588,24 +540,15 @@ namespace Leap.Unity.Recording {
         }
       }
 
-      using (new ProfilerSample("Discover Transforms")) {
-        //Record ALL transform and gameObject data, no matter what
-        foreach (var transform in _transforms) {
-          if (!_transformData.ContainsKey(transform)) {
-            _transformData[transform] = new List<TransformData>();
-          }
-        }
-      }
-
       using (new ProfilerSample("Record Transform Data")) {
         foreach (var pair in _transformData) {
+          var list = pair.Value;
+          var transform = pair.Key;
+
           //If we have no data for this object BUT we also are not
           //on the first frame of recording, this object must have
           //been spawned, make sure to record a frame with it being
           //disabled right before this
-          var list = pair.Value;
-          var transform = pair.Key;
-
           if (list.Count == 0 && Time.time > _startTime) {
             list.Add(new TransformData() {
               time = Time.time - _startTime - Time.deltaTime,
@@ -623,18 +566,6 @@ namespace Leap.Unity.Recording {
             localRotation = transform.localRotation,
             localScale = transform.localScale
           });
-        }
-      }
-
-      using (new ProfilerSample("Discover Behaviours")) {
-        foreach (var behaviour in _behaviours) {
-          if (behaviour == null || behaviour is PropertyRecorder) {
-            continue;
-          }
-
-          if (!_behaviourActivity.ContainsKey(behaviour)) {
-            _behaviourActivity[behaviour] = new List<ActivityData>();
-          }
         }
       }
 
@@ -660,6 +591,7 @@ namespace Leap.Unity.Recording {
         using (new ProfilerSample("Record Leap Data")) {
           Frame newFrame = new Frame();
           newFrame.CopyFrom(provider.CurrentFrame);
+          newFrame.CurrentFramesPerSecond = 1.0f / Time.smoothDeltaTime;
           newFrame.Timestamp = (long)((Time.time - _startTime) * 1e6);
           newFrame.Id = Time.frameCount - _startFrame;
           _leapData.Add(newFrame);

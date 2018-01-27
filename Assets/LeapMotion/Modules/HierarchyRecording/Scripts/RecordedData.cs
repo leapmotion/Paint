@@ -13,7 +13,6 @@ using UnityEngine;
 
 namespace Leap.Unity.Recording {
 
-  [RecordingFriendly]
   public class RecordedData : MonoBehaviour {
 
     public List<EditorCurveBindingData> data = new List<EditorCurveBindingData>();
