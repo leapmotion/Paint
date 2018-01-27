@@ -496,50 +496,58 @@ namespace Leap.Unity.Recording {
           var component = _components[i];
 
           if (!_initialComponentData.ContainsKey(component)) {
-            using (new ProfilerSample("Handle New Components")) {
+            using (new ProfilerSample("Handle New Component")) {
               _initialComponentData[component] = new SerializedObject(component);
 
               //First time experiencing a gameobject
               if (component is Transform) {
-                var transform = component as Transform;
+                using (new ProfilerSample("Handle New Transform")) {
+                  var transform = component as Transform;
 
-                _transformData[transform] = new List<TransformData>();
+                  _transformData[transform] = new List<TransformData>();
 
-                var parent = transform.parent;
-                if (parent != null) {
-                  var newName = transform.name;
+                  var parent = transform.parent;
+                  if (parent != null) {
+                    var newName = transform.name;
 
-                  for (int j = 0; j < parent.childCount; j++) {
-                    var sibling = parent.GetChild(j);
-                    if (sibling != transform && sibling.name == transform.name) {
-                      transform.name = transform.name + " " + transform.gameObject.GetInstanceID();
-                      break;
+                    for (int j = 0; j < parent.childCount; j++) {
+                      var sibling = parent.GetChild(j);
+                      if (sibling != transform && sibling.name == transform.name) {
+                        transform.name = transform.name + " " + transform.gameObject.GetInstanceID();
+                        break;
+                      }
                     }
                   }
                 }
               }
 
               if (component is AudioSource) {
-                var source = component as AudioSource;
-                var data = source.gameObject.AddComponent<RecordedAudio>();
-                data.target = source;
-                _audioData[source] = data;
+                using (new ProfilerSample("Handle New AudioSource")) {
+                  var source = component as AudioSource;
+                  var data = source.gameObject.AddComponent<RecordedAudio>();
+                  data.target = source;
+                  _audioData[source] = data;
+                }
               }
 
               if (component is PropertyRecorder) {
-                var recorder = component as PropertyRecorder;
-                foreach (var binding in recorder.GetBindings(gameObject)) {
-                  _curves.Add(new CurveData() {
-                    binding = binding,
-                    curve = new AnimationCurve(),
-                    accessor = new PropertyAccessor(gameObject, binding, failureIsZero: true)
-                  });
+                using (new ProfilerSample("Handle New PropertyRecorder")) {
+                  var recorder = component as PropertyRecorder;
+                  foreach (var binding in recorder.GetBindings(gameObject)) {
+                    _curves.Add(new CurveData() {
+                      binding = binding,
+                      curve = new AnimationCurve(),
+                      accessor = new PropertyAccessor(gameObject, binding, failureIsZero: true)
+                    });
+                  }
                 }
               }
 
               if (((component is Behaviour) || (component is Renderer) || (component is Collider)) &&
                   !(component is PropertyRecorder)) {
-                _behaviourActivity[component] = new List<ActivityData>();
+                using (new ProfilerSample("Handle New Behaviour")) {
+                  _behaviourActivity[component] = new List<ActivityData>();
+                }
               }
             }
           }
