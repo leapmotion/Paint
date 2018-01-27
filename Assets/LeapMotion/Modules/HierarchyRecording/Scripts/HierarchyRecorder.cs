@@ -462,9 +462,9 @@ namespace Leap.Unity.Recording {
         postProcessComponent.recordingName = recordingName;
         postProcessComponent.assetFolder = new AssetFolder(finalSubFolder);
 
-        var leapObject = GetComponentInChildren<LeapProvider>().gameObject;
+        var leapObject = myGameObject.GetComponentInChildren<LeapProvider>().gameObject;
         if (leapObject == null) {
-          leapObject = gameObject;
+          leapObject = myGameObject;
         }
 
         var leapDataComponent = leapObject.AddComponent<RecordedLeapData>();
