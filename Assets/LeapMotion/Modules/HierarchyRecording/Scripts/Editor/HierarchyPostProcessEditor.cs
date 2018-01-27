@@ -44,7 +44,7 @@ namespace Leap.Unity.Recording {
       if (_expandComponentTypes) {
         EditorGUI.indentLevel++;
 
-        var components = target.GetComponentsInChildren<Component>().
+        var components = target.GetComponentsInChildren<Component>(includeInactive: true).
                                 Select(c => c.GetType()).
                                 Distinct().
                                 OrderBy(m => m.Name);
@@ -58,7 +58,7 @@ namespace Leap.Unity.Recording {
             EditorGUILayout.PrefixLabel(type.Name);
 
             if (GUILayout.Button("Delete")) {
-              var toDelete = target.GetComponentsInChildren(type);
+              var toDelete = target.GetComponentsInChildren(type, includeInactive: true);
               foreach (var t in toDelete) {
                 Undo.DestroyObjectImmediate(t);
               }
