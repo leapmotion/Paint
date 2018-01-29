@@ -141,64 +141,73 @@ namespace Leap.Unity.Recording {
           autoProxy.autoPushingEnabled = true;
         }
 
-        progress.Begin(1, "", "Reverting Scene State", () => {
+        progress.Begin(3, "", "Reverting Scene State", () => {
           //For all of our transform data, revert to the first piece recorded
-          foreach (var pair in _transformData) {
-            var transform = pair.Key;
-            var data = pair.Value;
+          progress.Begin(_transformData.Count, "", "", () => {
+            foreach (var pair in _transformData) {
+              progress.Step();
+              var transform = pair.Key;
+              var data = pair.Value;
 
-            if (transform == null || data.Count == 0) {
-              continue;
+              if (transform == null || data.Count == 0) {
+                continue;
+              }
+
+              data[0].ApplyTo(transform);
             }
-
-            data[0].ApplyTo(transform);
-          }
+          });
 
           //For all recorded curves, revert to start of curve
-          {
+          progress.Begin(_curves.Count, "", "", () => {
             AnimationClip tempClip = new AnimationClip();
             foreach (var data in _curves) {
+              progress.Step();
               AnimationUtility.SetEditorCurve(tempClip, data.binding, data.curve);
             }
             tempClip.SampleAnimation(gameObject, 0);
-          }
+          });
 
           //For all non-transform components, revert to original serialized values
-          foreach (var pair in _initialComponentData) {
-            var component = pair.Key;
-            var sobj = pair.Value;
+          progress.Begin(_initialComponentData.Count, "", "", () => {
+            foreach (var pair in _initialComponentData) {
+              progress.Step();
+              var component = pair.Key;
+              var sobj = pair.Value;
 
-            if (component == null || component is Transform) {
-              continue;
+              if (component == null || component is Transform) {
+                continue;
+              }
+
+
+              //We don't want to revert method recordings!
+              if (component is MethodRecording ||
+                  component is RecordedData ||
+                  component is RecordedAudio) {
+                continue;
+              }
+
+              var flags = sobj.FindProperty("m_ObjectHideFlags");
+              if (flags == null) {
+                Debug.LogError("Could not find hide flags for " + component);
+                continue;
+              }
+
+              //We have to dirty the serialized object somehow
+              //apparently there is no api to do this
+              //all objects have hide flags so we just touch them and revert them
+              int originalFlags = flags.intValue;
+              flags.intValue = ~originalFlags;
+              flags.intValue = originalFlags;
+
+              try {
+                //Applies previous state of entire component
+                sobj.ApplyModifiedProperties();
+              } catch (Exception e) {
+                Debug.LogError("Exception when trying to apply properties to " + component);
+                Debug.LogException(e);
+              }
             }
-
-
-            //We don't want to revert method recordings!
-            if (component is MethodRecording) {
-              continue;
-            }
-
-            var flags = sobj.FindProperty("m_ObjectHideFlags");
-            if (flags == null) {
-              Debug.LogError("Could not find hide flags for " + component);
-              continue;
-            }
-
-            //We have to dirty the serialized object somehow
-            //apparently there is no api to do this
-            //all objects have hide flags so we just touch them and revert them
-            int originalFlags = flags.intValue;
-            flags.intValue = ~originalFlags;
-            flags.intValue = originalFlags;
-
-            try {
-              //Applies previous state of entire component
-              sobj.ApplyModifiedProperties();
-            } catch (Exception e) {
-              Debug.LogError("Exception when trying to apply properties to " + component);
-              Debug.LogException(e);
-            }
-          }
+          });
         });
 
         progress.Begin(1, "", "Patching Materials: ", () => {
@@ -351,6 +360,7 @@ namespace Leap.Unity.Recording {
         });
 
         progress.Begin(_curves.Count, "", "Compressing Data: ", () => {
+          _curves.Sort((a, b) => a.binding.propertyName.CompareTo(b.binding.propertyName));
           foreach (var data in _curves) {
             EditorCurveBinding binding = data.binding;
             AnimationCurve curve = data.curve;
@@ -442,9 +452,11 @@ namespace Leap.Unity.Recording {
         postProcessComponent.recordingName = recordingName;
         postProcessComponent.assetFolder = new AssetFolder(finalSubFolder);
 
-        var leapObject = myGameObject.GetComponentInChildren<LeapProvider>().gameObject;
-        if (leapObject == null) {
-          leapObject = myGameObject;
+        var leapObject = myGameObject;
+
+        var provider = myGameObject.GetComponentInChildren<LeapProvider>();
+        if (provider != null) {
+          leapObject = provider.gameObject;
         }
 
         var leapDataComponent = leapObject.AddComponent<RecordedLeapData>();
@@ -466,8 +478,10 @@ namespace Leap.Unity.Recording {
         }
       }
 
-      using (new ProfilerSample("Get Components In Hierarchy")) {
-        GetComponentsInChildren(true, _components);
+      using (new ProfilerSample("Search For New Components")) {
+        using (new ProfilerSample("Get Components In Children")) {
+          GetComponentsInChildren(true, _components);
+        }
 
         for (int i = 0; i < _components.Count; i++) {
           var component = _components[i];
@@ -571,15 +585,6 @@ namespace Leap.Unity.Recording {
 
       using (new ProfilerSample("Record Behaviour Activity Data")) {
         foreach (var pair in _behaviourActivity) {
-          //Same logic as above, if this is the first frame for a spawned
-          //object make sure to also record a disabled frame previously
-          if (pair.Value.Count == 0 && Time.time > _startTime) {
-            pair.Value.Add(new ActivityData() {
-              time = Time.time - _startTime - Time.deltaTime,
-              enabled = false
-            });
-          }
-
           pair.Value.Add(new ActivityData() {
             time = Time.time - _startTime,
             enabled = EditorUtility.GetObjectEnabled(pair.Key) == 1
