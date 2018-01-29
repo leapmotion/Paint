@@ -54,14 +54,6 @@ namespace Leap.Unity.Recording {
     protected float _startTime = 0;
     protected int _startFrame = 0;
 
-#if UNITY_EDITOR
-    protected List<Frame> _leapData;
-    protected List<CurveData> _curves;
-    protected Dictionary<AudioSource, RecordedAudio> _audioData;
-    protected Dictionary<Transform, List<TransformData>> _transformData;
-    protected Dictionary<Component, SerializedObject> _initialComponentData;
-    protected Dictionary<Component, List<ActivityData>> _behaviourActivity;
-
     public bool isRecording {
       get { return _isRecording; }
     }
@@ -69,6 +61,14 @@ namespace Leap.Unity.Recording {
     public float recordingTime {
       get { return Time.time - _startTime; }
     }
+
+#if UNITY_EDITOR
+    protected List<Frame> _leapData;
+    protected List<CurveData> _curves;
+    protected Dictionary<AudioSource, RecordedAudio> _audioData;
+    protected Dictionary<Transform, List<TransformData>> _transformData;
+    protected Dictionary<Component, SerializedObject> _initialComponentData;
+    protected Dictionary<Component, List<ActivityData>> _behaviourActivity;
 
     protected void Reset() {
       recordingName = gameObject.name;
