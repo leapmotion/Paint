@@ -14,9 +14,11 @@ using System.Linq;
 using Leap.Unity.GraphicalRenderer;
 
 namespace Leap.Unity.Recording {
+  using Query;
 
   [CustomEditor(typeof(HierarchyPostProcess))]
   public class HierarchyPostProcessEditor : CustomEditorBase<HierarchyPostProcess> {
+    private const string PREF_PREFIX = "HierarchyPostProcess_ShouldDelete_";
 
     private bool _expandComponentTypes = false;
 
@@ -54,24 +56,77 @@ namespace Leap.Unity.Recording {
                                 OrderBy(m => m.Name);
 
         var groups = components.GroupBy(t => t.Namespace).OrderBy(g => g.Key);
+
+        if (GUILayout.Button("Delete All Checked Components", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2))) {
+          foreach (var c in components.Where(t => EditorPrefs.GetBool(getTypePrefKey(t), defaultValue: false)).
+                                       SelectMany(c => target.GetComponentsInChildren(c, includeInactive: true))) {
+            Undo.DestroyObjectImmediate(c);
+          }
+        }
+
         foreach (var group in groups) {
           EditorGUILayout.Space();
-          EditorGUILayout.LabelField(group.Key ?? "Dev", EditorStyles.boldLabel);
-          foreach (var type in group) {
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel(type.Name);
 
-            if (GUILayout.Button("Delete")) {
-              var toDelete = target.GetComponentsInChildren(type, includeInactive: true);
-              foreach (var t in toDelete) {
-                Undo.DestroyObjectImmediate(t);
+          using (new GUILayout.VerticalScope(EditorStyles.helpBox)) {
+            using (new GUILayout.HorizontalScope()) {
+              var uniform = group.Query().
+                                  Select(getTypePrefKey).
+                                  Select(k => EditorPrefs.GetBool(k, defaultValue: false)).
+                                  UniformOrNone();
+
+              bool valueToUse = false;
+              uniform.Match(val => {
+                valueToUse = val;
+              },
+              () => {
+                valueToUse = false;
+                EditorGUI.showMixedValue = true;
+              });
+
+              EditorGUI.BeginChangeCheck();
+              valueToUse = EditorGUILayout.ToggleLeft(group.Key ?? "Dev", valueToUse, EditorStyles.boldLabel);
+              if (EditorGUI.EndChangeCheck()) {
+                foreach (var t in group) {
+                  EditorPrefs.SetBool(getTypePrefKey(t), valueToUse);
+                }
               }
+
+              EditorGUI.showMixedValue = false;
             }
 
-            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+
+            foreach (var type in group) {
+              using (new GUILayout.HorizontalScope()) {
+                string prefKey = getTypePrefKey(type);
+                bool curValue = EditorPrefs.GetBool(prefKey, defaultValue: false);
+
+                EditorGUI.BeginChangeCheck();
+                curValue = EditorGUILayout.ToggleLeft(type.Name, curValue);
+                if (EditorGUI.EndChangeCheck()) {
+                  EditorPrefs.SetBool(prefKey, curValue);
+                }
+
+                if (GUILayout.Button("Select", GUILayout.ExpandWidth(false))) {
+                  Selection.objects = target.GetComponentsInChildren(type, includeInactive: true).Select(t => t.gameObject).ToArray();
+                }
+
+                if (GUILayout.Button("Delete", GUILayout.ExpandWidth(false))) {
+                  var toDelete = target.GetComponentsInChildren(type, includeInactive: true);
+                  foreach (var t in toDelete) {
+                    Undo.DestroyObjectImmediate(t);
+                  }
+                }
+              }
+            }
           }
         }
       }
+    }
+
+    private static string getTypePrefKey(Type type) {
+      return PREF_PREFIX + type.Namespace + "_" + type.Name;
     }
   }
 }
