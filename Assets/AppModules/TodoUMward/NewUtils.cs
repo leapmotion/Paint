@@ -400,7 +400,8 @@ namespace Leap.Unity {
 
       var origColor = drawer.color;
 
-      drawer.DrawWireSphere(Vector3.zero, radius);
+      //drawer.DrawWireSphere(Vector3.zero, radius);
+      drawer.DrawCube(Vector3.zero, Vector3.one * radius * 0.3f);
       drawer.DrawPosition(Vector3.zero, radius * 2);
 
       drawer.color = origColor;
