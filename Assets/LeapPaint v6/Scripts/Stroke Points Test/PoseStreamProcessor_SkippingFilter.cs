@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Leap.Unity {
 
-  public class PoseStreamProcessor_InflectionPointsTest : MonoBehaviour,
+  public class PoseStreamProcessor_SkippingFilter : MonoBehaviour,
                                                           IStreamReceiver<Pose>,
                                                           IStream<Pose> {
 
@@ -21,6 +21,7 @@ namespace Leap.Unity {
 
     public float maxSkipDistance = 0.20f;
     public float maxSkipAngle = 5f;
+    public float maxSkipRotationAngle = 20f;
 
     private Pose? _lastOutputPose = null;
     private List<Pose> _skippedPoses = new List<Pose>();
@@ -59,11 +60,16 @@ namespace Leap.Unity {
           var b = nextPose.position - lastPose.position;
           var angleError = Vector3.Angle(a, b);
 
+          var rotAngleError = Quaternion.Angle(curPose.rotation, nextPose.rotation);
+
           var sqrDistanceSoFar = (a).sqrMagnitude
                                  + (nextPose.position - curPose.position).sqrMagnitude;
 
           if (angleError > sqrDistanceSoFar.Map(0f, maxSkipDistance * maxSkipDistance,
-                                                maxSkipAngle, 0f)) {
+                                                maxSkipAngle, 0f)
+              || rotAngleError > sqrDistanceSoFar.Map(0f,
+                                                      maxSkipDistance * maxSkipDistance,
+                                                      maxSkipRotationAngle, 0f)) {
             outputPose = curPose; // note that this is not the input pose,
                                   // but a previously skipped pose.
             _skippedPoses.Clear(); // Clear the other (previous) skipped poses.

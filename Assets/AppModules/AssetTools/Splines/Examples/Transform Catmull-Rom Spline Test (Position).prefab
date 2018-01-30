@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 4117598410970854}
   - component: {fileID: 114132696713290106}
   m_Layer: 0
-  m_Name: Transform Catmull-Rom Spline Test
+  m_Name: Transform Catmull-Rom Spline Test (Position)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -347,6 +347,8 @@ MonoBehaviour:
   B: {fileID: 4495987249833176}
   C: {fileID: 4796648982682386}
   D: {fileID: 4519621345442862}
+  poseEvaluationObj: {fileID: 0}
+  fullPoseSpline: 0
   color: {r: 0.4705882, g: 0.21107265, b: 0.3775207, a: 1}
 --- !u!135 &135016292502064908
 SphereCollider:

@@ -14,6 +14,7 @@ namespace Leap.Unity {
     public GameObject thePrefab;
 
     private void Go() {
+      #if UNITY_EDITOR
       var children = this.gameObject.transform.GetSelfAndAllChildren()
                                     .Query()
                                     .Where(t => t.name.Contains("Spline Pose Point"))
@@ -33,6 +34,7 @@ namespace Leap.Unity {
         clone.transform.SetWorldPose(pose);
         clone.gameObject.name = "Test Spline Pose Point (" + number + ")";
       }
+      #endif
     }
 
   }

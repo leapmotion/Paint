@@ -39,8 +39,8 @@ namespace Leap.Unity.Animation {
     }
 
     public void PoseAndMovementAt(float t, out Pose pose, out Movement movement) {
-      var minT = splines[0].t0;
-      var maxT = splines[splines.Length - 1].t1;
+      var minT = splines[0].minT;
+      var maxT = splines[splines.Length - 1].maxT;
 
       pose = Pose.identity;
       movement = Movement.identity;
@@ -73,7 +73,7 @@ namespace Leap.Unity.Animation {
       }
 
       foreach (var spline in splines) {
-        if (t >= spline.t0 && t <= spline.t1) {
+        if (t >= spline.minT && t <= spline.maxT) {
           pose = spline.PoseAt(t);
           movement = spline.MovementAt(t);
           return;
@@ -91,7 +91,7 @@ namespace Leap.Unity.Animation {
           return 0;
         }
         else {
-          return splines[0].t0;
+          return splines[0].minT;
         }
       }
     }
@@ -102,7 +102,7 @@ namespace Leap.Unity.Animation {
           return 0;
         }
         else {
-          return splines[splines.Length - 1].t1;
+          return splines[splines.Length - 1].maxT;
         }
       }
     }

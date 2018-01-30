@@ -14,10 +14,9 @@ using UnityEngine;
 namespace Leap.Unity.Animation {
 
   /// <summary>
-  /// Represents a spline for poses -- positions and rotations -- that travel from one
-  /// position and rotation in space to another over a specified time frame.  The two
-  /// endpoints are specified, as well as the instantaneous velocity and angular velocity
-  /// at those two endpoints.
+  /// Represents a spline for the rotation of a rigid body from one orientation in space
+  /// to another over a specified time frame.  The two endpoints are specified, as well
+  /// as the instantaneous angular velocity at those two endpoints.
   /// 
   /// You may ask for the position, rotation, velocity, or angular velocity at any time
   /// along the spline's duration.

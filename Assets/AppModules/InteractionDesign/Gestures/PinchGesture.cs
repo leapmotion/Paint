@@ -17,7 +17,7 @@ namespace Leap.Unity.Gestures {
 
     [DevGui.DevCategory("Pinch Heuristic")]
     [DevGui.DevValue]
-    public bool useVelocities = true;
+    public bool useVelocities = false;
 
     #region Safety Checks (Pinky Checks)
 
@@ -67,13 +67,13 @@ namespace Leap.Unity.Gestures {
     [DevGui.DevValue]
     [Range(-20f, 30f)]
     [DisableIf("requireMiddleFingerAngle", isEqualTo: false)]
-    public float minSignedMiddleIndexAngle = 5f;
+    public float minSignedMiddleIndexAngle = -20f;
 
     [DevGui.DevCategory(MIDDLE_SAFETY_CATEGORY)]
     [DevGui.DevValue]
     [Range(0f, 90f)]
     [DisableIf("requireMiddleFingerAngle", isEqualTo: false)]
-    public float minPalmMiddleAngle = 60f;
+    public float minPalmMiddleAngle = 65f;
 
     #endregion
 
@@ -89,13 +89,13 @@ namespace Leap.Unity.Gestures {
     [DevGui.DevValue]
     [Range(-20f, 30f)]
     [DisableIf("requireRingFingerAngle", isEqualTo: false)]
-    public float minSignedRingIndexAngle = 5f;
+    public float minSignedRingIndexAngle = -20f;
 
     [DevGui.DevCategory(RING_SAFETY_CATEGORY)]
     [DevGui.DevValue]
     [Range(0f, 90f)]
     [DisableIf("requireRingFingerAngle", isEqualTo: false)]
-    public float minPalmRingAngle = 70f;
+    public float minPalmRingAngle = 75f;
 
     #endregion
 

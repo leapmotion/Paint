@@ -8,10 +8,15 @@ namespace Leap.Unity.Splines {
 
   public class TransformCatmullRomSpline : MonoBehaviour, IRuntimeGizmoComponent {
 
+    private const int RESOLUTION = 12;
+
     public Transform A;
     public Transform B;
     public Transform C;
     public Transform D;
+
+    public GameObject poseEvaluationObj = null;
+    private GameObject[] _evalObjCopies = new GameObject[RESOLUTION + 1];
 
     public bool fullPoseSpline = false;
 
@@ -30,6 +35,26 @@ namespace Leap.Unity.Splines {
         _spline = CatmullRom.ToCHS(a.position, b.position, c.position, d.position);
         _qSpline = CatmullRom.ToQuaternionCHS(a.rotation, b.rotation,
                                               c.rotation, d.rotation);
+
+        if (poseEvaluationObj != null) {
+          float incr = 1f / RESOLUTION;
+          var t = 0f;
+          _evalObjCopies[0] = poseEvaluationObj;
+          for (int i = 0; i <= RESOLUTION; i++) {
+            var obj = _evalObjCopies[i];
+
+            if (obj == null) {
+              obj = Instantiate(poseEvaluationObj);
+              obj.transform.parent = poseEvaluationObj.transform.parent;
+              _evalObjCopies[i] = obj;
+            }
+
+            obj.transform.position = _spline.Value.PositionAt(t);
+            obj.transform.rotation = _qSpline.Value.RotationAt(t);
+
+            t += incr;
+          }
+        }
       }
     }
     
@@ -38,7 +63,7 @@ namespace Leap.Unity.Splines {
 
       if (!_spline.HasValue || (fullPoseSpline && !_qSpline.HasValue)) return;
 
-      int resolution = 32;
+      int resolution = 16;
       float incr = 1f / resolution;
       Vector3? lastPos = null;
       for (float t = 0; t <= 1f; t += incr) {

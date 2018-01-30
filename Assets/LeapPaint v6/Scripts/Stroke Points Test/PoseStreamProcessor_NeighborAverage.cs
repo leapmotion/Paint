@@ -44,22 +44,31 @@ namespace Leap.Unity {
       if (buffer.IsFull) {
         if (bufferWasNotFull) {
           for (int i = 0; i < buffer.Length / 2; i++) {
-            OnSend(new Pose(getAverage(0, i)));
+            OnSend(getAverage(0, i));
           }
         }
 
-        OnSend(new Pose(getAverage(0, buffer.Length)));
+        OnSend(getAverage(0, buffer.Length));
       }
     }
 
-    private Vector3 getAverage(int start, int end) {
-      if (start == end) return buffer.Get(start).position;
+    private Pose getAverage(int start, int end) {
+      if (start == end) return buffer.Get(start);
 
       var sum = Vector3.zero;
       for (int i = start; i < end; i++) {
         sum += buffer.Get(i).position;
       }
-      return sum / (end - start);
+      var avgPos = sum / (end - start);
+
+      // Try a fractionally-slerped accumulation for "averaging" the rotations.
+      var rot = buffer.Get(start).rotation;
+      var div = 1 / (end - start);
+      for (int i = start + 1; i < end; i++) {
+        rot = Quaternion.Slerp(rot, buffer.Get(i).rotation, div);
+      }
+
+      return new Pose(avgPos, rot);
     }
 
     public void Close() {
