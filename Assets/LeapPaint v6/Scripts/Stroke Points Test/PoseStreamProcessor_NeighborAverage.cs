@@ -43,7 +43,7 @@ namespace Leap.Unity {
 
       if (buffer.IsFull) {
         if (bufferWasNotFull) {
-          for (int i = 0; i < buffer.Length / 2; i++) {
+          for (int i = 1; i < buffer.Length; i += 2) {
             OnSend(getAverage(0, i));
           }
         }

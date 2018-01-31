@@ -24,10 +24,10 @@ namespace Leap.Unity.Drawing {
     [Header("Stroke Generator")]
 
     [SerializeField]
-    [ImplementsInterface(typeof(IStrokeGenerator))]
+    [ImplementsInterface(typeof(IStreamReceiver<StrokePoint>))]
     private MonoBehaviour _strokeGenerator;
-    public IStrokeGenerator strokeGenerator {
-      get { return _strokeGenerator as IStrokeGenerator; }
+    public IStreamReceiver<StrokePoint> strokeGenerator {
+      get { return _strokeGenerator as IStreamReceiver<StrokePoint>; }
       set { _strokeGenerator = value as MonoBehaviour; }
     }
 
@@ -43,7 +43,7 @@ namespace Leap.Unity.Drawing {
         _shouldUpdateBrush = true;
         _maybeLastPose = Maybe.None;
 
-        strokeGenerator.Initialize();
+        strokeGenerator.Open();
 
         _didBrushingBegin = false;
       }
@@ -52,23 +52,25 @@ namespace Leap.Unity.Drawing {
         var targetPose = pose;
 
         var effPosition = targetPose.position;
-        var effRotation = targetPose.rotation;
+        //var effRotation = targetPose.rotation;
 
         if (_maybeLastPose.hasValue) {
           if (Vector3.Distance(_maybeLastPose.valueOrDefault.position,
                                effPosition) > MIN_BRUSH_DISTANCE) {
-            strokeGenerator.AddPoint(effPosition,
-                                     effRotation * Vector3.up,
-                                     color,
-                                     size);
+            strokeGenerator.Receive(new StrokePoint() {
+              pose = pose,
+              color = color,
+              size = size
+            });
             _maybeLastPose = pose;
           }
         }
         else {
-          strokeGenerator.AddPoint(effPosition,
-                                   effRotation * Vector3.up,
-                                   color,
-                                   size);
+          strokeGenerator.Receive(new StrokePoint() {
+            pose = pose,
+            color = color,
+            size = size
+          });
           _maybeLastPose = pose;
         }
 
@@ -78,7 +80,7 @@ namespace Leap.Unity.Drawing {
         _shouldUpdateBrush = false;
         _maybeLastPose = Maybe.None;
 
-        strokeGenerator.Finish();
+        strokeGenerator.Close();
 
         _didBrushingEnd = false;
       }

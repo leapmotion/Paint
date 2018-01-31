@@ -124,6 +124,8 @@ namespace Leap.Unity {
     }
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      if (!this.enabled || !this.gameObject.activeInHierarchy) return;
+
       drawer.color = LeapColor.white;
 
       for (int i = 0; i < thumbPoints.Count; i++) {

@@ -115,7 +115,7 @@ namespace Leap.Unity.Drawing {
           var aP = stroke[i + 0];
           var bP = stroke[i + 1];
 
-          var n = aP.normal;                              // normal
+          var n = aP.rotation * Vector3.up;               // normal
           var t = (bP.position - aP.position).normalized; // tangent (not normalized)
           var b = Vector3.Cross(t, n).normalized;         // binormal
           n = Vector3.Cross(b, t).normalized;

@@ -61,6 +61,8 @@ namespace Leap.Unity.Meshing {
     /// Creates a new quadrilateral Polygon with Pooled vertex indices. Use indices that
     /// index into the positions of a PolyMesh, then add the Polygon to that PolyMesh via
     /// AddPolygon.
+    /// 
+    /// Polygons are always assumed to have coplanar vertices.
     /// </summary>
     public static Polygon SpawnQuad(int a, int b, int c, int d) {
       Polygon polygon = new Polygon();

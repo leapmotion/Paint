@@ -1,10 +1,11 @@
-﻿using Leap.Unity.Attributes;
+﻿using System;
+using Leap.Unity.Attributes;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Leap.Unity.Gestures {
 
-  public class PinchGesture : OneHandedGesture, IPoseGesture {
+  public class PinchGesture : OneHandedGesture, IPoseGesture, IStream<Pose> {
 
     // TODO: Incorporate intention system for exclusivity
     //[Header("Intention System")]
@@ -117,7 +118,7 @@ namespace Leap.Unity.Gestures {
     public Color readyColor = Color.Lerp(LeapColor.lime, LeapColor.red, 0.3f);
     public Color inactiveColor = LeapColor.red;
     public Material feedbackMaterial = null;
-    
+
     private Pose _lastPinchPose = Pose.identity;
 
     [Header("General Feedback")]
@@ -507,11 +508,11 @@ namespace Leap.Unity.Gestures {
             if (   // Absolute pinch strength.
                    (latestPinchStrength > 0.8f)
 
-                   // Pinch strength velocity.
+                // Pinch strength velocity.
                 && ((pinchStrengthVelocity > pinchActivateVelocity)
                     || !useVelocities)
 
-                    // Pinky-style safety pinch (+ optional velocity constraints).
+                // Pinky-style safety pinch (+ optional velocity constraints).
                 && (isSafetyActivationSatisfied()
                     || !requirePinkySafetyPinch)
                 && (pinkyCurlSample < maxPinkyCurl
@@ -521,7 +522,7 @@ namespace Leap.Unity.Gestures {
                 && (indexCurlVel > minIndexCurlVel
                     || !useVelocities || !requirePinkySafetyPinch)
 
-                    // Middle-style safety pinch (no velocities).
+                // Middle-style safety pinch (no velocities).
                 && (signedMiddleIndexAngle >= minSignedMiddleIndexAngle
                     || !requireMiddleFingerAngle)
                 && (signedMiddlePalmAngle >= minPalmMiddleAngle
@@ -536,7 +537,7 @@ namespace Leap.Unity.Gestures {
                 // FOV.
                 && (handWithinFOV)
 
-                    // Must cross pinch threshold from a non-pinching / non-fist pose.
+                // Must cross pinch threshold from a non-pinching / non-fist pose.
                 && (!requiresRepinch)) {
 
               shouldActivate = true;
@@ -616,16 +617,28 @@ namespace Leap.Unity.Gestures {
 
       return shouldDeactivate;
     }
+    // TODO: OneHandedGesture should implement IPoseGesture AND IStream<Pose> by default!
+
+    protected override void WhenGestureActivated(Hand hand) {
+      base.WhenGestureActivated(hand);
+
+      OnOpen();
+    }
 
     protected override void WhileGestureActive(Hand hand) {
       if (_drawDebugPath) {
         DebugPing.Ping(hand.GetPredictedPinchPosition(), LeapColor.amber, 0.05f);
       }
+
+      // TODO: Make this a part of OneHandedGesture so this doesn't have to be explicit!
+      OnSend(this.pose);
     }
 
     protected override void WhenGestureDeactivated(Hand maybeNullHand,
                                                    DeactivationReason reason) {
       pinchStrengthBuffer.Clear();
+
+      OnClose();
     }
 
     protected override void WhileHandTracked(Hand hand) {
@@ -633,7 +646,7 @@ namespace Leap.Unity.Gestures {
         position = hand.GetPredictedPinchPosition(),
         rotation = hand.Rotation.ToQuaternion()
       };
-      
+
       var lookingDownWrist = Vector3.Angle(hand.DistalAxis(),
          hand.PalmPosition.ToVector3() - Camera.main.transform.position) < 25f;
       if (lookingDownWrist) {
@@ -653,6 +666,14 @@ namespace Leap.Unity.Gestures {
         return _lastPinchPose;
       }
     }
+
+    #endregion
+
+    #region IStream<Pose>
+
+    public event Action OnOpen = () => { };
+    public event Action<Pose> OnSend = (pose) => { };
+    public event Action OnClose = () => { };
 
     #endregion
 
