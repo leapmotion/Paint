@@ -40,7 +40,7 @@ namespace Leap.Unity.Drawing {
       _curStrokeObject = null;
     }
 
-    #region IStrokeGenerator
+    #region IStreamReceiver<StrokePoint>
 
     public void Open() {
       if (!Application.isPlaying) return;

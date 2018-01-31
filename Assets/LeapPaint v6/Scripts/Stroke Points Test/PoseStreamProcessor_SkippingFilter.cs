@@ -19,6 +19,7 @@ namespace Leap.Unity {
 
     #region IStreamReceiver<Pose> Implementation
 
+    public float alwaysSkipDistance = 0.01f;
     public float maxSkipDistance = 0.20f;
     public float maxSkipAngle = 5f;
     public float maxSkipRotationAngle = 20f;
@@ -46,6 +47,7 @@ namespace Leap.Unity {
       else {
         // Should we skip this pose?
         bool skipThisPose = false;
+        bool rememberSkippedPose = true;
 
         if (_skippedPoses.Count == 0) {
           // Always skip a pose when there are no other skipped poses to compare it to.
@@ -58,34 +60,41 @@ namespace Leap.Unity {
 
           var a = curPose.position - lastPose.position;
           var b = nextPose.position - lastPose.position;
-          var angleError = Vector3.Angle(a, b);
 
-          var rotAngleError = Quaternion.Angle(curPose.rotation, nextPose.rotation);
-
-          var sqrDistanceSoFar = (a).sqrMagnitude
-                                 + (nextPose.position - curPose.position).sqrMagnitude;
-
-          if (angleError > sqrDistanceSoFar.Map(0f, maxSkipDistance * maxSkipDistance,
-                                                maxSkipAngle, 0f)
-              || rotAngleError > sqrDistanceSoFar.Map(0f,
-                                                      maxSkipDistance * maxSkipDistance,
-                                                      maxSkipRotationAngle, 0f)) {
-            outputPose = curPose; // note that this is not the input pose,
-                                  // but a previously skipped pose.
-            _skippedPoses.Clear(); // Clear the other (previous) skipped poses.
+          var sqrDistAB = (b - a).sqrMagnitude;
+          if (sqrDistAB < alwaysSkipDistance * alwaysSkipDistance) {
             skipThisPose = true;
+            rememberSkippedPose = false;
           }
           else {
-            if (sqrDistanceSoFar > maxSkipDistance * maxSkipDistance) {
-              outputPose = curPose;
-              _skippedPoses.Clear();
+            var angleError = Vector3.Angle(a, b);
+
+            var rotAngleError = Quaternion.Angle(curPose.rotation, nextPose.rotation);
+
+            var sqrDistanceSoFar = (a).sqrMagnitude
+                                 + (nextPose.position - curPose.position).sqrMagnitude;
+
+            if (angleError > sqrDistanceSoFar.Map(0f, maxSkipDistance * maxSkipDistance,
+                                                  maxSkipAngle, 0f)
+                || rotAngleError > sqrDistanceSoFar.Map(0f,
+                                                        maxSkipDistance * maxSkipDistance,
+                                                        maxSkipRotationAngle, 0f)) {
+              outputPose = curPose; // note that this is not the input pose,
+                                    // but a previously skipped pose.
+              _skippedPoses.Clear(); // Clear the other (previous) skipped poses.
               skipThisPose = true;
+            }
+            else {
+              if (sqrDistanceSoFar > maxSkipDistance * maxSkipDistance) {
+                outputPose = curPose;
+                _skippedPoses.Clear();
+                skipThisPose = true;
+              }
             }
           }
         }
-
-        // Remember any poses we skip.
-        if (skipThisPose) {
+        
+        if (skipThisPose && rememberSkippedPose) {
           _skippedPoses.Add(pose);
         }
       }
