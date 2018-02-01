@@ -142,6 +142,9 @@ namespace Leap.Unity.Streams {
       if (!this.enabled || !this.gameObject.activeInHierarchy) return;
 
       if (_stream != null && _receiver != null) {
+        // No wire to render if the stream and receiver components are on the same object.
+        if (_stream.gameObject == _receiver.gameObject) return;
+
         drawer.color = LeapColor.white.WithAlpha(0.3f);
 
         var a = _stream.transform.position;

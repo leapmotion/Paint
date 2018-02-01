@@ -18,6 +18,11 @@ namespace Leap.Unity.Gestures {
   public abstract class OneHandedGesture : Gesture {
 
     /// <summary>
+    /// What LeapProvider should be used to get hand data?
+    /// </summary>
+    public LeapProvider provider = null;
+
+    /// <summary>
     /// Which hand does the gesture apply to? If either hand can perform the
     /// gesture, create an instance for each hand.
     /// </summary>
@@ -175,12 +180,23 @@ namespace Leap.Unity.Gestures {
     #region Base Implementation (Unity Callbacks)
 
     private bool _isActive = false;
+    private bool _isHandTracked = false;
     private bool _wasHandTracked = false;
     
     protected bool _wasActivated = false;
     protected bool _wasDeactivated = false;
     protected bool _wasCancelled = false;
     protected bool _wasFinished = false;
+
+    public bool isHandTracked { get { return _isHandTracked; } }
+    
+    public override bool isEligible {
+      get { return _isHandTracked; }
+    }
+
+    protected virtual void Reset() {
+      if (provider == null) provider = Hands.Provider;
+    }
 
     protected virtual void OnDisable() {
       if (_isActive) {
@@ -190,16 +206,27 @@ namespace Leap.Unity.Gestures {
       }
     }
 
+    protected virtual void Start() {
+      if (provider == null) provider = Hands.Provider;
+    }
+
     protected virtual void Update() {
+      if (provider == null) {
+        Debug.LogError("No provider set for " + this.GetType().Name
+          + " in " + this.name + "; you should sure that there is a LeapProvider in "
+          + "your scene and that this component has a LeapProvider reference.", this);
+        this.enabled = false;
+      }
+
       _wasActivated = false;
       _wasDeactivated = false;
       _wasCancelled = false;
       _wasFinished = false;
 
-      var hand = Hands.Get(whichHand);
+      var hand = provider.Get(whichHand);
 
       // Determine the tracked state of hands and fire appropriate methods.
-      bool isHandTracked = hand != null;
+      _isHandTracked = hand != null;
 
       if (isHandTracked != _wasHandTracked) {
         if (isHandTracked) {

@@ -100,6 +100,22 @@ namespace Leap.Unity.Gestures {
 
     #endregion
 
+    #region Palm Vs Leap Angle
+    
+    private const string PALM_ANGLE_CATEGORY = "Palm Normal Angle";
+
+    [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
+    [DevGui.DevValue]
+    public bool requirePalmVsLeapAngle = true;
+
+    [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
+    [DevGui.DevValue]
+    [Range(10f, 180f)]
+    [DisableIf("requirePalmVsLeapAngle", isEqualTo: false)]
+    public float maxPalmVsLeapAngle = 100f;
+
+    #endregion
+
     #region Deactivation
 
     [Header("Deactivation")]
@@ -351,8 +367,17 @@ namespace Leap.Unity.Gestures {
 
     private bool requiresRepinch = false;
 
+    private bool _isGestureEligible = false;
+    public override bool isEligible {
+      get {
+        return base.isEligible && (isActive || _isGestureEligible);
+      }
+    }
+
     protected override bool ShouldGestureActivate(Hand hand) {
       bool shouldActivate = false;
+
+      _isGestureEligible = false;
 
       updateSafetyPinch(hand);
 
@@ -474,9 +499,6 @@ namespace Leap.Unity.Gestures {
 
             #endregion
 
-
-
-
             #region Ring Finger Safety
 
             var ringDir = hand.GetRing().bones[1].Direction.ToVector3();
@@ -504,23 +526,21 @@ namespace Leap.Unity.Gestures {
 
             #endregion
 
+            #region Palm-Facing Eligibility
+            
+            var palmNormalCameraAngle = Vector3.Angle(hand.PalmarAxis(),
+                                                      provider.transform.forward);
 
-            if (   // Absolute pinch strength.
-                   (latestPinchStrength > 0.8f)
+            #endregion
 
-                // Pinch strength velocity.
-                && ((pinchStrengthVelocity > pinchActivateVelocity)
-                    || !useVelocities)
-
-                // Pinky-style safety pinch (+ optional velocity constraints).
-                && (isSafetyActivationSatisfied()
+            // Eligibility.
+            if (
+              
+                // Pinky-style safety pinch
+                   (isSafetyActivationSatisfied()
                     || !requirePinkySafetyPinch)
                 && (pinkyCurlSample < maxPinkyCurl
                     || !requirePinkySafetyPinch)
-                && (indexMinusPinkyCurlVel > minIndexMinusPinkyCurlVel
-                    || !useVelocities || !requirePinkySafetyPinch)
-                && (indexCurlVel > minIndexCurlVel
-                    || !useVelocities || !requirePinkySafetyPinch)
 
                 // Middle-style safety pinch (no velocities).
                 && (signedMiddleIndexAngle >= minSignedMiddleIndexAngle
@@ -534,20 +554,47 @@ namespace Leap.Unity.Gestures {
                 && (signedRingPalmAngle >= minPalmRingAngle
                     || !requireRingFingerAngle)
 
+                // Palm normal vs Leap provider angle.
+                && (palmNormalCameraAngle <= maxPalmVsLeapAngle
+                    || !requirePalmVsLeapAngle)
+
                 // FOV.
                 && (handWithinFOV)
 
                 // Must cross pinch threshold from a non-pinching / non-fist pose.
-                && (!requiresRepinch)) {
+                && (!requiresRepinch)
+                
+                ) {
+              _isGestureEligible = true;
+            }
 
+            if (_isGestureEligible
+
+                // Absolute pinch strength.
+                && (latestPinchStrength > 0.8f)
+
+                // Pinch strength velocity.
+                && ((pinchStrengthVelocity > pinchActivateVelocity)
+                    || !useVelocities)
+
+                // (Pinky velocity constraints.)
+                && (indexMinusPinkyCurlVel > minIndexMinusPinkyCurlVel
+                    || !useVelocities || !requirePinkySafetyPinch)
+                && (indexCurlVel > minIndexCurlVel
+                    || !useVelocities || !requirePinkySafetyPinch)
+                    
+                    ) {
               shouldActivate = true;
-
-              if (feedbackMaterial != null) {
-                feedbackMaterial.color = activeColor;
-              }
-
+              
               if (_drawDebug) {
                 DebugPing.Ping(hand.GetPredictedPinchPosition(), Color.red, 0.20f);
+              }
+            }
+            else {
+              if (_isGestureEligible) {
+                if (feedbackMaterial != null) {
+                  feedbackMaterial.color = activeColor;
+                }
               }
             }
 
