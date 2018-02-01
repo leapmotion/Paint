@@ -31,6 +31,9 @@ namespace Leap.Unity {
     [DisableIf("doCanvasAlignment", isEqualTo: false)]
     public float maximumAlignmentAngleFromY = 90f;
 
+    [Range(0f, 20f)]
+    public float maxSegmentAngleToAlign = 5f;
+
     private void OnValidate() {
       if (minimumAlignmentAngleFromY > maximumAlignmentAngleFromY) {
         maximumAlignmentAngleFromY = minimumAlignmentAngleFromY;
@@ -107,11 +110,19 @@ namespace Leap.Unity {
                                                       ribbonForward);
 
           var alignmentStrengthParam = Mathf.Abs(ribbonCanvasAngle)
-                                              .Map(minimumAlignmentAngleFromY,
-                                                   maximumAlignmentAngleFromY,
+                                              .Map(maximumAlignmentAngleFromY,
+                                                   minimumAlignmentAngleFromY,
                                                    0f, 1f);
           var alignmentStrength = alignmentStrengthCurve.Evaluate(alignmentStrengthParam);
           var aligningAngle = alignmentStrength * ribbonCanvasAngle;
+
+          // Limit canvas alignment based on how much the pitch is currently changing.
+          var right = a.rotation * Vector3.right;
+          var forward = a.rotation * Vector3.forward;
+          var bc = (c.position - b.position);
+          var bc_pitchProjection = Vector3.ProjectOnPlane(bc, right);
+          var pitchAngle = Vector3.Angle(forward, bc_pitchProjection);
+          alignmentStrength *= pitchAngle.Map(0f, maxSegmentAngleToAlign, 1f, 0f);
 
           var abDistInCM = (b.position - a.position).magnitude * 100f;
           var maxAngleCorrection = abDistInCM * maxAlignmentAnglePerCentimeter

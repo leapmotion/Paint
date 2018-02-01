@@ -76,8 +76,11 @@ namespace Leap.Unity.Streams {
 
     #endregion
 
+    public bool drawWire = true;
+
     [OnEditorChange("ResetConnection")]
     public bool debugWire = false;
+
 
     protected void ResetConnection() {
       OnDisable();
@@ -145,11 +148,13 @@ namespace Leap.Unity.Streams {
         // No wire to render if the stream and receiver components are on the same object.
         if (_stream.gameObject == _receiver.gameObject) return;
 
-        drawer.color = LeapColor.white.WithAlpha(0.3f);
-
         var a = _stream.transform.position;
         var b = _receiver.transform.position;
-        drawer.DrawLine(a, b);
+
+        if (drawWire) {
+          drawer.color = LeapColor.white.WithAlpha(0.3f);
+          drawer.DrawLine(a, b);
+        }
 
         if (debugWire) {
           drawer.color = LeapColor.magenta.Lerp(LeapColor.white, 0.4f);

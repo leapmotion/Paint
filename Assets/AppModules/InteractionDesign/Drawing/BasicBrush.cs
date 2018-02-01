@@ -60,7 +60,7 @@ namespace Leap.Unity.Drawing {
             strokeGenerator.Receive(new StrokePoint() {
               pose = pose,
               color = color,
-              size = size
+              radius = size
             });
             _maybeLastPose = pose;
           }
@@ -69,7 +69,7 @@ namespace Leap.Unity.Drawing {
           strokeGenerator.Receive(new StrokePoint() {
             pose = pose,
             color = color,
-            size = size
+            radius = size
           });
           _maybeLastPose = pose;
         }

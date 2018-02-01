@@ -32,7 +32,7 @@ namespace Leap.Unity.Drawing {
     }
 
     [Header("Brush Settings")]
-    public float size = 0.05f;
+    public float radius = 0.05f;
     public Color color = Color.white;
 
     [Header("Brush Tip (Optional)")]
@@ -51,7 +51,7 @@ namespace Leap.Unity.Drawing {
     }
     public Pose GetLeftEdgePose(Pose brushPose) {
       var tipPose = GetTipPose(brushPose);
-      var edgePosition = tipPose.position + tipPose.rotation * -Vector3.right * size;
+      var edgePosition = tipPose.position + tipPose.rotation * -Vector3.right * radius;
       return new Pose(edgePosition, tipPose.rotation);
     }
 
@@ -60,7 +60,7 @@ namespace Leap.Unity.Drawing {
     }
     public Pose GetRightEdgePose(Pose brushPose) {
       var tipPose = GetTipPose(brushPose);
-      var edgePosition = tipPose.position + tipPose.rotation * -Vector3.right * size;
+      var edgePosition = tipPose.position + tipPose.rotation * -Vector3.right * radius;
       return new Pose(edgePosition, tipPose.rotation);
     }
 
@@ -88,21 +88,6 @@ namespace Leap.Unity.Drawing {
     }
 
     protected virtual void Update() {
-      if (activationGesture.wasActivated) {
-        OnOpen();
-      }
-
-      if (activationGesture.isActive) {
-        var strokePoint = new StrokePoint() {
-          pose = GetTipPose(),
-          size = size,
-          color = color
-        };
-      }
-
-      if (activationGesture.wasDeactivated) {
-        OnClose();
-      }
 
       if (eligibilitySwitch != null && activationGesture != null) {
         var shouldBeOn = activationGesture.isEligible;
@@ -113,6 +98,7 @@ namespace Leap.Unity.Drawing {
           eligibilitySwitch.On();
         }
       }
+
     }
 
     #endregion
@@ -122,6 +108,8 @@ namespace Leap.Unity.Drawing {
     public event Action OnOpen  = () => { };
     public event Action<StrokePoint> OnSend = (strokePoint) => { };
     public event Action OnClose = () => { };
+
+    private bool _isStreamOpen = false;
 
     #endregion
 
@@ -135,13 +123,34 @@ namespace Leap.Unity.Drawing {
 
     public override void Receive(Pose data) {
       base.Receive(data);
-      
-      _debugPoseBuffer.Add(GetTipPose(data));
-      if (activationGesture == null) {
-        _debugActivatedBuffer.Add(false);
+
+      bool shouldBePainting = false;
+      if (this.enabled && this.gameObject.activeInHierarchy) {
+        shouldBePainting = activationGesture != null && activationGesture.isActive;
+
+        /* Debug */ { 
+          var tipPose = GetTipPose(data);
+          _debugPoseBuffer.Add(tipPose);
+          _debugActivatedBuffer.Add(shouldBePainting);
+        }
       }
-      else {
-        _debugActivatedBuffer.Add(activationGesture.isActive);
+
+      if (shouldBePainting) {
+        if (!_isStreamOpen) {
+          OnOpen();
+          _isStreamOpen = true;
+        }
+
+        var tipPose = GetTipPose(data);
+        OnSend(new StrokePoint() {
+          pose = tipPose,
+          radius = radius,
+          color = color
+        });
+      }
+      else if (_isStreamOpen) {
+        OnClose();
+        _isStreamOpen = false;
       }
     }
 
@@ -170,13 +179,13 @@ namespace Leap.Unity.Drawing {
         var pose = _debugPoseBuffer.Get(i);
         var isActive = _debugActivatedBuffer.Get(i);
 
-        var a = pose.position + pose.rotation * Vector3.right * size / 2f;
-        var b = pose.position - pose.rotation * Vector3.right * size / 2f;
+        var a = pose.position + pose.rotation * Vector3.right * radius;
+        var b = pose.position - pose.rotation * Vector3.right * radius;
 
         var multiplier = 1f;
         if (isActive) multiplier = 2.5f;
 
-        if (isActive || drawDebugIdlePaths) {
+        if (isActive || drawDebugIdlePaths || !Application.isPlaying) {
           drawer.DrawPose(new Pose(a, pose.rotation), poseRadius * multiplier);
           drawer.DrawPose(new Pose(b, pose.rotation), poseRadius * multiplier);
         }

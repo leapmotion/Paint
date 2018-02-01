@@ -6,7 +6,7 @@ namespace Leap.Unity.Drawing {
   public struct StrokePoint {
     public Pose  pose;
     public Color color;
-    public float size;
+    public float radius;
 
     public Vector3 position { get { return pose.position; } }
     public Quaternion rotation { get { return pose.rotation; } }

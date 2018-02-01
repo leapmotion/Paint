@@ -462,6 +462,26 @@ namespace Leap.Unity {
 
     #endregion
 
+    #region List Utils
+
+    public static void Add<T>(this List<T> list, T t0, T t1) {
+      list.Add(t0);
+      list.Add(t1);
+    }
+    public static void Add<T>(this List<T> list, T t0, T t1, T t2) {
+      list.Add(t0);
+      list.Add(t1);
+      list.Add(t2);
+    }
+    public static void Add<T>(this List<T> list, T t0, T t1, T t2, T t3) {
+      list.Add(t0);
+      list.Add(t1);
+      list.Add(t2);
+      list.Add(t3);
+    }
+
+    #endregion
+
   }
 
   #region Grids

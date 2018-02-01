@@ -110,9 +110,25 @@ namespace Leap.Unity.Gestures {
 
     [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
     [DevGui.DevValue]
-    [Range(10f, 180f)]
+    [Range(10f, 181f)]
     [DisableIf("requirePalmVsLeapAngle", isEqualTo: false)]
-    public float maxPalmVsLeapAngle = 100f;
+    public float maxPalmVsLeapAngle = 181f;
+
+    #endregion
+
+    #region Index Angle (Eligibility Only)
+
+    private const string INDEX_ANGLE_CATEGORY = "Index Angle (Eligibility Only)";
+
+    [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
+    [DevGui.DevValue]
+    [Range(45f, 130f)]
+    public float maxIndexAngleForEligibilityActivation = 85f;
+
+    [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
+    [DevGui.DevValue]
+    [Range(45f, 130f)]
+    public float maxIndexAngleForEligibilityDeactivation = 94f;
 
     #endregion
 
@@ -377,6 +393,7 @@ namespace Leap.Unity.Gestures {
     protected override bool ShouldGestureActivate(Hand hand) {
       bool shouldActivate = false;
 
+      var wasEligibleLastCheck = _isGestureEligible;
       _isGestureEligible = false;
 
       updateSafetyPinch(hand);
@@ -533,6 +550,17 @@ namespace Leap.Unity.Gestures {
 
             #endregion
 
+            #region Index Angle (Eligibility Only)
+
+            // Note: obviously pinching already requires the index finger to
+            // close relative to the palm -- this check simply drives the
+            // isEligible state for this pinch gesture so that the gesture isn't
+            // "eligible" when the hand is fully open.
+
+            var indexPalmAngle = Vector3.Angle(indexDir, palmDir);
+
+            #endregion
+
             // Eligibility.
             if (
               
@@ -557,6 +585,12 @@ namespace Leap.Unity.Gestures {
                 // Palm normal vs Leap provider angle.
                 && (palmNormalCameraAngle <= maxPalmVsLeapAngle
                     || !requirePalmVsLeapAngle)
+
+                // Index angle (eligibility state only)
+                && ((!wasEligibleLastCheck
+                     && indexPalmAngle < maxIndexAngleForEligibilityActivation)
+                    || (wasEligibleLastCheck
+                        && indexPalmAngle < maxIndexAngleForEligibilityDeactivation))
 
                 // FOV.
                 && (handWithinFOV)

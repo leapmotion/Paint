@@ -35,7 +35,7 @@ namespace Leap.Unity.Drawing {
       OnSend(new StrokePoint() {
         pose = data,
         color = color,
-        size = size
+        radius = size
       });
     }
 
