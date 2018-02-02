@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Timeline;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 namespace Leap.Unity.Recording {
   using Query;
@@ -21,6 +23,7 @@ namespace Leap.Unity.Recording {
 
     public string[] allBindings;
 
+#if UNITY_EDITOR
     private void OnValidate() {
       allBindings = allClips.SelectMany(c => AnimationUtility.GetCurveBindings(c.Value)).
                              Select(b => b.path).
@@ -159,5 +162,6 @@ namespace Leap.Unity.Recording {
     private struct TimeRange {
       public float start, end;
     }
+#endif
   }
 }
