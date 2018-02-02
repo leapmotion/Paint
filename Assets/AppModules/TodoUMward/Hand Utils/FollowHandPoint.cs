@@ -11,9 +11,8 @@ namespace Leap.Unity.Attachments {
     #region Inspector
 
     public Chirality whichHand;
-
-    [QuickButton("Move Here", "moveToAttachmentPointNow")]
-    public AttachmentPointFlags attachmentPoint;
+    
+    public AttachmentPointFlags attachmentPoint = AttachmentPointFlags.Palm;
 
     public enum FollowMode { Update, FixedUpdate }
     private FollowMode _followMode = FollowMode.Update;

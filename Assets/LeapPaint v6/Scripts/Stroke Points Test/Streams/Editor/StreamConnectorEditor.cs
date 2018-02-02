@@ -18,7 +18,8 @@ namespace Leap.Unity.Streams {
 
       // Only show wire settings if it makes sense to draw a wire (connector must connect
       // two different objects instead of being an 'internal' connection.
-      specifyConditionalDrawing(() => getStreamBehaviour() != getReceiverBehaviour(),
+      specifyConditionalDrawing(() => getStreamBehaviour().gameObject
+                                        != getReceiverBehaviour().gameObject,
                                 "drawWire",
                                 "debugWire");
     }
@@ -28,7 +29,7 @@ namespace Leap.Unity.Streams {
               as MonoBehaviour);
     }
     private MonoBehaviour getReceiverBehaviour() {
-      return (serializedObject.FindProperty("_stream").objectReferenceValue
+      return (serializedObject.FindProperty("_receiver").objectReferenceValue
               as MonoBehaviour);
     }
 

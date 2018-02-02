@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Leap.Unity {
 
-  public class PoseStreamProcessor_NeighborAverage : MonoBehaviour,
-                                                     IStreamReceiver<Pose>,
-                                                     IStream<Pose> {
+  public class PoseStreamMovingAverageFilter : MonoBehaviour,
+                                               IStreamReceiver<Pose>,
+                                               IStream<Pose> {
 
     [Range(0, 16)]
     public int neighborRadius = 4;
