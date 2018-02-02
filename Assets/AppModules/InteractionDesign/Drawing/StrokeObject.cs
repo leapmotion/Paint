@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Leap.Unity.Drawing {
 
-  public class StrokeObject : MonoBehaviour {
+  public class StrokeObject : MonoBehaviour, IIndexable<StrokePoint> {
 
     [SerializeField]
     private List<StrokePoint> _data;
@@ -48,6 +48,10 @@ namespace Leap.Unity.Drawing {
 
       OnModified();
       OnStrokeModified(this);
+    }
+
+    public void Clear() {
+      _data.Clear();
     }
 
   }

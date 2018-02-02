@@ -12,6 +12,8 @@
 
     bool wasCancelled { get; }
 
+    bool isEligible { get; }
+
   }
 
 }

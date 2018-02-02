@@ -13,7 +13,9 @@ namespace Leap.Unity {
 
   public class TestStrokeGizmos : MonoBehaviour, IRuntimeGizmoComponent {
 
-    public Color rawLinesColor = LeapColor.jade.WithAlpha(0.4f);
+    public Color gizmoColor = LeapColor.jade.WithAlpha(0.4f);
+
+    public bool drawPoseGizmos = false;
 
     [ImplementsInterface(typeof(IIndexable<Pose>))]
     [SerializeField]
@@ -22,9 +24,15 @@ namespace Leap.Unity {
       get { return _strokePoses as IIndexable<Pose>; }
     }
 
+    void Start() { }
+
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-      // Raw Lines
-      drawer.color = rawLinesColor;
+      if (!this.enabled || !gameObject.activeInHierarchy) {
+        return;
+      }
+
+      drawer.color = gizmoColor;
+
       foreach (var prevPair in strokePoses.Query().WithPrevious()) {
         var pose = prevPair.value;
         var prevPose = prevPair.prev;
@@ -32,7 +40,11 @@ namespace Leap.Unity {
         drawer.DrawLine(prevPose.position, pose.position);
       }
 
-
+      if (drawPoseGizmos) {
+        foreach (var pose in strokePoses.Query()) {
+          drawer.DrawPose(pose, 0.006f);
+        }
+      }
     }
 
   }

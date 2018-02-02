@@ -191,6 +191,12 @@ namespace Leap.Unity.Gestures {
     private Hand _rHand;
 
     private bool _isActive = false;
+
+    private bool _isLeftHandTracked = false;
+    private bool _isRightHandTracked = false;
+    protected bool isLeftHandTracked { get { return _isLeftHandTracked; } }
+    protected bool isRightHandTracked { get { return _isRightHandTracked; } }
+
     private bool _wasLeftTracked = false;
     private bool _wasRightTracked = false;
 
@@ -198,6 +204,10 @@ namespace Leap.Unity.Gestures {
     protected bool _wasDeactivated = false;
     protected bool _wasCancelled = false;
     protected bool _wasFinished = false;
+
+    public override bool isEligible {
+      get { return isLeftHandTracked && isRightHandTracked; }
+    }
 
     protected virtual void OnDisable() {
       if (_isActive) {
@@ -246,19 +256,19 @@ namespace Leap.Unity.Gestures {
       _rHand = frame.Hands.Query().FirstOrDefault(h => !h.IsLeft);
 
       // Determine the tracked state of hands and fire appropriate methods.
-      bool isLeftTracked  = _lHand != null;
-      bool isRightTracked = _rHand != null;
+      _isLeftHandTracked  = _lHand != null;
+      _isRightHandTracked = _rHand != null;
 
-      if (isLeftTracked != _wasLeftTracked) {
-        if (isLeftTracked) {
+      if (isLeftHandTracked != _wasLeftTracked) {
+        if (isLeftHandTracked) {
           WhenHandBecomesTracked(_lHand);
         }
         else {
           WhenHandLosesTracking(true);
         }
       }
-      if (isRightTracked != _wasRightTracked) {
-        if (isRightTracked) {
+      if (isRightHandTracked != _wasRightTracked) {
+        if (isRightHandTracked) {
           WhenHandBecomesTracked(_rHand);
         }
         else {
@@ -266,24 +276,24 @@ namespace Leap.Unity.Gestures {
         }
       }
 
-      if (isLeftTracked) {
+      if (isLeftHandTracked) {
         WhileHandTracked(_lHand);
       }
       else {
         WhileHandUntracked(true);
       }
-      if (isRightTracked) {
+      if (isRightHandTracked) {
         WhileHandTracked(_rHand);
       }
       else {
         WhileHandUntracked(false);
       }
 
-      if (isLeftTracked && isRightTracked) {
+      if (isLeftHandTracked && isRightHandTracked) {
         WhileBothHandsTracked(_lHand, _rHand);
       }
-      _wasLeftTracked  = isLeftTracked;
-      _wasRightTracked = isRightTracked;
+      _wasLeftTracked  = isLeftHandTracked;
+      _wasRightTracked = isRightHandTracked;
 
       // Determine whether or not the gesture should be active or inactive.
       bool shouldGestureBeActive;

@@ -1,11 +1,12 @@
-﻿using Leap.Unity.Attributes;
+﻿using System;
+using Leap.Unity.Attributes;
 using Leap.Unity.Query;
 using UnityEngine;
 
 namespace Leap.Unity.Attachments {
   
   [ExecuteInEditMode]
-  public class FollowHandPoint : MonoBehaviour {
+  public class FollowHandPoint : MonoBehaviour, IStream<Pose> {
 
     #region Inspector
 
@@ -37,6 +38,7 @@ namespace Leap.Unity.Attachments {
     public bool isHandTracked { get { return _isHandTracked; } }
 
     private LeapProvider _backingProvider = null;
+
     private LeapProvider _provider {
       get {
         if (_backingProvider == null) {
@@ -46,9 +48,31 @@ namespace Leap.Unity.Attachments {
       }
     }
 
+    [Header("Pose Stream Offset")]
+
+    public bool usePoseStreamOffset = false;
+
+    [DisableIf("usePoseStreamOffset", isEqualTo: false)]
+    public Transform poseStreamOffsetSource = null;
+
+    [DisableIf("usePoseStreamOffset", isEqualTo: false)]
+    public Pose poseStreamOffset = Pose.identity;
+
+    private bool _isStreamOpen = false;
+
     #endregion
 
     #region Unity Events
+
+    private void OnValidate() {
+      if (!usePoseStreamOffset) {
+        poseStreamOffset = Pose.identity;
+      }
+      else if (poseStreamOffsetSource != null) {
+        poseStreamOffset = poseStreamOffsetSource.ToWorldPose()
+                             .From(transform.ToWorldPose());
+      }
+    }
 
     void OnEnable() {
       unsubscribeFrameCallback();
@@ -76,6 +100,12 @@ namespace Leap.Unity.Attachments {
                             .FirstOrDefault(h => h.IsLeft == (whichHand == Chirality.Left));
       
       if (hand != null) {
+        if (!_isHandTracked && Application.isPlaying) {
+          // Hand just began tracking, open Pose stream.
+          OnOpen();
+          _isStreamOpen = true;
+        }
+
         _isHandTracked = true;
 
         if (enabled && gameObject.activeInHierarchy) {
@@ -92,18 +122,33 @@ namespace Leap.Unity.Attachments {
                                                           out pointRotation);
           }
 
-          // Hand data will be in the provider's parent's coordinate frame.
-          //var providerParent = Hands.Provider.transform.parent;
-          //if (providerParent != null) {
-          //  pointPosition = providerParent.TransformVector(pointPosition);
-          //  pointRotation = providerParent.TransformRotation(pointRotation);
-          //}
-
           this.transform.position = pointPosition;
           this.transform.rotation = pointRotation;
+
+          var streamPose = new Pose(pointPosition, pointRotation);
+          var streamOffset = Pose.identity;
+          if (usePoseStreamOffset && poseStreamOffsetSource != null) {
+            streamOffset = poseStreamOffsetSource.transform.ToWorldPose()
+                             .From(streamPose);
+          }
+
+          if (Application.isPlaying) {
+            if (!_isStreamOpen) {
+              OnOpen();
+              _isStreamOpen = true;
+            }
+            OnSend(streamPose.Then(streamOffset));
+          }
         }
       }
       else {
+        if (_isHandTracked && Application.isPlaying && _isStreamOpen) {
+          // Hand just stopped tracking; close Pose stream.
+          OnClose();
+
+          _isStreamOpen = false;
+        }
+
         _isHandTracked = false;
       }
     }
@@ -137,6 +182,14 @@ namespace Leap.Unity.Attachments {
         }
       }
     }
+
+    #endregion
+
+    #region IStream<Pose>
+    
+    public event Action OnOpen = () => { };
+    public event Action<Pose> OnSend = (pose) => { };
+    public event Action OnClose = () => { };
 
     #endregion
 

@@ -33,7 +33,9 @@ namespace Leap.Unity.Examples.Lines {
 
     private bool _fireDoubleTap = false;
 
-    protected virtual void Start() {
+    protected override void Start() {
+      base.Start();
+
       tapSource.OnGestureActivated += onTap;
     }
 

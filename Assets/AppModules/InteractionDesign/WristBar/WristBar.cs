@@ -17,6 +17,8 @@ namespace Leap.Unity {
     public Pose tabStubPose { get { return new Pose(tabPosition, this.transform.rotation); } }
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      if (!this.enabled || !this.gameObject.activeInHierarchy) return;
+
       drawer.color = LeapColor.white;
 
       drawer.DrawPose(this.pose, radius: 0.015f);

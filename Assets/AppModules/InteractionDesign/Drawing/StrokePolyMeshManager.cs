@@ -1,4 +1,5 @@
-﻿using Leap.Unity.Meshing;
+﻿using Leap.Unity.Attributes;
+using Leap.Unity.Meshing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,14 @@ namespace Leap.Unity.Drawing {
   
   public class StrokePolyMeshManager : MonoBehaviour {
 
-    public int maxPolygonsPerPolyMesh = 64;
+    public int maxPolygonsPerPolyMesh = 256;
+
+    [SerializeField]
+    [ImplementsInterface(typeof(IPolyMesher<StrokeObject>))]
+    private MonoBehaviour _polyMesher;
+    public IPolyMesher<StrokeObject> polyMesher {
+      get { return _polyMesher as IPolyMesher<StrokeObject>;  }
+    }
 
     public Material outputMaterial;
 
@@ -53,9 +61,11 @@ namespace Leap.Unity.Drawing {
           var strokeSmoothEdges = Pool<List<Edge>>.Spawn();
           strokeSmoothEdges.Clear();
           try {
-            getStrokePolygons(stroke, strokeMeshPositions,
-                                      strokeMeshPolygons,
-                                      strokeSmoothEdges);
+            polyMesher.FillPolyMeshData(stroke,
+                                        strokeMeshPositions,
+                                        strokeMeshPolygons,
+                                        strokeSmoothEdges);
+            
 
             // If the current one is full, create a new LivePolyMeshObject for this
             // stroke's polygon data.
@@ -97,88 +107,6 @@ namespace Leap.Unity.Drawing {
       finally {
         strokesToAdd.Clear();
         Pool<List<StrokeObject>>.Recycle(strokesToAdd);
-      }
-    }
-
-    // TODO: Actually refactor this into some static generator method, and figure out how
-    // to get it some actual customizability.
-    private void getStrokePolygons(StrokeObject stroke,
-                                   List<Vector3> outStrokePositions,
-                                   List<Polygon> outStrokePolygons,
-                                   List<Edge> outStrokeSmoothEdges) {
-      if (stroke.Count == 1) {
-        // nothing for now.
-      }
-      else {
-        Maybe<Vector3> prevBinormal = Maybe.None;
-        for (int i = 0; i + 1 < stroke.Count; i++) {
-          var aP = stroke[i + 0];
-          var bP = stroke[i + 1];
-
-          var n = aP.normal;                              // normal
-          var t = (bP.position - aP.position).normalized; // tangent (not normalized)
-          var b = Vector3.Cross(t, n).normalized;         // binormal
-          n = Vector3.Cross(b, t).normalized;
-
-          // Modulate binormal thickness based on stroke curvature.
-          // This is a look-backward modification.
-          var bMult = 1f;
-          if (i > 0) {
-            var zP = stroke[i - 1];
-
-            var zaDir = (aP.position - zP.position).normalized;
-            var abDir = (bP.position - aP.position).normalized;
-
-            bMult = Vector3.Dot(abDir, zaDir).Map(0.5f, 1f, 0f, 1f);
-
-            outStrokePositions[outStrokePositions.Count - 2]
-              = aP.position + prevBinormal.valueOrDefault * zP.size * bMult;
-            outStrokePositions[outStrokePositions.Count - 1]
-              = aP.position - prevBinormal.valueOrDefault * zP.size * bMult;
-          }
-
-          // Line up the corners of each quad in the stroke.
-          var prevB = b;
-          if (prevBinormal.hasValue) {
-            prevB = prevBinormal.valueOrDefault;
-          }
-          prevBinormal = b;
-
-          // Add positions.
-          if (i == 0) {
-            outStrokePositions.Add(aP.position - prevB * aP.size * bMult);
-            outStrokePositions.Add(aP.position + prevB * aP.size * bMult);
-          }
-          outStrokePositions.Add(bP.position + b * aP.size);
-          outStrokePositions.Add(bP.position - b * aP.size);
-
-          // Add polygon.
-          var polyVerts = Pool<List<int>>.Spawn();
-          if (i == 0) {
-            polyVerts.Add((i * 4) + 0);
-            polyVerts.Add((i * 4) + 1);
-            polyVerts.Add((i * 4) + 2);
-            polyVerts.Add((i * 4) + 3);
-          }
-          else {
-            polyVerts.Add(4 + (i - 1) * 2 - 1);
-            polyVerts.Add(4 + (i - 1) * 2 - 2);
-            polyVerts.Add(4 + (i - 1) * 2 + 0);
-            polyVerts.Add(4 + (i - 1) * 2 + 1);
-          }
-          outStrokePolygons.Add(new Polygon() {
-            mesh = null,      // meshless Polygon
-            verts = polyVerts
-          });
-
-          // Mark the joining edges of the stroke as smooth.
-          if (i == 0) {
-            outStrokeSmoothEdges.Add(new Edge((i * 4) + 2, (i * 4) + 3));
-          }
-          else {
-            outStrokeSmoothEdges.Add(new Edge((4 + (i - 1) * 2 + 0), (4 + (i - 1) * 2 + 1)));
-          }
-        }
       }
     }
 
@@ -259,9 +187,10 @@ namespace Leap.Unity.Drawing {
             using (new ProfilerSample("getStrokePolygons")) {
               // Get polygon data for the entirety of the stroke.
               // TODO: _Removing_ smooth edges is not supported.
-              getStrokePolygons(strokeObj, newStrokeMeshPositions,
-                                           newStrokeMeshPolygons,
-                                           newStrokeSmoothEdges);
+              polyMesher.FillPolyMeshData(strokeObj,
+                                          newStrokeMeshPositions,
+                                          newStrokeMeshPolygons,
+                                          newStrokeSmoothEdges);
             }
 
             using (new ProfilerSample("Add/modify PolyMesh stroke positions")) {

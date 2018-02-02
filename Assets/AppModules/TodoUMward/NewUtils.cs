@@ -400,7 +400,8 @@ namespace Leap.Unity {
 
       var origColor = drawer.color;
 
-      drawer.DrawWireSphere(Vector3.zero, radius);
+      //drawer.DrawWireSphere(Vector3.zero, radius);
+      drawer.DrawCube(Vector3.zero, Vector3.one * radius * 0.3f);
       drawer.DrawPosition(Vector3.zero, radius * 2);
 
       drawer.color = origColor;
@@ -411,6 +412,24 @@ namespace Leap.Unity {
     public static void DrawRay(this RuntimeGizmos.RuntimeGizmoDrawer drawer,
                                Vector3 position, Vector3 direction) {
       drawer.DrawLine(position, position + direction);
+    }
+
+    public static void DrawDashedLine(this RuntimeGizmos.RuntimeGizmoDrawer drawer, 
+                                      Vector3 a, Vector3 b,
+                                      float segmentsPerMeter = 32f,
+                                      float normalizedPhaseOffset = 0f) {
+      var distance = (b - a).magnitude;
+      var numSegments = distance * segmentsPerMeter;
+      var segmentLength = distance / numSegments;
+
+      var dir = (b - a) / distance;
+
+      for (float i = normalizedPhaseOffset; i < numSegments; i += 2) {
+        var start = a + dir * segmentLength * i;
+        var end   = a + dir * Mathf.Min(segmentLength * (i + 1), distance);
+
+        drawer.DrawLine(start, end);
+      }
     }
 
     #endregion
@@ -431,6 +450,54 @@ namespace Leap.Unity {
 
     public static Quaternion Flipped(this Quaternion q) {
       return new Quaternion(-q.x, -q.y, -q.z, -q.w);
+    }
+
+    #endregion
+
+    #region Color Utils
+
+    public static Color Lerp(this Color a, Color b, float t) {
+      return Color.Lerp(a, b, t);
+    }
+
+    #endregion
+
+    #region List Utils
+
+    public static void Add<T>(this List<T> list, T t0, T t1) {
+      list.Add(t0);
+      list.Add(t1);
+    }
+    public static void Add<T>(this List<T> list, T t0, T t1, T t2) {
+      list.Add(t0);
+      list.Add(t1);
+      list.Add(t2);
+    }
+    public static void Add<T>(this List<T> list, T t0, T t1, T t2, T t3) {
+      list.Add(t0);
+      list.Add(t1);
+      list.Add(t2);
+      list.Add(t3);
+    }
+
+    #endregion
+
+    #region Frame/Provider Utils
+    
+    public static Hand Get(this LeapProvider provider, Chirality whichHand) {
+      List<Hand> hands;
+      if (Time.inFixedTimeStep) {
+        hands = provider.CurrentFixedFrame.Hands;
+      }
+      else {
+        hands = provider.CurrentFrame.Hands;
+      }
+
+      return hands.Query().FirstOrDefault(h => h.IsLeft == (whichHand == Chirality.Left));
+    }
+
+    public static Hand Get(this Frame frame, Chirality whichHand) {
+      return frame.Hands.Query().FirstOrDefault(h => h.IsLeft == (whichHand == Chirality.Left));
     }
 
     #endregion

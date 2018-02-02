@@ -20,6 +20,12 @@ namespace Leap.Unity.Gestures {
 
     public abstract bool wasCancelled { get; }
 
+    /// <summary>
+    /// Optionally override this property to specify to systems that take gestures as
+    /// input whether or not the gesture "could be activated" given its current state.
+    /// </summary>
+    public virtual bool isEligible { get { return true; } }
+
     protected enum DeactivationReason {
       FinishedGesture,
       CancelledGesture,

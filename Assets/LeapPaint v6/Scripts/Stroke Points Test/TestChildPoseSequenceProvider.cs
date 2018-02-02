@@ -13,8 +13,10 @@ namespace Leap.Unity {
                                                IStream<Pose> {
 
     public string nameMustContain = "";
+
+    [QuickButton("Send Poses As Stream", "SendAsStream")]
+    public bool unusedBool;
     
-    [QuickButton("Send As Stream", "SendAsStream")]
     [SerializeField]
     private List<Pose> poses = new List<Pose>();
 
@@ -36,7 +38,13 @@ namespace Leap.Unity {
         transforms.Clear();
         Pool<List<Transform>>.Recycle(transforms);
       }
+
+      if (Time.frameCount % _frameCount == 0) {
+        SendAsStream();
+      }
     }
+
+    private int _frameCount = 20;
 
     public Pose this[int idx] {
       get {

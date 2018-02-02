@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Leap.Unity.Drawing {
 
-  public class BasicStrokeGenerator : MonoBehaviour, IStrokeGenerator {
+  public class BasicStrokeGenerator : MonoBehaviour, IStreamReceiver<StrokePoint> {
 
     public const int MAX_NUM_STROKE_POINTS = 256;
 
@@ -22,8 +22,7 @@ namespace Leap.Unity.Drawing {
       _curStrokeObject.transform.parent = outputParentObject;
     }
 
-    private void addToStroke(Vector3 position, Vector3 normal,
-                                 Color color, float size) {
+    private void addToStroke(StrokePoint strokePoint) {
 
       using (new ProfilerSample("addToStroke: Restart Stroke")) {
         if (_curStrokeObject.Count > MAX_NUM_STROKE_POINTS) {
@@ -33,12 +32,7 @@ namespace Leap.Unity.Drawing {
       }
 
       using (new ProfilerSample("addToStroke: Modify Stroke")) {
-        _curStrokeObject.Add(new StrokePoint() {
-          position = position,
-          normal = normal,
-          color = color,
-          size = size
-        });
+        _curStrokeObject.Add(strokePoint);
       }
     }
 
@@ -46,9 +40,11 @@ namespace Leap.Unity.Drawing {
       _curStrokeObject = null;
     }
 
-    #region IStrokeGenerator
+    #region IStreamReceiver<StrokePoint>
 
-    public void Initialize() {
+    public void Open() {
+      if (!Application.isPlaying) return;
+
       if (_strokeInProgress) {
         finalizeStroke();
       }
@@ -56,7 +52,9 @@ namespace Leap.Unity.Drawing {
       _strokeInProgress = false;
     }
 
-    public void AddPoint(Vector3 position, Vector3 normal, Color color, float size) {
+    public void Receive(StrokePoint strokePoint) {
+      if (!Application.isPlaying) return;
+
       if (!_strokeInProgress) {
         _strokeInProgress = true;
 
@@ -64,11 +62,13 @@ namespace Leap.Unity.Drawing {
       }
 
       using (new ProfilerSample("BasicStrokeGenerator addToStroke")) {
-        addToStroke(position, normal, color, size);
+        addToStroke(strokePoint);
       }
     }
 
-    public void Finish() {
+    public void Close() {
+      if (!Application.isPlaying) return;
+
       if (_strokeInProgress) {
         finalizeStroke();
       }

@@ -14,16 +14,16 @@ MonoBehaviour:
   _gradient:
     serializedVersion: 2
     key0: {r: 0.61764705, g: 0.61764705, b: 0.61764705, a: 1}
-    key1: {r: 0.6228031, g: 0.6228031, b: 0.6228031, a: 1}
-    key2: {r: 0.78676474, g: 0.78676474, b: 0.78676474, a: 0}
-    key3: {r: 0.60294116, g: 0.8521299, b: 1, a: 0}
+    key1: {r: 0.1102941, g: 0.1102941, b: 0.1102941, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0.58823526, g: 0.58823526, b: 0.58823526, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 56090
-    ctime2: 58211
+    ctime1: 58211
+    ctime2: 65535
     ctime3: 65535
     ctime4: 65535
     ctime5: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 4
+    m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   _wrapMode: 1
   _textureResolution: 128
@@ -53,6 +53,8 @@ Texture2D:
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
   serializedVersion: 2
   m_Width: 128
   m_Height: 1
@@ -74,7 +76,7 @@ Texture2D:
   m_LightmapFormat: 0
   m_ColorSpace: 0
   image data: 512
-  _typelessdata: ff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9d9d9dff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9eff9e9e9effa1a1a1ffacacacffb6b6b6ffc0c0c0ffc7c8c9ffc4cacdffc1cbd1ffbeccd4ffbacdd8ffb7cedcffb4cfe0ffb0d1e4ffadd2e8ffaad3ebffa6d4efffa3d5f3ffa0d6f7ff9dd8fbff99d9ff
+  _typelessdata: ff9d9d9dff9c9c9cff9b9b9bff9a9a9aff989898ff979797ff969696ff959595ff949494ff939393ff929292ff909090ff8f8f8fff8e8e8eff8d8d8dff8c8c8cff8b8b8bff8a8a8aff888888ff878787ff868686ff858585ff848484ff838383ff818181ff808080ff7f7f7fff7e7e7eff7d7d7dff7c7c7cff7b7b7bff797979ff787878ff777777ff767676ff757575ff747474ff737373ff717171ff707070ff6f6f6fff6e6e6eff6d6d6dff6c6c6cff6b6b6bff696969ff686868ff676767ff666666ff656565ff646464ff636363ff616161ff606060ff5f5f5fff5e5e5eff5d5d5dff5c5c5cff5a5a5aff595959ff585858ff575757ff565656ff555555ff545454ff525252ff515151ff505050ff4f4f4fff4e4e4eff4d4d4dff4c4c4cff4a4a4aff494949ff484848ff474747ff464646ff454545ff444444ff424242ff414141ff404040ff3f3f3fff3e3e3eff3d3d3dff3c3c3cff3a3a3aff393939ff383838ff373737ff363636ff353535ff333333ff323232ff313131ff303030ff2f2f2fff2e2e2eff2d2d2dff2b2b2bff2a2a2aff292929ff282828ff272727ff262626ff252525ff232323ff222222ff212121ff202020ff1f1f1fff1e1e1eff1d1d1dff1b1b1bff191919ff171717ff151515ff131313ff111111ff0f0f0fff0d0d0dff0b0b0bff090909ff070707ff050505ff030303ff010101ff000000
   m_StreamData:
     offset: 0
     size: 0

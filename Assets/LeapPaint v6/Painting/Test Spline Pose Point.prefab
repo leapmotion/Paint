@@ -156,7 +156,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1600525069382704}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.395, z: 0.498}
+  m_LocalPosition: {x: 4.546795, y: -4.137769, z: 7.3343515}
   m_LocalScale: {x: 0.16669214, y: 0.16669214, z: 0.16669214}
   m_Children:
   - {fileID: 4922257995270266}
@@ -171,7 +171,7 @@ Transform:
   m_GameObject: {fileID: 1222079709389268}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.012217048, y: 0.01221705, z: 0.01221705}
+  m_LocalScale: {x: 0.0060518873, y: 0.0060518887, z: 0.0060518887}
   m_Children:
   - {fileID: 4263587826455300}
   - {fileID: 4959744321255708}
@@ -368,5 +368,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d252a2c00487a21449f4fd9ccbd99de5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  poseRadius: 0.007
+  poseRadius: 0.001
   sphereColor: {r: 0.7941176, g: 0.7941176, b: 0.7941176, a: 0}
