@@ -78,7 +78,7 @@ namespace Leap.Unity.Gestures {
 
     #endregion
 
-    #region Safety Checks (Middle Finger Checks)
+    #region Safety Checks (Ring Finger Checks)
 
     private const string RING_SAFETY_CATEGORY = "Ring Finger Safety Pinch";
 
@@ -99,9 +99,20 @@ namespace Leap.Unity.Gestures {
     public float minPalmRingAngle = 75f;
 
     #endregion
+    
+    #region Finger Safety Eligibility Hysteresis
+
+    private const string GENERIC_HYSTERESIS_CATEGORY = "Ring & Middle Safety Hysteresis";
+
+    [DevGui.DevCategory(GENERIC_HYSTERESIS_CATEGORY)]
+    [DevGui.DevValue]
+    [Range(0.6f, 1f)]
+    public float ringMiddleSafetyHysteresisMult = 0.9f;
+
+    #endregion
 
     #region Palm Vs Leap Angle
-    
+
     private const string PALM_ANGLE_CATEGORY = "Palm Normal Angle";
 
     [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
@@ -120,15 +131,31 @@ namespace Leap.Unity.Gestures {
 
     private const string INDEX_ANGLE_CATEGORY = "Index Angle (Eligibility Only)";
 
-    [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
+    [DevGui.DevCategory(INDEX_ANGLE_CATEGORY)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
     public float maxIndexAngleForEligibilityActivation = 85f;
 
-    [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
+    [DevGui.DevCategory(INDEX_ANGLE_CATEGORY)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
     public float maxIndexAngleForEligibilityDeactivation = 94f;
+
+    #endregion
+
+    #region Thumb Angle (Eligibility Only)
+
+    private const string THUMB_ANGLE_CATEGORY = "Thumb Angle (Eligibility Only)";
+
+    [DevGui.DevCategory(THUMB_ANGLE_CATEGORY)]
+    [DevGui.DevValue]
+    [Range(45f, 130f)]
+    public float maxThumbAngleForEligibilityActivation = 60f;
+
+    [DevGui.DevCategory(THUMB_ANGLE_CATEGORY)]
+    [DevGui.DevValue]
+    [Range(45f, 130f)]
+    public float maxThumbAngleForEligibilityDeactivation = 85f;
 
     #endregion
 
@@ -561,6 +588,18 @@ namespace Leap.Unity.Gestures {
 
             #endregion
 
+            #region Thumb Angle (Eligibility Only)
+
+            // Note: obviously pinching already requires the thumb finger to
+            // close to touch the index finger -- this check simply drives the
+            // isEligible state for this pinch gesture so that the gesture isn't
+            // "eligible" when the hand is fully open.
+
+            var thumbDir = hand.GetThumb().bones[2].Direction.ToVector3();
+            var thumbPalmAngle = Vector3.Angle(thumbDir, palmDir);
+
+            #endregion
+
             // Eligibility.
             if (
               
@@ -571,15 +610,33 @@ namespace Leap.Unity.Gestures {
                     || !requirePinkySafetyPinch)
 
                 // Middle-style safety pinch (no velocities).
-                && (signedMiddleIndexAngle >= minSignedMiddleIndexAngle
-                    || !requireMiddleFingerAngle)
-                && (signedMiddlePalmAngle >= minPalmMiddleAngle
+                //&& ((!wasEligibleLastCheck
+                //      && signedMiddleIndexAngle >= minSignedMiddleIndexAngle)
+                //    || (wasEligibleLastCheck
+                //        && signedMiddleIndexAngle >= minSignedMiddleIndexAngle
+                //                                     * ringMiddleSafetyHysteresisMult)
+                //    || !requireMiddleFingerAngle)
+
+                && ((!wasEligibleLastCheck
+                     && signedMiddlePalmAngle >= minPalmMiddleAngle)
+                    || (wasEligibleLastCheck
+                        && signedMiddlePalmAngle >= minPalmMiddleAngle
+                                                    * ringMiddleSafetyHysteresisMult)
                     || !requireMiddleFingerAngle)
 
                 // Ring-style safety pinch (no velocities).
-                && (signedRingIndexAngle >= minSignedRingIndexAngle
-                    || !requireRingFingerAngle)
-                && (signedRingPalmAngle >= minPalmRingAngle
+                //&& ((!wasEligibleLastCheck
+                //     && signedRingIndexAngle >= minSignedRingIndexAngle)
+                //    || (wasEligibleLastCheck
+                //        && signedRingIndexAngle >= minSignedRingIndexAngle
+                //                                   * ringMiddleSafetyHysteresisMult)
+                //    || !requireRingFingerAngle)0.04
+
+                && ((!wasEligibleLastCheck
+                     && signedRingPalmAngle >= minPalmRingAngle)
+                    || (wasEligibleLastCheck
+                        && signedRingPalmAngle >= minPalmRingAngle
+                                                  * ringMiddleSafetyHysteresisMult)
                     || !requireRingFingerAngle)
 
                 // Palm normal vs Leap provider angle.
@@ -591,6 +648,12 @@ namespace Leap.Unity.Gestures {
                      && indexPalmAngle < maxIndexAngleForEligibilityActivation)
                     || (wasEligibleLastCheck
                         && indexPalmAngle < maxIndexAngleForEligibilityDeactivation))
+
+                // Thumb angle (eligibility state only)
+                && ((!wasEligibleLastCheck
+                     && thumbPalmAngle < maxThumbAngleForEligibilityActivation)
+                    || (wasEligibleLastCheck
+                        && thumbPalmAngle < maxThumbAngleForEligibilityDeactivation))
 
                 // FOV.
                 && (handWithinFOV)

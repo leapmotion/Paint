@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Paint Material
-  m_Shader: {fileID: 4800000, guid: 6945d2ff131047c40bc1745e93ed172f, type: 3}
+  m_Name: Inflation Hand L
+  m_Shader: {fileID: 4800000, guid: bff04b25cb317da4b8f3382b496ffd28, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -60,8 +60,9 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.45
+    - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _InflationAmount: 0.001
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -71,6 +72,7 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
+    - _isLeftHand: 0
     m_Colors:
-    - _Color: {r: 0.9485294, g: 0.07671931, b: 0.07671931, a: 1}
+    - _Color: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

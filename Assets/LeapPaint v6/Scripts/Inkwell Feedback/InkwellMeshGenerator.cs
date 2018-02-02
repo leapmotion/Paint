@@ -1,14 +1,18 @@
 ﻿using Leap.Unity.Attributes;
+using Leap.Unity.Drawing;
+using Leap.Unity.Meshing;
 using Leap.Unity.Query;
 using Leap.Unity.RuntimeGizmos;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Leap.Unity {
+namespace Leap.Unity.LeapPaint {
 
-  public class InkwellRenderer : MonoBehaviour, IRuntimeGizmoComponent {
-    
+  public class InkwellMeshGenerator : MonoBehaviour, IRuntimeGizmoComponent {
+
+    #region Inspector
+
     public bool autoDetectPinchAmount = true;
 
     [DisableIf("autoDetectPinchAmount", isEqualTo: false)]
@@ -23,6 +27,28 @@ namespace Leap.Unity {
     List<Vector3> thumbPoints = new List<Vector3>(64);
     List<Vector3> indexPoints = new List<Vector3>(64);
 
+    [Header("Brush Data Source")]
+
+    public Paintbrush paintbrush;
+
+    [Header("Mesh Generation")]
+
+    [SerializeField]
+    [ImplementsInterface(typeof(IPolyMesher<StrokeObject>))]
+    private MonoBehaviour _strokePolyMesher;
+    public IPolyMesher<StrokeObject> strokePolyMesher {
+      get { return _strokePolyMesher as IPolyMesher<StrokeObject>; }
+    }
+
+    public MeshFilter toFilter;
+
+    [Header("Debug")]
+    public bool drawDebug = false;
+
+    #endregion
+
+    #region Unity Events
+
     private void Reset() {
       if (provider == null) provider = Hands.Provider;
     }
@@ -35,6 +61,10 @@ namespace Leap.Unity {
     private void OnDisable() {
       provider.OnUpdateFrame -= onUpdateFrame;
     }
+
+    #endregion
+
+    #region Leap Frame Callback
 
     private void onUpdateFrame(Frame frame) {
       var hand = frame.Get(whichHand);
@@ -51,7 +81,8 @@ namespace Leap.Unity {
         //var indexLenOverThumbLen = indexLen / thumbLen;
 
         if (autoDetectPinchAmount) {
-          var pinchStrength = Gestures.PinchGesture.GetCustomPinchStrength(hand).Clamped01();
+          var pinchStrength = Gestures.PinchGesture.GetCustomPinchStrength(hand)
+                                                   .Clamped01();
           pinchAmount = pinchStrength;
         }
 
@@ -123,8 +154,62 @@ namespace Leap.Unity {
       }
     }
 
+    #endregion
+
+    #region Mesh Generation
+
+    private StrokeObject _strokeObj;
+    private PolyMesh _polyMesh = new PolyMesh();
+
+    private void updateMeshRepresentation() {
+
+      // Prepare Mesh object.
+      var mesh = toFilter.mesh;
+      if (mesh == null) {
+        mesh = toFilter.mesh = new Mesh();
+        mesh.name = "Inkwell Mesh";
+      }
+      else {
+        mesh.Clear();
+      }
+
+      // Index + Thumb points -> StrokePoints in a StrokeObject.
+      if (_strokeObj == null) {
+        _strokeObj = gameObject.AddComponent<StrokeObject>();
+      }
+
+      _strokeObj.Clear();
+      for (int i = 0; i < indexPoints.Count; i++) {
+        var avgPos = (indexPoints[i] + thumbPoints[i]) * 0.5f;
+        var rot = Quaternion.identity; // can this just be the identity?..
+
+        var color = paintbrush.color;
+        var radius = paintbrush.radius;
+
+        var strokePoint = new StrokePoint() {
+          pose = new Pose(avgPos, rot),
+          color = color,
+          radius = radius
+        };
+
+        _strokeObj.Add(strokePoint);
+      }
+
+      // StrokeObjects -> PolyMesh.
+      _polyMesh.Clear();
+      //strokePolyMesher.FillPolyMeshData()
+
+      
+      // PolyMesh -> Mesh.
+      
+    }
+
+    #endregion
+
+    #region Runtime Gizmos
+
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
-      if (!this.enabled || !this.gameObject.activeInHierarchy) return;
+      if (!this.enabled || !this.gameObject.activeInHierarchy || !drawDebug) return;
 
       drawer.color = LeapColor.white;
 
@@ -133,25 +218,7 @@ namespace Leap.Unity {
       }
     }
 
-  }
-
-  public static class InkwellRendererExtensions {
-
-    public static Hand Get(this LeapProvider provider, Chirality whichHand) {
-      List<Hand> hands;
-      if (Time.inFixedTimeStep) {
-        hands = provider.CurrentFixedFrame.Hands;
-      }
-      else {
-        hands = provider.CurrentFrame.Hands;
-      }
-
-      return hands.Query().FirstOrDefault(h => h.IsLeft == (whichHand == Chirality.Left));
-    }
-
-    public static Hand Get(this Frame frame, Chirality whichHand) {
-      return frame.Hands.Query().FirstOrDefault(h => h.IsLeft == (whichHand == Chirality.Left));
-    }
+    #endregion
 
   }
 

@@ -32,8 +32,9 @@ namespace Leap.Unity.Drawing {
     }
 
     [Header("Brush Settings")]
-    public float radius = 0.05f;
-    public Color color = Color.white;
+    [Range(0.005f, 0.04f)]
+    public float radius = 0.04f;
+    public Color color = Color.red;
 
     [Header("Brush Tip (Optional)")]
     public Transform tipTransform = null;

@@ -50,6 +50,10 @@ namespace Leap.Unity.Drawing {
       OnStrokeModified(this);
     }
 
+    public void Clear() {
+      _data.Clear();
+    }
+
   }
 
 }
