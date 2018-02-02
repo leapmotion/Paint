@@ -40,7 +40,7 @@ namespace Leap.Unity.LeapPaint {
       get { return _strokePolyMesher as IPolyMesher<StrokeObject>; }
     }
 
-    public MeshFilter toFilter;
+    public PolyMeshObject fillPolyMeshObject;
 
     [Header("Debug")]
     public bool drawDebug = false;
@@ -60,6 +60,10 @@ namespace Leap.Unity.LeapPaint {
 
     private void OnDisable() {
       provider.OnUpdateFrame -= onUpdateFrame;
+    }
+
+    private void Update() {
+      updateMeshRepresentation();
     }
 
     #endregion
@@ -88,7 +92,7 @@ namespace Leap.Unity.LeapPaint {
 
         var progress = pinchAmount.Map(0f, 1f, -0.2f, 1f);
         var positiveDir = -hand.PalmarAxis();
-        for (float p = -0.2f; p <= progress; p += 0.01f) {
+        for (float p = -0.2f; p <= progress; p += 0.015f) {
           Vector3 thumbPos, indexPos;
 
           // Thumb position evaluation
@@ -159,19 +163,8 @@ namespace Leap.Unity.LeapPaint {
     #region Mesh Generation
 
     private StrokeObject _strokeObj;
-    private PolyMesh _polyMesh = new PolyMesh();
 
     private void updateMeshRepresentation() {
-
-      // Prepare Mesh object.
-      var mesh = toFilter.mesh;
-      if (mesh == null) {
-        mesh = toFilter.mesh = new Mesh();
-        mesh.name = "Inkwell Mesh";
-      }
-      else {
-        mesh.Clear();
-      }
 
       // Index + Thumb points -> StrokePoints in a StrokeObject.
       if (_strokeObj == null) {
@@ -179,12 +172,18 @@ namespace Leap.Unity.LeapPaint {
       }
 
       _strokeObj.Clear();
-      for (int i = 0; i < indexPoints.Count; i++) {
+      for (int i = 1; i < indexPoints.Count; i++) {
         var avgPos = (indexPoints[i] + thumbPoints[i]) * 0.5f;
-        var rot = Quaternion.identity; // can this just be the identity?..
+        var prevAvgPos = (indexPoints[i - 1] + thumbPoints[i - 1]) * 0.5f;
+
+        var right = (indexPoints[i] - thumbPoints[i]).normalized;
+        var forward = (avgPos - prevAvgPos).normalized;
+        if ((avgPos - prevAvgPos).sqrMagnitude < 1e-7f) continue;
+        var up = Vector3.Cross(right, forward).normalized;
+        var rot = Quaternion.LookRotation(forward, up);
 
         var color = paintbrush.color;
-        var radius = paintbrush.radius;
+        var radius = (indexPoints[i] - thumbPoints[i]).magnitude / 2f;
 
         var strokePoint = new StrokePoint() {
           pose = new Pose(avgPos, rot),
@@ -196,12 +195,24 @@ namespace Leap.Unity.LeapPaint {
       }
 
       // StrokeObjects -> PolyMesh.
-      _polyMesh.Clear();
-      //strokePolyMesher.FillPolyMeshData()
+      fillPolyMeshObject.polyMesh.Clear();
+      var positions = Pool<List<Vector3>>.Spawn(); positions.Clear();
+      var polygons = Pool<List<Polygon>>.Spawn(); polygons.Clear();
+      var smoothEdges = Pool<List<Edge>>.Spawn(); smoothEdges.Clear();
+      try {
+        strokePolyMesher.FillPolyMeshData(_strokeObj,
+                                          positions, polygons, smoothEdges);
 
-      
-      // PolyMesh -> Mesh.
-      
+        fillPolyMeshObject.polyMesh.Fill(positions, polygons, smoothEdges);
+      }
+      finally {
+        positions.Clear(); Pool<List<Vector3>>.Recycle(positions);
+        polygons.Clear(); Pool<List<Polygon>>.Recycle(polygons);
+        smoothEdges.Clear(); Pool<List<Edge>>.Recycle(smoothEdges);
+      }
+
+      // Refresh the Unity mesh representation of the PolyMeshObject.
+      fillPolyMeshObject.RefreshUnityMesh();
     }
 
     #endregion

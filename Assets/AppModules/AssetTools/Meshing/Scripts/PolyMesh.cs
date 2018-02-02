@@ -319,6 +319,22 @@ namespace Leap.Unity.Meshing {
     }
 
     /// <summary>
+    /// Fills the PolyMesh with the provided positions and polygons and marks the
+    /// provided edge list as smooth.
+    /// 
+    /// The mesh is cleared first if it's not empty.
+    /// </summary>
+    public void Fill(ReadonlyList<Vector3> positions,
+                     ReadonlyList<Polygon> polygons,
+                     ReadonlyList<Edge> smoothEdges) {
+      if (_positions.Count != 0) { Clear(clearTransform: false); }
+
+      AddPositions(positions);
+      AddPolygons(polygons);
+      MarkEdgesSmooth(smoothEdges);
+    }
+
+    /// <summary>
     /// Fills the PolyMesh with the provided positions and polygons.
     /// 
     /// The mesh is cleared first if it's not empty.
@@ -717,6 +733,11 @@ namespace Leap.Unity.Meshing {
       }
 
       _smoothEdges.Add(edge);
+    }
+    public void MarkEdgesSmooth(ReadonlyList<Edge> edges) {
+      foreach (var edge in edges) {
+        MarkEdgeSmooth(edge);
+      }
     }
 
     /// <summary>

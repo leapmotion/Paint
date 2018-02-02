@@ -7,6 +7,7 @@ using UnityEngine;
 using System;
 using Leap.Unity.Animation;
 using Leap.Unity.Attributes;
+using UnityEngine.Events;
 
 namespace Leap.Unity.Drawing {
 
@@ -38,6 +39,9 @@ namespace Leap.Unity.Drawing {
 
     [Header("Brush Tip (Optional)")]
     public Transform tipTransform = null;
+
+    [Header("Feedback")]
+    public UnityEvent OnPaintingBeginEvent;
 
     [Header("Debug")]
     public bool drawDebug = false;
@@ -105,7 +109,7 @@ namespace Leap.Unity.Drawing {
     #endregion
 
     #region IStream<StrokePoint>
-    
+
     public event Action OnOpen  = () => { };
     public event Action<StrokePoint> OnSend = (strokePoint) => { };
     public event Action OnClose = () => { };
@@ -140,6 +144,8 @@ namespace Leap.Unity.Drawing {
         if (!_isStreamOpen) {
           OnOpen();
           _isStreamOpen = true;
+
+          OnPaintingBeginEvent.Invoke();
         }
 
         var tipPose = GetTipPose(data);
