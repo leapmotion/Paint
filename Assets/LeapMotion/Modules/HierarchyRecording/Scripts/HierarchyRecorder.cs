@@ -20,14 +20,15 @@ using Leap.Unity.Query;
 using Leap.Unity.GraphicalRenderer;
 
 namespace Leap.Unity.Recording {
+  using Attributes;
 
   public class HierarchyRecorder : MonoBehaviour {
     public static Action OnPreRecordFrame;
     public static Action OnBeginRecording;
     public static HierarchyRecorder instance;
 
-    public bool recordOnStart = false;
-    public bool recordOnHDMPresence = false;
+    [EnumFlags]
+    public RecordOn recordWhen = 0;
     public string recordingName;
     public AssetFolder targetFolder;
 
@@ -62,6 +63,12 @@ namespace Leap.Unity.Recording {
       get { return Time.time - _startTime; }
     }
 
+    public enum RecordOn {
+      Start = 0x01,
+      HMDPresence = 0x02,
+      HandPresence = 0x04
+    }
+
 #if UNITY_EDITOR
     protected List<Frame> _leapData;
     protected List<CurveData> _curves;
@@ -77,13 +84,17 @@ namespace Leap.Unity.Recording {
     protected void Start() {
       instance = this;
 
-      if (recordOnStart) {
+      if ((recordWhen & RecordOn.Start) != 0) {
         BeginRecording();
       }
     }
 
     protected void LateUpdate() {
-      if (XRDevice.isPresent && XRDevice.userPresence == UserPresenceState.Present && !_isRecording && recordOnHDMPresence) {
+      if (XRDevice.isPresent && XRDevice.userPresence == UserPresenceState.Present && !_isRecording && (recordWhen & RecordOn.HMDPresence) != 0) {
+        BeginRecording();
+      }
+
+      if ((Hands.Left != null || Hands.Right != null) && (recordWhen & RecordOn.HandPresence) != 0) {
         BeginRecording();
       }
 

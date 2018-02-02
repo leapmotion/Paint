@@ -62,6 +62,7 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
       else {
         source = Instantiate(_template);
+        source.transform.SetParent(transform);
       }
 
       source.clip = clip;
