@@ -3198,6 +3198,11 @@ namespace Leap.Unity.Meshing {
     private List<int> _cachedUnityMeshFaceIndicesList = new List<int>(4096);
 
     /// <summary>
+    /// Cached triangle RingBuffer for Unity mesh generation.
+    /// </summary>
+    private RingBuffer<int> _triBuffer = new RingBuffer<int>(3);
+
+    /// <summary>
     /// Clears and fills the provided Unity mesh object with data from this PolyMesh.
     /// 
     /// By default, the mesh is filled with one-sided triangles. Pass doubleSided as
@@ -3217,6 +3222,7 @@ namespace Leap.Unity.Meshing {
         sharedSmoothVertNormals.Clear();
         var vertColors = Pool<List<Color>>.Spawn(); vertColors.Clear();
         var hasColors = GetHasColors();
+        _triBuffer.Clear();
         try {
           if (this.smoothEdges.Count == 0) {
             #region Mesh Conversion Without Any Smooth Edges (Fast)
@@ -3289,123 +3295,131 @@ namespace Leap.Unity.Meshing {
               // Write them to the shared, smooth edge vertex memory.
               // Also accumulate shared normal data.
               Vector3 curPolyNormal;
-              foreach (var poly in polygons) {
-                curPolyNormal = poly.GetNormal();
-                foreach (var edge in poly.edges) {
-                  if (smoothEdges.Contains(edge)) {
-                    var polyMeshIdx = edge.a;
-                    for (int i = 0; i < 2; i++) {
+              using (new ProfilerSample("Assign positions for verts on shared edges")) {
+                foreach (var poly in polygons) {
+                  curPolyNormal = poly.GetNormal();
+                  foreach (var edge in poly.edges) {
+                    if (smoothEdges.Contains(edge)) {
+                      var polyMeshIdx = edge.a;
+                      for (int i = 0; i < 2; i++) {
 
-                      int sharedIdx;
-                      if (!polyMeshIdxToSharedIdxMap.TryGetValue(polyMeshIdx,
-                                                                 out sharedIdx)) {
-                        sharedIdx = meshVertWriteIdx++;
-                        polyMeshIdxToSharedIdxMap[polyMeshIdx] = sharedIdx;
-                        verts.Add(GetLocalPosition(polyMeshIdx)); // position at sharedIdx.
-                        if (hasColors) {
-                          vertColors.Add(_colors[polyMeshIdx]); //color at sharedIdx.
+                        int sharedIdx;
+                        if (!polyMeshIdxToSharedIdxMap.TryGetValue(polyMeshIdx,
+                                                                   out sharedIdx)) {
+                          sharedIdx = meshVertWriteIdx++;
+                          polyMeshIdxToSharedIdxMap[polyMeshIdx] = sharedIdx;
+                          verts.Add(GetLocalPosition(polyMeshIdx)); // position at sharedIdx.
+                          if (hasColors) {
+                            vertColors.Add(_colors[polyMeshIdx]); //color at sharedIdx.
+                          }
                         }
-                      }
 
-                      Vector4 accumNormal;
-                      if (!sharedSmoothVertNormals.TryGetValue(sharedIdx,
-                                                               out accumNormal)) {
-                        sharedSmoothVertNormals[sharedIdx] = V4(curPolyNormal, 1);
-                      }
-                      else {
-                        sharedSmoothVertNormals[sharedIdx] = V4(V3(accumNormal)
-                                                                  + curPolyNormal,
-                                                                w: accumNormal.w + 1);
-                      }
+                        Vector4 accumNormal;
+                        if (!sharedSmoothVertNormals.TryGetValue(sharedIdx,
+                                                                 out accumNormal)) {
+                          sharedSmoothVertNormals[sharedIdx] = V4(curPolyNormal, 1);
+                        }
+                        else {
+                          sharedSmoothVertNormals[sharedIdx] = V4(V3(accumNormal)
+                                                                    + curPolyNormal,
+                                                                  w: accumNormal.w + 1);
+                        }
 
-                      polyMeshIdx = edge.b;
+                        polyMeshIdx = edge.b;
+                      }
                     }
                   }
                 }
               }
 
               // Write accumulated normals for shared vertices.
-              for (int i = 0; i < verts.Count; i++) {
-                normals.Add(Vector3.zero);
+              using (new ProfilerSample("Write accumulated normals for shared verts")) {
+                for (int i = 0; i < verts.Count; i++) {
+                  normals.Add(Vector3.zero);
+                }
+                foreach (var sharedIdxNormalPair in sharedSmoothVertNormals) {
+                  var accumNormal = sharedIdxNormalPair.Value;
+                  var finalNormal = V3(accumNormal) / accumNormal.w;
+                  var sharedIdx = sharedIdxNormalPair.Key;
+                  normals[sharedIdx] = finalNormal;
+                }
               }
-              foreach (var sharedIdxNormalPair in sharedSmoothVertNormals) {
-                var accumNormal = sharedIdxNormalPair.Value;
-                var finalNormal = V3(accumNormal) / accumNormal.w;
-                var sharedIdx = sharedIdxNormalPair.Key;
-                normals[sharedIdx] = finalNormal;
-              }
-              
+
               // Final pass: Write triangle indices, adding non-shared vertices and
               // normals as we go.
-              RingBuffer<int> triBuffer = new RingBuffer<int>(3);
-              foreach (var poly in polygons) {
-                curPolyNormal = poly.GetNormal();
+              _triBuffer.Clear();
+              using (new ProfilerSample("Write triangle indices, add non-shared verts")) {
+                foreach (var poly in polygons) {
+                  curPolyNormal = poly.GetNormal();
 
-                triBuffer.Clear();
-                for (int pv = 0; pv < poly.verts.Count; pv++) {
+                  _triBuffer.Clear();
+                  for (int pv = 0; pv < poly.verts.Count; pv++) {
 
-                  // Collect "actual indices", which might be shared from the earlier
-                  // pass or might be newly constructed, into a triangle buffer.
-                  int actualIdx;
+                    // Collect "actual indices", which might be shared from the earlier
+                    // pass or might be newly constructed, into a triangle buffer.
+                    int actualIdx;
 
-                  // A vertex is shared/smooth if it on a smooth edge AND that edge is
-                  // on this polygon.
-                  bool onSmoothPolyEdge = false;
-                  var prevEdge = new Edge(this, poly[pv - 1], poly[pv]);
-                  var nextEdge = new Edge(this, poly[pv], poly[pv + 1]);
-                  onSmoothPolyEdge = smoothEdges.Contains(prevEdge)
-                                     || smoothEdges.Contains(nextEdge);
-                  if (onSmoothPolyEdge) {
-                    // Shared vertex; access via map, already have position and normal,
-                    // only need to write tri.
-                    actualIdx = polyMeshIdxToSharedIdxMap[poly[pv]];
-                  }
-                  else {
-                    // Non-shared vertex: Add new index, write vert position and normal.
-                    actualIdx = meshVertWriteIdx++;
-                    verts.Add(GetLocalPosition(poly[pv]));
-                    normals.Add(curPolyNormal);
-                    if (hasColors) {
-                      vertColors.Add(_colors[poly[pv]]);
+                    // A vertex is shared/smooth if it on a smooth edge AND that edge is
+                    // on this polygon.
+                    bool onSmoothPolyEdge = false;
+                    var prevEdge = new Edge(this, poly[pv - 1], poly[pv]);
+                    var nextEdge = new Edge(this, poly[pv], poly[pv + 1]);
+                    onSmoothPolyEdge = smoothEdges.Contains(prevEdge)
+                                       || smoothEdges.Contains(nextEdge);
+                    if (onSmoothPolyEdge) {
+                      // Shared vertex; access via map, already have position and normal,
+                      // only need to write tri.
+                      actualIdx = polyMeshIdxToSharedIdxMap[poly[pv]];
                     }
-                  }
+                    else {
+                      // Non-shared vertex: Add new index, write vert position and normal.
+                      actualIdx = meshVertWriteIdx++;
+                      verts.Add(GetLocalPosition(poly[pv]));
+                      normals.Add(curPolyNormal);
+                      if (hasColors) {
+                        vertColors.Add(_colors[poly[pv]]);
+                      }
+                    }
 
-                  // Accumulate a single triangle or shift buffer across the polygon.
-                  if (!triBuffer.IsFull) {
-                    triBuffer.Add(actualIdx);
-                  }
-                  else {
-                    triBuffer.Set(1, triBuffer.Get(2));
-                    triBuffer.Set(2, actualIdx);
-                  }
-                  
-                  if (triBuffer.IsFull) {
-                    // 3 vertices in buffer, write dat triangle!
-                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(0));
-                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(1));
-                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(2));
+                    // Accumulate a single triangle or shift buffer across the polygon.
+                    if (!_triBuffer.IsFull) {
+                      _triBuffer.Add(actualIdx);
+                    }
+                    else {
+                      _triBuffer.Set(1, _triBuffer.Get(2));
+                      _triBuffer.Set(2, actualIdx);
+                    }
+
+                    if (_triBuffer.IsFull) {
+                      // 3 vertices in buffer, write dat triangle!
+                      _cachedUnityMeshFaceIndicesList.Add(_triBuffer.Get(0));
+                      _cachedUnityMeshFaceIndicesList.Add(_triBuffer.Get(1));
+                      _cachedUnityMeshFaceIndicesList.Add(_triBuffer.Get(2));
+                    }
                   }
                 }
               }
 
               // Okay ONE more thing if we want a double-sided mesh.
               if (doubleSided) {
-                int doubleSidedStartIdx = verts.Count;
-                for (int v = 0; v < doubleSidedStartIdx; v++) {
-                  verts.Add(verts[v]);
-                  normals.Add(-normals[v]);
-                  if (hasColors) {
-                    vertColors.Add(_colors[v]);
+                using (new ProfilerSample("Final pass for double-sided mesh")) {
+                  int doubleSidedStartIdx = verts.Count;
+                  for (int v = 0; v < doubleSidedStartIdx; v++) {
+                    verts.Add(verts[v]);
+                    normals.Add(-normals[v]);
+                    if (hasColors) {
+                      vertColors.Add(_colors[v]);
+                    }
                   }
-                }
-                int origIndexCount = _cachedUnityMeshFaceIndicesList.Count;
-                for (int i = 0; i < origIndexCount; i += 3) {
-                  _cachedUnityMeshFaceIndicesList.Add(
-                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 0]);
-                  _cachedUnityMeshFaceIndicesList.Add(
-                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 2]);
-                  _cachedUnityMeshFaceIndicesList.Add(
-                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 1]);
+                  int origIndexCount = _cachedUnityMeshFaceIndicesList.Count;
+                  for (int i = 0; i < origIndexCount; i += 3) {
+                    _cachedUnityMeshFaceIndicesList.Add(
+                      doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 0]);
+                    _cachedUnityMeshFaceIndicesList.Add(
+                      doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 2]);
+                    _cachedUnityMeshFaceIndicesList.Add(
+                      doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 1]);
+                  }
                 }
               }
               #endregion

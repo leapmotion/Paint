@@ -39,9 +39,23 @@ namespace Leap.Unity.Drawing {
 
     [Header("Brush Tip (Optional)")]
     public Transform tipTransform = null;
-    public Renderer tipRendererForColor = null;
 
     [Header("Feedback")]
+
+    [Tooltip("If non-null, a material instance will be created from this renderer's "
+           + "material and it will be set to the brush's current color on Update.")]
+    public Renderer tipRendererForColor = null;
+    private Color? _lastColor = null;
+    private Material _tipMaterialInstance = null;
+
+    [Tooltip("If non-null, a material instance will be created from this renderer's "
+           + "material and it will be set to the brush's current color on Update.")]
+    public Renderer brushHeadColorRenderer = null;
+    public string brushHeadColorPropertyName = "_OutlineColor";
+    private int _brushHeadColorPropId = -1;
+    private Material _brushHeadMaterialInstance = null;
+    public Color nonPaintingBrushHeadColor = Color.white;
+
     public UnityEvent OnPaintingBeginEvent;
 
     [Header("Debug")]
@@ -51,6 +65,12 @@ namespace Leap.Unity.Drawing {
     #endregion
 
     #region Paintbrush
+
+    public bool isPainting {
+      get {
+        return _isStreamOpen;
+      }
+    }
 
     public Pose GetLeftEdgePose() {
       return GetLeftEdgePose(transform.ToPose());
@@ -91,10 +111,11 @@ namespace Leap.Unity.Drawing {
           eligibilitySwitch.OffNow();
         }
       }
-    }
 
-    private Color? _lastColor = null;
-    private Material _tipMaterialInstance = null;
+      if (_brushHeadColorPropId == -1) {
+        _brushHeadColorPropId = Shader.PropertyToID(brushHeadColorPropertyName);
+      }
+    }
 
     protected virtual void Update() {
       if (eligibilitySwitch != null && activationGesture != null) {
@@ -107,6 +128,8 @@ namespace Leap.Unity.Drawing {
         }
       }
 
+      // If we have a tip renderer reference, always set its color to match the current
+      // color of the brush.
       if (_lastColor.HasValue && this.color != _lastColor) {
         if (tipRendererForColor != null) {
           _tipMaterialInstance = tipRendererForColor.material;
@@ -117,6 +140,19 @@ namespace Leap.Unity.Drawing {
       }
       else {
         _lastColor = this.color;
+      }
+
+      // If we have brush head renderer reference, set its color depending on whether
+      // or not we're painting.
+      var targetBrushHeadColor = nonPaintingBrushHeadColor;
+      if (isPainting) {
+        targetBrushHeadColor = this.color;
+      }
+      if (brushHeadColorRenderer != null) {
+        _brushHeadMaterialInstance = brushHeadColorRenderer.material;
+      }
+      if (_brushHeadMaterialInstance != null) {
+        _brushHeadMaterialInstance.SetColor(_brushHeadColorPropId, targetBrushHeadColor);
       }
     }
 
