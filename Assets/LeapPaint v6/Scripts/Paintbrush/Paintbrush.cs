@@ -39,6 +39,7 @@ namespace Leap.Unity.Drawing {
 
     [Header("Brush Tip (Optional)")]
     public Transform tipTransform = null;
+    public Renderer tipRendererForColor = null;
 
     [Header("Feedback")]
     public UnityEvent OnPaintingBeginEvent;
@@ -92,8 +93,10 @@ namespace Leap.Unity.Drawing {
       }
     }
 
-    protected virtual void Update() {
+    private Color? _lastColor = null;
+    private Material _tipMaterialInstance = null;
 
+    protected virtual void Update() {
       if (eligibilitySwitch != null && activationGesture != null) {
         var shouldBeOn = activationGesture.isEligible;
         if (eligibilitySwitch.GetIsOnOrTurningOn() && !shouldBeOn) {
@@ -104,6 +107,17 @@ namespace Leap.Unity.Drawing {
         }
       }
 
+      if (_lastColor.HasValue && this.color != _lastColor) {
+        if (tipRendererForColor != null) {
+          _tipMaterialInstance = tipRendererForColor.material;
+        }
+        if (_tipMaterialInstance != null) {
+          _tipMaterialInstance.color = this.color;
+        }
+      }
+      else {
+        _lastColor = this.color;
+      }
     }
 
     #endregion
@@ -197,6 +211,14 @@ namespace Leap.Unity.Drawing {
           drawer.DrawPose(new Pose(b, pose.rotation), poseRadius * multiplier);
         }
       }
+    }
+
+    #endregion
+
+    #region Public Methods
+    
+    public void SetRadius(float radius) {
+      this.radius = radius;
     }
 
     #endregion

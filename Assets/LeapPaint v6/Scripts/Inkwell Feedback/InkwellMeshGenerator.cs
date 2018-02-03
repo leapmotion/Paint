@@ -183,7 +183,7 @@ namespace Leap.Unity.LeapPaint {
         var rot = Quaternion.LookRotation(forward, up);
 
         var color = paintbrush.color;
-        var radius = (indexPoints[i] - thumbPoints[i]).magnitude / 2f;
+        var radius = (indexPoints[i] - thumbPoints[i]).magnitude * 0.3f;
 
         var strokePoint = new StrokePoint() {
           pose = new Pose(avgPos, rot),
@@ -199,16 +199,18 @@ namespace Leap.Unity.LeapPaint {
       var positions = Pool<List<Vector3>>.Spawn(); positions.Clear();
       var polygons = Pool<List<Polygon>>.Spawn(); polygons.Clear();
       var smoothEdges = Pool<List<Edge>>.Spawn(); smoothEdges.Clear();
+      var colors = Pool<List<Color>>.Spawn(); colors.Clear();
       try {
         strokePolyMesher.FillPolyMeshData(_strokeObj,
-                                          positions, polygons, smoothEdges);
+                                          positions, polygons, smoothEdges, colors);
 
-        fillPolyMeshObject.polyMesh.Fill(positions, polygons, smoothEdges);
+        fillPolyMeshObject.polyMesh.Fill(positions, polygons, smoothEdges, colors);
       }
       finally {
         positions.Clear(); Pool<List<Vector3>>.Recycle(positions);
         polygons.Clear(); Pool<List<Polygon>>.Recycle(polygons);
         smoothEdges.Clear(); Pool<List<Edge>>.Recycle(smoothEdges);
+        colors.Clear(); Pool<List<Color>>.Recycle(colors);
       }
 
       // Refresh the Unity mesh representation of the PolyMeshObject.

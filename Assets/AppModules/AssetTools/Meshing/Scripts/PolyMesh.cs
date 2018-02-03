@@ -64,6 +64,15 @@ namespace Leap.Unity.Meshing {
 
     #endregion
 
+    #region Vertex Colors
+
+    private List<Color> _colors;
+    public ReadonlyList<Color> colors {
+      get { return _colors; }
+    }
+
+    #endregion
+
     #endregion
 
     #region Transform Support
@@ -181,6 +190,7 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     public void Clear(bool clearTransform = true) {
       _positions.Clear(); // We simply hold onto this List, there's nothing to pool.
+      if (_colors != null) _colors.Clear(); // same with colors.
 
       foreach (var polygon in _polygons) {
         polygon.RecycleVerts();
@@ -225,7 +235,8 @@ namespace Leap.Unity.Meshing {
     public void Append(List<Vector3> newPositions, List<Polygon> newPolygons,
                        List<int> outNewPositionIndices,
                        List<int> outNewPolygonIndices,
-                       List<Edge> newSmoothEdges = null) {
+                       List<Edge> newSmoothEdges = null,
+                       List<Color> newColors = null) {
       int origPositionCount = _positions.Count;
 
       AddPositions(newPositions, outNewPositionIndices);
@@ -242,6 +253,10 @@ namespace Leap.Unity.Meshing {
                                          smoothEdge.b + origPositionCount);
           MarkEdgeSmooth(incrementedEdge);
         }
+      }
+
+      if (newColors != null) {
+        AddColors(newColors);
       }
     }
 
@@ -292,6 +307,10 @@ namespace Leap.Unity.Meshing {
       foreach (var smoothEdge in otherPolyMesh.smoothEdges) {
         MarkEdgeSmooth(smoothEdge);
       }
+
+      if (otherPolyMesh.colors.isValid) {
+        AddColors(otherPolyMesh.colors);
+      }
     }
 
     /// <summary>
@@ -322,16 +341,25 @@ namespace Leap.Unity.Meshing {
     /// Fills the PolyMesh with the provided positions and polygons and marks the
     /// provided edge list as smooth.
     /// 
+    /// Optionally, a colors list can be added as well. If the list is not null and
+    /// not empty, its length must match the positions list length (representing vertex
+    /// colors).
+    /// 
     /// The mesh is cleared first if it's not empty.
     /// </summary>
     public void Fill(ReadonlyList<Vector3> positions,
                      ReadonlyList<Polygon> polygons,
-                     ReadonlyList<Edge> smoothEdges) {
+                     ReadonlyList<Edge> smoothEdges,
+                     ReadonlyList<Color> colors = default(ReadonlyList<Color>)) {
       if (_positions.Count != 0) { Clear(clearTransform: false); }
 
       AddPositions(positions);
       AddPolygons(polygons);
       MarkEdgesSmooth(smoothEdges);
+      
+      if (colors.isValid && colors.Count > 0) {
+        AddColors(colors);
+      }
     }
 
     /// <summary>
@@ -762,6 +790,29 @@ namespace Leap.Unity.Meshing {
       }
 
       _smoothEdges.Remove(edge);
+    }
+
+    #endregion
+
+    #region Vertex Color Operations
+
+    public void AddColors(ReadonlyList<Color> colors) {
+      if (_colors == null) {
+        _colors = new List<Color>();
+      }
+      _colors.AddRange(colors);
+    }
+
+    public void AddColor(Color color) {
+      _colors.Add(color);
+    }
+
+    public void SetColor(int positionIdx, Color color) {
+      _colors[positionIdx] = color;
+    }
+
+    public bool GetHasColors() {
+      return _colors != null && _colors.Count > 0;
     }
 
     #endregion
@@ -3157,15 +3208,15 @@ namespace Leap.Unity.Meshing {
         mesh.Clear();
 
         _cachedUnityMeshFaceIndicesList.Clear();
-        var verts   = Pool<List<Vector3>>.Spawn();
-        verts.Clear();
+        var verts   = Pool<List<Vector3>>.Spawn(); verts.Clear();
         int vertsCount = 0;
-        var normals = Pool<List<Vector3>>.Spawn();
-        normals.Clear();
+        var normals = Pool<List<Vector3>>.Spawn(); normals.Clear();
         var polyMeshIdxToSharedIdxMap = Pool<Dictionary<int, int>>.Spawn();
         polyMeshIdxToSharedIdxMap.Clear();
         var sharedSmoothVertNormals = Pool<Dictionary<int, Vector4>>.Spawn();
         sharedSmoothVertNormals.Clear();
+        var vertColors = Pool<List<Color>>.Spawn(); vertColors.Clear();
+        var hasColors = GetHasColors();
         try {
           if (this.smoothEdges.Count == 0) {
             #region Mesh Conversion Without Any Smooth Edges (Fast)
@@ -3191,11 +3242,21 @@ namespace Leap.Unity.Meshing {
                         verts.Add(GetLocalPosition(tri.a));
                         verts.Add(GetLocalPosition(tri.b));
                         verts.Add(GetLocalPosition(tri.c));
+                        if (hasColors) {
+                          vertColors.Add(_colors[tri.a]);
+                          vertColors.Add(_colors[tri.b]);
+                          vertColors.Add(_colors[tri.c]);
+                        }
                         vertsCount += 3;
                         if (doubleSided) {
                           verts.Add(GetLocalPosition(tri.a));
                           verts.Add(GetLocalPosition(tri.b));
                           verts.Add(GetLocalPosition(tri.c));
+                          if (hasColors) {
+                            vertColors.Add(_colors[tri.a]);
+                            vertColors.Add(_colors[tri.b]);
+                            vertColors.Add(_colors[tri.c]);
+                          }
                           vertsCount += 3;
                         }
                       }
@@ -3240,7 +3301,10 @@ namespace Leap.Unity.Meshing {
                                                                  out sharedIdx)) {
                         sharedIdx = meshVertWriteIdx++;
                         polyMeshIdxToSharedIdxMap[polyMeshIdx] = sharedIdx;
-                        verts.Add(_positions[polyMeshIdx]); // position at sharedIdx.
+                        verts.Add(GetLocalPosition(polyMeshIdx)); // position at sharedIdx.
+                        if (hasColors) {
+                          vertColors.Add(_colors[polyMeshIdx]); //color at sharedIdx.
+                        }
                       }
 
                       Vector4 accumNormal;
@@ -3299,8 +3363,11 @@ namespace Leap.Unity.Meshing {
                   else {
                     // Non-shared vertex: Add new index, write vert position and normal.
                     actualIdx = meshVertWriteIdx++;
-                    verts.Add(_positions[poly[pv]]);
+                    verts.Add(GetLocalPosition(poly[pv]));
                     normals.Add(curPolyNormal);
+                    if (hasColors) {
+                      vertColors.Add(_colors[poly[pv]]);
+                    }
                   }
 
                   // Accumulate a single triangle or shift buffer across the polygon.
@@ -3327,6 +3394,9 @@ namespace Leap.Unity.Meshing {
                 for (int v = 0; v < doubleSidedStartIdx; v++) {
                   verts.Add(verts[v]);
                   normals.Add(-normals[v]);
+                  if (hasColors) {
+                    vertColors.Add(_colors[v]);
+                  }
                 }
                 int origIndexCount = _cachedUnityMeshFaceIndicesList.Count;
                 for (int i = 0; i < origIndexCount; i += 3) {
@@ -3347,6 +3417,9 @@ namespace Leap.Unity.Meshing {
             mesh.SetTriangles(_cachedUnityMeshFaceIndicesList,
                               submesh: 0, calculateBounds: true);
             mesh.SetNormals(normals);
+            if (hasColors) {
+              mesh.SetColors(vertColors);
+            }
           }
         }
         finally {
@@ -3359,6 +3432,8 @@ namespace Leap.Unity.Meshing {
           Pool<Dictionary<int, int>>.Recycle(polyMeshIdxToSharedIdxMap);
           sharedSmoothVertNormals.Clear();
           Pool<Dictionary<int, Vector4>>.Recycle(sharedSmoothVertNormals);
+          vertColors.Clear();
+          Pool<List<Color>>.Recycle(vertColors);
         }
       }
     }

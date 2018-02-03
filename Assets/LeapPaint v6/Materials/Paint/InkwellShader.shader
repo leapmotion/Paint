@@ -15,9 +15,9 @@
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
 
-		struct Input {
-			float2 uv_MainTex;
-		};
+    struct Input {
+      float4 color : COLOR;
+    };
 
 		half _Glossiness;
 		half _Metallic;
@@ -34,7 +34,7 @@
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			// Albedo comes from a texture tinted by color
-			fixed4 c = _Color;
+			fixed4 c = _Color * IN.color;
 			o.Albedo = c.rgb;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
