@@ -826,8 +826,8 @@ namespace Leap.Unity.Meshing {
     public static void RenderPoint(Vector3 point, Color color, float rMult = 1f) {
       RuntimeGizmos.RuntimeGizmoDrawer drawer;
       if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
-        drawer.color = color;
-        drawer.DrawWireSphere(point, 0.003f * rMult);
+        drawer.color = color.WithAlpha(0.5f);
+        drawer.DrawSphere(point, 0.003f * rMult * 0.5f);
       }
     }
 
@@ -928,19 +928,10 @@ namespace Leap.Unity.Meshing {
               }
             }
 
-            // Render step.
+            // Render step, colocated vertices.
             {
               foreach (var colocatedVertexPosition in colocatedVertexPositions) {
                 RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.0f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.1f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.2f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.3f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.4f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 10f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 11f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 12f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 13f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 14f);
               }
             }
           }
@@ -972,27 +963,24 @@ namespace Leap.Unity.Meshing {
                     var edgeCutPointBA = cutPointsOnEdgeA[i];
                     var edgeCutPointBB = cutPointsOnEdgeA[i + 1];
 
-                    var aColor = Color.Lerp(Color.red, Color.green, 0.55f);
-                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.50f);
-                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.52f);
-                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.54f);
-                    var bColor = Color.Lerp(Color.blue, Color.green, 0.55f);
-                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.51f);
-                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.53f);
-                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.55f);
+
+                    // Render step: edge colinearities.
+                    {
+                      var aColor = Color.Lerp(Color.red, Color.green, 0.55f);
+                      var bColor = Color.Lerp(Color.blue, Color.green, 0.55f);
+
+                      Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.50f);
+                      Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.51f);
+                    }
                   }
 
                   foreach (var newPointOnEdgeA in cutPointsOnEdgeA) {
                     var aColor = Color.Lerp(Color.red, Color.green, 0.55f);
                     PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.0f);
-                    PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.2f);
-                    PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.4f);
                   }
                   foreach (var newPointOnEdgeB in cutPointsOnEdgeB) {
                     var bColor = Color.Lerp(Color.blue, Color.green, 0.55f);
                     PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.1f);
-                    PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.3f);
-                    PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.5f);
                   }
 
                 }
@@ -1068,12 +1056,8 @@ namespace Leap.Unity.Meshing {
 
               var aColor = Color.Lerp(Color.cyan, Color.red, 0.45f);
               RenderPoint(cutPointOnA, aColor, 5.6f);
-              RenderPoint(cutPointOnA, aColor, 5.8f);
-              RenderPoint(cutPointOnA, aColor, 6.0f);
               var bColor = Color.Lerp(Color.cyan, Color.blue, 0.45f);
               RenderPoint(cutPointOnB, bColor, 5.7f);
-              RenderPoint(cutPointOnB, bColor, 5.9f);
-              RenderPoint(cutPointOnB, bColor, 6.1f);
             }
           }
           finally {

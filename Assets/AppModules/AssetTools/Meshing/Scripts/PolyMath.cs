@@ -136,9 +136,6 @@ namespace Leap.Unity.Meshing {
 
               // Render this intersection.
               PolyMesh.RenderPoint(intersection, LeapColor.gold, 10f);
-              PolyMesh.RenderPoint(intersection, LeapColor.gold, 11f);
-              PolyMesh.RenderPoint(intersection, LeapColor.gold, 12f);
-              PolyMesh.RenderPoint(intersection, LeapColor.gold, 13f);
 
               cutPointsOnEdgeA.Add(intersection.ClampedTo(eA_a, eA_b));
               cutPointsOnEdgeB.Add(intersection.ClampedTo(eB_a, eB_b));
