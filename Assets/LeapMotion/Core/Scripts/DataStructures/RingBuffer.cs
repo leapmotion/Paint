@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -7,11 +7,7 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Leap.Unity {
+ namespace Leap.Unity {
 
   public class RingBuffer<T> {
 
@@ -23,7 +19,7 @@ namespace Leap.Unity {
       arr = new T[bufferSize];
     }
 
-    public int Length {
+    public int Count {
       get {
         if (lastIdx == -1) return 0;
         int diff = (lastIdx + 1) - firstIdx;
@@ -37,7 +33,7 @@ namespace Leap.Unity {
     }
 
     public bool IsFull {
-      get { return Length == arr.Length; }
+      get { return Count == Capacity; }
     }
 
     public void Clear() {
@@ -64,7 +60,7 @@ namespace Leap.Unity {
     }
 
     public T GetLatest() {
-      return Get(Length - 1);
+      return Get(Count - 1);
     }
 
     public T GetOldest() {
@@ -77,33 +73,9 @@ namespace Leap.Unity {
     }
 
     public void SetLatest(T t) {
-      Set(Length - 1, t);
+      Set(Count - 1, t);
     }
 
-    public RingBufferEnumerator<T> GetEnumerator() {
-      return new RingBufferEnumerator<T>(this);
-    }
-
-  }
-
-  public struct RingBufferEnumerator<T> {
-    private RingBuffer<T> buffer;
-    private int idx;
-
-    public RingBufferEnumerator(RingBuffer<T> buffer) {
-      this.buffer = buffer;
-      this.idx = -1;
-    }
-
-    public bool MoveNext() {
-      idx += 1;
-      return idx < buffer.Length;
-    }
-
-    public T Current {
-      get { return buffer.Get(idx); }
-    }
-    
   }
 
 }
