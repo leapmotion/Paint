@@ -14,7 +14,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
       float maxThickness = data.GetLatest().thickness;
 
-      for (int i = 1; i < data.Length - 1; i++) {
+      for (int i = 1; i < data.Count - 1; i++) {
         var prevStroke = data.Get(i - 1);
         var currStroke = data.Get(i);
         var nextStroke = data.Get(i + 1);
@@ -51,13 +51,13 @@ namespace Leap.Unity.LeapPaint_v3 {
     public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
       float maxThickness = data.GetLatest().thickness;
 
-      for (int i = 0; i < data.Length; i++) {
+      for (int i = 0; i < data.Count; i++) {
         var currStroke = data.Get(i);
         float thickness = currStroke.thickness;
 
         for (int j = -NEIGHBORHOOD; j <= NEIGHBORHOOD; j++) {
           int index = i + j;
-          if (index < 0 || index >= data.Length) continue;
+          if (index < 0 || index >= data.Count) continue;
 
           float percent = Mathf.Abs(j) / (NEIGHBORHOOD + 1.0f);
 

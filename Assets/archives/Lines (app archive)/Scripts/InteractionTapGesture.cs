@@ -131,7 +131,7 @@ namespace Leap.Unity.Examples.Lines {
         _colors[i] = Color.Lerp(Color.cyan, Color.red, _heat[i]);
       }
 
-      for (int i = 0; i < _indexPosBuffer.Length; i++) {
+      for (int i = 0; i < _indexPosBuffer.Count; i++) {
         drawer.color = _colors[i];
         float radius = 0.005F;
         if (_heat[i] > 0.8F) {

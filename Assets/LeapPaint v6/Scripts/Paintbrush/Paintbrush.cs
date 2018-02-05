@@ -232,7 +232,7 @@ namespace Leap.Unity.Drawing {
         _debugActivatedBuffer.Clear();
         _debugActivatedBuffer.Add(false);
       }
-      for (int i = 0; i < _debugPoseBuffer.Length; i++) {
+      for (int i = 0; i < _debugPoseBuffer.Count; i++) {
         var pose = _debugPoseBuffer.Get(i);
         var isActive = _debugActivatedBuffer.Get(i);
 

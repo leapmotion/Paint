@@ -11,12 +11,12 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
-      Debug.Log("Data size is " + data.Length);
+      Debug.Log("Data size is " + data.Count);
       StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < data.Length; i++) {
+      for (int i = 0; i < data.Count; i++) {
         sb.Append("Ring buffer " + i + " from end: ");
         sb.Append(data.GetFromEnd(i));
-        sb.Append(" corresponds to data index " + indices.Get(data.Length - 1 - i));
+        sb.Append(" corresponds to data index " + indices.Get(data.Count - 1 - i));
         sb.Append("\n");
       }
       Debug.Log(sb.ToString());

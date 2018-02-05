@@ -123,10 +123,10 @@ namespace Leap.Unity.LeapPaint_v3 {
         _actualizedStrokeIdxBuffer.SetLatest(_actualizedStrokeIdx++);
 
         // Output points from the buffer to the actualized stroke output.
-        int offset = Mathf.Min(_outputBufferEndOffset, _strokeBuffer.Length - 1);
+        int offset = Mathf.Min(_outputBufferEndOffset, _strokeBuffer.Count - 1);
         for (int i = 0; i <= offset; i++) {
-          int outputIdx = Mathf.Max(0, _outputBufferEndOffset - (_strokeBuffer.Length - 1)) + i;
-          StrokePoint bufferStrokePoint = _strokeBuffer.Get(_strokeBuffer.Length - 1 - (Mathf.Min(_strokeBuffer.Length - 1, _outputBufferEndOffset) - i));
+          int outputIdx = Mathf.Max(0, _outputBufferEndOffset - (_strokeBuffer.Count - 1)) + i;
+          StrokePoint bufferStrokePoint = _strokeBuffer.Get(_strokeBuffer.Count - 1 - (Mathf.Min(_strokeBuffer.Count - 1, _outputBufferEndOffset) - i));
           if (outputIdx > _strokeOutput.Count - 1) {
             _strokeOutput.Add(bufferStrokePoint);
           }

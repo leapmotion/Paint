@@ -251,7 +251,7 @@ namespace Leap.Unity.Animation {
 
       Color origContentColor = GUI.contentColor;
       if (node.isOn) {
-        Rect glowRect = buttonRect.PadOuter(GLOW_WIDTH);
+        Rect glowRect = buttonRect.Extrude(GLOW_WIDTH);
         EditorGUI.DrawRect(glowRect, glowBackgroundColor);
         GUI.contentColor = glowContentColor;
       }

@@ -97,10 +97,10 @@ namespace Leap.Unity {
     }
 
     public void Close() {
-      if (_poseBuffer.Length < 2) {
+      if (_poseBuffer.Count < 2) {
         return;
       }
-      if (_poseBuffer.Length == 2) {
+      if (_poseBuffer.Count == 2) {
         OnSend(_poseBuffer.Get(0));
         OnSend(_poseBuffer.Get(1));
       }

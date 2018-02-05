@@ -60,7 +60,7 @@ namespace Leap.Unity {
     public void Receive(Pose data) {
       _buffer.Add(data);
 
-      if (_buffer.Length == 2) {
+      if (_buffer.Count == 2) {
         Pose a = _buffer.Get(0), b = _buffer.Get(1);
         var ab = b.position - a.position;
 

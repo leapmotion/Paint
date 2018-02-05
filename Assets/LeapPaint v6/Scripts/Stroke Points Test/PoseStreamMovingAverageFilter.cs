@@ -43,12 +43,12 @@ namespace Leap.Unity {
 
       if (buffer.IsFull) {
         if (bufferWasNotFull) {
-          for (int i = 1; i < buffer.Length; i += 2) {
+          for (int i = 1; i < buffer.Count; i += 2) {
             OnSend(getAverage(0, i));
           }
         }
 
-        OnSend(getAverage(0, buffer.Length));
+        OnSend(getAverage(0, buffer.Count));
       }
     }
 
@@ -74,7 +74,7 @@ namespace Leap.Unity {
     public void Close() {
       var finalPose = buffer.GetLatest();
 
-      for (int i = 0; i < buffer.Length - 1; i++) {
+      for (int i = 0; i < buffer.Count - 1; i++) {
         Receive(finalPose);
       }
 
