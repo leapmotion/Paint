@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Leap.Unity.Recording {
 
-  public class RecordedLeapData : MonoBehaviour {
+  public class RecordedLeapData : ScriptableObject {
 
     public List<Frame> frames;
 

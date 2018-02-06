@@ -132,7 +132,7 @@ namespace Leap.Unity.Recording {
     }
 
     protected void finishRecording(ProgressBar progress) {
-      progress.Begin(5, "Saving Recording", "", () => {
+      progress.Begin(6, "Saving Recording", "", () => {
         if (!_isRecording) return;
         _isRecording = false;
 
@@ -181,7 +181,6 @@ namespace Leap.Unity.Recording {
 
               //We don't want to revert method recordings!
               if (component is MethodRecording ||
-                  component is RecordedData ||
                   component is RecordedAudio) {
                 continue;
               }
@@ -406,13 +405,17 @@ namespace Leap.Unity.Recording {
             } else {
               Debug.LogError("Target obj was of type " + targetObj.GetType().Name);
             }
+          }
+        });
 
-            var dataRecorder = targetTransform.GetComponent<RecordedData>();
-            if (dataRecorder == null) {
-              dataRecorder = targetTransform.gameObject.AddComponent<RecordedData>();
-            }
+        RecordedDataAsset curveAsset = ScriptableObject.CreateInstance<RecordedDataAsset>();
+        progress.Begin(_curves.Count, "", "Creating Curve Asset", () => {
+          foreach (var data in _curves) {
+            progress.Step();
+            var binding = data.binding;
+            var curve = data.curve;
 
-            dataRecorder.data.Add(new RecordedData.EditorCurveBindingData() {
+            curveAsset.data.Add(new RecordedDataAsset.EditorCurveBindingData() {
               path = binding.path,
               propertyName = binding.propertyName,
               typeName = binding.type.Name,
@@ -421,7 +424,7 @@ namespace Leap.Unity.Recording {
           }
         });
 
-        progress.Step("Finalizing Prefab...");
+        progress.Step("Finalizing Assets...");
 
         var postProcessComponent = gameObject.AddComponent<HierarchyPostProcess>();
 
@@ -449,22 +452,28 @@ namespace Leap.Unity.Recording {
         Directory.CreateDirectory(finalSubFolder);
         AssetDatabase.Refresh();
 
+        //Create the asset that holds all of the curve data
+        string assetPath = Path.Combine(finalSubFolder, recordingName + " Raw.asset");
+        AssetDatabase.CreateAsset(curveAsset, assetPath);
+
+        //Create the asset that holds all of the leap data
+        RecordedLeapData leapDataAsset = null;
+        if (_leapData.Count > 0) {
+          string leapAssetPath = Path.Combine(finalSubFolder, recordingName + " LeapData.asset");
+          leapDataAsset = ScriptableObject.CreateInstance<RecordedLeapData>();
+          leapDataAsset.frames = _leapData;
+          AssetDatabase.CreateAsset(leapDataAsset, leapAssetPath);
+        }
+
+        //Init the post process component
+        postProcessComponent.curves = curveAsset;
+        postProcessComponent.leapData = leapDataAsset;
         postProcessComponent.recordingName = recordingName;
         postProcessComponent.assetFolder = new AssetFolder(finalSubFolder);
 
-        var leapObject = myGameObject;
-
-        var provider = myGameObject.GetComponentInChildren<LeapProvider>();
-        if (provider != null) {
-          leapObject = provider.gameObject;
-        }
-
-        var leapDataComponent = leapObject.AddComponent<RecordedLeapData>();
-        leapDataComponent.frames = _leapData;
-        postProcessComponent.leapData = leapDataComponent;
-
         string prefabPath = Path.Combine(finalSubFolder, recordingName + " Raw.prefab");
         PrefabUtility.CreatePrefab(prefabPath.Replace('\\', '/'), myGameObject);
+
         AssetDatabase.Refresh();
 
         EditorApplication.isPlaying = false;
