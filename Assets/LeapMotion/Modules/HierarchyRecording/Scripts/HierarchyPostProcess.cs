@@ -16,6 +16,7 @@ using UnityEngine.Timeline;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using Leap.Unity;
 using Leap.Unity.Query;
 using Leap.Unity.Attributes;
 using Leap.Unity.GraphicalRenderer;
@@ -28,10 +29,9 @@ namespace Leap.Unity.Recording {
     public string recordingName;
     public AssetFolder assetFolder;
 
-    public RecordedDataAsset curves;
+    public string curveDataFilename;
 
-    [Header("Leap Data")]
-    public RecordedLeapData leapData;
+    public string leapDataFilename;
 
     [SerializeField, ImplementsTypeNameDropdown(typeof(LeapRecording))]
     private string _leapRecordingType;
@@ -88,7 +88,8 @@ namespace Leap.Unity.Recording {
       //Try to generate a leap recording if we have leap data
       RecordingTrack recordingTrack = null;
       LeapRecording leapRecording = null;
-      if (leapData != null && leapData.frames.Count > 0) {
+      if (!string.IsNullOrEmpty(leapDataFilename)) {
+        var leapData = JsonUtility.FromJson<RecordedLeapData>(File.ReadAllText(Path.Combine(assetFolder.Path, leapDataFilename)));
         leapRecording = ScriptableObject.CreateInstance(_leapRecordingType) as LeapRecording;
         if (leapRecording != null) {
           leapRecording.name = "Recorded Leap Data";
@@ -197,6 +198,8 @@ namespace Leap.Unity.Recording {
     }
 
     private AnimationClip generateCompressedClip(ProgressBar progress) {
+      var curves = JsonUtility.FromJson<RecordedDataAsset>(File.ReadAllText(Path.Combine(assetFolder.Path, curveDataFilename)));
+
       var clip = new AnimationClip();
       clip.name = "Recorded Animation";
 

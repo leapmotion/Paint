@@ -4,8 +4,13 @@ using UnityEngine;
 
 namespace Leap.Unity.Recording {
 
-  public class RecordedDataAsset : ScriptableObject {
+  [Serializable]
+  public class RecordedLeapData {
+    public List<Frame> frames;
+  }
 
+  [Serializable]
+  public class RecordedDataAsset {
     public List<EditorCurveBindingData> data = new List<EditorCurveBindingData>();
 
     [Serializable]

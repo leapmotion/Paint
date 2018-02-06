@@ -38,10 +38,10 @@ namespace Leap.Unity.Recording {
   public abstract class BasicMethodRecording<T> : MethodRecording {
 
     [SerializeField]
-    private List<float> _times;
+    protected List<float> _times;
 
     [SerializeField]
-    private List<T> _args;
+    protected List<T> _args;
 
     public override sealed float GetDuration() {
       if (_times.Count == 0) {

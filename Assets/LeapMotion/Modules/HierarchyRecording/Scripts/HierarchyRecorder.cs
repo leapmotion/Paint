@@ -20,14 +20,15 @@ using Leap.Unity.Query;
 using Leap.Unity.GraphicalRenderer;
 
 namespace Leap.Unity.Recording {
+  using Attributes;
 
   public class HierarchyRecorder : MonoBehaviour {
     public static Action OnPreRecordFrame;
     public static Action OnBeginRecording;
     public static HierarchyRecorder instance;
 
-    public bool recordOnStart = false;
-    public bool recordOnHDMPresence = false;
+    [EnumFlags]
+    public RecordOn recordWhen = 0;
     public string recordingName;
     public AssetFolder targetFolder;
 
@@ -62,6 +63,12 @@ namespace Leap.Unity.Recording {
       get { return Time.time - _startTime; }
     }
 
+    public enum RecordOn {
+      Start = 0x01,
+      HMDPresence = 0x02,
+      HandPresence = 0x04
+    }
+
 #if UNITY_EDITOR
     protected List<Frame> _leapData;
     protected List<CurveData> _curves;
@@ -77,13 +84,17 @@ namespace Leap.Unity.Recording {
     protected void Start() {
       instance = this;
 
-      if (recordOnStart) {
+      if ((recordWhen & RecordOn.Start) != 0) {
         BeginRecording();
       }
     }
 
     protected void LateUpdate() {
-      if (XRDevice.isPresent && XRDevice.userPresence == UserPresenceState.Present && !_isRecording && recordOnHDMPresence) {
+      if (XRDevice.isPresent && XRDevice.userPresence == UserPresenceState.Present && !_isRecording && (recordWhen & RecordOn.HMDPresence) != 0) {
+        BeginRecording();
+      }
+
+      if ((Hands.Left != null || Hands.Right != null) && (recordWhen & RecordOn.HandPresence) != 0) {
         BeginRecording();
       }
 
@@ -132,6 +143,29 @@ namespace Leap.Unity.Recording {
     }
 
     protected void finishRecording(ProgressBar progress) {
+
+      string targetFolderPath = targetFolder.Path;
+      if (targetFolderPath == null) {
+        if (gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.path)) {
+          string sceneFolder = Path.GetDirectoryName(gameObject.scene.path);
+          targetFolderPath = Path.Combine(sceneFolder, "Recordings");
+        } else {
+          targetFolderPath = Path.Combine("Assets", "Recordings");
+        }
+      }
+
+      int folderSuffix = 1;
+      string finalSubFolder;
+      do {
+        finalSubFolder = Path.Combine(targetFolderPath, recordingName + " " + folderSuffix.ToString().PadLeft(2, '0'));
+        folderSuffix++;
+      } while (Directory.Exists(finalSubFolder));
+
+      Directory.CreateDirectory(finalSubFolder);
+      AssetDatabase.Refresh();
+
+      RecordedDataAsset curveData = null;
+
       progress.Begin(6, "Saving Recording", "", () => {
         if (!_isRecording) return;
         _isRecording = false;
@@ -361,61 +395,65 @@ namespace Leap.Unity.Recording {
         progress.Begin(_curves.Count, "", "Compressing Data: ", () => {
           _curves.Sort((a, b) => a.binding.propertyName.CompareTo(b.binding.propertyName));
           foreach (var data in _curves) {
-            EditorCurveBinding binding = data.binding;
-            AnimationCurve curve = data.curve;
+            using (new ProfilerSample("A")) {
+              EditorCurveBinding binding = data.binding;
+              AnimationCurve curve = data.curve;
 
-            progress.Step(binding.propertyName);
+              progress.Step(binding.propertyName);
 
-            GameObject animationGameObject;
-            {
-              var animatedObj = AnimationUtility.GetAnimatedObject(gameObject, binding);
-              if (animatedObj is GameObject) {
-                animationGameObject = animatedObj as GameObject;
+              GameObject animationGameObject;
+              {
+                var animatedObj = AnimationUtility.GetAnimatedObject(gameObject, binding);
+                if (animatedObj is GameObject) {
+                  animationGameObject = animatedObj as GameObject;
+                } else {
+                  animationGameObject = (animatedObj as Component).gameObject;
+                }
+              }
+
+              bool isMatBinding = binding.propertyName.StartsWith("material.") &&
+                                  binding.type.IsSubclassOf(typeof(Renderer));
+
+              //But if the curve is constant, just get rid of it!
+              //Except for material curves, which we always need to keep
+              if (curve.IsConstant() && !isMatBinding) {
+                //Check to make sure there are no other matching curves that are
+                //non constant.  If X and Y are constant but Z is not, we need to 
+                //keep them all :(
+                if (_curves.Query().Where(p => p.binding.path == binding.path &&
+                                               p.binding.type == binding.type &&
+                                               p.binding.propertyName.TrimEnd(2) == binding.propertyName.TrimEnd(2)).
+                                    All(k => k.curve.IsConstant())) {
+                  continue;
+                }
+              }
+
+              //First do a lossless compression
+              using (new ProfilerSample("B")) {
+                curve = AnimationCurveUtil.Compress(curve, Mathf.Epsilon, checkSteps: 3);
+              }
+
+              Transform targetTransform = null;
+              var targetObj = AnimationUtility.GetAnimatedObject(gameObject, binding);
+              if (targetObj is GameObject) {
+                targetTransform = (targetObj as GameObject).transform;
+              } else if (targetObj is Component) {
+                targetTransform = (targetObj as Component).transform;
               } else {
-                animationGameObject = (animatedObj as Component).gameObject;
+                Debug.LogError("Target obj was of type " + targetObj.GetType().Name);
               }
-            }
-
-            bool isMatBinding = binding.propertyName.StartsWith("material.") &&
-                                binding.type.IsSubclassOf(typeof(Renderer));
-
-            //But if the curve is constant, just get rid of it!
-            //Except for material curves, which we always need to keep
-            if (curve.IsConstant() && !isMatBinding) {
-              //Check to make sure there are no other matching curves that are
-              //non constant.  If X and Y are constant but Z is not, we need to 
-              //keep them all :(
-              if (_curves.Query().Where(p => p.binding.path == binding.path &&
-                                             p.binding.type == binding.type &&
-                                             p.binding.propertyName.TrimEnd(2) == binding.propertyName.TrimEnd(2)).
-                                  All(k => k.curve.IsConstant())) {
-                continue;
-              }
-            }
-
-            //First do a lossless compression
-            curve = AnimationCurveUtil.Compress(curve, Mathf.Epsilon);
-
-            Transform targetTransform = null;
-            var targetObj = AnimationUtility.GetAnimatedObject(gameObject, binding);
-            if (targetObj is GameObject) {
-              targetTransform = (targetObj as GameObject).transform;
-            } else if (targetObj is Component) {
-              targetTransform = (targetObj as Component).transform;
-            } else {
-              Debug.LogError("Target obj was of type " + targetObj.GetType().Name);
             }
           }
         });
 
-        RecordedDataAsset curveAsset = ScriptableObject.CreateInstance<RecordedDataAsset>();
+        curveData = new RecordedDataAsset();
         progress.Begin(_curves.Count, "", "Creating Curve Asset", () => {
           foreach (var data in _curves) {
             progress.Step();
             var binding = data.binding;
             var curve = data.curve;
 
-            curveAsset.data.Add(new RecordedDataAsset.EditorCurveBindingData() {
+            curveData.data.Add(new RecordedDataAsset.EditorCurveBindingData() {
               path = binding.path,
               propertyName = binding.propertyName,
               typeName = binding.type.Name,
@@ -423,51 +461,35 @@ namespace Leap.Unity.Recording {
             });
           }
         });
+      });
 
-        progress.Step("Finalizing Assets...");
-
+      progress.Begin(3, "Finalizing Assets", "", () => {
         var postProcessComponent = gameObject.AddComponent<HierarchyPostProcess>();
 
         GameObject myGameObject = gameObject;
 
         DestroyImmediate(this);
 
-        string targetFolderPath = targetFolder.Path;
-        if (targetFolderPath == null) {
-          if (myGameObject.scene.IsValid() && !string.IsNullOrEmpty(myGameObject.scene.path)) {
-            string sceneFolder = Path.GetDirectoryName(myGameObject.scene.path);
-            targetFolderPath = Path.Combine(sceneFolder, "Recordings");
-          } else {
-            targetFolderPath = Path.Combine("Assets", "Recordings");
-          }
-        }
-
-        int folderSuffix = 1;
-        string finalSubFolder;
-        do {
-          finalSubFolder = Path.Combine(targetFolderPath, recordingName + " " + folderSuffix.ToString().PadLeft(2, '0'));
-          folderSuffix++;
-        } while (Directory.Exists(finalSubFolder));
-
-        Directory.CreateDirectory(finalSubFolder);
-        AssetDatabase.Refresh();
-
         //Create the asset that holds all of the curve data
-        string assetPath = Path.Combine(finalSubFolder, recordingName + " Raw.asset");
-        AssetDatabase.CreateAsset(curveAsset, assetPath);
+        progress.Step("Creating Curve File...");
+        postProcessComponent.curveDataFilename = recordingName + " CurveData.data";
+        string assetPath = Path.Combine(finalSubFolder, postProcessComponent.curveDataFilename);
+        File.WriteAllText(assetPath, JsonUtility.ToJson(curveData));
 
         //Create the asset that holds all of the leap data
         RecordedLeapData leapDataAsset = null;
+        progress.Step("Creating Leap Data File...");
         if (_leapData.Count > 0) {
-          string leapAssetPath = Path.Combine(finalSubFolder, recordingName + " LeapData.asset");
-          leapDataAsset = ScriptableObject.CreateInstance<RecordedLeapData>();
+          postProcessComponent.leapDataFilename = recordingName + " LeapData.data";
+
+          string leapAssetPath = Path.Combine(finalSubFolder, postProcessComponent.leapDataFilename);
+          leapDataAsset = new RecordedLeapData();
           leapDataAsset.frames = _leapData;
-          AssetDatabase.CreateAsset(leapDataAsset, leapAssetPath);
+          File.WriteAllText(leapAssetPath, JsonUtility.ToJson(leapDataAsset));
         }
 
+        progress.Step("Creating Final Prefab...");
         //Init the post process component
-        postProcessComponent.curves = curveAsset;
-        postProcessComponent.leapData = leapDataAsset;
         postProcessComponent.recordingName = recordingName;
         postProcessComponent.assetFolder = new AssetFolder(finalSubFolder);
 
