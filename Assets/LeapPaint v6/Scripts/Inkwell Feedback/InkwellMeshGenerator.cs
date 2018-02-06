@@ -1,5 +1,6 @@
 ﻿using Leap.Unity.Attributes;
 using Leap.Unity.Drawing;
+using Leap.Unity.Infix;
 using Leap.Unity.Meshing;
 using Leap.Unity.Query;
 using Leap.Unity.RuntimeGizmos;
