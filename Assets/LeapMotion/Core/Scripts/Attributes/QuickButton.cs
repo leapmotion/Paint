@@ -18,15 +18,16 @@ namespace Leap.Unity.Attributes {
     public string methodOnPress = null;
     public string tooltip = "";
 
-    public Type type;
-    public System.Reflection.MethodInfo method;
-
     public QuickButtonAttribute(string buttonLabel, string methodOnPress, string tooltip = "") {
       this.label = buttonLabel;
       this.methodOnPress = methodOnPress;
       this.tooltip = tooltip;
     }
 
+    /// <summary>
+    /// IBeforeFieldAdditiveDrawer uses this to determine the width of the rect to pass
+    /// to the Draw method.
+    /// </summary>
     public float GetWidth() {
       return GUI.skin.label.CalcSize(new GUIContent(label)).x + 12f + PADDING_RIGHT;
     }
@@ -34,10 +35,18 @@ namespace Leap.Unity.Attributes {
 #if UNITY_EDITOR
     public void Draw(Rect rect, SerializedProperty property) {
       
-      type = targets.Query().FirstOrDefault().GetType();
-      method = type.GetMethod(methodOnPress, System.Reflection.BindingFlags.Instance
+      var type = targets.Query().FirstOrDefault().GetType();
+      System.Reflection.MethodInfo method;
+      try {
+        method = type.GetMethod(methodOnPress, System.Reflection.BindingFlags.Instance
                                              | System.Reflection.BindingFlags.Public
                                              | System.Reflection.BindingFlags.NonPublic);
+      }
+      catch (System.Reflection.AmbiguousMatchException e) {
+        Debug.LogError("QuickButton tried to prepare " + methodOnPress + " for calling, "
+                     + "but received an AmbiguousMatchException:\n" + e.ToString());
+        return;
+      }
 
       if (method == null) {
         Debug.LogError("QuickButton tried to prepare " + methodOnPress + " for calling, "
@@ -56,32 +65,19 @@ namespace Leap.Unity.Attributes {
           Undo.RegisterFullObjectHierarchyUndo(target, "Perform QuickButton Action");
         }
         foreach (var target in targets) {
-          method.Invoke(target, new object[] { });
+          try {
+            method.Invoke(target, new object[] { });
+          }
+          catch (Exception e) {
+            Debug.LogError(e.GetType().Name + " thrown trying to call method "
+              + method.Name + " on target " + target.name + ":\n"
+              + e.ToString());
+          }
         }
       }
 
     }
 #endif
-
-  }
-
-  public static class RectExtensions {
-
-    /// <summary>
-    /// Returns a new Rect centered on the original Rect but with the specified amount of
-    /// inner edge padding for each edge.
-    /// </summary>
-    public static Rect PadInner(this Rect r, float padding) {
-      return new Rect(r.x + padding, r.y + padding, r.width - padding, r.height - padding);
-    }
-
-    /// <summary>
-    /// Returns a new Rect centered on the original Rect but with the specified amount of
-    /// inner edge padding for each edge.
-    /// </summary>
-    public static Rect PadInner(this Rect r, float top, float bottom, float left, float right) {
-      return new Rect(r.x + left, r.y + bottom, r.width - right, r.height - top);
-    }
 
   }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,7 +41,7 @@ namespace Leap.Unity {
 
   }
 
-  public struct ReadonlySlice<T> {
+  public struct ReadonlySlice<T> : IIndexable<T> {
 
     private ReadonlyList<T> _list;
 
@@ -65,7 +66,7 @@ namespace Leap.Unity {
 
     public T this[int index] {
       get {
-        if (index > Count - 1) { throw new System.IndexOutOfRangeException(); }
+        if (index < 0 || index > Count - 1) { throw new IndexOutOfRangeException(); }
         return _list[_beginIdx + index * _direction];
       }
     }
@@ -76,27 +77,7 @@ namespace Leap.Unity {
       }
     }
 
-    public ReadonlySliceEnumerator<T> GetEnumerator() { return new ReadonlySliceEnumerator<T>(this); }
-
-  }
-
-  public struct ReadonlySliceEnumerator<T> {
-
-    private ReadonlySlice<T> _readonlySlice;
-
-    private int _index;
-
-    public ReadonlySliceEnumerator(ReadonlySlice<T> readonlySlice) {
-      _readonlySlice = readonlySlice;
-      _index = -1;
-    }
-
-    public T Current { get { return _readonlySlice[_index]; } }
-
-    public bool MoveNext() {
-      _index += 1;
-      return _index < _readonlySlice.Count;
-    }
+    public IIndexableEnumerator<T> GetEnumerator() { return this.GetEnumerator(); }
 
   }
 
