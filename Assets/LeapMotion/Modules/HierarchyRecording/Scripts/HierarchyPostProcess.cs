@@ -28,6 +28,8 @@ namespace Leap.Unity.Recording {
     public string recordingName;
     public AssetFolder assetFolder;
 
+    public RecordedDataAsset curves;
+
     [Header("Leap Data")]
     public RecordedLeapData leapData;
 
@@ -86,7 +88,7 @@ namespace Leap.Unity.Recording {
       //Try to generate a leap recording if we have leap data
       RecordingTrack recordingTrack = null;
       LeapRecording leapRecording = null;
-      if (leapData.frames.Count > 0) {
+      if (leapData != null && leapData.frames.Count > 0) {
         leapRecording = ScriptableObject.CreateInstance(_leapRecordingType) as LeapRecording;
         if (leapRecording != null) {
           leapRecording.name = "Recorded Leap Data";
@@ -118,14 +120,6 @@ namespace Leap.Unity.Recording {
 
       AssetDatabase.SaveAssets();
       AssetDatabase.Refresh();
-
-      foreach (var recording in GetComponentsInChildren<RecordedData>(includeInactive: true)) {
-        DestroyImmediate(recording);
-      }
-
-      foreach (var leapData in GetComponentsInChildren<RecordedLeapData>(includeInactive: true)) {
-        DestroyImmediate(leapData);
-      }
 
       //Create the playable director and link it to the new timeline
       var director = gameObject.AddComponent<PlayableDirector>();
@@ -207,59 +201,72 @@ namespace Leap.Unity.Recording {
       clip.name = "Recorded Animation";
 
       var bindingMap = new Dictionary<EditorCurveBinding, AnimationCurve>();
-      var recordings = GetComponentsInChildren<RecordedData>(includeInactive: true);
 
-      progress.Begin(2, "", "", () => {
-        progress.Begin(recordings.Length, "", "Compressing: ", () => {
-          for (int i = 0; i < recordings.Length; i++) {
-            progress.Begin(2, "", "", () => {
-              var recordingData = recordings[i];
+      Dictionary<string, Type> nameToType = new Dictionary<string, Type>();
+      foreach (var component in GetComponentsInChildren<Component>()) {
+        nameToType[component.GetType().Name] = component.GetType();
+      }
+      nameToType[typeof(GameObject).Name] = typeof(GameObject);
 
-              progress.Step(recordingData.name);
+      var toCompress = new Dictionary<EditorCurveBinding, AnimationCurve>();
+      var targetGameObjects = new HashSet<GameObject>();
 
-              var toCompress = new Dictionary<EditorCurveBinding, AnimationCurve>();
+      progress.Begin(3, "", "", () => {
 
-              progress.Begin(recordingData.data.Count, "", "", () => {
-                foreach (var bindingData in recordingData.data) {
-                  progress.Step(recordingData.name + " : " + bindingData.propertyName);
+        progress.Begin(curves.data.Count, "Extracting Curves", "", () => {
+          foreach (var data in curves.data) {
+            progress.Step();
 
-                  Type type = recordingData.GetComponents<Component>().
-                                            Query().
-                                            Select(c => c.GetType()).
-                                            Concat(typeof(GameObject)).
-                                            FirstOrDefault(t => t.Name == bindingData.typeName);
+            Type type;
+            if (!nameToType.TryGetValue(data.typeName, out type)) {
+              continue;
+            }
 
-                  if (type == null) {
-                    //If could not find the type, the component must have been deleted
-                    continue;
-                  }
+            var binding = EditorCurveBinding.FloatCurve(data.path, type, data.propertyName);
 
-                  var binding = EditorCurveBinding.FloatCurve(bindingData.path, type, bindingData.propertyName);
-                  toCompress[binding] = bindingData.curve;
-                }
-              });
+            var targetObj = AnimationUtility.GetAnimatedObject(gameObject, binding);
+            if (targetObj == null) {
+              continue;
+            }
 
-              doCompression(progress, recordingData, toCompress, bindingMap);
-            });
+            toCompress[binding] = data.curve;
+
+            if (targetObj is GameObject) {
+              targetGameObjects.Add(targetObj as GameObject);
+            } else if (targetObj is Component) {
+              targetGameObjects.Add((targetObj as Component).gameObject);
+            } else {
+              Debug.LogWarning("Unexpected target object type " + targetObj.GetType());
+              continue;
+            }
           }
         });
 
-        progress.Begin(bindingMap.Count, "", "Assigning Curves: ", () => {
+        progress.Begin(targetGameObjects.Count, "Compressing Curves", "", () => {
+          foreach (var targetGameObject in targetGameObjects) {
+            progress.Step(targetGameObject.name);
+
+            doCompression(progress, targetGameObject, toCompress, bindingMap);
+          }
+        });
+
+        progress.Begin(bindingMap.Count, "Assigning Curves", "", () => {
           foreach (var binding in bindingMap) {
+            progress.Step();
+
             progress.Step(binding.Key.propertyName);
             AnimationUtility.SetEditorCurve(clip, binding.Key, binding.Value);
           }
         });
       });
-
       return clip;
     }
 
     private void doCompression(ProgressBar progress,
-                               RecordedData recordingData,
+                               GameObject targetGameObject,
                                Dictionary<EditorCurveBinding, AnimationCurve> toCompress,
                                Dictionary<EditorCurveBinding, AnimationCurve> bindingMap) {
-      var propertyToMaxError = calculatePropertyErrors(recordingData);
+      var propertyToMaxError = calculatePropertyErrors(targetGameObject);
 
       List<EditorCurveBinding> bindings;
 
@@ -451,9 +458,9 @@ namespace Leap.Unity.Recording {
       });
     }
 
-    private Dictionary<string, float> calculatePropertyErrors(RecordedData recordingData) {
+    private Dictionary<string, float> calculatePropertyErrors(GameObject targetGameObject) {
       var propertyToMaxError = new Dictionary<string, float>();
-      Transform currTransform = recordingData.transform;
+      Transform currTransform = targetGameObject.transform;
       while (currTransform != null) {
         var compressionSettings = currTransform.GetComponent<PropertyCompression>();
         if (compressionSettings != null) {
