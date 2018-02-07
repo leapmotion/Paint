@@ -42,6 +42,8 @@ public class ThickLineRendererRecorder : BasicMethodRecording<ThickLineRendererR
   //}
 
   public override void EnterRecordingMode() {
+    base.EnterRecordingMode();
+
     _renderer.OnInitializeRenderer += () => SaveArgs(new Args() {
       method = Method.InitializeRenderer
     });

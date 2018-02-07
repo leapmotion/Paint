@@ -51,11 +51,11 @@ namespace Leap.Unity.Recording {
     public T data { get; private set; }
 
     protected virtual void Awake() {
-      HierarchyRecorder.OnBeginRecording += EnterRecordingMode;
-    }
-
-    protected virtual void OnDestroy() {
-      HierarchyRecorder.OnBeginRecording -= EnterRecordingMode;
+      HierarchyRecorder.OnBeginRecording += () => {
+        if (gameObject != null) {
+          EnterRecordingMode();
+        }
+      };
     }
 
     public override void LoadDataFromFile() {
