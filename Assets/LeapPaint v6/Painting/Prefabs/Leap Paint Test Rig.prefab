@@ -2315,20 +2315,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e0ed5922e911b343b8400997c95409c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  group:
-    GroupName: 
-    _handPool: {fileID: 0}
-    LeftModel: {fileID: 0}
-    IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
-    IsRightToBeSpawned: 0
-    IsEnabled: 1
-    CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   handedness: 1
   handModelPalmWidth: 0.085
   fingers:
@@ -2441,12 +2427,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   editTimePose: 1
-  _isHeadMounted: 1
-  _temporalWarping: {fileID: 114722661693623662}
   _frameOptimization: 0
   _physicsExtrapolation: 1
   _physicsExtrapolationTime: 0.011111111
-  _updateHandInPrecull: 1
 --- !u!114 &114521515748004854
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2482,20 +2465,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e0ed5922e911b343b8400997c95409c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  group:
-    GroupName: 
-    _handPool: {fileID: 0}
-    LeftModel: {fileID: 0}
-    IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
-    IsRightToBeSpawned: 0
-    IsEnabled: 1
-    CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   handedness: 0
   handModelPalmWidth: 0.085
   fingers:
@@ -2609,7 +2578,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _eyeType:
     _orderType: 3
-  _overrideEyePosition: 0
 --- !u!114 &114705679213994286
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2817,10 +2785,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c592f16851a620743868a31232613370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelsParent: {fileID: 4429164647125508}
+  _leapProvider: {fileID: 0}
   ModelPool:
   - GroupName: Rigged Hands
-    _handPool: {fileID: 0}
+    _handModelManager: {fileID: 0}
     LeftModel: {fileID: 114589447914138176}
     IsLeftToBeSpawned: 0
     RightModel: {fileID: 114476611631400058}

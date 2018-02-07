@@ -1465,6 +1465,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114388180428405364}
   _receiver: {fileID: 114476400136029252}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114171946881495318
 MonoBehaviour:
@@ -1511,6 +1512,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114476400136029252}
   _receiver: {fileID: 114680012973732708}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114239616296809378
 MonoBehaviour:
@@ -1525,6 +1527,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114400671564048536}
   _receiver: {fileID: 114557888179749178}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114245065303986518
 MonoBehaviour:
@@ -1539,6 +1542,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114818976534978808}
   _receiver: {fileID: 114400671564048536}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114256914654492402
 MonoBehaviour:
@@ -1565,6 +1569,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 295f107bb5f3ea8439356eed674e2a3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreSkipping: 0
+  alwaysSkipDistance: 0.01
   maxSkipDistance: 0.07
   maxSkipAngle: 10
   maxSkipRotationAngle: 20
@@ -1581,6 +1587,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114388180428405364}
   _receiver: {fileID: 114848365435003330}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114388180428405364
 MonoBehaviour:
@@ -1593,6 +1600,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 295f107bb5f3ea8439356eed674e2a3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignoreSkipping: 0
+  alwaysSkipDistance: 0.01
   maxSkipDistance: 0.07
   maxSkipAngle: 3
   maxSkipRotationAngle: 20
@@ -1609,6 +1618,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114818976534978808}
   _receiver: {fileID: 114762367312249822}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114398884367536130
 MonoBehaviour:
@@ -1669,6 +1679,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   minimumAlignmentAngleFromY: 30
   maximumAlignmentAngleFromY: 90
+  maxSegmentAngleToAlign: 5
 --- !u!114 &114505868910595914
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1682,6 +1693,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114267794441974294}
   _receiver: {fileID: 114200460944314236}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114557888179749178
 MonoBehaviour:
@@ -1740,6 +1752,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 0}
   _receiver: {fileID: 114267794441974294}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114624580515487222
 MonoBehaviour:
@@ -1754,6 +1767,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114476400136029252}
   _receiver: {fileID: 0}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114680012973732708
 MonoBehaviour:
@@ -1820,6 +1834,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114400671564048536}
   _receiver: {fileID: 114388180428405364}
+  drawWire: 1
   debugWire: 0
 --- !u!114 &114818976534978808
 MonoBehaviour:
@@ -1875,4 +1890,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 114267794441974294}
   _receiver: {fileID: 114818976534978808}
+  drawWire: 1
   debugWire: 0

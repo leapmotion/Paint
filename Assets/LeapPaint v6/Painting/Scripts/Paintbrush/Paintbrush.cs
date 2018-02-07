@@ -257,6 +257,14 @@ namespace Leap.Unity.Drawing {
       this.radius = radius;
     }
 
+    private Action<Color> _setColorFunc = null;
+    public Action<Color> setColorFunc {
+      get { return _setColorFunc = _setColorFunc ?? SetColor; }
+    }
+    public void SetColor(Color color) {
+      this.color = color;
+    }
+
     #endregion
 
   }
