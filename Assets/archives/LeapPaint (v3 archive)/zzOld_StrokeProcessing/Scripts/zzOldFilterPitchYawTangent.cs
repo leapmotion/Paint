@@ -15,8 +15,8 @@ namespace Leap.Unity.LeapPaint_v3 {
       Vector3 T, B, N;
       StrokePoint memory, current;
 
-      if (data.Length < 1) return;
-      else if (data.Length == 1) {
+      if (data.Count < 1) return;
+      else if (data.Count == 1) {
         StrokePoint point = data.Get(0);
         point.rotation = point.handOrientation;
         point.normal = point.rotation * Vector3.up;
@@ -24,11 +24,11 @@ namespace Leap.Unity.LeapPaint_v3 {
         return;
       }
 
-      for (int offset = data.Length - 2; offset >= 0; offset--) {
+      for (int offset = data.Count - 2; offset >= 0; offset--) {
         memory  = data.GetFromEnd((1 + offset));
         current = data.GetFromEnd((0 + offset));
 
-        if (offset == data.Length - 2) {
+        if (offset == data.Count - 2) {
           N = memory.rotation * Vector3.up;
           B = memory.rotation * Vector3.right;
           T = Vector3.Cross(N, B);

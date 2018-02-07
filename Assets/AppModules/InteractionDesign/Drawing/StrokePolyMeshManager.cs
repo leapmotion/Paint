@@ -60,11 +60,14 @@ namespace Leap.Unity.Drawing {
           strokeMeshPositions.Clear();
           var strokeSmoothEdges = Pool<List<Edge>>.Spawn();
           strokeSmoothEdges.Clear();
+          var strokeColors = Pool<List<Color>>.Spawn();
+          strokeColors.Clear();
           try {
             polyMesher.FillPolyMeshData(stroke,
                                         strokeMeshPositions,
                                         strokeMeshPolygons,
-                                        strokeSmoothEdges);
+                                        strokeSmoothEdges,
+                                        strokeColors);
             
 
             // If the current one is full, create a new LivePolyMeshObject for this
@@ -80,7 +83,8 @@ namespace Leap.Unity.Drawing {
             addStrokePolygonData(_curPolyMeshObj, stroke,
                                  strokeMeshPositions,
                                  strokeMeshPolygons,
-                                 strokeSmoothEdges);
+                                 strokeSmoothEdges,
+                                 strokeColors);
             
             _strokeMeshes[stroke] = _curPolyMeshObj;
 
@@ -101,6 +105,8 @@ namespace Leap.Unity.Drawing {
             Pool<List<Vector3>>.Recycle(strokeMeshPositions);
             strokeSmoothEdges.Clear();
             Pool<List<Edge>>.Recycle(strokeSmoothEdges);
+            strokeColors.Clear();
+            Pool<List<Color>>.Recycle(strokeColors);
           }
         }
       }
@@ -131,10 +137,12 @@ namespace Leap.Unity.Drawing {
                                       StrokeObject strokeObj,
                                       List<Vector3> strokeMeshPositions,
                                       List<Polygon> strokeMeshPolygons,
-                                      List<Edge>    strokeSmoothEdges) {
+                                      List<Edge>    strokeSmoothEdges,
+                                      List<Color>   strokeColors) {
       polyMeshObj.AddDataFor(strokeObj, strokeMeshPositions,
                                         strokeMeshPolygons,
-                                        strokeSmoothEdges);
+                                        strokeSmoothEdges,
+                                        strokeColors);
 
       // TODO: This counting is hacky and not-robust :(
       foreach (var polygon in strokeMeshPolygons) {
@@ -176,6 +184,8 @@ namespace Leap.Unity.Drawing {
           newStrokeMeshPositions.Clear();
           var newStrokeSmoothEdges   = Pool<List<Edge>>.Spawn();
           newStrokeSmoothEdges.Clear();
+          var newStrokeColors   = Pool<List<Color>>.Spawn();
+          newStrokeColors.Clear();
           var addedStrokeMeshPositionIndices = Pool<List<int>>.Spawn();
           addedStrokeMeshPositionIndices.Clear();
           var addedStrokeMeshPolygonIndices = Pool<List<int>>.Spawn();
@@ -190,13 +200,18 @@ namespace Leap.Unity.Drawing {
               polyMesher.FillPolyMeshData(strokeObj,
                                           newStrokeMeshPositions,
                                           newStrokeMeshPolygons,
-                                          newStrokeSmoothEdges);
+                                          newStrokeSmoothEdges,
+                                          newStrokeColors);
             }
+
+            var hasColors = newStrokeColors != null && newStrokeColors.Count > 0;
 
             using (new ProfilerSample("Add/modify PolyMesh stroke positions")) {
 
               // Re-use existing position indices or add new ones to fit the modified
               // stroke.
+              // Also take care of vertex colors here, because those always match the
+              // positions.
               for (int i = 0; i < newStrokeMeshPositions.Count; i++) {
                 int existingPositionIdx = -1;
                 if (i < curStrokePosIndices.Count) {
@@ -205,6 +220,9 @@ namespace Leap.Unity.Drawing {
                 if (existingPositionIdx != -1) {
                   // Modify the position at the existing position index.
                   polyMesh.SetPosition(existingPositionIdx, newStrokeMeshPositions[i]);
+                  if (hasColors) {
+                    polyMesh.SetColor(existingPositionIdx, newStrokeColors[i]);
+                  }
 
                   // Remember what this position index wound up being; the polygons of
                   // the stroke need to re-index into the final position index list.
@@ -215,6 +233,9 @@ namespace Leap.Unity.Drawing {
                   int addedPositionIdx;
                   polyMesh.AddPosition(newStrokeMeshPositions[i], out addedPositionIdx);
                   addedStrokeMeshPositionIndices.Add(addedPositionIdx);
+                  if (hasColors) {
+                    polyMesh.AddColor(newStrokeColors[i]);
+                  }
 
                   // Remember what this position index wound up being.
                   finalPositionIndices.Add(addedPositionIdx);

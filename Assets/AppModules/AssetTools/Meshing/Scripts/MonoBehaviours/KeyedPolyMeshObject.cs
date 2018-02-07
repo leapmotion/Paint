@@ -74,7 +74,8 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     public void AddDataFor(object key, List<Vector3> newPositions,
                                        List<Polygon> newPolygons,
-                                       List<Edge>    newSmoothEdges) {
+                                       List<Edge>    newSmoothEdges,
+                                       List<Color>   newColors = null) {
       PolygonData polygonData;
       if (objectPolygonData.TryGetValue(key, out polygonData)) {
         throw new System.InvalidOperationException(
@@ -89,7 +90,8 @@ namespace Leap.Unity.Meshing {
                       newPolygons,
                       newPositionIndices,
                       newPolygonIndices,
-                      newSmoothEdges: newSmoothEdges);
+                      newSmoothEdges: newSmoothEdges,
+                      newColors: newColors);
       
       objectPolygonData[key] = new PolygonData() {
         a = newPositionIndices,

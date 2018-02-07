@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
+using Leap.Unity.Infix;
 
 namespace Leap.Unity.RuntimeGizmos {
 

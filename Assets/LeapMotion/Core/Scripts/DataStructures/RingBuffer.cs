@@ -7,11 +7,7 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Leap.Unity {
+ namespace Leap.Unity {
 
   public class RingBuffer<T> {
 
@@ -20,15 +16,18 @@ namespace Leap.Unity {
     private int lastIdx = -1;
 
     public RingBuffer(int bufferSize) {
+      bufferSize = System.Math.Max(1, bufferSize);
       arr = new T[bufferSize];
     }
 
-    public int Length {
+    public int Count {
       get {
         if (lastIdx == -1) return 0;
-        int diff = (lastIdx + 1) - firstIdx;
-        if (diff <= 0) return diff + arr.Length;
-        return diff;
+
+        int endIdx = (lastIdx + 1) % arr.Length;
+
+        if (endIdx <= firstIdx) { endIdx += arr.Length; }
+        return endIdx - firstIdx;
       }
     }
 
@@ -37,12 +36,17 @@ namespace Leap.Unity {
     }
 
     public bool IsFull {
-      get { return Length == arr.Length; }
+      get { return lastIdx != -1
+                   && ((lastIdx + 1 + arr.Length) % arr.Length) == firstIdx; }
+    }
+
+    public bool IsEmpty {
+      get { return lastIdx == -1; }
     }
 
     public void Clear() {
-      lastIdx = -1;
       firstIdx = 0;
+      lastIdx = -1;
     }
 
     public void Add(T t) {
@@ -57,14 +61,14 @@ namespace Leap.Unity {
     }
 
     /// <summary>
-    /// Oldest element is at index 0, youngest is at Length - 1.
+    /// Oldest element is at index 0, youngest is at Count - 1.
     /// </summary>
     public T Get(int idx) {
       return arr[(firstIdx + idx) % arr.Length];
     }
 
     public T GetLatest() {
-      return Get(Length - 1);
+      return Get(Count - 1);
     }
 
     public T GetOldest() {
@@ -77,33 +81,9 @@ namespace Leap.Unity {
     }
 
     public void SetLatest(T t) {
-      Set(Length - 1, t);
+      Set(Count - 1, t);
     }
 
-    public RingBufferEnumerator<T> GetEnumerator() {
-      return new RingBufferEnumerator<T>(this);
-    }
-
-  }
-
-  public struct RingBufferEnumerator<T> {
-    private RingBuffer<T> buffer;
-    private int idx;
-
-    public RingBufferEnumerator(RingBuffer<T> buffer) {
-      this.buffer = buffer;
-      this.idx = -1;
-    }
-
-    public bool MoveNext() {
-      idx += 1;
-      return idx < buffer.Length;
-    }
-
-    public T Current {
-      get { return buffer.Get(idx); }
-    }
-    
   }
 
 }

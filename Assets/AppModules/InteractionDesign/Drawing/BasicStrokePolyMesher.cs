@@ -11,7 +11,8 @@ namespace Leap.Unity.Drawing {
     public void FillPolyMeshData(StrokeObject strokeObj,
                                  List<Vector3> outStrokePositions,
                                  List<Polygon> outStrokePolygons,
-                                 List<Edge> outStrokeSmoothEdges) {
+                                 List<Edge> outStrokeSmoothEdges,
+                                 List<Color> outStrokeColors) {
       if (strokeObj.Count == 1) {
         return;
       }
@@ -23,6 +24,9 @@ namespace Leap.Unity.Drawing {
           var p0 = a.pose.position + a.pose.rotation * Vector3.right * a.radius;
           var p1 = a.pose.position - a.pose.rotation * Vector3.right * a.radius;
           outStrokePositions.Add(p0, p1, p0, p1);
+
+          var color = a.color;
+          outStrokeColors.Add(color, color, color, color);
 
           if (maybeLastStrokePoint.HasValue) {
             var newPoly = Polygon.SpawnQuad(0, 1, -3, -4,

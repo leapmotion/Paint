@@ -12,6 +12,7 @@ Shader "Virtual Materials/Plath Standard Emissive" {
 		_Color ("Color", Color) = (1, 1, 1, 1)
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
+    _BaseEmissionColor ("Base Emission Color", Color) = (0, 0, 0, 0)
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
@@ -35,6 +36,7 @@ Shader "Virtual Materials/Plath Standard Emissive" {
 
 		sampler2D _MainTex;
     float4 _Color;
+    float4 _BaseEmissionColor;
 
 		struct Input {
 			float2 uv_MainTex;
@@ -60,7 +62,9 @@ Shader "Virtual Materials/Plath Standard Emissive" {
 			o.Albedo = c.rgb * _Color;
 
       // Proximity emission effect from Plath.
-      o.Emission = evalProximityColor(IN.worldPos, _ProximityGradient, _ProximityMapping);
+      o.Emission = _BaseEmissionColor
+                    + evalProximityColor(IN.worldPos, _ProximityGradient,
+                                         _ProximityMapping);
 
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;

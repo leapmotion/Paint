@@ -1,5 +1,6 @@
 ﻿using System;
 using Leap.Unity.Attributes;
+using Leap.Unity.Infix;
 using UnityEngine;
 using UnityEngine.Events;
 

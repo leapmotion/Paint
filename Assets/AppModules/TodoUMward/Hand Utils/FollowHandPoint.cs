@@ -10,10 +10,18 @@ namespace Leap.Unity.Attachments {
 
     #region Inspector
 
-    public Chirality whichHand;
+    [SerializeField]
+    private LeapProvider _provider;
+    public LeapProvider provider {
+      get {
+        if (_provider == null) { _provider = Hands.Provider; }
+        return _provider;
+      }
+    }
 
-    [QuickButton("Move Here", "moveToAttachmentPointNow")]
-    public AttachmentPointFlags attachmentPoint;
+    public Chirality whichHand;
+    
+    public AttachmentPointFlags attachmentPoint = AttachmentPointFlags.Palm;
 
     public enum FollowMode { Update, FixedUpdate }
     private FollowMode _followMode = FollowMode.Update;
@@ -36,17 +44,6 @@ namespace Leap.Unity.Attachments {
     [Disable]
     private bool _isHandTracked = false;
     public bool isHandTracked { get { return _isHandTracked; } }
-
-    private LeapProvider _backingProvider = null;
-
-    private LeapProvider _provider {
-      get {
-        if (_backingProvider == null) {
-          _backingProvider = Hands.Provider;
-        }
-        return _backingProvider;
-      }
-    }
 
     [Header("Pose Stream Offset")]
 
@@ -196,7 +193,7 @@ namespace Leap.Unity.Attachments {
     #region Editor Methods
 
     private void moveToAttachmentPointNow() {
-      onUpdateFrame(_provider.CurrentFrame);
+      onUpdateFrame(provider.CurrentFrame);
     }
 
     #endregion

@@ -64,6 +64,15 @@ namespace Leap.Unity.Meshing {
 
     #endregion
 
+    #region Vertex Colors
+
+    private List<Color> _colors;
+    public ReadonlyList<Color> colors {
+      get { return _colors; }
+    }
+
+    #endregion
+
     #endregion
 
     #region Transform Support
@@ -181,6 +190,7 @@ namespace Leap.Unity.Meshing {
     /// </summary>
     public void Clear(bool clearTransform = true) {
       _positions.Clear(); // We simply hold onto this List, there's nothing to pool.
+      if (_colors != null) _colors.Clear(); // same with colors.
 
       foreach (var polygon in _polygons) {
         polygon.RecycleVerts();
@@ -225,7 +235,8 @@ namespace Leap.Unity.Meshing {
     public void Append(List<Vector3> newPositions, List<Polygon> newPolygons,
                        List<int> outNewPositionIndices,
                        List<int> outNewPolygonIndices,
-                       List<Edge> newSmoothEdges = null) {
+                       List<Edge> newSmoothEdges = null,
+                       List<Color> newColors = null) {
       int origPositionCount = _positions.Count;
 
       AddPositions(newPositions, outNewPositionIndices);
@@ -242,6 +253,10 @@ namespace Leap.Unity.Meshing {
                                          smoothEdge.b + origPositionCount);
           MarkEdgeSmooth(incrementedEdge);
         }
+      }
+
+      if (newColors != null) {
+        AddColors(newColors);
       }
     }
 
@@ -292,6 +307,10 @@ namespace Leap.Unity.Meshing {
       foreach (var smoothEdge in otherPolyMesh.smoothEdges) {
         MarkEdgeSmooth(smoothEdge);
       }
+
+      if (otherPolyMesh.colors.isValid) {
+        AddColors(otherPolyMesh.colors);
+      }
     }
 
     /// <summary>
@@ -322,16 +341,25 @@ namespace Leap.Unity.Meshing {
     /// Fills the PolyMesh with the provided positions and polygons and marks the
     /// provided edge list as smooth.
     /// 
+    /// Optionally, a colors list can be added as well. If the list is not null and
+    /// not empty, its length must match the positions list length (representing vertex
+    /// colors).
+    /// 
     /// The mesh is cleared first if it's not empty.
     /// </summary>
     public void Fill(ReadonlyList<Vector3> positions,
                      ReadonlyList<Polygon> polygons,
-                     ReadonlyList<Edge> smoothEdges) {
+                     ReadonlyList<Edge> smoothEdges,
+                     ReadonlyList<Color> colors = default(ReadonlyList<Color>)) {
       if (_positions.Count != 0) { Clear(clearTransform: false); }
 
       AddPositions(positions);
       AddPolygons(polygons);
       MarkEdgesSmooth(smoothEdges);
+      
+      if (colors.isValid && colors.Count > 0) {
+        AddColors(colors);
+      }
     }
 
     /// <summary>
@@ -766,6 +794,29 @@ namespace Leap.Unity.Meshing {
 
     #endregion
 
+    #region Vertex Color Operations
+
+    public void AddColors(ReadonlyList<Color> colors) {
+      if (_colors == null) {
+        _colors = new List<Color>();
+      }
+      _colors.AddRange(colors);
+    }
+
+    public void AddColor(Color color) {
+      _colors.Add(color);
+    }
+
+    public void SetColor(int positionIdx, Color color) {
+      _colors[positionIdx] = color;
+    }
+
+    public bool GetHasColors() {
+      return _colors != null && _colors.Count > 0;
+    }
+
+    #endregion
+
     #region Debug Rendering
 
     public static void RenderPoint(Vector3 point, float rMult = 1f) {
@@ -775,8 +826,8 @@ namespace Leap.Unity.Meshing {
     public static void RenderPoint(Vector3 point, Color color, float rMult = 1f) {
       RuntimeGizmos.RuntimeGizmoDrawer drawer;
       if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
-        drawer.color = color;
-        drawer.DrawWireSphere(point, 0.003f * rMult);
+        drawer.color = color.WithAlpha(0.5f);
+        drawer.DrawSphere(point, 0.003f * rMult * 0.5f);
       }
     }
 
@@ -877,19 +928,10 @@ namespace Leap.Unity.Meshing {
               }
             }
 
-            // Render step.
+            // Render step, colocated vertices.
             {
               foreach (var colocatedVertexPosition in colocatedVertexPositions) {
                 RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.0f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.1f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.2f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.3f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 1.4f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 10f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 11f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 12f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 13f);
-                RenderPoint(colocatedVertexPosition, LeapColor.violet, 14f);
               }
             }
           }
@@ -921,27 +963,24 @@ namespace Leap.Unity.Meshing {
                     var edgeCutPointBA = cutPointsOnEdgeA[i];
                     var edgeCutPointBB = cutPointsOnEdgeA[i + 1];
 
-                    var aColor = Color.Lerp(Color.red, Color.green, 0.55f);
-                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.50f);
-                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.52f);
-                    Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.54f);
-                    var bColor = Color.Lerp(Color.blue, Color.green, 0.55f);
-                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.51f);
-                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.53f);
-                    Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.55f);
+
+                    // Render step: edge colinearities.
+                    {
+                      var aColor = Color.Lerp(Color.red, Color.green, 0.55f);
+                      var bColor = Color.Lerp(Color.blue, Color.green, 0.55f);
+
+                      Edge.RenderLiteral(edgeCutPointAA, edgeCutPointAB, aColor, 0.50f);
+                      Edge.RenderLiteral(edgeCutPointBA, edgeCutPointBB, bColor, 0.51f);
+                    }
                   }
 
                   foreach (var newPointOnEdgeA in cutPointsOnEdgeA) {
                     var aColor = Color.Lerp(Color.red, Color.green, 0.55f);
                     PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.0f);
-                    PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.2f);
-                    PolyMesh.RenderPoint(newPointOnEdgeA, aColor, 5.4f);
                   }
                   foreach (var newPointOnEdgeB in cutPointsOnEdgeB) {
                     var bColor = Color.Lerp(Color.blue, Color.green, 0.55f);
                     PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.1f);
-                    PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.3f);
-                    PolyMesh.RenderPoint(newPointOnEdgeB, bColor, 5.5f);
                   }
 
                 }
@@ -1017,12 +1056,8 @@ namespace Leap.Unity.Meshing {
 
               var aColor = Color.Lerp(Color.cyan, Color.red, 0.45f);
               RenderPoint(cutPointOnA, aColor, 5.6f);
-              RenderPoint(cutPointOnA, aColor, 5.8f);
-              RenderPoint(cutPointOnA, aColor, 6.0f);
               var bColor = Color.Lerp(Color.cyan, Color.blue, 0.45f);
               RenderPoint(cutPointOnB, bColor, 5.7f);
-              RenderPoint(cutPointOnB, bColor, 5.9f);
-              RenderPoint(cutPointOnB, bColor, 6.1f);
             }
           }
           finally {
@@ -3147,6 +3182,11 @@ namespace Leap.Unity.Meshing {
     private List<int> _cachedUnityMeshFaceIndicesList = new List<int>(4096);
 
     /// <summary>
+    /// Cached triangle RingBuffer for Unity mesh generation.
+    /// </summary>
+    private RingBuffer<int> _triBuffer = new RingBuffer<int>(3);
+
+    /// <summary>
     /// Clears and fills the provided Unity mesh object with data from this PolyMesh.
     /// 
     /// By default, the mesh is filled with one-sided triangles. Pass doubleSided as
@@ -3157,15 +3197,16 @@ namespace Leap.Unity.Meshing {
         mesh.Clear();
 
         _cachedUnityMeshFaceIndicesList.Clear();
-        var verts   = Pool<List<Vector3>>.Spawn();
-        verts.Clear();
+        var verts   = Pool<List<Vector3>>.Spawn(); verts.Clear();
         int vertsCount = 0;
-        var normals = Pool<List<Vector3>>.Spawn();
-        normals.Clear();
+        var normals = Pool<List<Vector3>>.Spawn(); normals.Clear();
         var polyMeshIdxToSharedIdxMap = Pool<Dictionary<int, int>>.Spawn();
         polyMeshIdxToSharedIdxMap.Clear();
         var sharedSmoothVertNormals = Pool<Dictionary<int, Vector4>>.Spawn();
         sharedSmoothVertNormals.Clear();
+        var vertColors = Pool<List<Color>>.Spawn(); vertColors.Clear();
+        var hasColors = GetHasColors();
+        _triBuffer.Clear();
         try {
           if (this.smoothEdges.Count == 0) {
             #region Mesh Conversion Without Any Smooth Edges (Fast)
@@ -3191,11 +3232,21 @@ namespace Leap.Unity.Meshing {
                         verts.Add(GetLocalPosition(tri.a));
                         verts.Add(GetLocalPosition(tri.b));
                         verts.Add(GetLocalPosition(tri.c));
+                        if (hasColors) {
+                          vertColors.Add(_colors[tri.a]);
+                          vertColors.Add(_colors[tri.b]);
+                          vertColors.Add(_colors[tri.c]);
+                        }
                         vertsCount += 3;
                         if (doubleSided) {
                           verts.Add(GetLocalPosition(tri.a));
                           verts.Add(GetLocalPosition(tri.b));
                           verts.Add(GetLocalPosition(tri.c));
+                          if (hasColors) {
+                            vertColors.Add(_colors[tri.a]);
+                            vertColors.Add(_colors[tri.b]);
+                            vertColors.Add(_colors[tri.c]);
+                          }
                           vertsCount += 3;
                         }
                       }
@@ -3228,114 +3279,131 @@ namespace Leap.Unity.Meshing {
               // Write them to the shared, smooth edge vertex memory.
               // Also accumulate shared normal data.
               Vector3 curPolyNormal;
-              foreach (var poly in polygons) {
-                curPolyNormal = poly.GetNormal();
-                foreach (var edge in poly.edges) {
-                  if (smoothEdges.Contains(edge)) {
-                    var polyMeshIdx = edge.a;
-                    for (int i = 0; i < 2; i++) {
+              using (new ProfilerSample("Assign positions for verts on shared edges")) {
+                foreach (var poly in polygons) {
+                  curPolyNormal = poly.GetNormal();
+                  foreach (var edge in poly.edges) {
+                    if (smoothEdges.Contains(edge)) {
+                      var polyMeshIdx = edge.a;
+                      for (int i = 0; i < 2; i++) {
 
-                      int sharedIdx;
-                      if (!polyMeshIdxToSharedIdxMap.TryGetValue(polyMeshIdx,
-                                                                 out sharedIdx)) {
-                        sharedIdx = meshVertWriteIdx++;
-                        polyMeshIdxToSharedIdxMap[polyMeshIdx] = sharedIdx;
-                        verts.Add(_positions[polyMeshIdx]); // position at sharedIdx.
-                      }
+                        int sharedIdx;
+                        if (!polyMeshIdxToSharedIdxMap.TryGetValue(polyMeshIdx,
+                                                                   out sharedIdx)) {
+                          sharedIdx = meshVertWriteIdx++;
+                          polyMeshIdxToSharedIdxMap[polyMeshIdx] = sharedIdx;
+                          verts.Add(GetLocalPosition(polyMeshIdx)); // position at sharedIdx.
+                          if (hasColors) {
+                            vertColors.Add(_colors[polyMeshIdx]); //color at sharedIdx.
+                          }
+                        }
 
-                      Vector4 accumNormal;
-                      if (!sharedSmoothVertNormals.TryGetValue(sharedIdx,
-                                                               out accumNormal)) {
-                        sharedSmoothVertNormals[sharedIdx] = V4(curPolyNormal, 1);
-                      }
-                      else {
-                        sharedSmoothVertNormals[sharedIdx] = V4(V3(accumNormal)
-                                                                  + curPolyNormal,
-                                                                w: accumNormal.w + 1);
-                      }
+                        Vector4 accumNormal;
+                        if (!sharedSmoothVertNormals.TryGetValue(sharedIdx,
+                                                                 out accumNormal)) {
+                          sharedSmoothVertNormals[sharedIdx] = V4(curPolyNormal, 1);
+                        }
+                        else {
+                          sharedSmoothVertNormals[sharedIdx] = V4(V3(accumNormal)
+                                                                    + curPolyNormal,
+                                                                  w: accumNormal.w + 1);
+                        }
 
-                      polyMeshIdx = edge.b;
+                        polyMeshIdx = edge.b;
+                      }
                     }
                   }
                 }
               }
 
               // Write accumulated normals for shared vertices.
-              for (int i = 0; i < verts.Count; i++) {
-                normals.Add(Vector3.zero);
+              using (new ProfilerSample("Write accumulated normals for shared verts")) {
+                for (int i = 0; i < verts.Count; i++) {
+                  normals.Add(Vector3.zero);
+                }
+                foreach (var sharedIdxNormalPair in sharedSmoothVertNormals) {
+                  var accumNormal = sharedIdxNormalPair.Value;
+                  var finalNormal = V3(accumNormal) / accumNormal.w;
+                  var sharedIdx = sharedIdxNormalPair.Key;
+                  normals[sharedIdx] = finalNormal;
+                }
               }
-              foreach (var sharedIdxNormalPair in sharedSmoothVertNormals) {
-                var accumNormal = sharedIdxNormalPair.Value;
-                var finalNormal = V3(accumNormal) / accumNormal.w;
-                var sharedIdx = sharedIdxNormalPair.Key;
-                normals[sharedIdx] = finalNormal;
-              }
-              
+
               // Final pass: Write triangle indices, adding non-shared vertices and
               // normals as we go.
-              RingBuffer<int> triBuffer = new RingBuffer<int>(3);
-              foreach (var poly in polygons) {
-                curPolyNormal = poly.GetNormal();
+              _triBuffer.Clear();
+              using (new ProfilerSample("Write triangle indices, add non-shared verts")) {
+                foreach (var poly in polygons) {
+                  curPolyNormal = poly.GetNormal();
 
-                triBuffer.Clear();
-                for (int pv = 0; pv < poly.verts.Count; pv++) {
+                  _triBuffer.Clear();
+                  for (int pv = 0; pv < poly.verts.Count; pv++) {
 
-                  // Collect "actual indices", which might be shared from the earlier
-                  // pass or might be newly constructed, into a triangle buffer.
-                  int actualIdx;
+                    // Collect "actual indices", which might be shared from the earlier
+                    // pass or might be newly constructed, into a triangle buffer.
+                    int actualIdx;
 
-                  // A vertex is shared/smooth if it on a smooth edge AND that edge is
-                  // on this polygon.
-                  bool onSmoothPolyEdge = false;
-                  var prevEdge = new Edge(this, poly[pv - 1], poly[pv]);
-                  var nextEdge = new Edge(this, poly[pv], poly[pv + 1]);
-                  onSmoothPolyEdge = smoothEdges.Contains(prevEdge)
-                                     || smoothEdges.Contains(nextEdge);
-                  if (onSmoothPolyEdge) {
-                    // Shared vertex; access via map, already have position and normal,
-                    // only need to write tri.
-                    actualIdx = polyMeshIdxToSharedIdxMap[poly[pv]];
-                  }
-                  else {
-                    // Non-shared vertex: Add new index, write vert position and normal.
-                    actualIdx = meshVertWriteIdx++;
-                    verts.Add(_positions[poly[pv]]);
-                    normals.Add(curPolyNormal);
-                  }
+                    // A vertex is shared/smooth if it on a smooth edge AND that edge is
+                    // on this polygon.
+                    bool onSmoothPolyEdge = false;
+                    var prevEdge = new Edge(this, poly[pv - 1], poly[pv]);
+                    var nextEdge = new Edge(this, poly[pv], poly[pv + 1]);
+                    onSmoothPolyEdge = smoothEdges.Contains(prevEdge)
+                                       || smoothEdges.Contains(nextEdge);
+                    if (onSmoothPolyEdge) {
+                      // Shared vertex; access via map, already have position and normal,
+                      // only need to write tri.
+                      actualIdx = polyMeshIdxToSharedIdxMap[poly[pv]];
+                    }
+                    else {
+                      // Non-shared vertex: Add new index, write vert position and normal.
+                      actualIdx = meshVertWriteIdx++;
+                      verts.Add(GetLocalPosition(poly[pv]));
+                      normals.Add(curPolyNormal);
+                      if (hasColors) {
+                        vertColors.Add(_colors[poly[pv]]);
+                      }
+                    }
 
-                  // Accumulate a single triangle or shift buffer across the polygon.
-                  if (!triBuffer.IsFull) {
-                    triBuffer.Add(actualIdx);
-                  }
-                  else {
-                    triBuffer.Set(1, triBuffer.Get(2));
-                    triBuffer.Set(2, actualIdx);
-                  }
-                  
-                  if (triBuffer.IsFull) {
-                    // 3 vertices in buffer, write dat triangle!
-                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(0));
-                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(1));
-                    _cachedUnityMeshFaceIndicesList.Add(triBuffer.Get(2));
+                    // Accumulate a single triangle or shift buffer across the polygon.
+                    if (!_triBuffer.IsFull) {
+                      _triBuffer.Add(actualIdx);
+                    }
+                    else {
+                      _triBuffer.Set(1, _triBuffer.Get(2));
+                      _triBuffer.Set(2, actualIdx);
+                    }
+
+                    if (_triBuffer.IsFull) {
+                      // 3 vertices in buffer, write dat triangle!
+                      _cachedUnityMeshFaceIndicesList.Add(_triBuffer.Get(0));
+                      _cachedUnityMeshFaceIndicesList.Add(_triBuffer.Get(1));
+                      _cachedUnityMeshFaceIndicesList.Add(_triBuffer.Get(2));
+                    }
                   }
                 }
               }
 
               // Okay ONE more thing if we want a double-sided mesh.
               if (doubleSided) {
-                int doubleSidedStartIdx = verts.Count;
-                for (int v = 0; v < doubleSidedStartIdx; v++) {
-                  verts.Add(verts[v]);
-                  normals.Add(-normals[v]);
-                }
-                int origIndexCount = _cachedUnityMeshFaceIndicesList.Count;
-                for (int i = 0; i < origIndexCount; i += 3) {
-                  _cachedUnityMeshFaceIndicesList.Add(
-                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 0]);
-                  _cachedUnityMeshFaceIndicesList.Add(
-                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 2]);
-                  _cachedUnityMeshFaceIndicesList.Add(
-                    doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 1]);
+                using (new ProfilerSample("Final pass for double-sided mesh")) {
+                  int doubleSidedStartIdx = verts.Count;
+                  for (int v = 0; v < doubleSidedStartIdx; v++) {
+                    verts.Add(verts[v]);
+                    normals.Add(-normals[v]);
+                    if (hasColors) {
+                      vertColors.Add(_colors[v]);
+                    }
+                  }
+                  int origIndexCount = _cachedUnityMeshFaceIndicesList.Count;
+                  for (int i = 0; i < origIndexCount; i += 3) {
+                    _cachedUnityMeshFaceIndicesList.Add(
+                      doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 0]);
+                    _cachedUnityMeshFaceIndicesList.Add(
+                      doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 2]);
+                    _cachedUnityMeshFaceIndicesList.Add(
+                      doubleSidedStartIdx + _cachedUnityMeshFaceIndicesList[i + 1]);
+                  }
                 }
               }
               #endregion
@@ -3347,6 +3415,9 @@ namespace Leap.Unity.Meshing {
             mesh.SetTriangles(_cachedUnityMeshFaceIndicesList,
                               submesh: 0, calculateBounds: true);
             mesh.SetNormals(normals);
+            if (hasColors) {
+              mesh.SetColors(vertColors);
+            }
           }
         }
         finally {
@@ -3359,6 +3430,8 @@ namespace Leap.Unity.Meshing {
           Pool<Dictionary<int, int>>.Recycle(polyMeshIdxToSharedIdxMap);
           sharedSmoothVertNormals.Clear();
           Pool<Dictionary<int, Vector4>>.Recycle(sharedSmoothVertNormals);
+          vertColors.Clear();
+          Pool<List<Color>>.Recycle(vertColors);
         }
       }
     }

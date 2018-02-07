@@ -25,6 +25,12 @@ namespace Leap.Unity {
       _list = list;
     }
 
+    public bool isValid {
+      get {
+        return _list != null;
+      }
+    }
+
     public int Count {
       get {
         return _list.Count;

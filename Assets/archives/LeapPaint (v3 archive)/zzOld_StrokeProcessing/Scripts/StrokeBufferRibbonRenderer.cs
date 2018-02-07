@@ -75,7 +75,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     private void RefreshRenderTrail() {
       Vector3 endPosition = _lastStrokeBuffer.GetLatest().position;
-      for (int i = 0; i < _lastStrokeBuffer.Length; i++) {
+      for (int i = 0; i < _lastStrokeBuffer.Count; i++) {
         StrokePoint strokePoint = _lastStrokeBuffer.Get(i);
 
         MeshPoint point = new MeshPoint(strokePoint.position);
@@ -99,15 +99,15 @@ namespace Leap.Unity.LeapPaint_v3 {
           // Thickness + decay
           int maxBufferSize = 16;
           //int effBufferSize = Mathf.Min(maxBufferSize, _lastStrokeBuffer.Size - 1);
-          float thicknessCurveEvalPos = Mathf.Min(1F, (float)(_lastStrokeBuffer.Length - 1 - i) / maxBufferSize); // ([0-16]) / 8 --> 0, 1/8, 2/8, ... 1, 1, 1
+          float thicknessCurveEvalPos = Mathf.Min(1F, (float)(_lastStrokeBuffer.Count - 1 - i) / maxBufferSize); // ([0-16]) / 8 --> 0, 1/8, 2/8, ... 1, 1, 1
           float targetThickness = 0F;
-          if (_lastStrokeBuffer.Length > 1) {
+          if (_lastStrokeBuffer.Count > 1) {
             targetThickness = strokePoint.thickness * previewThicknessCurve.Evaluate(thicknessCurveEvalPos) * _thicknessDecayMultiplier;
           }
           if (i > _prevDrawRadii.Count - 1) {
             _prevDrawRadii.Add(targetThickness);
           }
-          if (_lastStrokeBuffer.Length - 1 - i < maxBufferSize) {
+          if (_lastStrokeBuffer.Count - 1 - i < maxBufferSize) {
             _ribbon.Radii[i] = Mathf.Lerp(_prevDrawRadii[i], targetThickness, 0.05F);
           }
           else {

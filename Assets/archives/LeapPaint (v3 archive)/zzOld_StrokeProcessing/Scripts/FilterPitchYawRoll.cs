@@ -12,15 +12,15 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     public void Process(RingBuffer<StrokePoint> data, RingBuffer<int> indices) {
-      if (data.Length < 1) return;
-      if (data.Length == 1) {
+      if (data.Count < 1) return;
+      if (data.Count == 1) {
         StrokePoint point = data.Get(0);
         point.rotation = point.handOrientation;
         point.normal = point.rotation * Vector3.up;
         data.Set(0, point);
       }
-      else if (data.Length >= 2) {
-        for (int offset = 0; offset < data.Length - 1; offset++) {
+      else if (data.Count >= 2) {
+        for (int offset = 0; offset < data.Count - 1; offset++) {
           StrokePoint point = data.Get(0 + offset);
           Vector3 T = point.rotation * Vector3.forward;
           Vector3 N = point.rotation * Vector3.up;
@@ -92,11 +92,11 @@ namespace Leap.Unity.LeapPaint_v3 {
   public static class RingBufferExtensions {
 
     public static T GetFromEnd<T>(this RingBuffer<T> ringBuffer, int idxFromEnd) {
-      return ringBuffer.Get(ringBuffer.Length - 1 - idxFromEnd);
+      return ringBuffer.Get(ringBuffer.Count - 1 - idxFromEnd);
     }
 
     public static void SetFromEnd<T>(this RingBuffer<T> ringBuffer, int idxFromEnd, T value) {
-      ringBuffer.Set(ringBuffer.Length - 1 - idxFromEnd, value);
+      ringBuffer.Set(ringBuffer.Count - 1 - idxFromEnd, value);
     }
 
   }

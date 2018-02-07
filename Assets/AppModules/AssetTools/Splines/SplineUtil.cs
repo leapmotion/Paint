@@ -1,4 +1,5 @@
-﻿using Leap.Unity.Meshing;
+﻿using Leap.Unity.Infix;
+using Leap.Unity.Meshing;
 using Leap.Unity.PhysicalInterfaces;
 using System.Collections;
 using System.Collections.Generic;

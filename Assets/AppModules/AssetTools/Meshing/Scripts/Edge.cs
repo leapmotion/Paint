@@ -186,7 +186,7 @@ namespace Leap.Unity.Meshing {
       RuntimeGizmos.RuntimeGizmoDrawer drawer;
       if (RuntimeGizmos.RuntimeGizmoManager.TryGetGizmoDrawer(out drawer)) {
         drawer.color = color;
-
+        
         drawer.DrawWireCapsule(pA, pB, 0.04f * sizeMult);
       }
     }

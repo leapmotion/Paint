@@ -45,9 +45,8 @@ namespace Leap.Unity.Meshing.Examples {
       // Verts.
       foreach (var poly in mesh.polygons) {
         int vertIdx = 0;
+        drawer.color = debugVertColor;
         foreach (var vertPos in poly.verts.Query().Select(vIdx => poly.GetMeshPosition(vIdx))) {
-          drawer.color = Color.Lerp(debugVertColor, Color.Lerp(debugVertColor, Color.black, 0.2f),
-                                    ((float)vertIdx / poly.verts.Count));
           drawer.DrawWireSphere(vertPos, PolyMath.POSITION_TOLERANCE * debugVertRadiusMult);
           drawer.DrawWireCube(vertPos, Vector3.one * PolyMath.POSITION_TOLERANCE * debugVertRadiusMult);
           vertIdx++;
