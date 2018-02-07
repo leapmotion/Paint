@@ -66,7 +66,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected void OnValidate() {
-      Start();
+      //Start();
     }
 
     private void RefreshVerts() {
