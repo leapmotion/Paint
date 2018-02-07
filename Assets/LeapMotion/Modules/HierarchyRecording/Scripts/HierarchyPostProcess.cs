@@ -168,6 +168,8 @@ namespace Leap.Unity.Recording {
             director.SetGenericBinding(track.outputs.Query().First().sourceObject, recording);
 
             var clip = track.CreateClip<MethodRecordingClip>();
+
+            recording.LoadDataFromFile();
             clip.duration = recording.GetDuration();
           }
         });

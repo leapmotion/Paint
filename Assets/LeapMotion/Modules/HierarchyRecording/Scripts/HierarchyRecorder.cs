@@ -467,12 +467,21 @@ namespace Leap.Unity.Recording {
         });
       });
 
-      progress.Begin(3, "Finalizing Assets", "", () => {
+      progress.Begin(4, "Finalizing Assets", "", () => {
         var postProcessComponent = gameObject.AddComponent<HierarchyPostProcess>();
 
         GameObject myGameObject = gameObject;
 
         DestroyImmediate(this);
+
+        //Create all the files for the method recording
+        progress.Step("Creating Method Recording Files...");
+        var methodRecordings = myGameObject.GetComponentsInChildren<MethodRecording>();
+        for (int i = 0; i < methodRecordings.Length; i++) {
+          var methodRecording = methodRecordings[i];
+          string fullPath = Path.Combine(finalSubFolder, "MethodRecording_" + i + ".data");
+          methodRecording.ExitRecordingMode(fullPath);
+        }
 
         //Create the asset that holds all of the curve data
         progress.Step("Creating Curve File...");

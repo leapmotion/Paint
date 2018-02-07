@@ -8,27 +8,26 @@
  ******************************************************************************/
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Leap.Unity.Recording {
 
   public abstract class MethodRecording : MonoBehaviour {
-
     public Mode mode { get; private set; }
-
-    protected virtual void Awake() {
-      HierarchyRecorder.OnBeginRecording += EnterRecordingMode;
-    }
-
-    protected virtual void OnDestroy() {
-      HierarchyRecorder.OnBeginRecording -= EnterRecordingMode;
-    }
 
     public abstract float GetDuration();
 
+    public abstract void SaveDataToFile(string file);
+    public abstract void LoadDataFromFile();
+
     public virtual void EnterRecordingMode() {
       mode = Mode.Recording;
+    }
+
+    public virtual void ExitRecordingMode(string savePath) {
+      mode = Mode.None;
     }
 
     public virtual void EnterPlaybackMode() {
@@ -44,25 +43,59 @@ namespace Leap.Unity.Recording {
     }
   }
 
-  public abstract class BasicMethodRecording<T> : MethodRecording {
+  public abstract class MethodRecording<T> : MethodRecording where T : new() {
 
     [SerializeField]
-    protected List<float> _times;
+    private string recordedDataPath;
 
-    [SerializeField]
-    protected List<T> _args;
+    public T data { get; private set; }
+
+    protected virtual void Awake() {
+      HierarchyRecorder.OnBeginRecording += EnterRecordingMode;
+    }
+
+    protected virtual void OnDestroy() {
+      HierarchyRecorder.OnBeginRecording -= EnterRecordingMode;
+    }
+
+    public override void LoadDataFromFile() {
+      data = JsonUtility.FromJson<T>(File.ReadAllText(recordedDataPath));
+    }
+
+    public override void SaveDataToFile(string file) {
+      recordedDataPath = file;
+      File.WriteAllText(file, JsonUtility.ToJson(data));
+    }
+
+    public override void EnterRecordingMode() {
+      base.EnterRecordingMode();
+      data = new T();
+    }
+
+    public override void ExitRecordingMode(string savePath) {
+      base.ExitRecordingMode(savePath);
+      SaveDataToFile(savePath);
+    }
+
+    public override void EnterPlaybackMode() {
+      base.EnterPlaybackMode();
+      LoadDataFromFile();
+    }
+  }
+
+  public abstract class BasicMethodRecording<T> : MethodRecording<BasicMethodRecording<T>.RecordedData> {
 
     public override sealed float GetDuration() {
-      if (_times.Count == 0) {
+      if (data.times.Count == 0) {
         return 0;
       } else {
-        return _times[_times.Count - 1];
+        return data.times[data.times.Count - 1];
       }
     }
 
     public override sealed void SweepTime(float from, float to) {
-      int startIndex = _times.BinarySearch(from);
-      int endIndex = _times.BinarySearch(to);
+      int startIndex = data.times.BinarySearch(from);
+      int endIndex = data.times.BinarySearch(to);
 
       if (startIndex < 0) {
         startIndex = ~startIndex;
@@ -75,24 +108,24 @@ namespace Leap.Unity.Recording {
       Debug.Log("Sweep from " + from + " (" + startIndex + ") to " + to + " (" + endIndex + ")");
 
       for (int i = startIndex; i < endIndex; i++) {
-        InvokeArgs(_args[i]);
+        InvokeArgs(data.args[i]);
       }
     }
 
     protected void SaveArgs(T state) {
-      if (_times == null) _times = new List<float>();
-      if (_args == null) _args = new List<T>();
+      if (data.times == null) data.times = new List<float>();
+      if (data.args == null) data.args = new List<T>();
 
-      _times.Add(HierarchyRecorder.instance.recordingTime);
-      _args.Add(state);
+      data.times.Add(HierarchyRecorder.instance.recordingTime);
+      data.args.Add(state);
     }
 
     protected abstract void InvokeArgs(T state);
 
     [Serializable]
-    private struct TimedArgs {
-      public float time;
-      public T state;
+    public class RecordedData {
+      public List<float> times;
+      public List<T> args;
     }
   }
 }
