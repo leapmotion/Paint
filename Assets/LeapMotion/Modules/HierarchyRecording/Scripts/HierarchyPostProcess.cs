@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -198,65 +198,60 @@ namespace Leap.Unity.Recording {
     }
 
     private AnimationClip generateCompressedClip(ProgressBar progress) {
-      var curves = JsonUtility.FromJson<RecordedDataAsset>(File.ReadAllText(Path.Combine(assetFolder.Path, curveDataFilename)));
-
       var clip = new AnimationClip();
       clip.name = "Recorded Animation";
 
-      var bindingMap = new Dictionary<EditorCurveBinding, AnimationCurve>();
+      RecordedDataAsset curves = null;
+      progress.Begin(1, "Opening Curve File...", "", () => {
+        progress.Step();
+        curves = JsonUtility.FromJson<RecordedDataAsset>(File.ReadAllText(Path.Combine(assetFolder.Path, curveDataFilename)));
+      });
 
-      Dictionary<string, Type> nameToType = new Dictionary<string, Type>();
-      foreach (var component in GetComponentsInChildren<Component>()) {
-        nameToType[component.GetType().Name] = component.GetType();
-      }
-      nameToType[typeof(GameObject).Name] = typeof(GameObject);
+      progress.Begin(2, "", "", () => {
+        var bindingMap = new Dictionary<EditorCurveBinding, AnimationCurve>();
 
-      var toCompress = new Dictionary<EditorCurveBinding, AnimationCurve>();
-      var targetGameObjects = new HashSet<GameObject>();
+        Dictionary<string, Type> nameToType = new Dictionary<string, Type>();
+        foreach (var component in GetComponentsInChildren<Component>()) {
+          nameToType[component.GetType().Name] = component.GetType();
+        }
+        nameToType[typeof(GameObject).Name] = typeof(GameObject);
 
-      progress.Begin(3, "", "", () => {
+        var toCompress = new Dictionary<EditorCurveBinding, AnimationCurve>();
+        var targetObjects = new HashSet<UnityEngine.Object>();
 
-        progress.Begin(curves.data.Count, "Extracting Curves", "", () => {
-          foreach (var data in curves.data) {
-            progress.Step();
-
-            Type type;
-            if (!nameToType.TryGetValue(data.typeName, out type)) {
-              continue;
-            }
-
-            var binding = EditorCurveBinding.FloatCurve(data.path, type, data.propertyName);
-
-            var targetObj = AnimationUtility.GetAnimatedObject(gameObject, binding);
-            if (targetObj == null) {
-              continue;
-            }
-
-            toCompress[binding] = data.curve;
-
-            if (targetObj is GameObject) {
-              targetGameObjects.Add(targetObj as GameObject);
-            } else if (targetObj is Component) {
-              targetGameObjects.Add((targetObj as Component).gameObject);
-            } else {
-              Debug.LogWarning("Unexpected target object type " + targetObj.GetType());
-              continue;
-            }
+        foreach (var data in curves.data) {
+          Type type;
+          if (!nameToType.TryGetValue(data.typeName, out type)) {
+            continue;
           }
-        });
 
-        progress.Begin(targetGameObjects.Count, "Compressing Curves", "", () => {
-          foreach (var targetGameObject in targetGameObjects) {
-            progress.Step(targetGameObject.name);
+          var binding = EditorCurveBinding.FloatCurve(data.path, type, data.propertyName);
 
-            doCompression(progress, targetGameObject, toCompress, bindingMap);
+          var targetObj = AnimationUtility.GetAnimatedObject(gameObject, binding);
+          if (targetObj == null) {
+            continue;
+          }
+
+          toCompress[binding] = data.curve;
+          targetObjects.Add(targetObj);
+        }
+
+        progress.Begin(targetObjects.Count, "Compressing Curves", "", () => {
+          foreach (var targetObj in targetObjects) {
+
+            var filteredCurves = new Dictionary<EditorCurveBinding, AnimationCurve>();
+            foreach (var curve in toCompress) {
+              if (AnimationUtility.GetAnimatedObject(gameObject, curve.Key) == targetObj) {
+                filteredCurves[curve.Key] = curve.Value;
+              }
+            }
+
+            doCompression(progress, targetObj, filteredCurves, bindingMap);
           }
         });
 
         progress.Begin(bindingMap.Count, "Assigning Curves", "", () => {
           foreach (var binding in bindingMap) {
-            progress.Step();
-
             progress.Step(binding.Key.propertyName);
             AnimationUtility.SetEditorCurve(clip, binding.Key, binding.Value);
           }
@@ -266,14 +261,14 @@ namespace Leap.Unity.Recording {
     }
 
     private void doCompression(ProgressBar progress,
-                               GameObject targetGameObject,
+                               UnityEngine.Object targetObject,
                                Dictionary<EditorCurveBinding, AnimationCurve> toCompress,
                                Dictionary<EditorCurveBinding, AnimationCurve> bindingMap) {
-      var propertyToMaxError = calculatePropertyErrors(targetGameObject);
+      var propertyToMaxError = calculatePropertyErrors(targetObject);
 
       List<EditorCurveBinding> bindings;
 
-      progress.Begin(6, "", "", () => {
+      progress.Begin(6, "", targetObject.name, () => {
 
         //First do rotations
         bindings = toCompress.Keys.Query().ToList();
@@ -461,9 +456,18 @@ namespace Leap.Unity.Recording {
       });
     }
 
-    private Dictionary<string, float> calculatePropertyErrors(GameObject targetGameObject) {
+    private Dictionary<string, float> calculatePropertyErrors(UnityEngine.Object targetObject) {
+      Transform targetTransform;
+      if (targetObject is GameObject) {
+        targetTransform = (targetObject as GameObject).transform;
+      } else if (targetObject is Component) {
+        targetTransform = (targetObject as Component).transform;
+      } else {
+        throw new InvalidOperationException("Unexpected target object type " + targetObject);
+      }
+
       var propertyToMaxError = new Dictionary<string, float>();
-      Transform currTransform = targetGameObject.transform;
+      Transform currTransform = targetTransform;
       while (currTransform != null) {
         var compressionSettings = currTransform.GetComponent<PropertyCompression>();
         if (compressionSettings != null) {
