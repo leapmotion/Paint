@@ -25,7 +25,7 @@ public class NinePatchPanelMesh : MonoBehaviour {
 
   protected virtual void OnValidate() {
     _meshFilter = GetComponent<MeshFilter>();
-    RefreshMesh();
+    //RefreshMesh();
   }
 
   protected virtual void Start() {
