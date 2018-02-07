@@ -13,6 +13,8 @@ namespace Leap.Unity.LeapPaint_v3 {
     private float _radialThickness = 0.2F;
     [SerializeField]
     private float _verticalThickness = 0.02F;
+    [SerializeField]
+    private bool _alwaysUpdate = false;
 
     public float Radius {
       get { return _radius; }
@@ -60,7 +62,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected void Update() {
-      if (_dirty) {
+      if (_dirty || _alwaysUpdate) {
         RefreshVerts();
       }
     }

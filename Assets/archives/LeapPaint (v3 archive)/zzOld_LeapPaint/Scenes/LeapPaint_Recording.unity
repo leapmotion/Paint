@@ -1349,6 +1349,7 @@ GameObject:
   - component: {fileID: 75724563}
   - component: {fileID: 75724562}
   - component: {fileID: 75724561}
+  - component: {fileID: 75724564}
   m_Layer: 0
   m_Name: RectToroid (Pinch State)
   m_TagString: Untagged
@@ -1424,6 +1425,23 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &75724564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 75724559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f8d6ed2b677314896e1968924c49c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bindings:
+  - 'RectToroid : _radius'
+  - 'RectToroid : _verticalThickness'
+  - 'RectToroid : _radialThickness'
+  _expandedTypes:
+  - RectToroid
 --- !u!1001 &83054378
 Prefab:
   m_ObjectHideFlags: 0
@@ -18178,7 +18196,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1457780253}
-  m_LocalRotation: {x: -0.18366593, y: -0.12492772, z: -0.029339097, w: 0.9745764}
+  m_LocalRotation: {x: -0.18366604, y: -0.12492772, z: -0.029339118, w: 0.9745764}
   m_LocalPosition: {x: 4.142978, y: 24.917301, z: 29.18804}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -19080,6 +19098,7 @@ GameObject:
   - component: {fileID: 1529369612}
   - component: {fileID: 1529369610}
   - component: {fileID: 1529369609}
+  - component: {fileID: 1529369613}
   m_Layer: 0
   m_Name: RectToroid (Pinch Target)
   m_TagString: Untagged
@@ -19155,6 +19174,23 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &1529369613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1529369608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f8d6ed2b677314896e1968924c49c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bindings:
+  - 'RectToroid : _radius'
+  - 'RectToroid : _verticalThickness'
+  - 'RectToroid : _radialThickness'
+  _expandedTypes:
+  - RectToroid
 --- !u!1 &1530708583
 GameObject:
   m_ObjectHideFlags: 0
@@ -21361,6 +21397,7 @@ GameObject:
   - component: {fileID: 1718764565}
   - component: {fileID: 1718764564}
   - component: {fileID: 1718764563}
+  - component: {fileID: 1718764566}
   m_Layer: 0
   m_Name: RectToroid (Pinch State)
   m_TagString: Untagged
@@ -21437,6 +21474,23 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &1718764566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1718764561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f8d6ed2b677314896e1968924c49c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bindings:
+  - 'RectToroid : _radius'
+  - 'RectToroid : _verticalThickness'
+  - 'RectToroid : _radialThickness'
+  _expandedTypes:
+  - RectToroid
 --- !u!1 &1719502376
 GameObject:
   m_ObjectHideFlags: 0
@@ -22044,6 +22098,7 @@ GameObject:
   - component: {fileID: 1762451436}
   - component: {fileID: 1762451435}
   - component: {fileID: 1762451434}
+  - component: {fileID: 1762451437}
   m_Layer: 0
   m_Name: RectToroid (Pinch Target)
   m_TagString: Untagged
@@ -22119,6 +22174,23 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &1762451437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1762451432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f8d6ed2b677314896e1968924c49c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bindings:
+  - 'RectToroid : _radius'
+  - 'RectToroid : _verticalThickness'
+  - 'RectToroid : _radialThickness'
+  _expandedTypes:
+  - RectToroid
 --- !u!1001 &1770405667
 Prefab:
   m_ObjectHideFlags: 0
