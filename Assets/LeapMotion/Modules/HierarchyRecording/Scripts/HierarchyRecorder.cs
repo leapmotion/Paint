@@ -264,6 +264,10 @@ namespace Leap.Unity.Recording {
               var materials = renderer.sharedMaterials;
               for (int i = 0; i < materials.Length; i++) {
                 var material = materials[i];
+                if (material == null) {
+                  continue;
+                }
+
                 if (!AssetDatabase.IsMainAsset(material)) {
                   var matchingMaterial = allMaterials.Query().FirstOrDefault(m => material.name.Contains(m.name) &&
                                                                                   material.shader == m.shader);

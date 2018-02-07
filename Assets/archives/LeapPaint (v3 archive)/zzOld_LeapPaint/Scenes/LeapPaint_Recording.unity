@@ -1384,6 +1384,7 @@ MonoBehaviour:
   _radius: 0.03
   _radialThickness: 0.00025
   _verticalThickness: 0.00025
+  _alwaysUpdate: 0
 --- !u!33 &75724562
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -3532,6 +3533,21 @@ Prefab:
       propertyPath: manager
       value: 
       objectReference: {fileID: 1774551161}
+    - target: {fileID: 136700287422052190, guid: 72368278d054cda4bb18e5aa08ce971d,
+        type: 2}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 136896733893505300, guid: 72368278d054cda4bb18e5aa08ce971d,
+        type: 2}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114446365300099102, guid: 72368278d054cda4bb18e5aa08ce971d,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 72368278d054cda4bb18e5aa08ce971d, type: 2}
   m_IsPrefabParent: 0
@@ -4240,7 +4256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   recordWhen: 4
-  recordingName: 0.2.0 - Learn To Paint With Hands
+  recordingName: 3.0.0 - Painting Intro
   targetFolder:
     _assetFolder: {fileID: 102900000, guid: 04b6ffc2f45c073419ecc13c1c0a70ad, type: 3}
   provider: {fileID: 206709972}
@@ -14966,6 +14982,14 @@ Prefab:
       propertyPath: _isTracked
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1667579115992878, guid: 80001c6c93c5068488198a82e151e3ff, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1777116285163618, guid: 80001c6c93c5068488198a82e151e3ff, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 80001c6c93c5068488198a82e151e3ff, type: 2}
   m_IsPrefabParent: 0
@@ -18196,7 +18220,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1457780253}
-  m_LocalRotation: {x: -0.18366604, y: -0.12492772, z: -0.029339118, w: 0.9745764}
+  m_LocalRotation: {x: -0.18366598, y: -0.12492772, z: -0.02933911, w: 0.9745764}
   m_LocalPosition: {x: 4.142978, y: 24.917301, z: 29.18804}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -19120,6 +19144,7 @@ MonoBehaviour:
   _radius: 0.03
   _radialThickness: 0.00025
   _verticalThickness: 0.00025
+  _alwaysUpdate: 0
 --- !u!33 &1529369610
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -21433,6 +21458,7 @@ MonoBehaviour:
   _radius: 0.03
   _radialThickness: 0.00025
   _verticalThickness: 0.00025
+  _alwaysUpdate: 0
 --- !u!33 &1718764564
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -22133,6 +22159,7 @@ MonoBehaviour:
   _radius: 0.03
   _radialThickness: 0.00025
   _verticalThickness: 0.00025
+  _alwaysUpdate: 0
 --- !u!33 &1762451435
 MeshFilter:
   m_ObjectHideFlags: 0
