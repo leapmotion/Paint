@@ -474,7 +474,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brushColorReceiver: {fileID: 0}
-  swatchColor: {r: 0.88235295, g: 0.11029412, b: 0.11029412, a: 1}
+  swatchColor: {r: 1, g: 0.99264705, b: 0.9958418, a: 1}
   swatchRendererToSet: {fileID: 23402350849808192}
   colorPropertyName: _Color
 --- !u!114 &114937408635388772
@@ -489,14 +489,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 114243503686383756}
+  lerpCoeffPerSec: 20
   maxEmissionColor: {r: 1, g: 1, b: 1, a: 1}
   idleEmissionAmount: 0
   primaryHoverEmissionAmount: 0.1
   pressedEmissionAmount: 1
-  lerpCoeffPerSec: 20
-  rendererToSet: {fileID: 23367940031906752}
+  colorRendererToSet: {fileID: 23367940031906752}
   emissionPropertyName: _EmissionColor
   _emissionColor: {r: 0, g: 0, b: 0, a: 0}
+  outlinePrimaryHoverMult: 2.5
+  outlinePressedMult: 0.3
+  outlineRendererToSet: {fileID: 23148322703618448}
+  outlinePropertyName: _Width
+  _baseOutline: -1
+  _currentOutline: -1
 --- !u!135 &135778097518849828
 SphereCollider:
   m_ObjectHideFlags: 1
