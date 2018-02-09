@@ -188,8 +188,8 @@ namespace Leap.Unity.PhysicalInterfaces {
 
       // TODO: have finger strengths be persistent and fading..?
 
-      _stableFingersDelta.UpdateCentroidMovement(_touchingFingerPositions.ToIndexable(),
-                                                _fingerStrengths.ToIndexable(),
+      _stableFingersDelta.UpdateCentroidMovement(_touchingFingerPositions,
+                                                _fingerStrengths,
                                                 drawDebug: drawInteractionDebug);
 
       if (_stableFingersDelta.didCentroidAppear) {
@@ -564,10 +564,10 @@ namespace Leap.Unity.PhysicalInterfaces {
         _lastPositions = new Vector3?[maxPositions];
       }
 
-      public void UpdateCentroidMovement(IIndexable<Vector3?> positions,
-                                         IIndexable<float> strengths = null,
+      public void UpdateCentroidMovement(Vector3?[] positions,
+                                         float[] strengths = null,
                                          bool drawDebug = false) {
-        if (strengths != null && positions.Count != strengths.Count) {
+        if (strengths != null && positions.Length != strengths.Length) {
           throw new InvalidOperationException(
             "positions and strengths Indexables must have the same Count.");
         }
@@ -590,7 +590,7 @@ namespace Leap.Unity.PhysicalInterfaces {
 
         // Useable indices have valid positions in both the "last" and "current" arrays.
         for (int i = 0; i < _lastPositions.Length; i++) {
-          if (i >= positions.Count) break;
+          if (i >= positions.Length) break;
 
           var lastV = _lastPositions[i];
           var curV = positions[i];
@@ -657,7 +657,7 @@ namespace Leap.Unity.PhysicalInterfaces {
         // Set last positions with the current positions.
 
         for (int i = 0; i < _lastPositions.Length; i++) {
-          if (i >= positions.Count) {
+          if (i >= positions.Length) {
             _lastPositions[i] = null;
           }
           else {
@@ -666,7 +666,7 @@ namespace Leap.Unity.PhysicalInterfaces {
         }
       }
 
-      public void UpdateCentroidMovement(IIndexable<Vector3?> positions,
+      public void UpdateCentroidMovement(Vector3?[] positions,
                                          bool drawDebug = false) {
         UpdateCentroidMovement(positions, null, drawDebug);
       }
