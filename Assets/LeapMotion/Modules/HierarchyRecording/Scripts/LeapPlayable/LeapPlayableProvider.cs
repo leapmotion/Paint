@@ -7,6 +7,9 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
+using UnityEngine;
+using Leap.Unity.RuntimeGizmos;
+
 namespace Leap.Unity.Recording {
 
   public class LeapPlayableProvider : LeapProvider {

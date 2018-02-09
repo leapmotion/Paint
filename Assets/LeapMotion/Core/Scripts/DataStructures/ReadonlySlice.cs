@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Leap.Unity.Query;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,7 +42,7 @@ namespace Leap.Unity {
 
   }
 
-  public struct ReadonlySlice<T> : IIndexable<T> {
+  public struct ReadonlySlice<T> : IIndexableStruct<T, ReadonlySlice<T>> {
 
     private ReadonlyList<T> _list;
 
@@ -77,7 +78,18 @@ namespace Leap.Unity {
       }
     }
 
-    public IIndexableEnumerator<T> GetEnumerator() { return this.GetEnumerator(); }
+    #region foreach and Query()
+
+    public IndexableStructEnumerator<T, ReadonlySlice<T>> GetEnumerator() {
+      return new IndexableStructEnumerator<T, ReadonlySlice<T>>(this);
+    }
+
+    public QueryWrapper<T, IndexableStructEnumerator<T, ReadonlySlice<T>>> Query() {
+      return new QueryWrapper<T, IndexableStructEnumerator<T,
+                                   ReadonlySlice<T>>>(GetEnumerator());
+    }
+
+    #endregion
 
   }
 

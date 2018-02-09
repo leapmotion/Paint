@@ -1,25 +1,15 @@
-﻿using System;
-using Leap.Unity.Query;
-using System.Collections.Generic;
+﻿using Leap.Unity.Query;
 
 namespace Leap.Unity {
 
   /// <summary>
   /// This easy-to-implement interface represents the ability to index into a collection
-  /// of elements of type T.
+  /// of elements of type T. IIndexables inherit Query() via an extension method.
   /// 
-  /// The other nice thing is that you get foreach and more complex Query support for any
-  /// IIndexable if you call Query(). The Query call is allocation-free.
-  /// 
-  /// You can also get <code>foreach</code> directly on your Indexable implementer if you
-  /// have it define a "GetEnumerator()" method that simply returns the result of the
-  /// "GetEnumerator()" extension method provided for all Indexables. (Unfortunately,
-  /// C# isn't smart enough to recognize the extension method automatically for the
-  /// purposes of <code>foreach</code>.)
+  /// IIndexable is fire-and-forget if your implementer is a reference type (class). If
+  /// the implementing type is a struct, be mindful of boxing, and consider using
+  /// IIndexableStruct and pooling instead.
   /// </summary>
-  /// <example>
-  /// <code>foreach (var element in myIndexable.Query()) { /* ... */ }</code>
-  /// </example>
   public interface IIndexable<T> {
 
     T this[int idx] { get; }
@@ -30,30 +20,38 @@ namespace Leap.Unity {
 
   public static class IIndexableExtensions {
 
-    public static IIndexableEnumerator<T>
-                    GetEnumerator<T>(this IIndexable<T> indexable) {
-      return new IIndexableEnumerator<T>(indexable);
+    public static IndexableEnumerator<T> GetEnumerator<T>(this IIndexable<T> indexable) {
+      return new IndexableEnumerator<T>(indexable);
     }
 
-
-    public static QueryWrapper<T, IIndexableEnumerator<T>>
+    /// <summary>
+    /// Returns a QueryWrapper suitable for Query operations around this IIndexable.
+    /// You can also call this to quickly declare a <code>foreach</code> statement over
+    /// elements in the IIndexable, even if you don't actually call any Query operations.
+    /// 
+    /// If you call this method on a struct that implements IIndexable, the struct will
+    /// be boxed, resulting in garbage allocation. Consider IIndexableStruct instead,
+    /// which provides easy access to pooling methods to avoid allocation while still
+    /// allowing a struct to be wrapped as an IIndexable.
+    /// </summary>
+    public static QueryWrapper<T, IndexableEnumerator<T>>
                     Query<T>(this IIndexable<T> indexable) {
-      return new QueryWrapper<T, IIndexableEnumerator<T>>(GetEnumerator(indexable));
+      return new QueryWrapper<T, IndexableEnumerator<T>>(GetEnumerator(indexable));
     }
 
   }
 
-  public struct IIndexableEnumerator<Element> : IQueryOp<Element> {
+  public struct IndexableEnumerator<Element> : IQueryOp<Element> {
 
     IIndexable<Element> indexable;
     int index;
 
-    public IIndexableEnumerator(IIndexable<Element> indexable) {
+    public IndexableEnumerator(IIndexable<Element> indexable) {
       this.indexable = indexable;
       index = -1;
     }
 
-    public IIndexableEnumerator<Element> GetEnumerator() {
+    public IndexableEnumerator<Element> GetEnumerator() {
       return this;
     }
 
