@@ -531,22 +531,6 @@ namespace Leap.Unity {
       return arr;
     }
 
-    public static IIndexable<T> ToIndexable<T>(this T[] arr) {
-      return new ArrayIndexable<T>(arr);
-    }
-
-    public struct ArrayIndexable<T> : IIndexable<T> {
-      private T[] _arr;
-
-      public ArrayIndexable(T[] arr) {
-        _arr = arr;
-      }
-
-      public T this[int idx] { get { return _arr[idx]; } }
-
-      public int Count { get { return _arr.Length; } }
-    }
-
     #endregion
 
     #region List Utils
