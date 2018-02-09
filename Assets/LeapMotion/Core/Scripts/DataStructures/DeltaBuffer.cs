@@ -7,6 +7,7 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
+using Leap.Unity.Query;
 using UnityEngine;
 
 namespace Leap.Unity {
@@ -21,7 +22,7 @@ namespace Leap.Unity {
   /// change type (in many cases the these are the same) and implement the Delta()
   /// function to compute the average change of samples currently in the buffer.
   /// </summary>
-  public abstract class DeltaBuffer<SampleType, DerivativeType> {
+  public abstract class DeltaBuffer<SampleType, DerivativeType> : IIndexable<SampleType> {
 
     protected struct ValueTimePair {
       public SampleType value;
@@ -33,8 +34,8 @@ namespace Leap.Unity {
     }
 
     protected RingBuffer<ValueTimePair> _buffer;
-    
-    public int  Count { get { return _buffer.Count; } }
+
+    public int Count { get { return _buffer.Count; } }
 
     public bool IsFull { get { return _buffer.IsFull; } }
 
@@ -42,11 +43,14 @@ namespace Leap.Unity {
 
     public int Capacity { get { return _buffer.Capacity; } }
 
+    public SampleType this[int idx] {
+      get { return _buffer[idx].value; }
+    }
+
     public void Clear() { _buffer.Clear(); }
 
-    private float _previousSampleTime = 0F;
     public void Add(SampleType sample, float sampleTime) {
-      if (!IsEmpty && sampleTime == _previousSampleTime) {
+      if (!IsEmpty && sampleTime == GetLatestTime()) {
         SetLatest(sample, sampleTime);
         return;
       }
@@ -75,12 +79,24 @@ namespace Leap.Unity {
       return _buffer.Get(idx).time;
     }
 
+    public float GetLatestTime() {
+      return _buffer.Get(Count - 1).time;
+    }
+
     /// <summary>
     /// Returns the average change between each sample per unit time.
     /// 
     /// If the buffer is empty, you should return the identity for your derivative type.
     /// </summary>
     public abstract DerivativeType Delta();
+    
+    #region foreach Support
+    
+    public IndexableEnumerator<SampleType> GetEnumerator() {
+      return new IndexableEnumerator<SampleType>(this);
+    }
+
+    #endregion
 
   }
 
@@ -174,6 +190,11 @@ namespace Leap.Unity {
         var deltaTime = t1.From(t0);
 
         deltaSum += delta / deltaTime;
+      }
+
+      Slice<float> floats = new Slice<float>(new float[] { 0f, 1f });
+      foreach (var f in floats.Query()) {
+
       }
 
       return deltaSum / (Count - 1);

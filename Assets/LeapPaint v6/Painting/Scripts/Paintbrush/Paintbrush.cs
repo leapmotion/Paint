@@ -1,19 +1,20 @@
-﻿using Leap.Unity.Gestures;
+﻿using Leap.Unity.Animation;
+using Leap.Unity.Attributes;
+using Leap.Unity.Gestures;
 using Leap.Unity.RuntimeGizmos;
 using Leap.Unity.Streams;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
-using Leap.Unity.Animation;
-using Leap.Unity.Attributes;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Leap.Unity.Drawing {
 
-  public class Paintbrush : PoseStreamTransformFollower,
+  public class Paintbrush : MonoBehaviour,
                             IRuntimeGizmoComponent,
-                            IStream<StrokePoint> {
+                            IStreamReceiver<Pose>,
+                            IStream<StrokePoint>   {
 
     #region Inspector
 
@@ -168,22 +169,21 @@ namespace Leap.Unity.Drawing {
 
     #endregion
 
-    #region PoseStreamTransformFollower
+    #region IStreamReceiver<Pose>
 
-    public override void Open() {
-      base.Open();
-
+    public void Open() {
       _debugPoseBuffer.Clear();
     }
 
-    public override void Receive(Pose data) {
-      base.Receive(data);
+    public void Receive(Pose data) {
+      transform.SetPose(data);
 
       bool shouldBePainting = false;
       if (this.enabled && this.gameObject.activeInHierarchy) {
         shouldBePainting = activationGesture != null && activationGesture.isActive;
 
-        /* Debug */ { 
+        /* Debug */
+        {
           var tipPose = GetTipPose(data);
           _debugPoseBuffer.Add(tipPose);
           _debugActivatedBuffer.Add(shouldBePainting);
@@ -209,6 +209,10 @@ namespace Leap.Unity.Drawing {
         OnClose();
         _isStreamOpen = false;
       }
+    }
+
+    public void Close() {
+
     }
 
     #endregion
