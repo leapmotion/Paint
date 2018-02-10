@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using Leap.Unity.UserContext;
 
 namespace Leap.Unity.Drawing {
 
@@ -37,6 +38,11 @@ namespace Leap.Unity.Drawing {
     [Range(0.005f, 0.04f)]
     public float radius = 0.04f;
     public Color color = Color.red;
+
+    [Header("Ucon Input Channels")]
+    public UserContextType context = UserContextType.Local;
+    public string colorChannelIn = "brush/color";
+    public string radiusChannelIn = "brush/radius";
 
     [Header("Brush Tip (Optional)")]
     public Transform tipTransform = null;
@@ -106,6 +112,10 @@ namespace Leap.Unity.Drawing {
 
     #region Unity Events
 
+    protected virtual void Start() {
+      Ucon.C(context).At(colorChannelIn).Set<Color>(this.color);
+    }
+
     protected virtual void OnEnable() {
       if (eligibilitySwitch != null && activationGesture != null) {
         if (!activationGesture.isEligible) {
@@ -116,6 +126,8 @@ namespace Leap.Unity.Drawing {
       if (_brushHeadColorPropId == -1) {
         _brushHeadColorPropId = Shader.PropertyToID(brushHeadColorPropertyName);
       }
+
+
     }
 
     protected virtual void Update() {
@@ -128,6 +140,12 @@ namespace Leap.Unity.Drawing {
           eligibilitySwitch.On();
         }
       }
+
+      // Update the color at the color receiving channel.
+      this.color = Ucon.C(context).At(colorChannelIn).Get<Color>();
+
+      // Update the radius at the radius receiving channel.
+      this.radius = Ucon.C(context).At(radiusChannelIn).Get<float>();
 
       // If we have a tip renderer reference, always set its color to match the current
       // color of the brush.
