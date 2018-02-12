@@ -101,7 +101,7 @@ namespace Leap.Unity.UserContext {
       public T contextObj;
 
       public Channel At(string channelPath) {
-        return new Channel(typeof(T).FullName, channelPath);
+        return new Channel(contextObj, channelPath);
       }
     }
 
@@ -112,8 +112,8 @@ namespace Leap.Unity.UserContext {
     public struct Channel {
       public readonly Hash channelHash;
 
-      public Channel(string contextString, string channelPath) {
-        channelHash = new Hash() { contextString, channelPath };
+      public Channel(object contextObj, string channelPath) {
+        channelHash = new Hash() { contextObj, channelPath };
       }
 
       #region Internal API
@@ -294,6 +294,13 @@ namespace Leap.Unity.UserContext {
         TypedFor<T>().Remove(value);
       }
 
+      /// <summary>
+      /// Returns the underlying buffer object.
+      /// </summary>
+      public List<T> GetBuffer<T>() {
+        return TypedFor<T>().GetBuffer();
+      }
+
       #endregion
 
     }
@@ -438,6 +445,15 @@ namespace Leap.Unity.UserContext {
       }
 
       #endregion
+
+      public List<T> GetBuffer() {
+        List<T> outTs;
+        if (!Board<T>.memory.TryGetValue(channelHash, out outTs)) {
+          outTs = new List<T>();
+          Board<T>.memory[channelHash] = outTs;
+        }
+        return outTs;
+      }
 
     }
 
