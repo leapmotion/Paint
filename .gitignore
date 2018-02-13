@@ -18,6 +18,8 @@
 Paintings/
 Paintings/*
 
+Assets/Editor/PanicButton/reloader.cs
+
 WinPixEventRuntime.dll
 UnityPlayer.dll
 
@@ -47,4 +49,3 @@ Thumbs.db
 .DS_Store?
 
 *_ElementData*
-Assets/Editor/PanicButton/reloader.cs
