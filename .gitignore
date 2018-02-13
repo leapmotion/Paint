@@ -18,8 +18,6 @@
 Paintings/
 Paintings/*
 
-Assets/Editor/PanicButton/reloader.cs
-
 WinPixEventRuntime.dll
 UnityPlayer.dll
 
