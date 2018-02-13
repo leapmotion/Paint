@@ -40,9 +40,8 @@ namespace Leap.Unity.Drawing {
     public Color color = Color.red;
 
     [Header("Ucon Input Channels")]
-    public UserContextType context = UserContextType.Local;
-    public string colorChannelIn = "brush/color";
-    public string radiusChannelIn = "brush/radius";
+    public ColorChannel colorChannelIn = new ColorChannel("brush/color");
+    public FloatChannel radiusChannelIn = new FloatChannel("brush/radius");
 
     [Header("Brush Tip (Optional)")]
     public Transform tipTransform = null;
@@ -113,7 +112,7 @@ namespace Leap.Unity.Drawing {
     #region Unity Events
 
     protected virtual void Start() {
-      Ucon.C(context).At(colorChannelIn).Set<Color>(this.color);
+      colorChannelIn.Set(this.color);
     }
 
     protected virtual void OnEnable() {
@@ -142,10 +141,10 @@ namespace Leap.Unity.Drawing {
       }
 
       // Update the color at the color receiving channel.
-      this.color = Ucon.C(context).At(colorChannelIn).Get<Color>();
+      this.color = colorChannelIn.Get();
 
       // Update the radius at the radius receiving channel.
-      this.radius = Ucon.C(context).At(radiusChannelIn).Get<float>();
+      this.radius = radiusChannelIn.Get();
 
       // If we have a tip renderer reference, always set its color to match the current
       // color of the brush.

@@ -5,11 +5,10 @@ using UnityEngine;
 
 namespace Leap.Unity.LeapPaint {
 
-  public class Slider_BrushThickness : UISlider {
+  public class Slider_UconChannel : UISlider {
 
     [Header("Ucon Channel Output")]
-    public UserContextType context = UserContextType.Local;
-    public string channel = "brush/radius";
+    public FloatChannel sliderOutputChannel = new FloatChannel("brush/radius");
 
     public override float GetStartingSliderValue() {
       return slider.defaultHorizontalValue;
@@ -18,7 +17,7 @@ namespace Leap.Unity.LeapPaint {
     public override void OnSliderValue(float value) {
       base.OnSliderValue(value);
 
-      Ucon.C(context).At(channel).Set<float>(value);
+      sliderOutputChannel.Set(value);
     }
 
   }

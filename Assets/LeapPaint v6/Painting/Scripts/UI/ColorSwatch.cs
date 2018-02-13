@@ -9,9 +9,8 @@ namespace Leap.Unity.LeapPaint {
   public class ColorSwatch : MonoBehaviour {
 
     [Header("Ucon Output Channel")]
-    public UserContextType context = UserContextType.Local;
+    public ColorChannel colorChannel = new ColorChannel("brush/color");
 
-    public string colorChannel = "brush/color";
     public Color swatchColor;
 
     [Header("Visuals")]
@@ -41,7 +40,7 @@ namespace Leap.Unity.LeapPaint {
     }
 
     public void SendColorToBrush() {
-      Ucon.C(context).At(colorChannel).Set(swatchColor);
+      colorChannel.Set(swatchColor);
 
       sendColorToSwatchRenderer();
     }

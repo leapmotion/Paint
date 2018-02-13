@@ -20,7 +20,7 @@ namespace Leap.Unity.UserContext {
                                SerializedProperty property,
                                GUIContent label) {
 
-      var value = fieldInfo.GetValue(property.serializedObject.targetObject);
+      //var value = fieldInfo.GetValue(property.serializedObject.targetObject);
 
       //EditorGUI.BeginChangeCheck();
       //EditorGUI.EndChangeCheck();

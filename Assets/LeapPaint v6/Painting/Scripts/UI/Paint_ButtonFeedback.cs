@@ -54,7 +54,7 @@ public class Paint_ButtonFeedback : MonoBehaviour {
   private Material _outlineMaterialInstance = null;
 
   [EditTimeOnly]
-  public string outlinePropertyName = "_Outline";
+  public string outlinePropertyName = "_Width";
   private int _outlineShaderPropId = -1;
 
   [SerializeField]

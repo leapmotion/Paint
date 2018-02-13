@@ -30,9 +30,7 @@ namespace Leap.Unity.LeapPaint {
     List<Vector3> indexPoints = new List<Vector3>(64);
 
     [Header("Ucon Channel Input")]
-
-    public UserContextType context = UserContextType.Local;
-    public string colorChannelIn = "brush/color";
+    public ColorChannel colorChannelIn = new ColorChannel("brush/color");
 
     [Header("Mesh Generation")]
 
@@ -175,7 +173,7 @@ namespace Leap.Unity.LeapPaint {
       }
 
       // Get color via Ucon wiring.
-      var brushColor = Ucon.C(context).At(colorChannelIn).Get<Color>();
+      var brushColor = colorChannelIn.Get();
 
       _strokeObj.Clear();
       for (int i = 1; i < indexPoints.Count; i++) {

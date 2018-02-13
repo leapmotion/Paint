@@ -16,12 +16,14 @@ namespace Leap.Unity.UserContext {
   #region Some Unity-serializable UconChannel Wrapper Classes
 
   /// <summary>
-  /// UconChannel pre-defines channels for a few common types.
-  /// If a type you need to use in a channel doesn't already exist, create a new
-  /// subclass of UconChannel with the type argument you need.
+  /// Pre-defined UconChannel for a "bang" signal, which represents the transmission
+  /// of a signal but isn't associated with any particular data. This is a concept
+  /// borrowed from Max MSP, a data-flow oriented visual programming language.
   /// </summary>
   [Serializable]
-  public class FloatChannel : UconChannel<float> { }
+  public class BangChannel : UconChannel<Bang> {
+    public BangChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   /// <summary>
   /// UconChannel pre-defines channels for a few common types.
@@ -29,7 +31,9 @@ namespace Leap.Unity.UserContext {
   /// subclass of UconChannel with the type argument you need.
   /// </summary>
   [Serializable]
-  public class IntChannel : UconChannel<int> { }
+  public class FloatChannel : UconChannel<float> {
+    public FloatChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   /// <summary>
   /// UconChannel pre-defines channels for a few common types.
@@ -37,7 +41,9 @@ namespace Leap.Unity.UserContext {
   /// subclass of UconChannel with the type argument you need.
   /// </summary>
   [Serializable]
-  public class Vector2Channel : UconChannel<Vector2> { }
+  public class IntChannel : UconChannel<int> {
+    public IntChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   /// <summary>
   /// UconChannel pre-defines channels for a few common types.
@@ -45,7 +51,9 @@ namespace Leap.Unity.UserContext {
   /// subclass of UconChannel with the type argument you need.
   /// </summary>
   [Serializable]
-  public class Vector3Channel : UconChannel<Vector3> { }
+  public class Vector2Channel : UconChannel<Vector2> {
+    public Vector2Channel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   /// <summary>
   /// UconChannel pre-defines channels for a few common types.
@@ -53,7 +61,9 @@ namespace Leap.Unity.UserContext {
   /// subclass of UconChannel with the type argument you need.
   /// </summary>
   [Serializable]
-  public class Vector4Channel : UconChannel<Vector4> { }
+  public class Vector3Channel : UconChannel<Vector3> {
+    public Vector3Channel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   /// <summary>
   /// UconChannel pre-defines channels for a few common types.
@@ -61,7 +71,9 @@ namespace Leap.Unity.UserContext {
   /// subclass of UconChannel with the type argument you need.
   /// </summary>
   [Serializable]
-  public class QuaternionChannel : UconChannel<Quaternion> { }
+  public class Vector4Channel : UconChannel<Vector4> {
+    public Vector4Channel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   /// <summary>
   /// UconChannel pre-defines channels for a few common types.
@@ -69,7 +81,9 @@ namespace Leap.Unity.UserContext {
   /// subclass of UconChannel with the type argument you need.
   /// </summary>
   [Serializable]
-  public class HandChannel : UconChannel<Hand> { }
+  public class QuaternionChannel : UconChannel<Quaternion> {
+    public QuaternionChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   /// <summary>
   /// UconChannel pre-defines channels for a few common types.
@@ -77,7 +91,9 @@ namespace Leap.Unity.UserContext {
   /// subclass of UconChannel with the type argument you need.
   /// </summary>
   [Serializable]
-  public class PoseChannel : UconChannel<Pose> { }
+  public class HandChannel : UconChannel<Hand> {
+    public HandChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   /// <summary>
   /// UconChannel pre-defines channels for a few common types.
@@ -85,7 +101,19 @@ namespace Leap.Unity.UserContext {
   /// subclass of UconChannel with the type argument you need.
   /// </summary>
   [Serializable]
-  public class ColorChannel : UconChannel<Color> { }
+  public class PoseChannel : UconChannel<Pose> {
+    public PoseChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
+
+  /// <summary>
+  /// UconChannel pre-defines channels for a few common types.
+  /// If a type you need to use in a channel doesn't already exist, create a new
+  /// subclass of UconChannel with the type argument you need.
+  /// </summary>
+  [Serializable]
+  public class ColorChannel : UconChannel<Color> {
+    public ColorChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
 
   #endregion
 
@@ -124,7 +152,7 @@ namespace Leap.Unity.UserContext {
     public UnityObject contextObj { get { return _contextObj; } }
 
     [SerializeField]
-    private string _channelPath = "";
+    protected string _channelPath = "";
     public string channelPath {
       get {
         if (_channelPath == null) { _channelPath = ""; }
