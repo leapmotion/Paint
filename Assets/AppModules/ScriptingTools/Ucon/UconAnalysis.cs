@@ -31,7 +31,7 @@ namespace Leap.Unity.UserContext {
     }
 
     private static Type[] s_allTypes;
-    private static List<AnalyzedUconType> s_channelTypes;
+    private static List<AnalyzedUconType> s_channelTypes = new List<AnalyzedUconType>();
     public static ReadonlyList<AnalyzedUconType> uconChannelTypes {
       get { return s_channelTypes; }
     }
@@ -52,8 +52,8 @@ namespace Leap.Unity.UserContext {
       // Find all types that serialize a UconChannel<>.
       s_allTypes = Assembly.GetCallingAssembly().GetTypes();
 
-      if (s_channelTypes != null) s_channelTypes.Clear();
-      s_channelTypes = new List<AnalyzedUconType>();
+      if (s_channelTypes == null) { s_channelTypes = new List<AnalyzedUconType>(); }
+      s_channelTypes.Clear();
 
       AnalyzedUconType curChannelType = new AnalyzedUconType();
       foreach (var type in s_allTypes) {
