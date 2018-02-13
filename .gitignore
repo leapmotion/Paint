@@ -47,3 +47,4 @@ Thumbs.db
 .DS_Store?
 
 *_ElementData*
+Assets/Editor/PanicButton/reloader.cs
