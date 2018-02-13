@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Leap.Unity.Drawing {
 
-  public interface IBrush {
+  public interface zzOld_IBrush {
 
     bool isBrushing { get; }
     

@@ -28,12 +28,17 @@ namespace Leap.Unity.Drawing {
     private List<KeyedPolyMeshObject> _livePolyMeshObjs = new List<KeyedPolyMeshObject>();
     private List<KeyedPolyMeshObject> _pendingPolyMeshObjs = new List<KeyedPolyMeshObject>();
 
-    // The manager places one or more strokes into each LivePolyMeshObject.
+    // The manager places one or more strokes into each KeyedPolyMeshObject.
 
     private Dictionary<StrokeObject, KeyedPolyMeshObject> _strokeMeshes
       = new Dictionary<StrokeObject, KeyedPolyMeshObject>();
     private Dictionary<KeyedPolyMeshObject, List<StrokeObject>> _meshStrokes
       = new Dictionary<KeyedPolyMeshObject, List<StrokeObject>>();
+
+    /// <summary>
+    /// Temporary Action fired when a new StrokeObject is added.
+    /// </summary>
+    public Action Temp_OnNewStrokeAdded = () => { };
 
     void LateUpdate() {
       var strokesToAdd = Pool<List<StrokeObject>>.Spawn();
@@ -74,6 +79,7 @@ namespace Leap.Unity.Drawing {
             // stroke's polygon data.
             if (_curPolyMeshObj.PolygonCount
                 + strokeMeshPolygons.Count > maxPolygonsPerPolyMesh) {
+
               _livePolyMeshObjs.Add(_curPolyMeshObj);
               _pendingPolyMeshObjs.Add(_curPolyMeshObj);
 
@@ -108,6 +114,9 @@ namespace Leap.Unity.Drawing {
             strokeColors.Clear();
             Pool<List<Color>>.Recycle(strokeColors);
           }
+
+          // Fire the temporary stroke-added callback.
+          Temp_OnNewStrokeAdded();
         }
       }
       finally {

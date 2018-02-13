@@ -6,13 +6,13 @@ using UnityEngine;
 
 namespace Leap.Unity.LeapPaint {
 
-  public class GestureBrushController : MonoBehaviour {
+  public class zzOld_GestureBrushController : MonoBehaviour {
 
-    [ImplementsInterface(typeof(IBrush))]
+    [ImplementsInterface(typeof(zzOld_IBrush))]
     [SerializeField]
     private MonoBehaviour _brush;
-    public IBrush brush {
-      get { return _brush as IBrush; }
+    public zzOld_IBrush brush {
+      get { return _brush as zzOld_IBrush; }
       set { _brush = value as MonoBehaviour; }
     }
 

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using Leap.Unity.Attributes;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +10,34 @@ namespace Leap.Unity.Drawing {
     [SerializeField]
     private List<StrokePoint> _data;
 
+    [SerializeField, Disable]
+    private bool _isHidden = false;
+    public bool isHidden { get { return _isHidden; } }
+
+    /// <summary>
+    /// Marks the StrokeObject as hidden, firing stroke modification callbacks if this
+    /// changed the "hidden" state of the the StrokeObject.
+    /// </summary>
+    public void HideStroke() {
+      if (!_isHidden) {
+        _isHidden = true;
+        OnModified();
+        OnStrokeModified(this);
+      }
+    }
+
+    /// <summary>
+    /// Unmarks the StrokeObject from being hidden, firing stroke modification callbacks
+    /// if this changed the "hidden" state of the the StrokeObject.
+    /// </summary>
+    public void UnhideStroke() {
+      if (_isHidden) {
+        _isHidden = false;
+        OnModified();
+        OnStrokeModified(this);
+      }
+    }
+
     /// <summary>
     /// Fired when this Stroke Object is modified.
     /// </summary>
@@ -19,11 +47,6 @@ namespace Leap.Unity.Drawing {
     /// Fired when this Stroke Object is modified; passes itself as an argument.
     /// </summary>
     public event Action<StrokeObject> OnStrokeModified = (stroke) => { };
-
-    // TODO: I don't think this is necessary actually, the LivePolyMesh can probably
-    // do this.
-    //public Maybe<StrokePoint> previousStrokePointHint;
-    //public Maybe<StrokePoint> nextStrokePointHint;
 
     void Awake() {
       _data = Pool<List<StrokePoint>>.Spawn();

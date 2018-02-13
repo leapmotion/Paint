@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Leap.Unity.Drawing {
 
-  public class BasicBrush : MonoBehaviour, IBrush {
+  public class zzOld_BasicBrush : MonoBehaviour, zzOld_IBrush {
 
     public const float MIN_BRUSH_DISTANCE = 0.01f;
     //public const float MAX_ANGLE_PER_CM = 5f;

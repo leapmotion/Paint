@@ -305,6 +305,9 @@ GameObject:
   - component: {fileID: 14080531}
   - component: {fileID: 14080530}
   - component: {fileID: 14080529}
+  - component: {fileID: 14080532}
+  - component: {fileID: 14080533}
+  - component: {fileID: 14080534}
   m_Layer: 0
   m_Name: Paintbrush Mesh Output
   m_TagString: Untagged
@@ -366,6 +369,82 @@ MonoBehaviour:
   outputStrokeObjectPrefab: {fileID: 114146328851637124, guid: 2a03fb3f5337cd140bd3f4834e1e0883,
     type: 2}
   outputParentObject: {fileID: 14080528}
+--- !u!114 &14080532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 14080527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f552e01438e26b649b3be3723bbbf45e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  strokePolyMeshManager: {fileID: 14080530}
+--- !u!114 &14080533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 14080527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13346b4cbfc9fe4a8806ff7dd2040b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  singleConsumerChannel:
+    _contextType: 0
+    _userContextType: 0
+    _contextObj: {fileID: 0}
+    _channelPath: brush/undo
+  onBangReceived:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 14080532}
+        m_MethodName: Undo
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &14080534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 14080527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13346b4cbfc9fe4a8806ff7dd2040b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  singleConsumerChannel:
+    _contextType: 0
+    _userContextType: 0
+    _contextObj: {fileID: 0}
+    _channelPath: brush/redo
+  onBangReceived:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 14080532}
+        m_MethodName: Redo
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &16129303
 GameObject:
   m_ObjectHideFlags: 0
@@ -16700,6 +16779,7 @@ GameObject:
   - component: {fileID: 1396813990}
   - component: {fileID: 1396813989}
   - component: {fileID: 1396813988}
+  - component: {fileID: 1396813991}
   m_Layer: 0
   m_Name: Redo Button
   m_TagString: Untagged
@@ -16812,6 +16892,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &1396813991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1396813986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d77e585ed525ce643a363f71f102a904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 1396813989}
+  pressOutputChannel:
+    _contextType: 0
+    _userContextType: 0
+    _contextObj: {fileID: 0}
+    _channelPath: brush/redo
 --- !u!1001 &1397747165
 Prefab:
   m_ObjectHideFlags: 0
@@ -21561,12 +21658,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd66228b20306d49ad7f891f6269e17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _leftFingertipsUniformParamId: 274
-  _rightFingertipsUniformParamId: 275
-  _leftPalmTrisUniformParamId: 276
-  _rightPalmTrisUniformParamId: 277
-  _leftFingerSegmentsUniformParamId: 278
-  _rightFingerSegmentsUniformParamId: 279
+  _leftFingertipsUniformParamId: 266
+  _rightFingertipsUniformParamId: 267
+  _leftPalmTrisUniformParamId: 268
+  _rightPalmTrisUniformParamId: 269
+  _leftFingerSegmentsUniformParamId: 270
+  _rightFingerSegmentsUniformParamId: 271
 --- !u!4 &1756187802
 Transform:
   m_ObjectHideFlags: 0
@@ -26745,6 +26842,7 @@ GameObject:
   - component: {fileID: 2127716460}
   - component: {fileID: 2127716459}
   - component: {fileID: 2127716461}
+  - component: {fileID: 2127716462}
   m_Layer: 0
   m_Name: Undo Button
   m_TagString: Untagged
@@ -26857,6 +26955,23 @@ MonoBehaviour:
   outlinePropertyName: _Width
   _baseOutline: -1
   _currentOutline: -1
+--- !u!114 &2127716462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2127716457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d77e585ed525ce643a363f71f102a904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 2127716459}
+  pressOutputChannel:
+    _contextType: 0
+    _userContextType: 0
+    _contextObj: {fileID: 0}
+    _channelPath: brush/undo
 --- !u!1 &2128066205
 GameObject:
   m_ObjectHideFlags: 0
