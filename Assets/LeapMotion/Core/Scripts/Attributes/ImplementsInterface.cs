@@ -40,7 +40,8 @@ namespace Leap.Unity.Attributes {
     public void ConstrainValue(SerializedProperty property) {
       if (property.objectReferenceValue != null) {
 
-        UnityObject implementingObject = FindImplementer(property, property.objectReferenceValue);
+        UnityObject implementingObject = FindImplementer(property,
+                                                         property.objectReferenceValue);
 
         if (implementingObject == null) {
           Debug.LogError(property.objectReferenceValue.GetType().Name + " does not implement " + type.Name);
@@ -63,7 +64,8 @@ namespace Leap.Unity.Attributes {
       // editor. (Specific case: StreamConnectorEditor.cs)
 
       if (!this.type.IsAssignableFrom(obj.GetType())
-          && obj.GetType() != typeof(GameObject)) {
+          && obj.GetType() != typeof(GameObject)
+          && !typeof(Component).IsAssignableFrom(obj.GetType())) {
         // Even if the object implements the correct interface, the field isn't
         // compatible with this object. E.g. A ScriptableObject can't be assigned to a
         // MonoBehaviour field.
@@ -122,6 +124,7 @@ namespace Leap.Unity.Attributes {
 
     public void ProcessDroppedObjects(UnityObject[] droppedObjects,
                                       SerializedProperty property) {
+
       var implementer = droppedObjects.Query()
                                       .FirstOrDefault(o => FindImplementer(property, o));
 

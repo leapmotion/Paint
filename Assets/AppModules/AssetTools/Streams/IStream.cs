@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Leap.Unity {
-
+  
   public interface IStream<T> {
 
     event Action OnOpen;

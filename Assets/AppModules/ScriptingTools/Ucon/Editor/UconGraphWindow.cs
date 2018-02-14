@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using UnityEditor;
 using System.Collections;
 using System;
@@ -20,7 +21,12 @@ namespace Leap.Unity.UserContext {
       drawUconTypes();
     }
 
+    private Vector2 _scrollPos = Vector2.zero;
+
     private void drawUconTypes() {
+
+      _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos,
+                                                   GUILayout.ExpandWidth(false));
 
       foreach (var analyzedUconType in UconAnalysis.uconChannelTypes) {
         GUILayout.Box(new GUIContent(analyzedUconType.type.Name), EditorStyles.helpBox);
@@ -37,6 +43,8 @@ namespace Leap.Unity.UserContext {
         EditorGUILayout.Space();
         EditorGUILayout.Space();
       }
+
+      EditorGUILayout.EndScrollView();
 
     }
 
