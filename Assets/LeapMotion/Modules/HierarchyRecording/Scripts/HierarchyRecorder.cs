@@ -9,6 +9,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -163,8 +164,6 @@ namespace Leap.Unity.Recording {
 
       Directory.CreateDirectory(finalSubFolder);
       AssetDatabase.Refresh();
-
-      RecordedDataAsset curveData = null;
 
       progress.Begin(6, "Saving Recording", "", () => {
         if (!_isRecording) return;
@@ -449,22 +448,6 @@ namespace Leap.Unity.Recording {
             }
           }
         });
-
-        curveData = new RecordedDataAsset();
-        progress.Begin(_curves.Count, "", "Creating Curve Asset", () => {
-          foreach (var data in _curves) {
-            progress.Step();
-            var binding = data.binding;
-            var curve = data.curve;
-
-            curveData.data.Add(new RecordedDataAsset.EditorCurveBindingData() {
-              path = binding.path,
-              propertyName = binding.propertyName,
-              typeName = binding.type.Name,
-              curve = curve
-            });
-          }
-        });
       });
 
       progress.Begin(4, "Finalizing Assets", "", () => {
@@ -484,21 +467,44 @@ namespace Leap.Unity.Recording {
         }
 
         //Create the asset that holds all of the curve data
-        progress.Step("Creating Curve File...");
-        postProcessComponent.curveDataFilename = recordingName + " CurveData.data";
-        string assetPath = Path.Combine(finalSubFolder, postProcessComponent.curveDataFilename);
-        File.WriteAllText(assetPath, JsonUtility.ToJson(curveData));
+        progress.Begin(_curves.Count, "", "", () => {
+          string curveDirectory = Path.Combine(finalSubFolder, recordingName + " CurveData");
+          Directory.CreateDirectory(curveDirectory);
+          postProcessComponent.curveDataFolder = new AssetFolder(curveDirectory);
+
+          int prefix = 0;
+          foreach (var data in _curves) {
+            progress.Step(data.binding.propertyName);
+
+            var bindingData = new EditorCurveBindingData() {
+              path = data.binding.path,
+              propertyName = data.binding.propertyName,
+              typeName = data.binding.type.Name,
+              curve = data.curve
+            };
+
+            string assetName = prefix + "_" + new string(bindingData.path.Where(c => char.IsLetterOrDigit(c)).ToArray()) + ".data";
+            string assetPath = Path.Combine(curveDirectory, assetName);
+            File.WriteAllText(assetPath, JsonUtility.ToJson(bindingData));
+            prefix++;
+          }
+        });
 
         //Create the asset that holds all of the leap data
-        RecordedLeapData leapDataAsset = null;
-        progress.Step("Creating Leap Data File...");
         if (_leapData.Count > 0) {
-          postProcessComponent.leapDataFilename = recordingName + " LeapData.data";
+          string leapDirectory = Path.Combine(finalSubFolder, recordingName + " LeapData");
+          Directory.CreateDirectory(leapDirectory);
+          postProcessComponent.leapDataFolder = new AssetFolder(leapDirectory);
 
-          string leapAssetPath = Path.Combine(finalSubFolder, postProcessComponent.leapDataFilename);
-          leapDataAsset = new RecordedLeapData();
-          leapDataAsset.frames = _leapData;
-          File.WriteAllText(leapAssetPath, JsonUtility.ToJson(leapDataAsset));
+          progress.Begin(_leapData.Count, "", "", () => {
+            for (int i = 0; i < _leapData.Count; i++) {
+              progress.Step("Frame " + i);
+
+              string assetName = "Frame_" + i + ".data";
+              string assetPath = Path.Combine(leapDirectory, assetName);
+              File.WriteAllText(assetPath, JsonUtility.ToJson(_leapData[i]));
+            }
+          });
         }
 
         progress.Step("Creating Final Prefab...");

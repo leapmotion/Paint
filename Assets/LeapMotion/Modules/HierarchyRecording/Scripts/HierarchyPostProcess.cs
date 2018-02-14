@@ -29,9 +29,9 @@ namespace Leap.Unity.Recording {
     public string recordingName;
     public AssetFolder assetFolder;
 
-    public string curveDataFilename;
+    public AssetFolder curveDataFolder;
 
-    public string leapDataFilename;
+    public AssetFolder leapDataFolder;
 
     [SerializeField, ImplementsTypeNameDropdown(typeof(LeapRecording))]
     private string _leapRecordingType;
@@ -88,12 +88,21 @@ namespace Leap.Unity.Recording {
       //Try to generate a leap recording if we have leap data
       RecordingTrack recordingTrack = null;
       LeapRecording leapRecording = null;
-      if (!string.IsNullOrEmpty(leapDataFilename)) {
-        var leapData = JsonUtility.FromJson<RecordedLeapData>(File.ReadAllText(Path.Combine(assetFolder.Path, leapDataFilename)));
+      if (!string.IsNullOrEmpty(leapDataFolder.Path)) {
+        List<Frame> frames = new List<Frame>();
+        for (int i = 0; ; i++) {
+          string framePath = Path.Combine(leapDataFolder.Path, "Frame " + i + ".data");
+          if (!File.Exists(framePath)) {
+            break;
+          }
+
+          frames.Add(JsonUtility.FromJson<Frame>(File.ReadAllText(framePath)));
+        }
+
         leapRecording = ScriptableObject.CreateInstance(_leapRecordingType) as LeapRecording;
         if (leapRecording != null) {
           leapRecording.name = "Recorded Leap Data";
-          leapRecording.LoadFrames(leapData.frames);
+          leapRecording.LoadFrames(frames);
         } else {
           Debug.LogError("Unable to create Leap recording: Invalid type specification for "
                        + "LeapRecording implementation.", this);
@@ -203,10 +212,16 @@ namespace Leap.Unity.Recording {
       var clip = new AnimationClip();
       clip.name = "Recorded Animation";
 
-      RecordedDataAsset curves = null;
-      progress.Begin(1, "Opening Curve File...", "", () => {
-        progress.Step();
-        curves = JsonUtility.FromJson<RecordedDataAsset>(File.ReadAllText(Path.Combine(assetFolder.Path, curveDataFilename)));
+      List<EditorCurveBindingData> curveData = new List<EditorCurveBindingData>();
+      progress.Begin(1, "Opening Curve Files...", "", () => {
+        foreach (var curveFile in Directory.GetFiles(curveDataFolder.Path)) {
+          if (!curveFile.EndsWith(".data")) {
+            continue;
+          }
+
+          var data = JsonUtility.FromJson<EditorCurveBindingData>(File.ReadAllText(curveFile));
+          curveData.Add(data);
+        }
       });
 
       progress.Begin(2, "", "", () => {
@@ -221,7 +236,7 @@ namespace Leap.Unity.Recording {
         var toCompress = new Dictionary<EditorCurveBinding, AnimationCurve>();
         var targetObjects = new HashSet<UnityEngine.Object>();
 
-        foreach (var data in curves.data) {
+        foreach (var data in curveData) {
           Type type;
           if (!nameToType.TryGetValue(data.typeName, out type)) {
             continue;
