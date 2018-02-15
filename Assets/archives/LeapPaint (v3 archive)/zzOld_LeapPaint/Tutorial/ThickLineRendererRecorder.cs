@@ -39,6 +39,8 @@ public class ThickLineRendererRecorder : BasicMethodRecording<ThickLineRendererA
     data.args.Insert(0, new Args() {
       method = Method.InitializeRenderer
     });
+
+    data.times.Insert(0, data.times[0] - 0.001f);
   }
 
   public override void EnterRecordingMode() {

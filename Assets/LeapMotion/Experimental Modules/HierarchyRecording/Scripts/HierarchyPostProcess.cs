@@ -179,12 +179,17 @@ namespace Leap.Unity.Recording {
           foreach (var recording in recordings) {
             progress.Step(recording.gameObject.name);
 
-            var track = timeline.CreateTrack<MethodRecordingTrack>(null, recording.gameObject.name);
-            director.SetGenericBinding(track.outputs.Query().First().sourceObject, recording);
+            try {
+              var track = timeline.CreateTrack<MethodRecordingTrack>(null, recording.gameObject.name);
+              director.SetGenericBinding(track.outputs.Query().First().sourceObject, recording);
 
-            var clip = track.CreateClip<MethodRecordingClip>();
+              var clip = track.CreateClip<MethodRecordingClip>();
 
-            clip.duration = recording.GetDuration();
+
+              clip.duration = recording.GetDuration();
+            } catch (Exception e) {
+              Debug.LogException(e);
+            }
           }
         });
       }
