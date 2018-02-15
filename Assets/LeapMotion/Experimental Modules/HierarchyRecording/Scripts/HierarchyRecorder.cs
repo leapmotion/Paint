@@ -465,7 +465,7 @@ namespace Leap.Unity.Recording {
         var methodRecordings = myGameObject.GetComponentsInChildren<MethodRecording>();
         for (int i = 0; i < methodRecordings.Length; i++) {
           var methodRecording = methodRecordings[i];
-          string fullPath = Path.Combine(finalSubFolder, "MethodRecording_" + i + ".data");
+          string fullPath = Path.Combine(finalSubFolder, "MethodRecording_" + i + ".asset");
           methodRecording.ExitRecordingMode(fullPath);
         }
 

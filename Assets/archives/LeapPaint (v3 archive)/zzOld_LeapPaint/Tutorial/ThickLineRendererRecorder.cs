@@ -6,7 +6,7 @@ using Leap.Unity.Recording;
 using Leap.Unity.LeapPaint_v3;
 
 [RequireComponent(typeof(ThickRibbonRenderer))]
-public class ThickLineRendererRecorder : BasicMethodRecording<ThickLineRendererRecorder.Args> {
+public class ThickLineRendererRecorder : BasicMethodRecording<ThickLineRendererArgs, ThickLineRendererRecorder.Args> {
   private ThickRibbonRenderer _renderer;
 
   public float clipTime = 0;
@@ -16,30 +16,30 @@ public class ThickLineRendererRecorder : BasicMethodRecording<ThickLineRendererR
     _renderer = GetComponent<ThickRibbonRenderer>();
   }
 
-  //[ContextMenu("Clip Start")]
-  //public void ClipStart() {
-  //  if (_args.Count(a => a.method == Method.InitializeRenderer) != 1) {
-  //    Debug.LogWarning("Cannot clip because there are more than one stroke.");
-  //    return;
-  //  }
+  [ContextMenu("Clip Start")]
+  public void ClipStart() {
+    if (data.args.Count(a => a.method == Method.InitializeRenderer) != 1) {
+      Debug.LogWarning("Cannot clip because there are more than one stroke.");
+      return;
+    }
 
-  //  int clipToIndex = _times.Where(t => t < clipTime).Count();
+    int clipToIndex = data.times.Where(t => t < clipTime).Count();
 
-  //  int strokePointsToRemove = _args[clipToIndex - 1].stroke.Count;
+    int strokePointsToRemove = data.args[clipToIndex - 1].stroke.Count;
 
-  //  _times = _times.Skip(clipToIndex).ToList();
-  //  _args = _args.Skip(clipToIndex).ToList();
+    data.times = data.times.Skip(clipToIndex).ToList();
+    data.args = data.args.Skip(clipToIndex).ToList();
 
-  //  foreach (var arg in _args) {
-  //    if (arg.method == Method.UpdateRenderer) {
-  //      arg.stroke.RemoveRange(0, strokePointsToRemove);
-  //    }
-  //  }
+    foreach (var arg in data.args) {
+      if (arg.method == Method.UpdateRenderer) {
+        arg.stroke.RemoveRange(0, strokePointsToRemove);
+      }
+    }
 
-  //  _args.Insert(0, new Args() {
-  //    method = Method.InitializeRenderer
-  //  });
-  //}
+    data.args.Insert(0, new Args() {
+      method = Method.InitializeRenderer
+    });
+  }
 
   public override void EnterRecordingMode() {
     base.EnterRecordingMode();

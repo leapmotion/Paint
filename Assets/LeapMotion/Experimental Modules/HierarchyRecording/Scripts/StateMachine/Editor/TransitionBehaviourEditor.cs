@@ -18,6 +18,19 @@ namespace Leap.Unity.Recording {
   [CustomEditor(typeof(TransitionBehaviour), editorForChildClasses: true, isFallback = true)]
   public class TransitionBehaviourEditor : CustomEditorBase<TransitionBehaviour> {
 
+    protected override void OnEnable() {
+      base.OnEnable();
+
+      specifyCustomDrawer("transitionState", drawIndentedTransitionState);
+    }
+
+    private void drawIndentedTransitionState(SerializedProperty prop) {
+      EditorGUI.indentLevel++;
+      EditorGUILayout.PropertyField(prop);
+      EditorGUI.indentLevel--;
+      EditorGUILayout.Space();
+    }
+
     public override void OnInspectorGUI() {
       base.OnInspectorGUI();
 

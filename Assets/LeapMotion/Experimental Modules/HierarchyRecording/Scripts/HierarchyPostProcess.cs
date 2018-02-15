@@ -184,7 +184,6 @@ namespace Leap.Unity.Recording {
 
             var clip = track.CreateClip<MethodRecordingClip>();
 
-            recording.LoadDataFromFile();
             clip.duration = recording.GetDuration();
           }
         });

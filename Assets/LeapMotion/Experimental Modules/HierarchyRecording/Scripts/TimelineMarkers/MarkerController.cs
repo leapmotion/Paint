@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -9,62 +10,101 @@ namespace Leap.Unity.Recording {
   public class MarkerController : MonoBehaviour {
 
     private PlayableDirector _director;
-
-    private TimelineClip _currMarker;
-    private Action _action;
+    private TimelineAsset _timeline;
+    private Dictionary<string, TimelineClip> _markers = new Dictionary<string, TimelineClip>();
+    private Dictionary<string, Action> _actions = new Dictionary<string, Action>();
 
     private void Awake() {
       _director = GetComponent<PlayableDirector>();
     }
 
-    public void LoopAt(string markerName) {
-      setCurrentMarker(markerName);
-      _action = Action.Loop;
+    public bool TestMarker(string markerName, MarkerTest test) {
+      TimelineClip clip;
+      if (_markers.TryGetValue(markerName, out clip)) {
+        switch (test) {
+          case MarkerTest.BeforeMarkerStarts:
+            return _director.time < clip.start;
+          case MarkerTest.AfterMarkerStarts:
+            return _director.time > clip.start;
+          case MarkerTest.BeforeMarkerEnds:
+            return _director.time < clip.end;
+          case MarkerTest.AfterMarkerEnds:
+            return _director.time > clip.end;
+          case MarkerTest.InsideMarker:
+            return _director.time > clip.start && _director.time < clip.end;
+          case MarkerTest.OutsideMarker:
+            return _director.time < clip.start || _director.time > clip.end;
+          default:
+            throw new ArgumentException();
+        }
+      } else {
+        return false;
+      }
     }
 
-    public void PauseAt(string markerName) {
-      setCurrentMarker(markerName);
-      _action = Action.Pause;
+    public void LoopAtMarker(string markerName) {
+      _actions[markerName] = Action.Loop;
     }
 
-    public void Resume() {
-      //Undo current action
-      switch (_action) {
-        case Action.Pause:
-          _director.Resume();
-          break;
+    public void PauseAtMarker(string markerName) {
+      _actions[markerName] = Action.Pause;
+    }
+
+    public void SkipMarker(string markerName) {
+      _actions[markerName] = Action.Skip;
+    }
+
+    public void ClearMarker(string markerName) {
+      if (_actions.ContainsKey(markerName) &&
+          _actions[markerName] == Action.Pause &&
+          TestMarker(markerName, MarkerTest.InsideMarker)) {
+        _director.Resume();
       }
 
-      //Set current action to none
-      _action = Action.None;
+      _actions[markerName] = Action.None;
     }
 
     private void Update() {
-      switch (_action) {
-        case Action.Pause:
-          if (_director.time >= _currMarker.start) {
-            _director.Pause();
-          }
-          break;
-        case Action.Loop:
-          if (_director.time >= _currMarker.end) {
-            _director.time = _currMarker.start;
-          }
-          break;
+      updateMarkersIfNeeded();
+
+      foreach (var action in _actions) {
+        var clip = _markers[action.Key];
+
+        switch (action.Value) {
+          case Action.Pause:
+            if (_director.time >= clip.start) {
+              _director.Pause();
+            }
+            break;
+          case Action.Loop:
+            if (_director.time >= clip.end) {
+              _director.time = clip.start;
+            }
+            break;
+          case Action.Skip:
+            if (_director.time >= clip.start && _director.time < clip.end) {
+              _director.time = clip.end;
+            }
+            break;
+        }
       }
     }
 
-    private void setCurrentMarker(string name) {
+    public void updateMarkersIfNeeded() {
+      if (_timeline == _director.playableAsset) {
+        return;
+      }
+
+      _timeline = _director.playableAsset as TimelineAsset;
+
+      _markers.Clear();
       var timeline = _director.playableAsset as TimelineAsset;
       for (int i = 0; i < timeline.outputTrackCount; i++) {
         var track = timeline.GetOutputTrack(i);
         if (track is MarkerTrack) {
           foreach (var clip in track.GetClips()) {
             var marker = clip.asset as MarkerClip;
-            if (marker.markerName == name) {
-              _currMarker = clip;
-              return;
-            }
+            _markers[marker.markerName] = clip;
           }
         }
       }
@@ -73,7 +113,17 @@ namespace Leap.Unity.Recording {
     private enum Action {
       None,
       Pause,
-      Loop
+      Loop,
+      Skip
+    }
+
+    public enum MarkerTest {
+      BeforeMarkerStarts,
+      AfterMarkerStarts,
+      BeforeMarkerEnds,
+      AfterMarkerEnds,
+      InsideMarker,
+      OutsideMarker
     }
   }
 }
