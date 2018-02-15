@@ -1,5 +1,6 @@
 ﻿using Leap.Unity.Drawing;
 using Leap.Unity.Query;
+using Leap.Unity.UserContext;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +8,12 @@ namespace Leap.Unity.LeapPaint {
 
   public class ColorSwatch : MonoBehaviour {
 
-    public Paintbrush brushColorReceiver;
+    [Header("Ucon Output Channel")]
+    public ColorChannel colorChannel = new ColorChannel("brush/color");
+
     public Color swatchColor;
+
+    [Header("Visuals")]
 
     public Renderer swatchRendererToSet;
     public string colorPropertyName = "_Color";
@@ -35,7 +40,7 @@ namespace Leap.Unity.LeapPaint {
     }
 
     public void SendColorToBrush() {
-      brushColorReceiver.color = swatchColor;
+      colorChannel.Set(swatchColor);
 
       sendColorToSwatchRenderer();
     }

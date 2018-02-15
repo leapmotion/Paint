@@ -21,6 +21,11 @@ namespace Leap.Unity.Drawing {
         int polyOffset = 0;
         foreach (var strokePoint in strokeObj.Query()) {
           var a = strokePoint;
+
+          // If the stroke object is "hidden", we can spoof this by creating strokes
+          // with zero width.
+          if (strokeObj.isHidden) { a.radius = 0f; }
+
           var p0 = a.pose.position + a.pose.rotation * Vector3.right * a.radius;
           var p1 = a.pose.position - a.pose.rotation * Vector3.right * a.radius;
           outStrokePositions.Add(p0, p1, p0, p1);

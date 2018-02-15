@@ -27,7 +27,8 @@ namespace Leap.Unity.Streams {
 
   [ExecuteInEditMode]
   public abstract class StreamConnector<StreamType> : StreamConnector,
-                                                      IRuntimeGizmoComponent {
+                                                      IRuntimeGizmoComponent,
+                                                      ISerializationCallbackReceiver {
 
     [SerializeField]
     // Sadly, this doesn't compile (name isn't constant), so we'll have to
@@ -46,6 +47,15 @@ namespace Leap.Unity.Streams {
     private MonoBehaviour _receiver;
     public IStreamReceiver<StreamType> receiver {
       get { return _receiver as IStreamReceiver<StreamType>; }
+    }
+
+    public void OnBeforeSerialize() {
+
+    }
+
+    public void OnAfterDeserialize() {
+      // GO GO GO!
+      initCallbacks();
     }
 
     #region StreamConnector
@@ -81,14 +91,22 @@ namespace Leap.Unity.Streams {
     [OnEditorChange("ResetConnection")]
     public bool debugWire = false;
 
-
     protected void ResetConnection() {
       OnDisable();
       OnEnable();
     }
 
+    private void Awake() {
+      initCallbacks();
+    }
+
     private void OnEnable() {
+      initCallbacks();
+    }
+
+    private void initCallbacks() {
       if (stream != null && receiver != null) {
+
         stream.OnOpen -= receiver.Open;
         stream.OnOpen += receiver.Open;
 
@@ -162,7 +180,6 @@ namespace Leap.Unity.Streams {
         }
       }
     }
-
   }
 
 }

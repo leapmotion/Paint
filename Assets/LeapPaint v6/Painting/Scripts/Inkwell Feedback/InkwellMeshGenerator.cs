@@ -4,6 +4,7 @@ using Leap.Unity.Infix;
 using Leap.Unity.Meshing;
 using Leap.Unity.Query;
 using Leap.Unity.RuntimeGizmos;
+using Leap.Unity.UserContext;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,9 +29,8 @@ namespace Leap.Unity.LeapPaint {
     List<Vector3> thumbPoints = new List<Vector3>(64);
     List<Vector3> indexPoints = new List<Vector3>(64);
 
-    [Header("Brush Data Source")]
-
-    public Paintbrush paintbrush;
+    [Header("Ucon Channel Input")]
+    public ColorChannel colorChannelIn = new ColorChannel("brush/color");
 
     [Header("Mesh Generation")]
 
@@ -172,6 +172,9 @@ namespace Leap.Unity.LeapPaint {
         _strokeObj = gameObject.AddComponent<StrokeObject>();
       }
 
+      // Get color via Ucon wiring.
+      var brushColor = colorChannelIn.Get();
+
       _strokeObj.Clear();
       for (int i = 1; i < indexPoints.Count; i++) {
         var avgPos = (indexPoints[i] + thumbPoints[i]) * 0.5f;
@@ -182,13 +185,12 @@ namespace Leap.Unity.LeapPaint {
         if ((avgPos - prevAvgPos).sqrMagnitude < 1e-7f) continue;
         var up = Vector3.Cross(right, forward).normalized;
         var rot = Quaternion.LookRotation(forward, up);
-
-        var color = paintbrush.color;
+        
         var radius = (indexPoints[i] - thumbPoints[i]).magnitude * 0.3f;
 
         var strokePoint = new StrokePoint() {
           pose = new Pose(avgPos, rot),
-          color = color,
+          color = brushColor,
           radius = radius
         };
 
