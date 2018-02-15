@@ -9,7 +9,6 @@ namespace Leap.Unity.Recording {
   public class MarkerController : MonoBehaviour {
 
     private PlayableDirector _director;
-    private List<MarkerClip> _markers = new List<MarkerClip>();
 
     private TimelineClip _currMarker;
     private Action _action;
