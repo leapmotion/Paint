@@ -3624,8 +3624,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 273669485}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.015175973, y: -0.018613312, z: -0.024960568, w: 0.99939996}
+  m_LocalPosition: {x: 0.01981392, y: 1.6255357, z: -0.08687737}
   m_LocalScale: {x: 0.14530975, y: 0.14530976, z: 0.14530976}
   m_Children:
   - {fileID: 1092424975}
@@ -3678,9 +3678,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6748749169650b947aaa5361736a9747, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  discontinuity: {fileID: 279845041}
   src: {fileID: 206709971}
-  positionThresh: 0.01
-  rotationThresh: 10
+  performSmoothing: 1
   returnStrengthMult: 0.01
   positionReturnStrength:
     serializedVersion: 2
@@ -3718,7 +3718,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
-  warmUpFrames: 5
 --- !u!33 &273669489
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -3966,6 +3965,7 @@ GameObject:
   - component: {fileID: 279845038}
   - component: {fileID: 279845039}
   - component: {fileID: 279845040}
+  - component: {fileID: 279845041}
   m_Layer: 0
   m_Name: Tutorial Bot
   m_TagString: Untagged
@@ -3997,7 +3997,7 @@ PlayableDirector:
   m_GameObject: {fileID: 279845036}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 71c4787e5273018478a550624a8077a2, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 8011ee1000fb4684eaa2b53683c9c9b3, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -4226,6 +4226,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7ca330565001694a966a1c1363d7dd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &279845041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 279845036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b9319bebe11354782ce29c51135bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tracksToWatch:
+  - Tutorial Bot
 --- !u!1 &282441509
 GameObject:
   m_ObjectHideFlags: 0
@@ -18768,7 +18781,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1194710330}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b580d315682b3949a58d75661dd69f2, type: 3}
   m_Name: 
@@ -18789,7 +18802,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _director: {fileID: 279845038}
   _playable: {fileID: 11400000, guid: dd6cdabe8a3991f499cb42cf4ec1f8fe, type: 2}
-  _wrapMode: 2
+  _wrapMode: 1
 --- !u!114 &1194710334
 MonoBehaviour:
   m_ObjectHideFlags: 0
