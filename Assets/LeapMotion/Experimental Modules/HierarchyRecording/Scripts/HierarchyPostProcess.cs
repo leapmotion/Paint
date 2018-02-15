@@ -91,16 +91,19 @@ namespace Leap.Unity.Recording {
       if (File.Exists(framesPath)) {
         List<Frame> frames = new List<Frame>();
 
-        using (var reader = File.OpenText(framesPath)) {
-          while (true) {
-            string line = reader.ReadLine();
-            if (string.IsNullOrEmpty(line)) {
-              break;
-            }
+        progress.Begin(1, "Loading Leap Data", "", () => {
+          progress.Step();
+          using (var reader = File.OpenText(framesPath)) {
+            while (true) {
+              string line = reader.ReadLine();
+              if (string.IsNullOrEmpty(line)) {
+                break;
+              }
 
-            frames.Add(JsonUtility.FromJson<Frame>(line));
+              frames.Add(JsonUtility.FromJson<Frame>(line));
+            }
           }
-        }
+        });
 
         leapRecording = ScriptableObject.CreateInstance(_leapRecordingType) as LeapRecording;
         if (leapRecording != null) {
@@ -217,6 +220,7 @@ namespace Leap.Unity.Recording {
 
       List<EditorCurveBindingData> curveData = new List<EditorCurveBindingData>();
       progress.Begin(1, "Opening Curve Files...", "", () => {
+        progress.Step();
         using (var reader = File.OpenText(Path.Combine(dataFolder.Path, "Curves.data"))) {
           while (true) {
             string line = reader.ReadLine();

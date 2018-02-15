@@ -4256,9 +4256,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   recordWhen: 4
-  recordingName: 3.0.0 - Painting Intro
+  recordingName: 3.0.0 - How To Paint
   targetFolder:
-    _assetFolder: {fileID: 102900000, guid: 04b6ffc2f45c073419ecc13c1c0a70ad, type: 3}
+    _assetFolder: {fileID: 102900000, guid: 7af88481cef376d4dbeff63bd0149190, type: 3}
   provider: {fileID: 206709972}
   recordLeapData: 1
   beginRecordingKey: 286
@@ -18220,7 +18220,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1457780253}
-  m_LocalRotation: {x: -0.18366602, y: -0.12492772, z: -0.029339116, w: 0.9745764}
+  m_LocalRotation: {x: -0.18366598, y: -0.12492772, z: -0.02933911, w: 0.9745764}
   m_LocalPosition: {x: 4.142978, y: 24.917301, z: 29.18804}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:

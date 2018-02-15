@@ -4528,7 +4528,7 @@ PlayableDirector:
   m_GameObject: {fileID: 279845036}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 68d4f3cfa327bb444b0feecdb1672fd1, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 509299671b11e894297166a6cdcaee92, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -4602,6 +4602,30 @@ PlayableDirector:
     value: {fileID: 279845036}
   - key: {fileID: 114440329120741648, guid: 68d4f3cfa327bb444b0feecdb1672fd1, type: 2}
     value: {fileID: 206709972}
+  - key: {fileID: 114199658763684046, guid: 8011ee1000fb4684eaa2b53683c9c9b3, type: 2}
+    value: {fileID: 279845036}
+  - key: {fileID: 114529183623213518, guid: 8011ee1000fb4684eaa2b53683c9c9b3, type: 2}
+    value: {fileID: 206709972}
+  - key: {fileID: 114339773767688754, guid: cf577d509cf1547468a2f3efeff78a3f, type: 2}
+    value: {fileID: 279845036}
+  - key: {fileID: 0}
+    value: {fileID: 206709972}
+  - key: {fileID: 114242868819644202, guid: dd6cdabe8a3991f499cb42cf4ec1f8fe, type: 2}
+    value: {fileID: 279845036}
+  - key: {fileID: 114261289236674188, guid: dd6cdabe8a3991f499cb42cf4ec1f8fe, type: 2}
+    value: {fileID: 206709972}
+  - key: {fileID: 114010498409069402, guid: 509299671b11e894297166a6cdcaee92, type: 2}
+    value: {fileID: 279845036}
+  - key: {fileID: 114206912546067078, guid: 509299671b11e894297166a6cdcaee92, type: 2}
+    value: {fileID: 206709972}
+  - key: {fileID: 0}
+    value: {fileID: 0}
+  - key: {fileID: 0}
+    value: {fileID: 0}
+  - key: {fileID: 0}
+    value: {fileID: 0}
+  - key: {fileID: 0}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References:
     - 3ca6737c5575f1649bc555f77a3d9038: {fileID: 587459124}
@@ -17125,14 +17149,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   assets:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: cf577d509cf1547468a2f3efeff78a3f, type: 2}
   headPositionPath: LMHeadMountedRig/Main Camera
-  lerpStartingPosition: 1
+  lerpStartingPosition: 0
   startHeadPosition: {x: 0, y: 1.78, z: -0.1}
-  lerpEndingPosition: 1
+  lerpEndingPosition: 0
   endHeadPosition: {x: 0, y: 1.78, z: -0.1}
-  cropAnimation: 0
-  allBindings: []
+  cropAnimation: 1
+  allBindings:
+  - LMHeadMountedRig/Main Camera
 --- !u!4 &1016044319
 Transform:
   m_ObjectHideFlags: 0
