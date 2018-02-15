@@ -47,6 +47,8 @@ public class Paint_ButtonFeedback : MonoBehaviour {
 
   [Header("Outline Feedback")]
 
+  public bool doOutlineFeedback = true;
+
   public float outlinePrimaryHoverMult = 2.5f;
   public float outlinePressedMult = 0.3f;
 
@@ -71,7 +73,7 @@ public class Paint_ButtonFeedback : MonoBehaviour {
     if (colorRendererToSet == null) {
       colorRendererToSet = GetComponentInChildren<Renderer>();
     }
-    if (outlineRendererToSet == null) {
+    if (outlineRendererToSet == null && doOutlineFeedback) {
       outlineRendererToSet = GetComponentInChildren<Renderer>();
     }
 
@@ -90,11 +92,11 @@ public class Paint_ButtonFeedback : MonoBehaviour {
     if (_outlineMaterialInstance == null && outlineRendererToSet != null) {
       _outlineMaterialInstance = outlineRendererToSet.material;
     }
-
-
+    
     // In the re-enable case (Start() already called), recalculate base outline value
     // from the material.
-    if (_outlineMaterialInstance != null && _outlineShaderPropId != -1) {
+    if (_outlineMaterialInstance != null && _outlineShaderPropId != -1
+        && doOutlineFeedback) {
       _baseOutline = _outlineMaterialInstance.GetFloat(_outlineShaderPropId);
       _currentOutline = _baseOutline;
     }
@@ -104,7 +106,7 @@ public class Paint_ButtonFeedback : MonoBehaviour {
     _colorShaderPropId = Shader.PropertyToID(emissionPropertyName);
     _outlineShaderPropId = Shader.PropertyToID(outlinePropertyName);
 
-    if (_outlineMaterialInstance != null) {
+    if (_outlineMaterialInstance != null && doOutlineFeedback) {
       _baseOutline = _outlineMaterialInstance.GetFloat(_outlineShaderPropId);
       _currentOutline = _baseOutline;
     }
@@ -131,7 +133,7 @@ public class Paint_ButtonFeedback : MonoBehaviour {
     }
 
     // Update outline.
-    if (_outlineMaterialInstance != null) {
+    if (_outlineMaterialInstance != null && doOutlineFeedback) {
       float targetOutline;
       if (button.isPressed) {
         targetOutline = _baseOutline * outlinePressedMult;
