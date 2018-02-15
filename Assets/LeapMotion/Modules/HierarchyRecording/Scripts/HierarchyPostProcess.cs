@@ -29,9 +29,7 @@ namespace Leap.Unity.Recording {
     public string recordingName;
     public AssetFolder assetFolder;
 
-    public AssetFolder curveDataFolder;
-
-    public AssetFolder leapDataFolder;
+    public AssetFolder dataFolder;
 
     [SerializeField, ImplementsTypeNameDropdown(typeof(LeapRecording))]
     private string _leapRecordingType;
@@ -88,15 +86,20 @@ namespace Leap.Unity.Recording {
       //Try to generate a leap recording if we have leap data
       RecordingTrack recordingTrack = null;
       LeapRecording leapRecording = null;
-      if (!string.IsNullOrEmpty(leapDataFolder.Path)) {
-        List<Frame> frames = new List<Frame>();
-        for (int i = 0; ; i++) {
-          string framePath = Path.Combine(leapDataFolder.Path, "Frame " + i + ".data");
-          if (!File.Exists(framePath)) {
-            break;
-          }
 
-          frames.Add(JsonUtility.FromJson<Frame>(File.ReadAllText(framePath)));
+      string framesPath = Path.Combine(dataFolder.Path, "Frames.data");
+      if (File.Exists(framesPath)) {
+        List<Frame> frames = new List<Frame>();
+
+        using (var reader = File.OpenText(framesPath)) {
+          while (true) {
+            string line = reader.ReadLine();
+            if (string.IsNullOrEmpty(line)) {
+              break;
+            }
+
+            frames.Add(JsonUtility.FromJson<Frame>(line));
+          }
         }
 
         leapRecording = ScriptableObject.CreateInstance(_leapRecordingType) as LeapRecording;
@@ -214,13 +217,15 @@ namespace Leap.Unity.Recording {
 
       List<EditorCurveBindingData> curveData = new List<EditorCurveBindingData>();
       progress.Begin(1, "Opening Curve Files...", "", () => {
-        foreach (var curveFile in Directory.GetFiles(curveDataFolder.Path)) {
-          if (!curveFile.EndsWith(".data")) {
-            continue;
-          }
+        using (var reader = File.OpenText(Path.Combine(dataFolder.Path, "Curves.data"))) {
+          while (true) {
+            string line = reader.ReadLine();
+            if (string.IsNullOrEmpty(line)) {
+              break;
+            }
 
-          var data = JsonUtility.FromJson<EditorCurveBindingData>(File.ReadAllText(curveFile));
-          curveData.Add(data);
+            curveData.Add(JsonUtility.FromJson<EditorCurveBindingData>(line));
+          }
         }
       });
 
