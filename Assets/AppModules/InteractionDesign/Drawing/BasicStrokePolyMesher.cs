@@ -26,6 +26,33 @@ namespace Leap.Unity.Drawing {
           // with zero width.
           if (strokeObj.isHidden) { a.radius = 0f; }
 
+          // Support TRS by accounting for stroke point reference frame.
+          {
+            // The stroke point's pose is in world space. Each stroke point also has
+            // a reference matrix: The output frame for the stroke point, which may NOT
+            // be world space, specifically if it is not the identity matrix.
+            // We want to preserve the pose and radius even given a non-identity matrix.
+
+            var strokePose = a.pose;
+            var radius = a.radius;
+
+            var frame = a.temp_refFrame;
+
+            var position = strokePose.position;
+            var rotation = strokePose.rotation;
+
+            var frameInverse = frame.inverse;
+
+            var useFrame = frameInverse;
+            useFrame = frame;
+
+            var finalPosition = useFrame.MultiplyPoint3x4(position);
+            var finalRotation = useFrame.rotation * rotation;
+
+            a.pose = new Pose(finalPosition, finalRotation);
+            a.radius = useFrame.lossyScale.x * radius;
+          }
+
           var p0 = a.pose.position + a.pose.rotation * Vector3.right * a.radius;
           var p1 = a.pose.position - a.pose.rotation * Vector3.right * a.radius;
           outStrokePositions.Add(p0, p1, p0, p1);

@@ -128,6 +128,7 @@ namespace Leap.Unity.Drawing {
     private KeyedPolyMeshObject createNewPolyMeshObj() {
       var gameObj = new GameObject("Live PolyMesh Object");
       gameObj.transform.parent = this.transform;
+      gameObj.transform.ResetLocalTransform();
 
       var polyMeshObj = gameObj.AddComponent<KeyedPolyMeshObject>();
       polyMeshObj.meshRenderer.material = outputMaterial;

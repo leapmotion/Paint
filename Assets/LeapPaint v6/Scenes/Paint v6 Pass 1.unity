@@ -459,6 +459,7 @@ GameObject:
   - component: {fileID: 14080532}
   - component: {fileID: 14080533}
   - component: {fileID: 14080534}
+  - component: {fileID: 14080535}
   m_Layer: 0
   m_Name: Paintbrush Mesh Output
   m_TagString: Untagged
@@ -596,6 +597,22 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &14080535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 14080527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccbc457884e101e4dbaa2a82fd804ecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldFrameChannel:
+    _contextType: 0
+    _userContextType: 0
+    _contextObj: {fileID: 0}
+    _channelPath: brush/frame
 --- !u!1 &14100114
 GameObject:
   m_ObjectHideFlags: 0
@@ -6550,14 +6567,14 @@ MonoBehaviour:
   minPalmMiddleAngle: 65
   requireRingFingerAngle: 1
   minSignedRingIndexAngle: -20
-  minPalmRingAngle: 75
-  ringMiddleSafetyHysteresisMult: 0.9
-  requirePalmVsLeapAngle: 1
+  minPalmRingAngle: 65
+  ringMiddleSafetyHysteresisMult: 0.8
+  requirePalmVsLeapAngle: 0
   maxPalmVsLeapAngle: 181
-  maxIndexAngleForEligibilityActivation: 85
-  maxIndexAngleForEligibilityDeactivation: 94
-  maxThumbAngleForEligibilityActivation: 60
-  maxThumbAngleForEligibilityDeactivation: 85
+  maxIndexAngleForEligibilityActivation: 98
+  maxIndexAngleForEligibilityDeactivation: 110
+  maxThumbAngleForEligibilityActivation: 85
+  maxThumbAngleForEligibilityDeactivation: 100
   pinchDeactivateDistance: 0.04
   activeColor: {r: 0.61960787, g: 0.99215686, b: 0.21960784, a: 1}
   readyColor: {r: 0.7337255, g: 0.6945098, b: 0.15372549, a: 1}
@@ -6568,7 +6585,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Leap.Unity.Gestures.PinchGesture+FloatEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  _drawDebug: 1
+  _drawDebug: 0
   _drawDebugPath: 0
 --- !u!1 &302260287
 GameObject:
@@ -18280,14 +18297,14 @@ MonoBehaviour:
   minPalmMiddleAngle: 65
   requireRingFingerAngle: 1
   minSignedRingIndexAngle: -20
-  minPalmRingAngle: 75
-  ringMiddleSafetyHysteresisMult: 0.9
-  requirePalmVsLeapAngle: 1
+  minPalmRingAngle: 65
+  ringMiddleSafetyHysteresisMult: 0.8
+  requirePalmVsLeapAngle: 0
   maxPalmVsLeapAngle: 181
-  maxIndexAngleForEligibilityActivation: 85
-  maxIndexAngleForEligibilityDeactivation: 94
-  maxThumbAngleForEligibilityActivation: 60
-  maxThumbAngleForEligibilityDeactivation: 85
+  maxIndexAngleForEligibilityActivation: 98
+  maxIndexAngleForEligibilityDeactivation: 110
+  maxThumbAngleForEligibilityActivation: 85
+  maxThumbAngleForEligibilityDeactivation: 100
   pinchDeactivateDistance: 0.04
   activeColor: {r: 0.61960787, g: 0.99215686, b: 0.21960784, a: 1}
   readyColor: {r: 0.7337255, g: 0.6945098, b: 0.15372549, a: 1}
@@ -18298,7 +18315,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Leap.Unity.Gestures.PinchGesture+FloatEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  _drawDebug: 1
+  _drawDebug: 0
   _drawDebugPath: 0
 --- !u!1 &918167217
 GameObject:
@@ -29126,6 +29143,11 @@ MonoBehaviour:
     _userContextType: 0
     _contextObj: {fileID: 0}
     _channelPath: brush/radius
+  outputFrameChannelIn:
+    _contextType: 0
+    _userContextType: 0
+    _contextObj: {fileID: 0}
+    _channelPath: brush/frame
   tipTransform: {fileID: 1283087848}
   tipRendererForColor: {fileID: 2007949515}
   brushHeadColorRenderer: {fileID: 584210953}
@@ -32973,6 +32995,11 @@ MonoBehaviour:
     _userContextType: 0
     _contextObj: {fileID: 0}
     _channelPath: brush/radius
+  outputFrameChannelIn:
+    _contextType: 0
+    _userContextType: 0
+    _contextObj: {fileID: 0}
+    _channelPath: brush/frame
   tipTransform: {fileID: 2054639532}
   tipRendererForColor: {fileID: 487904331}
   brushHeadColorRenderer: {fileID: 0}

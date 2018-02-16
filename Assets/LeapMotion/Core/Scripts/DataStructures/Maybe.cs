@@ -157,6 +157,19 @@ namespace Leap.Unity {
       }
     }
 
+    /// <summary>
+    /// If this Maybe has a value, returns the value, otherwise returns the argument
+    /// custom default value.
+    /// </summary>
+    public T ValueOr(T customDefault) {
+      if (hasValue) {
+        return _t;
+      }
+      else {
+        return customDefault;
+      }
+    }
+
     public QueryWrapper<T, Maybe<T>.MaybeOp> Query() {
       return new QueryWrapper<T, MaybeOp>(new MaybeOp(this));
     }

@@ -97,7 +97,7 @@ namespace Leap.Unity.Gestures {
     [DevGui.DevValue]
     [Range(0f, 90f)]
     [DisableIf("requireRingFingerAngle", isEqualTo: false)]
-    public float minPalmRingAngle = 75f;
+    public float minPalmRingAngle = 65f;
 
     #endregion
     
@@ -108,7 +108,7 @@ namespace Leap.Unity.Gestures {
     [DevGui.DevCategory(GENERIC_HYSTERESIS_CATEGORY)]
     [DevGui.DevValue]
     [Range(0.6f, 1f)]
-    public float ringMiddleSafetyHysteresisMult = 0.9f;
+    public float ringMiddleSafetyHysteresisMult = 0.8f;
 
     #endregion
 
@@ -118,7 +118,7 @@ namespace Leap.Unity.Gestures {
 
     [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
     [DevGui.DevValue]
-    public bool requirePalmVsLeapAngle = true;
+    public bool requirePalmVsLeapAngle = false;
 
     [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
     [DevGui.DevValue]
@@ -135,12 +135,12 @@ namespace Leap.Unity.Gestures {
     [DevGui.DevCategory(INDEX_ANGLE_CATEGORY)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
-    public float maxIndexAngleForEligibilityActivation = 85f;
+    public float maxIndexAngleForEligibilityActivation = 98f;
 
     [DevGui.DevCategory(INDEX_ANGLE_CATEGORY)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
-    public float maxIndexAngleForEligibilityDeactivation = 94f;
+    public float maxIndexAngleForEligibilityDeactivation = 110f;
 
     #endregion
 
@@ -151,12 +151,12 @@ namespace Leap.Unity.Gestures {
     [DevGui.DevCategory(THUMB_ANGLE_CATEGORY)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
-    public float maxThumbAngleForEligibilityActivation = 60f;
+    public float maxThumbAngleForEligibilityActivation = 85f;
 
     [DevGui.DevCategory(THUMB_ANGLE_CATEGORY)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
-    public float maxThumbAngleForEligibilityDeactivation = 85f;
+    public float maxThumbAngleForEligibilityDeactivation = 100f;
 
     #endregion
 
@@ -701,10 +701,12 @@ namespace Leap.Unity.Gestures {
             // valid position -- think, closed-fist to safety-pinch, as opposed to
             // open-hand to safety-pinch -- without introducing any velocity-based
             // requirement.
-            if (latestPinchStrength > 0.8f && !shouldActivate) {
+            if (latestPinchStrength > 0.88f && !shouldActivate) {
               requiresRepinch = true;
             }
-            if (requiresRepinch && latestPinchStrength < 0.8f) {
+            if (requiresRepinch && latestPinchStrength < 0.88f) {
+              // changed from 0.8 to 0.88 because testing showed the requirement is a
+              // bit too strict 
               requiresRepinch = false;
             }
           }
