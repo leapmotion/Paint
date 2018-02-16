@@ -115,6 +115,16 @@ namespace Leap.Unity.UserContext {
     public ColorChannel(string channelPath) : base() { _channelPath = channelPath; }
   }
 
+  /// <summary>
+  /// UconChannel pre-defines channels for a few common types.
+  /// If a type you need to use in a channel doesn't already exist, create a new
+  /// subclass of UconChannel with the type argument you need.
+  /// </summary>
+  [Serializable]
+  public class StringChannel : UconChannel<string> {
+    public StringChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
+
   #endregion
 
   [Serializable]
