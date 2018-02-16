@@ -57,7 +57,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnMarbleActivated() {
       base.DoOnMarbleActivated();
 
-      if (!IsGrabbed && !IsWorkstation) {
+      if (!isGrasped && !IsWorkstation) {
         if (_menuButtonEmergeables[0].IsEmergedOrEmerging) {
           for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
             _menuButtonEmergeables[i].TryVanish(IsWorkstation);
