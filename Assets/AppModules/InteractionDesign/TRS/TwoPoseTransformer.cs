@@ -7,7 +7,7 @@ using UnityEngine;
 
 using Pose = Leap.Unity.Pose;
 
-public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
+public class TwoPoseTransformer : MonoBehaviour, IRuntimeGizmoComponent {
 
   #region Inspector
 
@@ -33,17 +33,17 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
   private bool _allowScale = true;
 
   [SerializeField]
-  private float _minScale = 0.01f;
+  private float _minScale = 0.02f;
 
   [SerializeField]
-  private float _maxScale = 500f;
+  private float _maxScale = 50f;
 
   [Header("Position Constraint")]
   
   [SerializeField]
   [Tooltip("Constrains the maximum distance from the TRS object, only if the user isn't "
          + "actively performing the TRS action.")]
-  private bool _constrainPosition = false;
+  private bool _constrainPosition = true;
 
   [SerializeField]
   [Tooltip("The maximum distance from the base position in the OBJECT'S space.")]
@@ -51,7 +51,7 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
 
   [SerializeField]
   [Tooltip("The maximum distance from the base position in world space.")]
-  private float _maxWorldDistance = 120f;
+  private float _maxWorldDistance = 30f;
 
   [SerializeField]
   [DisableIf("_constrainPosition", isEqualTo: false)]
@@ -63,29 +63,33 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
   [SerializeField, Disable]
   private Vector3 _basePosition = Vector3.zero;
 
+  [Tooltip("The base transform provides a dynamic base position if non-null. Since the "
+         + "user is usually the entity that wants to not drift too far away, this will "
+         + "default to the main camera if there is one.")]
   [SerializeField]
-  private Transform _overrideBaseTransform;
+  private Transform _baseTransform;
 
+  [Tooltip("Readonly. The local distance from the object to the base.")]
   [SerializeField, Disable]
   private float _localDistanceFromBase = 1f;
 
   [Header("Momentum (when not pinching)")]
 
   [SerializeField]
-  private bool _allowMomentum = false;
+  private bool _allowMomentum = true;
   public bool allowMomentum {
     get { return _allowMomentum; }
     set { _allowMomentum = value; }
   }
 
   [SerializeField]
-  private float      _linearFriction = 1f;
+  private float      _linearFriction = 8f;
 
   [SerializeField]
-  private float      _angularFriction = 1f;
+  private float      _angularFriction = 0.9f;
 
   [SerializeField]
-  private float      _scaleFriction = 1f;
+  private float      _scaleFriction = 25f;
 
   [SerializeField, Disable]
   private Vector3    _positionMomentum;
@@ -114,6 +118,15 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
   #endregion
 
   #region Unity Events
+
+  private void Reset() {
+    if (_baseTransform == null) {
+      var mainCamera = Camera.main;
+      if (mainCamera != null) {
+        _baseTransform = Camera.main.transform;
+      }
+    }
+  }
 
   void Update() {
     updateTRS();
@@ -206,14 +219,14 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
         // Twist.
         var perp = Utils.Perpendicular(nextAxis);
         
-        var aRotatedPerp = perp.RotatedBy(_aPoses[1].rotation.From(_aPoses[0].rotation));
-        //aRotatedPerp = (_aPoses[1].rotation * Quaternion.Inverse(_aPoses[0].rotation))
-        //               * perp;
+        //var aRotatedPerp = perp.RotatedBy(_aPoses[0].rotation.From(_aPoses[1].rotation));
+        var aRotatedPerp = (_aPoses[1].rotation * Quaternion.Inverse(_aPoses[0].rotation))
+                           * perp;
         var aTwist = Vector3.SignedAngle(perp, aRotatedPerp, nextAxis);
 
-        var bRotatedPerp = perp.RotatedBy(_bPoses[1].rotation.From(_bPoses[0].rotation));
-        //bRotatedPerp = (_bPoses[1].rotation * Quaternion.Inverse(_bPoses[0].rotation))
-        //               * perp;
+        //var bRotatedPerp = perp.RotatedBy(_bPoses[0].rotation.From(_bPoses[1].rotation));
+        var bRotatedPerp = (_bPoses[1].rotation * Quaternion.Inverse(_bPoses[0].rotation))
+                           * perp;
         var bTwist = Vector3.SignedAngle(perp, bRotatedPerp, nextAxis);
 
         twist = (aTwist + bTwist) * 0.5f;
@@ -226,7 +239,9 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
     // Calculate TRS.
     Vector3    origTargetPos = objectTransform.transform.position;
     Quaternion origTargetRot = objectTransform.transform.rotation;
-    float      origTargetScale = objectTransform.transform.localScale.x;
+
+    // No references to this as of 2/15. Is it important? -Nick
+    //float      origTargetScale = objectTransform.transform.localScale.x;
 
     // Declare delta properties.
     Vector3    finalPosDelta;
@@ -239,8 +254,8 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
     // Determine base position if we expect to apply positional constraints.
     float distanceToEdge = 0f;
     if (_constrainPosition) {
-      if (_overrideBaseTransform) {
-        _basePosition = _overrideBaseTransform.position;
+      if (_baseTransform) {
+        _basePosition = _baseTransform.position;
       }
       else if (objectTransform.parent != null) {
         _basePosition = objectTransform.parent.position;
@@ -322,8 +337,8 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
     var poleRotation = Quaternion.FromToRotation(origAxis, nextAxis);
     var poleTwist = Quaternion.AngleAxis(twist, nextAxis);
     finalRotDelta = objectTransform.rotation
-                                   .Then(poleRotation)
                                    .Then(poleTwist)
+                                   .Then(poleRotation)
                                    .From(objectTransform.rotation);
 
     // Apply scale and rotation, or use momentum for these properties.
@@ -346,7 +361,7 @@ public class PinchTransformer : MonoBehaviour, IRuntimeGizmoComponent {
     }
     else {
       // Apply transformations.
-      objectTransform.rotation = objectTransform.rotation.Then(finalRotDelta);
+      objectTransform.rotation = finalRotDelta * objectTransform.rotation;
       objectTransform.localScale = Vector3.one * (objectTransform.localScale.x
                                                   * finalScaleRatio);
 
