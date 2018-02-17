@@ -789,11 +789,24 @@ namespace Leap.Unity.Gestures {
     }
 
     protected override void WhileHandTracked(Hand hand) {
+
+      // Update pose with the position of the pinch, which is theoretical if there's no
+      // pinch but absolute when a pinch is actually occuring.
+      var pinchPosition = hand.GetPredictedPinchPosition();
+      if (pinchStrengthBuffer.Count > 0) {
+        var latestPinchStrength = pinchStrengthBuffer.GetLatest();
+        var avgIndexThumbTip = ((hand.GetIndex().TipPosition
+                                 + hand.GetThumb().TipPosition) / 2f).ToVector3();
+        pinchPosition = Vector3.Lerp(pinchPosition, avgIndexThumbTip, latestPinchStrength);
+      }
       _lastPinchPose = new Pose() {
-        position = hand.GetPredictedPinchPosition(),
+        position = pinchPosition,
         rotation = hand.Rotation.ToQuaternion()
       };
 
+      // Reset the "degenerate conditions" timer if we detect that we're looking down
+      // the wrist of the hand; here fingers are usually occluded, so we want to ignore
+      // pinch information in this case.
       var lookingDownWrist = Vector3.Angle(hand.DistalAxis(),
          hand.PalmPosition.ToVector3() - Camera.main.transform.position) < 25f;
       if (lookingDownWrist) {

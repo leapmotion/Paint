@@ -722,7 +722,6 @@ GameObject:
   m_Component:
   - component: {fileID: 16935802}
   - component: {fileID: 16935804}
-  - component: {fileID: 16935803}
   m_Layer: 0
   m_Name: Palm Follower (Right)
   m_TagString: Untagged
@@ -741,25 +740,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1383809820}
-  - {fileID: 305218793}
   m_Father: {fileID: 1506018790}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &16935803
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 16935801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b4fb9402d0435b45af0758feb0f310c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stream: {fileID: 16935804}
-  _receiver: {fileID: 1632521676}
-  drawWire: 0
-  debugWire: 0
 --- !u!114 &16935804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -775,11 +758,12 @@ MonoBehaviour:
   whichHand: 1
   attachmentPoint: 4
   _isHandTracked: 1
-  usePoseStreamOffset: 1
-  poseStreamOffsetSource: {fileID: 305218793}
+  doPoseStream: 1
+  usePoseStreamOffset: 0
+  poseStreamOffsetSource: {fileID: 0}
   poseStreamOffset:
-    position: {x: -0.03490001, y: -0.056958675, z: 0.03504324}
-    rotation: {x: 0.0045014177, y: 0.53728086, z: -0.84336174, w: 0.007065701}
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
 --- !u!1 &25837221
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,6 +938,7 @@ MonoBehaviour:
   whichHand: 1
   attachmentPoint: 4
   _isHandTracked: 1
+  doPoseStream: 1
   usePoseStreamOffset: 1
   poseStreamOffsetSource: {fileID: 1802368594}
   poseStreamOffset:
@@ -6776,8 +6761,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 305218793}
+  - component: {fileID: 305218794}
+  - component: {fileID: 305218795}
   m_Layer: 0
-  m_Name: Paintbrush Offset Basis
+  m_Name: Pinch Gesture Pose Stream
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6789,13 +6776,41 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 305218792}
-  m_LocalRotation: {x: 0.0045014136, y: 0.53728086, z: -0.8433618, w: 0.007065682}
-  m_LocalPosition: {x: -0.034900017, y: -0.056958683, z: 0.035043243}
+  m_LocalRotation: {x: 0.0018133293, y: 0.21643192, z: 0.9762618, w: -0.008179246}
+  m_LocalPosition: {x: 0.0451, y: 1.6355, z: 0.1665}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 16935802}
-  m_RootOrder: 1
+  m_Father: {fileID: 1506018790}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 65, y: 0, z: 90}
+--- !u!114 &305218794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 305218792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 802f11bcb4f180a4bb3baf6cf6116e5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  streamMode: 2
+  _poseGesture: {fileID: 628900568}
+--- !u!114 &305218795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 305218792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4fb9402d0435b45af0758feb0f310c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stream: {fileID: 305218794}
+  _receiver: {fileID: 1632521676}
+  drawWire: 0
+  debugWire: 0
 --- !u!1001 &308582965
 Prefab:
   m_ObjectHideFlags: 0
@@ -7402,7 +7417,7 @@ Transform:
   m_Children:
   - {fileID: 1784561553}
   m_Father: {fileID: 1632521675}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &323810325
 MonoBehaviour:
@@ -7991,6 +8006,22 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 31fb6318eae35544bbd075e4442d2959, type: 2}
+    - target: {fileID: 4437985243979600, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: -0.99437046
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599822919676468, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: -0.99368477
+      objectReference: {fileID: 0}
+    - target: {fileID: 4830608005988508, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: -0.98981386
+      objectReference: {fileID: 0}
+    - target: {fileID: 4572308722735894, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0.17725916
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2aa010a1e75292e49a24f3f71bb9cddb, type: 2}
   m_IsPrefabParent: 0
@@ -12288,6 +12319,7 @@ MonoBehaviour:
   whichHand: 0
   attachmentPoint: 4
   _isHandTracked: 1
+  doPoseStream: 1
   usePoseStreamOffset: 0
   poseStreamOffsetSource: {fileID: 0}
   poseStreamOffset:
@@ -12885,7 +12917,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1506018790}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &629274226
 GameObject:
@@ -17189,6 +17221,7 @@ MonoBehaviour:
   whichHand: 0
   attachmentPoint: 4
   _isHandTracked: 1
+  doPoseStream: 1
   usePoseStreamOffset: 0
   poseStreamOffsetSource: {fileID: 0}
   poseStreamOffset:
@@ -21794,6 +21827,7 @@ MonoBehaviour:
   whichHand: 1
   attachmentPoint: 4
   _isHandTracked: 1
+  doPoseStream: 1
   usePoseStreamOffset: 0
   poseStreamOffsetSource: {fileID: 0}
   poseStreamOffset:
@@ -22673,6 +22707,7 @@ MonoBehaviour:
   whichHand: 0
   attachmentPoint: 2
   _isHandTracked: 1
+  doPoseStream: 1
   usePoseStreamOffset: 0
   poseStreamOffsetSource: {fileID: 0}
   poseStreamOffset:
@@ -23579,6 +23614,10 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 34d17dbe300e3b349a2e73a46a95f4f7, type: 2}
+    - target: {fileID: 4531893592447476, guid: 2276723046d707c4f94d431ceb80ab92, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2276723046d707c4f94d431ceb80ab92, type: 2}
   m_IsPrefabParent: 0
@@ -30209,8 +30248,9 @@ Transform:
   m_LocalPosition: {x: 0, y: -1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 628900569}
   - {fileID: 16935802}
+  - {fileID: 628900569}
+  - {fileID: 305218793}
   - {fileID: 1632521675}
   m_Father: {fileID: 893246924}
   m_RootOrder: 0
@@ -32949,10 +32989,9 @@ Transform:
   m_LocalPosition: {x: 0.0451, y: 1.6355, z: 0.1665}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2054639532}
   - {fileID: 323810324}
   m_Father: {fileID: 1506018790}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: -25.000002, y: 0, z: 180.95999}
 --- !u!114 &1632521676
 MonoBehaviour:
@@ -32984,7 +33023,7 @@ MonoBehaviour:
     _userContextType: 0
     _contextObj: {fileID: 0}
     _channelPath: brush/frame
-  tipTransform: {fileID: 2054639532}
+  tipTransform: {fileID: 0}
   tipRendererForColor: {fileID: 487904331}
   brushHeadColorRenderer: {fileID: 0}
   brushHeadColorPropertyName: _Outline
@@ -35286,6 +35325,7 @@ MonoBehaviour:
   whichHand: 0
   attachmentPoint: 2
   _isHandTracked: 1
+  doPoseStream: 1
   usePoseStreamOffset: 0
   poseStreamOffsetSource: {fileID: 0}
   poseStreamOffset:
@@ -35920,12 +35960,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd66228b20306d49ad7f891f6269e17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _leftFingertipsUniformParamId: 340
-  _rightFingertipsUniformParamId: 341
-  _leftPalmTrisUniformParamId: 342
-  _rightPalmTrisUniformParamId: 343
-  _leftFingerSegmentsUniformParamId: 344
-  _rightFingerSegmentsUniformParamId: 345
+  _leftFingertipsUniformParamId: 501
+  _rightFingertipsUniformParamId: 502
+  _leftPalmTrisUniformParamId: 503
+  _rightPalmTrisUniformParamId: 504
+  _leftFingerSegmentsUniformParamId: 505
+  _rightFingerSegmentsUniformParamId: 506
 --- !u!4 &1756187802
 Transform:
   m_ObjectHideFlags: 0
@@ -42389,34 +42429,6 @@ Transform:
   m_PrefabParentObject: {fileID: 4887521740578240, guid: 94ef22a120fad9f40a268911ae9fb4d8,
     type: 2}
   m_PrefabInternal: {fileID: 2050667125}
---- !u!1 &2054639531
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 2054639532}
-  m_Layer: 0
-  m_Name: Paintbrush Tip
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2054639532
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2054639531}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1632521675}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2069893134
 GameObject:
   m_ObjectHideFlags: 0
