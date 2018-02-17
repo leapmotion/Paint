@@ -478,7 +478,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &14080529
 MonoBehaviour:
@@ -627,7 +627,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &14100115
 Transform:
   m_ObjectHideFlags: 0
@@ -4368,7 +4368,7 @@ Transform:
   - {fileID: 434412548}
   - {fileID: 1375150782}
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &176456284
 Prefab:
@@ -7180,7 +7180,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &321541655 stripped
 MeshRenderer:
@@ -12266,7 +12266,6 @@ GameObject:
   - component: {fileID: 586923021}
   - component: {fileID: 586923020}
   - component: {fileID: 586923022}
-  - component: {fileID: 586923023}
   m_Layer: 0
   m_Name: Palm Follower (Left)
   m_TagString: Untagged
@@ -12320,21 +12319,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stream: {fileID: 586923020}
   _receiver: {fileID: 1959552854}
-  drawWire: 1
-  debugWire: 0
---- !u!114 &586923023
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 586923019}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b4fb9402d0435b45af0758feb0f310c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stream: {fileID: 586923020}
-  _receiver: {fileID: 1590745295}
   drawWire: 1
   debugWire: 0
 --- !u!1 &588192874
@@ -17687,7 +17671,7 @@ Transform:
   - {fileID: 866678751}
   - {fileID: 265631117}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &893246925
 MonoBehaviour:
@@ -21077,7 +21061,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1060027904
 GameObject:
@@ -21956,7 +21940,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1113495868
 Transform:
   m_ObjectHideFlags: 0
@@ -23110,7 +23094,7 @@ Transform:
   - {fileID: 300888972}
   - {fileID: 918167218}
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1167361464
 MonoBehaviour:
@@ -31535,7 +31519,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1564672213}
   m_LocalRotation: {x: 0.000000111758695, y: 0.7071069, z: 0.7071067, w: -0.000000111758695}
-  m_LocalPosition: {x: -0.0066, y: 0.0042, z: -0.0753}
+  m_LocalPosition: {x: -0.0003, y: 0.0042, z: -0.013}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1656389382}
@@ -31923,7 +31907,7 @@ GameObject:
   - component: {fileID: 1590745296}
   - component: {fileID: 1590745295}
   m_Layer: 0
-  m_Name: Palm Following Basis (Menu Band)
+  m_Name: Wrist Following Basis (Menu Band)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31947,12 +31931,12 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1590745294}
   m_LocalRotation: {x: 0.12940948, y: -0.48296294, z: -0.86272997, w: -0.07547902}
-  m_LocalPosition: {x: -0.21999995, y: 1.4704567, z: 0.2595414}
+  m_LocalPosition: {x: -0.21282744, y: 1.4405918, z: 0.2506181}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1564672214}
   m_Father: {fileID: 0}
-  m_RootOrder: 17
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1591486219
 Prefab:
@@ -32495,7 +32479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1611648156}
-  dataToSend: erase
+  dataToSend: eraser
   pressOutputChannel:
     _contextType: 0
     _userContextType: 0
@@ -33920,7 +33904,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1673903046
 GameObject:
@@ -35255,6 +35239,71 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1722721045}
   m_Mesh: {fileID: 4300000, guid: 5c8a5b7ce36ded04685ab67fe20cc614, type: 3}
+--- !u!1 &1724368089
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1724368092}
+  - component: {fileID: 1724368091}
+  - component: {fileID: 1724368090}
+  m_Layer: 0
+  m_Name: Wrist Follower (Left)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1724368090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1724368089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4fb9402d0435b45af0758feb0f310c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stream: {fileID: 1724368091}
+  _receiver: {fileID: 1590745295}
+  drawWire: 1
+  debugWire: 0
+--- !u!114 &1724368091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1724368089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 509f2425e5946da4ba503fe410913a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _provider: {fileID: 1882949155}
+  whichHand: 0
+  attachmentPoint: 2
+  _isHandTracked: 1
+  usePoseStreamOffset: 0
+  poseStreamOffsetSource: {fileID: 0}
+  poseStreamOffset:
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+--- !u!4 &1724368092
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1724368089}
+  m_LocalRotation: {x: 0.12940948, y: -0.48296294, z: -0.86272997, w: -0.07547902}
+  m_LocalPosition: {x: -0.21282744, y: 1.4405918, z: 0.2506181}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1725267304
 Prefab:
   m_ObjectHideFlags: 0
@@ -35871,12 +35920,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd66228b20306d49ad7f891f6269e17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _leftFingertipsUniformParamId: 268
-  _rightFingertipsUniformParamId: 269
-  _leftPalmTrisUniformParamId: 270
-  _rightPalmTrisUniformParamId: 271
-  _leftFingerSegmentsUniformParamId: 272
-  _rightFingerSegmentsUniformParamId: 273
+  _leftFingertipsUniformParamId: 340
+  _rightFingertipsUniformParamId: 341
+  _leftPalmTrisUniformParamId: 342
+  _rightPalmTrisUniformParamId: 343
+  _leftFingerSegmentsUniformParamId: 344
+  _rightFingerSegmentsUniformParamId: 345
 --- !u!4 &1756187802
 Transform:
   m_ObjectHideFlags: 0
@@ -36148,7 +36197,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1784561552
 GameObject:
@@ -40496,7 +40545,7 @@ Transform:
   m_Children:
   - {fileID: 97234646}
   m_Father: {fileID: 0}
-  m_RootOrder: 18
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1968395258
 GameObject:
