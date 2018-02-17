@@ -335,6 +335,10 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     public void NotifyFingerEnterMarble(Collider fingerCollider) {
+      if (this.name.Equals("Color")) {
+        Debug.Log("RECEIVE NotifyFingerEnterMarble");
+      }
+
       _fingerTouchingMarble = true;
 
       if (_marbleReady) {
@@ -353,6 +357,10 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     public void NotifyFingerEnterDepthCollider(Collider fingerCollider) {
+      if (this.name.Equals("Color")) {
+        Debug.Log("RECEIVE NotifyFingerEnterDepthCollider");
+      }
+
       _fingerTouchingDepthCollider = true;
     }
 
