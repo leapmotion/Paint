@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Leap.Unity.Animation;
-namespace Leap.Unity.LeapPaint_v3 {
+using Leap.Unity.Interaction;
 
+namespace Leap.Unity.LeapPaint_v3 {
 
   public class GrabbingTip : MonoBehaviour {
 
-    public WearableManager Manager;
+    public InteractionHand rightHand;
     public TextMesh text;
 
     private bool isShowing = false;
@@ -21,8 +22,9 @@ namespace Leap.Unity.LeapPaint_v3 {
     void Start() {
       text.gameObject.SetActive(false);
       //Anchor.OnAnchorBeginDisappearing += DoOnBeginDisappearing;
-      Manager.OnGrabBegin += DoOnGrab;
-      Manager.OnGrabEnd += DoOnUnGrab;
+
+      rightHand.OnGraspBegin += DoOnGrab;
+      rightHand.OnGraspEnd += DoOnUnGrab;
 
       firstLine = gameObject.AddComponent<LineRenderer>();
       firstLine.useWorldSpace = true;
@@ -88,12 +90,12 @@ namespace Leap.Unity.LeapPaint_v3 {
     void Update() {
       Vector3 marblePos = Vector3.zero;
       if (isShowing) {
-        if (Manager._leftGrabbedWearable != null) {
-          marblePos = (Manager._leftGrabbedWearable as WearableUI).transform.position;
-          thrownMarble = Manager._leftGrabbedWearable as WearableUI;
-        } else if (Manager._rightGrabbedWearable != null) {
-          marblePos = (Manager._rightGrabbedWearable as WearableUI).transform.position;
-          thrownMarble = Manager._rightGrabbedWearable as WearableUI;
+        if (rightHand.graspedObject != null) {
+          var marble = (rightHand.graspedObject as MonoBehaviour).GetComponent<WearableUI>();
+          if (marble != null) {
+            marblePos = marble.transform.position;
+            thrownMarble = marble;
+          }
         }
 
         transform.position = Vector3.Lerp(transform.position, marblePos + Vector3.up * 0.06f, 0.1f);

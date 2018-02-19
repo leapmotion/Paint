@@ -13,7 +13,7 @@ namespace Leap.Unity.UserContext {
     UnityObject = 1,
   }
 
-  #region Some Unity-serializable UconChannel Wrapper Classes
+  #region Channel Wrappers
 
   /// <summary>
   /// Pre-defined UconChannel for a "bang" signal, which represents the transmission
@@ -83,6 +83,7 @@ namespace Leap.Unity.UserContext {
   [Serializable]
   public class QuaternionChannel : UconChannel<Quaternion> {
     public QuaternionChannel(string channelPath) : base() { _channelPath = channelPath; }
+    public override Quaternion defaultForType { get { return Quaternion.identity; } }
   }
 
   /// <summary>
@@ -103,6 +104,7 @@ namespace Leap.Unity.UserContext {
   [Serializable]
   public class PoseChannel : UconChannel<Pose> {
     public PoseChannel(string channelPath) : base() { _channelPath = channelPath; }
+    public override Pose defaultForType { get { return Pose.identity; } }
   }
 
   /// <summary>
@@ -115,7 +117,30 @@ namespace Leap.Unity.UserContext {
     public ColorChannel(string channelPath) : base() { _channelPath = channelPath; }
   }
 
+  /// <summary>
+  /// UconChannel pre-defines channels for a few common types.
+  /// If a type you need to use in a channel doesn't already exist, create a new
+  /// subclass of UconChannel with the type argument you need.
+  /// </summary>
+  [Serializable]
+  public class StringChannel : UconChannel<string> {
+    public StringChannel(string channelPath) : base() { _channelPath = channelPath; }
+  }
+
+  /// <summary>
+  /// UconChannel pre-defines channels for a few common types.
+  /// If a type you need to use in a channel doesn't already exist, create a new
+  /// subclass of UconChannel with the type argument you need.
+  /// </summary>
+  [Serializable]
+  public class MatrixChannel : UconChannel<Matrix4x4> {
+    public MatrixChannel(string channelPath) : base() { _channelPath = channelPath; }
+    public override Matrix4x4 defaultForType { get { return Matrix4x4.identity; } }
+  }
+
   #endregion
+
+  #region Abstract UconChannel
 
   [Serializable]
   public abstract class UconChannel {
@@ -162,6 +187,10 @@ namespace Leap.Unity.UserContext {
 
   }
 
+  #endregion
+
+  #region UconChannel<T>
+
   /// <summary>
   /// A Ucon channel description, consisting of a context object, path string, and data
   /// type (the type argument.
@@ -182,6 +211,13 @@ namespace Leap.Unity.UserContext {
     /// drawer for Ucon channels.
     /// </summary>
     public override Type channelType { get { return typeof(T); } }
+
+    /// <summary>
+    /// Override this if you'd like to change the value returned as the default value
+    /// when there is no data at a given channel. e.g. Matrix4x4.identity instead of
+    /// the zero matrix.
+    /// </summary>
+    public virtual T defaultForType { get { return default(T); } }
 
     private List<T> _backingSource;
     /// <summary>
@@ -218,10 +254,12 @@ namespace Leap.Unity.UserContext {
     /// Returns the currently stored value at this channel, or the first value if there
     /// is more than one.
     /// 
-    /// If there is no data at this channel yet, returns the default value for the type.
+    /// If there is no data at this channel yet, returns the defaultForType specified
+    /// on the channel. Usually this is default(T), but for mathematical constructs like
+    /// Quaternion, Pose, and Matrix4x4, returns the identity value for that type.
     /// </summary>
     public T Get() {
-      return source.Query().FirstOrDefault();
+      return source.Query().FirstOrNone().ValueOr(defaultForType);
     }
 
     /// <summary>
@@ -244,7 +282,7 @@ namespace Leap.Unity.UserContext {
     /// </summary>
     public bool TryGet(out T value) {
       if (source.Count == 0) {
-        value = default(T);
+        value = defaultForType;
         return false;
       }
       value = source[0];
@@ -324,5 +362,7 @@ namespace Leap.Unity.UserContext {
     #endregion
 
   }
+
+  #endregion
 
 }

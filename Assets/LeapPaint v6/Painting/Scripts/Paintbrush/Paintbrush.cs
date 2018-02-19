@@ -40,8 +40,11 @@ namespace Leap.Unity.Drawing {
     public Color color = Color.red;
 
     [Header("Ucon Input Channels")]
-    public ColorChannel colorChannelIn = new ColorChannel("brush/color");
-    public FloatChannel radiusChannelIn = new FloatChannel("brush/radius");
+    public ColorChannel  colorChannelIn = new ColorChannel("brush/color");
+    public FloatChannel  radiusChannelIn = new FloatChannel("brush/radius");
+    [Tooltip("Output mesh reference frame that the brush outputs to.\n"
+           + "This is necessary for TRS painting to work.")]
+    public MatrixChannel outputFrameChannelIn = new MatrixChannel("brush/frame");
 
     [Header("Brush Tip (Optional)")]
     public Transform tipTransform = null;
@@ -215,11 +218,14 @@ namespace Leap.Unity.Drawing {
           OnPaintingBeginEvent.Invoke();
         }
 
+        var refFrame = outputFrameChannelIn.Get();
+
         var tipPose = GetTipPose(data);
         OnSend(new StrokePoint() {
           pose = tipPose,
           radius = radius,
-          color = color
+          color = color,
+          temp_refFrame = refFrame,
         });
       }
       else if (_isStreamOpen) {

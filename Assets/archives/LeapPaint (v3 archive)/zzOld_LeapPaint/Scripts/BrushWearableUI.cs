@@ -27,7 +27,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnMarbleActivated() {
       base.DoOnMarbleActivated();
 
-      if (!IsGrabbed && !IsWorkstation) {
+      if (!isGrasped && !IsWorkstation) {
         if (!_brushControlsEmerged) {
           _brushControlsEmergeable.TryEmerge(IsWorkstation);
           _brushControlsEmerged = true;
@@ -70,7 +70,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       _brushControlsMoveable.MoveToB();
 
-      if (!IsGrabbed) {
+      if (!isGrasped) {
         _brushControlsEmergeable.TryEmerge(IsWorkstation);
         _brushControlsEmerged = true;
         _brushWorkstationEmergeable.TryEmerge(IsWorkstation);

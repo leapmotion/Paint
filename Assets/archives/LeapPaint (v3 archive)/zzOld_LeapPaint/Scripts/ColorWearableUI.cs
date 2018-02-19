@@ -60,7 +60,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnMarbleActivated() {
       base.DoOnMarbleActivated();
 
-      if (!IsGrabbed && !IsWorkstation) {
+      if (!isGrasped && !IsWorkstation) {
         if (!_primaryPaletteEmergeable.IsEmergedOrEmerging) {
           _primaryPaletteEmergeable.TryEmerge(IsWorkstation);
         }
@@ -102,7 +102,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnMovementToWorkstationFinished() {
       base.DoOnMovementToWorkstationFinished();
 
-      if (!IsGrabbed) {
+      if (!isGrasped) {
         _primaryPaletteEmergeable.TryEmerge(IsWorkstation);
         for (int i = 0; i < _workstationEmergeables.Length; i++) {
           _workstationEmergeables[i].TryEmerge(IsWorkstation);

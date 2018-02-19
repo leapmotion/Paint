@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Events;
+using Leap.Unity.Interaction;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
@@ -14,14 +15,20 @@ namespace Leap.Unity.LeapPaint_v3 {
     public ColliderEvent PassedOnTriggerExit = new ColliderEvent();
 
     protected void OnTriggerEnter(Collider other) {
+      if (other.GetComponent<IndexUIActivator>() == null) { return; }
+
       PassedOnTriggerEnter.Invoke(other);
     }
 
     protected void OnTriggerStay(Collider other) {
+      if (other.GetComponent<IndexUIActivator>() == null) { return; }
+
       PassedOnTriggerStay.Invoke(other);
     }
 
     protected void OnTriggerExit(Collider other) {
+      if (other.GetComponent<IndexUIActivator>() == null) { return; }
+
       PassedOnTriggerExit.Invoke(other);
     }
 

@@ -8,7 +8,7 @@ namespace Leap.Unity.Animation {
 
   public class ScaleSwitch : TweenSwitch, IPropertySwitch {
 
-    public const float NEAR_ZERO = 0.0001f;
+    public const float NEAR_ZERO = 0.0002f;
 
     #region Inspector
 
@@ -33,9 +33,11 @@ namespace Leap.Unity.Animation {
     public bool enforceNonzeroScale = true;
 
     /// <summary>
-    /// Deactivates THIS OBJECT when its target localScale is zero or very near zero.
+    /// Deactivates THIS OBJECT when its target localScale or any of the component values
+    /// of its non-uniform local scale a very near the minimum value specified on the
+    /// scale curve.
     /// </summary>
-    public bool deactivateSelfWhenZero = true;
+    public bool deactivateSelfWhenSmallestValue = true;
     
     [Tooltip("Enable this setting to connect a Switch that will receive Off() when the "
            + "scale is effectively zero and On() when the scale is effectively nonzero.")]
@@ -101,9 +103,19 @@ namespace Leap.Unity.Animation {
         localScaleTarget.localScale = targetScale;
       }
 
-      bool effectivelyZeroScale = targetScale.CompMin() <= NEAR_ZERO;
+      float smallestCurveValue;
+      if (nonUniformScale) {
+        smallestCurveValue = Mathf.Min(getSmallestCurveValue(xScaleCurve),
+                             Mathf.Min(getSmallestCurveValue(yScaleCurve),
+                                       getSmallestCurveValue(zScaleCurve)));
+      }
+      else {
+        smallestCurveValue = getSmallestCurveValue(scaleCurve);
+      }
 
-      if (deactivateSelfWhenZero) {
+      bool effectivelyZeroScale = targetScale.CompMin() <= smallestCurveValue + NEAR_ZERO;
+
+      if (deactivateSelfWhenSmallestValue) {
         this.gameObject.SetActive(!effectivelyZeroScale);
       }
 
@@ -128,6 +140,17 @@ namespace Leap.Unity.Animation {
                            Mathf.Lerp(offLocalScale.y, onLocalScale.y, yScaleCurve.Evaluate(time)),
                            Mathf.Lerp(offLocalScale.z, onLocalScale.z, zScaleCurve.Evaluate(time)));
       }
+    }
+
+    private float getSmallestCurveValue(AnimationCurve animCurve) {
+      float smallestValueSoFar = 1f; // unit curve constraints prevent anything larger.
+      foreach (var keyframe in animCurve.keys) {
+        var testValue = keyframe.value;
+        if (testValue < smallestValueSoFar) {
+          smallestValueSoFar = testValue;
+        }
+      }
+      return smallestValueSoFar;
     }
 
     #endregion
