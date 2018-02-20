@@ -1,12 +1,15 @@
 ﻿using System;
 using Leap.Unity.Attributes;
 using Leap.Unity.Query;
+using Leap.Unity.RuntimeGizmos;
 using UnityEngine;
 
 namespace Leap.Unity.Attachments {
-  
+
   [ExecuteInEditMode]
-  public class FollowHandPoint : MonoBehaviour, IStream<Pose> {
+  public class HandRayStream : MonoBehaviour,
+                               IStream<Ray>,
+                               IRuntimeGizmoComponent {
 
     #region Inspector
 
@@ -20,12 +23,43 @@ namespace Leap.Unity.Attachments {
     }
 
     public Chirality whichHand;
-    
+
     public AttachmentPointFlags attachmentPoint = AttachmentPointFlags.Palm;
 
-    public enum FollowMode { Update, FixedUpdate }
-    private FollowMode _followMode = FollowMode.Update;
-    public FollowMode followMode {
+    public enum ProjectionMode { FromShoulder, FromElbow, FromHead }
+    public ProjectionMode projectionMode = ProjectionMode.FromShoulder;
+
+    private readonly Vector3 _shoulderOffset = new Vector3(0.196f, -0.101f, 0f);
+    private readonly Vector3 _elbowOffset = new Vector3(0.196f, -0.269f, 0f);
+    private readonly Vector3 _headOffset = new Vector3(0f, 0f, 0f);
+    private Vector3 projectionOrigin {
+      get {
+        if (provider != null) {
+          var rootTransform = provider.transform;
+          var shouldMirrorX = whichHand == Chirality.Left;
+          Vector3 offset;
+          switch (projectionMode) {
+            case ProjectionMode.FromShoulder:
+              offset = _shoulderOffset;
+              break;
+            case ProjectionMode.FromElbow:
+              offset = _elbowOffset;
+              break;
+            case ProjectionMode.FromHead: default:
+              offset = _headOffset;
+              break;
+          }
+          return rootTransform.TransformPoint(offset.MaybeMirroredX(shouldMirrorX));
+        }
+        else {
+          return Vector3.zero;
+        }
+      }
+    }
+
+    public enum StreamMode { Update, FixedUpdate }
+    private StreamMode _followMode = StreamMode.Update;
+    public StreamMode followMode {
       get {
         return _followMode;
       }
@@ -45,36 +79,15 @@ namespace Leap.Unity.Attachments {
     private bool _isHandTracked = false;
     public bool isHandTracked { get { return _isHandTracked; } }
 
-    [Header("Pose Stream")]
-
-    [Tooltip("Follow Hand Point implements IStream<Pose>; It will stream data as long as "
-          + "the component is enabled, the hand is tracked, and this option is enabled.")]
-    public bool doPoseStream = true;
-
-    [DisableIf("doPoseStream", isEqualTo: false)]
-    public bool usePoseStreamOffset = false;
-
-    [DisableIfAny("usePoseStreamOffset", "doPoseStream", areEqualTo: false)]
-    public Transform poseStreamOffsetSource = null;
-
-    [Disable]
-    public Pose poseStreamOffset = Pose.identity;
+    [Header("Debug")]
+    public bool drawDebug = false;
 
     private bool _isStreamOpen = false;
+    private Ray? _lastRay = null;
 
     #endregion
 
     #region Unity Events
-
-    private void OnValidate() {
-      if (!usePoseStreamOffset) {
-        poseStreamOffset = Pose.identity;
-      }
-      else if (poseStreamOffsetSource != null) {
-        poseStreamOffset = poseStreamOffsetSource.ToWorldPose()
-                             .From(transform.ToWorldPose());
-      }
-    }
 
     void OnEnable() {
       unsubscribeFrameCallback();
@@ -102,8 +115,8 @@ namespace Leap.Unity.Attachments {
                             .FirstOrDefault(h => h.IsLeft == (whichHand == Chirality.Left));
 
       bool shouldStream = false;
-      Pose streamPose = Pose.identity;
-      
+      Ray streamRay = default(Ray);
+
       if (hand != null) {
         _isHandTracked = true;
 
@@ -123,14 +136,11 @@ namespace Leap.Unity.Attachments {
 
           this.transform.position = pointPosition;
           this.transform.rotation = pointRotation;
-
-          streamPose = new Pose(pointPosition, pointRotation);
-          var streamOffset = Pose.identity;
-          if (usePoseStreamOffset && poseStreamOffsetSource != null) {
-            streamOffset = poseStreamOffsetSource.transform.ToWorldPose()
-                             .From(streamPose);
-          }
-          streamPose = streamPose.Then(streamOffset);
+          
+          var origin = projectionOrigin;
+          streamRay = new Ray(origin,
+                              pointPosition - origin);
+          _lastRay = streamRay;
           shouldStream = true;
         }
       }
@@ -138,8 +148,7 @@ namespace Leap.Unity.Attachments {
         _isHandTracked = false;
       }
 
-      // Pose Stream data.
-      shouldStream &= doPoseStream;
+      // Ray Stream data.
       shouldStream &= Application.isPlaying;
       shouldStream &= this.enabled && gameObject.activeInHierarchy;
       if (!shouldStream && _isStreamOpen) {
@@ -151,7 +160,7 @@ namespace Leap.Unity.Attachments {
         _isStreamOpen = true;
       }
       if (shouldStream) {
-        OnSend(streamPose);
+        OnSend(streamRay);
       }
     }
 
@@ -162,10 +171,10 @@ namespace Leap.Unity.Attachments {
     private void unsubscribeFrameCallback() {
       if (_provider != null) {
         switch (_followMode) {
-          case FollowMode.Update:
+          case StreamMode.Update:
             Hands.Provider.OnUpdateFrame -= onUpdateFrame;
             break;
-          case FollowMode.FixedUpdate:
+          case StreamMode.FixedUpdate:
             Hands.Provider.OnFixedFrame -= onUpdateFrame;
             break;
         }
@@ -175,10 +184,10 @@ namespace Leap.Unity.Attachments {
     private void subscribeFrameCallback() {
       if (_provider != null) {
         switch (_followMode) {
-          case FollowMode.Update:
+          case StreamMode.Update:
             Hands.Provider.OnUpdateFrame += onUpdateFrame;
             break;
-          case FollowMode.FixedUpdate:
+          case StreamMode.FixedUpdate:
             Hands.Provider.OnFixedFrame += onUpdateFrame;
             break;
         }
@@ -188,9 +197,9 @@ namespace Leap.Unity.Attachments {
     #endregion
 
     #region IStream<Pose>
-    
+
     public event Action OnOpen = () => { };
-    public event Action<Pose> OnSend = (pose) => { };
+    public event Action<Ray> OnSend = (ray) => { };
     public event Action OnClose = () => { };
 
     #endregion
@@ -201,7 +210,27 @@ namespace Leap.Unity.Attachments {
       onUpdateFrame(provider.CurrentFrame);
     }
 
+    public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      if (this.enabled && this.gameObject.activeInHierarchy && drawDebug
+          && _lastRay.HasValue) {
+        drawer.color = LeapColor.lime;
+        drawer.DrawRay(_lastRay.Value.origin, _lastRay.Value.direction);
+      }
+    }
+
     #endregion
+
+  }
+
+  public static class HandRayStreamExtensions {
+
+    public static Vector3 MirroredX(this Vector3 v) {
+      return new Vector3(-v.x, v.y, v.z);
+    }
+
+    public static Vector3 MaybeMirroredX(this Vector3 v, bool shouldMirror) {
+      return new Vector3(shouldMirror ? -v.x : v.x, v.y, v.z);
+    }
 
   }
 

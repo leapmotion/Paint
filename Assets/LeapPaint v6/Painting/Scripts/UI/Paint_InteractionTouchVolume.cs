@@ -12,7 +12,7 @@ namespace Leap.Unity.LeapPaint {
     public const float MAX_TOUCHING_DISTANCE = 0.015f;
     
     public float touchDistance {
-      get { return primaryHoverDistance; }
+      get { return closestHoveringControllerDistance; }
     }
 
     [Header("Touch Interaction")]

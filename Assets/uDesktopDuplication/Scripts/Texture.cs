@@ -229,14 +229,14 @@ public class Texture : MonoBehaviour
     {
         get
         {
-            return transform.localScale.x * (mesh.bounds.extents.x * 2f);
+            return transform.lossyScale.x * (mesh.bounds.extents.x * 2f);
         }
     }
     public float worldHeight
     {
         get
         {
-            return transform.localScale.y * (mesh.bounds.extents.y * 2f);
+            return transform.lossyScale.y * (mesh.bounds.extents.y * 2f);
         }
     }
 

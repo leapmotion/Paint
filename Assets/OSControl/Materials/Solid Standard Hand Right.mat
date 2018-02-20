@@ -6,10 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: uDD_Screen_Unlit
-  m_Shader: {fileID: 4800000, guid: 2ca7b38c676bddd439a77a646a279a54, type: 3}
-  m_ShaderKeywords: _CULL_BACK _EMISSION _FORWARD_Z _USEBEND_ON
-  m_LightmapFlags: 1
+  m_Name: Solid Standard Hand Right
+  m_Shader: {fileID: 4800000, guid: 3407ab7d34115174caf8665dda4aa1e7, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -19,10 +19,6 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _CursorTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -59,34 +55,29 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - PixelSnap: 0
-    - _Bend: 0
     - _BumpScale: 1
-    - _Cull: 2
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _Forward: 1
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0.51
     - _GlossyReflections: 1
-    - _InvFade: 1
-    - _InvertX: 1
-    - _InvertY: 0
-    - _Mask: 0.653
-    - _Metallic: 0
+    - _LitCoeff: 1
+    - _Metallic: 0.201
     - _Mode: 0
+    - _ModelWidth: 0
     - _OcclusionStrength: 1
+    - _OutlineWidth: 0.001
     - _Parallax: 0.02
-    - _Radius: 10
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Thickness: 1
     - _UVSec: 0
-    - _UseBend: 0
-    - _Width: 1
+    - _Width: 0.001
     - _ZWrite: 1
+    - _isLeftHand: 0
+    - _reverseNormals: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Outline: {r: 0.75, g: 0.75, b: 0.75, a: 1}

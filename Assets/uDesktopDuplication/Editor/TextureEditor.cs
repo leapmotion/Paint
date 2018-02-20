@@ -48,7 +48,16 @@ public class TextureEditor : Editor
         serializedObject.Update();
 
         EditorGUILayout.Space();
-        DrawMonitor();
+
+        GUI.enabled = false;
+        EditorGUILayout.ObjectField("",
+          MonoScript.FromMonoBehaviour(
+            (Texture)target),
+          typeof(Texture),
+          false);
+        GUI.enabled = true;
+
+      DrawMonitor();
         DrawInvert();
         DrawClip();
         DrawMaterial();
