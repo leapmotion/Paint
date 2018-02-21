@@ -439,6 +439,8 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     protected virtual void DoOnGrabbed() {
       ReleaseFromAnchor();
+      
+      _isWorkstation = false;
 
       _grabEffect.PlayOnTransform(transform);
     }
@@ -450,6 +452,8 @@ namespace Leap.Unity.LeapPaint_v3 {
         ActivateWorkstationTransition();
       }
       else {
+        _marbleReady = false;
+        _marbleCooldownTimer = MARBLE_COOLDOWN * 2f;
         MoveBackToAnchor();
       }
     }
