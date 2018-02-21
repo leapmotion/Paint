@@ -1,16 +1,16 @@
-﻿// Upgrade NOTE: upgraded instancing buffer 'Props' to new syntax.
-
-Shader "Virtual Materials/Plath Standard" {
+﻿Shader "Virtual Materials/Plath Standard Emissive" {
 	Properties {
     // Plath parameters
     [NoScaleOffset]
     _ProximityGradient ("Proximity Gradient", 2D) = "white" {}
-    _ProximityMapping ("Map: DistMin, DistMax, GradMin, GradMax", Vector) = (0, 0.10, 1, 0)
+    _ProximityMapping ("Map: DistMin, DistMax, GradMin, GradMax", Vector) = (0, 0.04, 1, 0)
 
     // Standard parameters
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
+		_Color ("Color", Color) = (1, 1, 1, 1)
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
+    _BaseEmissionColor ("Base Emission Color", Color) = (0, 0, 0, 0)
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
@@ -33,6 +33,8 @@ Shader "Virtual Materials/Plath Standard" {
 		#pragma target 3.0
 
 		sampler2D _MainTex;
+    float4 _Color;
+    float4 _BaseEmissionColor;
 
 		struct Input {
 			float2 uv_MainTex;
@@ -55,10 +57,12 @@ Shader "Virtual Materials/Plath Standard" {
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			// Albedo comes from a texture tinted by color
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex);
-			o.Albedo = c.rgb;
+			o.Albedo = c.rgb * _Color;
 
-      // Proximity effect from Plath.
-      o.Albedo *= evalProximityColor(IN.worldPos, _ProximityGradient, _ProximityMapping);
+      // Proximity emission effect from Plath.
+      o.Emission = _BaseEmissionColor
+                    + evalProximityColor(IN.worldPos, _ProximityGradient,
+                                         _ProximityMapping);
 
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;

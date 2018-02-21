@@ -1,11 +1,9 @@
-﻿// Upgrade NOTE: upgraded instancing buffer 'Props' to new syntax.
-
-Shader "Virtual Materials/Plath Standard ByVertex" {
+﻿Shader "Virtual Materials/Plath Standard" {
 	Properties {
     // Plath parameters
     [NoScaleOffset]
     _ProximityGradient ("Proximity Gradient", 2D) = "white" {}
-    _ProximityMapping ("Map: DistMin, DistMax, GradMin, GradMax", Vector) = (0, 0.10, 1, 0)
+    _ProximityMapping ("Map: DistMin, DistMax, GradMin, GradMax", Vector) = (0, 0.04, 1, 0)
 
     // Standard parameters
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
@@ -27,7 +25,7 @@ Shader "Virtual Materials/Plath Standard ByVertex" {
     #include "Assets/AppModules/TodoUMward/Shader Hand Data/Resources/HandData.cginc"
 
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows vertex:vert
+		#pragma surface surf Standard fullforwardshadows
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -36,7 +34,7 @@ Shader "Virtual Materials/Plath Standard ByVertex" {
 
 		struct Input {
 			float2 uv_MainTex;
-      float3 customColor;
+      float3 worldPos;
 		};
     
     sampler2D _ProximityGradient;
@@ -44,11 +42,6 @@ Shader "Virtual Materials/Plath Standard ByVertex" {
 
 		half _Glossiness;
 		half _Metallic;
-    
-    void vert (inout appdata_full v, out Input o) {
-      UNITY_INITIALIZE_OUTPUT(Input, o);
-      o.customColor = evalProximityColorLOD(mul(unity_ObjectToWorld, v.vertex), _ProximityGradient, _ProximityMapping, 0);
-    }
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -63,7 +56,7 @@ Shader "Virtual Materials/Plath Standard ByVertex" {
 			o.Albedo = c.rgb;
 
       // Proximity effect from Plath.
-      o.Albedo *= IN.customColor;
+      o.Albedo *= evalProximityColor(IN.worldPos, _ProximityGradient, _ProximityMapping);
 
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
