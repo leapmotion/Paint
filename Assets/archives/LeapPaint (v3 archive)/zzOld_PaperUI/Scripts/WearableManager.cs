@@ -79,12 +79,16 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
 
       if (_rightPalmFacingDetector.IsActive && !_isRightPalmFacingCamera) {
-        OnRightHandBeganFacingCamera();
-        _isRightPalmFacingCamera = true;
+        // Disable right-hand palm data to prevent the menu from appearing
+        // on the right hand. -Nick 02/21/2018
+        //OnRightHandBeganFacingCamera();
+        //_isRightPalmFacingCamera = true;
       }
       else if (!_rightPalmFacingDetector.IsActive && _isRightPalmFacingCamera) {
-        OnRightHandStoppedFacingCamera();
-        _isRightPalmFacingCamera = false;
+        // Disable right-hand palm data to prevent the menu from appearing
+        // on the right hand. -Nick 02/21/2018
+        //OnRightHandStoppedFacingCamera();
+        //_isRightPalmFacingCamera = false;
       }
     }
 
