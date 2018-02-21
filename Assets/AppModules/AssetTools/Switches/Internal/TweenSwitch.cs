@@ -84,7 +84,12 @@ namespace Leap.Unity.Animation {
 
     protected void refreshTween() {
       if (!_backingSwitchTween.isValid) {
-        _backingSwitchTween = Tween.Persistent().Value(0f, 1f, onTweenValue);
+        _backingSwitchTween = Tween.Persistent()
+                                   .Value(0f, 1f, onTweenValue)
+                                   .OnReachEnd(onTweenReachedEnd)
+                                   .OnLeaveEnd(onTweenLeftEnd)
+                                   .OnReachStart(onTweenReachedStart)
+                                   .OnLeaveStart(onTweenLeftStart);
       }
 
       // Sometimes we are initialized in Start(), other times another object
@@ -106,6 +111,22 @@ namespace Leap.Unity.Animation {
 
     private void onTweenValue(float value) {
       updateSwitch(value);
+    }
+
+    private void onTweenLeftStart() {
+      whenTweenLeavesStart();
+    }
+
+    private void onTweenLeftEnd() {
+      whenTweenLeavesEnd();
+    }
+
+    private void onTweenReachedStart() {
+      whenTweenReachesStart();
+    }
+
+    private void onTweenReachedEnd() {
+      whenTweenReachesEnd();
     }
 
     private Tween? _targetModeTween;
@@ -133,6 +154,46 @@ namespace Leap.Unity.Animation {
     /// </summary>
     protected abstract void updateSwitch(float time, bool immediately = false);
 
+    /// <summary>
+    /// Optionally override this method to have your TweenSwitch implementation do
+    /// something when the switch is first turned On() from an "Off or Turning Off" state.
+    /// </summary>
+    protected virtual void whenTurningOnBegins() { }
+
+    /// <summary>
+    /// Optionally override this method to have your TweenSwitch implementation do
+    /// something when the switch is first turned Off() from an "On or Turning On" state.
+    /// </summary>
+    protected virtual void whenTurningOffBegins() { }
+
+    /// <summary>
+    /// Optionally override this method to have your TweenSwitch implementation do
+    /// something when the Tween has just left its starting value (0) -- that is, it just
+    /// began turning on from having been fully turned off.
+    /// </summary>
+    protected virtual void whenTweenLeavesStart() { }
+
+    /// <summary>
+    /// Optionally override this method to have your TweenSwitch implementation do
+    /// something when the Tween has just left its ending value (1) -- that is, it just
+    /// begin turning off from having been fully turned on.
+    /// </summary>
+    protected virtual void whenTweenLeavesEnd() { }
+
+    /// <summary>
+    /// Optionally override this method to have your TweenSwitch implementation do
+    /// something when the Tween has reached its starting value (from being played
+    /// backwards -- that is, turning off).
+    /// </summary>
+    protected virtual void whenTweenReachesStart() { }
+
+    /// <summary>
+    /// Optionally override this method to have your TweenSwitch implementation do
+    /// something when the Tween has reached its ending value (from being played forwards
+    /// -- that is, turning on).
+    /// </summary>
+    protected virtual void whenTweenReachesEnd() { }
+
     #endregion
 
     #region IPropertySwitch
@@ -140,6 +201,10 @@ namespace Leap.Unity.Animation {
     public void On() {
       // Deactivate "targeted" mode because we received a Switch call.
       cancelTargetedMode();
+
+      if (GetIsOffOrTurningOff()) {
+        whenTurningOnBegins();
+      }
 
       _switchTween.Play(Direction.Forward);
     }
@@ -159,6 +224,10 @@ namespace Leap.Unity.Animation {
     public void Off() {
       // Deactivate "targeted" mode because we received a Switch call.
       cancelTargetedMode();
+
+      if (GetIsOnOrTurningOn()) {
+        whenTurningOffBegins();
+      }
 
       _switchTween.Play(Direction.Backward);
     }

@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Joystick Base Handle
-  m_Shader: {fileID: 4800000, guid: 1f2cf1f2474e142499311aed283ab750, type: 3}
+  m_Name: Joystick Base
+  m_Shader: {fileID: 4800000, guid: 0b946aa7a77f4df4c9dcd24cc035543d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -55,7 +55,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ProximityGradient:
-        m_Texture: {fileID: 28753282921749494, guid: 505a0fe3688fb244c90aaf7fed18c323,
+        m_Texture: {fileID: 28753282921749494, guid: c03d4be4cd437784586c723b44029682,
           type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -65,9 +65,9 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.616
+    - _Glossiness: 1
     - _GlossyReflections: 1
-    - _Metallic: 0
+    - _Metallic: 0.529
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -77,7 +77,8 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.88235295, g: 0.88235295, b: 0.88235295, a: 1}
+    - _BaseEmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 0.46323532, g: 0.46323532, b: 0.46323532, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ProximityMapping: {r: 0, g: 0.1, b: 1, a: 0}
     - _RimColor: {r: 0, g: 1, b: 0.0039999485, a: 0.678}
