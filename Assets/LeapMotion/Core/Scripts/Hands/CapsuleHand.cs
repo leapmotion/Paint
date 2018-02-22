@@ -158,10 +158,10 @@ namespace Leap.Unity {
       //PalmPos, WristPos, and mockThumbJointPos, which is derived and not taken from the frame obj
 
       Vector3 palmPosition = _hand.PalmPosition.ToVector3();
-      drawSphere(palmPosition, PALM_RADIUS);
+      //drawSphere(palmPosition, PALM_RADIUS);
 
       Vector3 wristPos = _hand.PalmPosition.ToVector3();
-      drawSphere(wristPos);
+      //drawSphere(wristPos);
 
       Vector3 thumbBaseToPalm = _spherePositions[THUMB_BASE_INDEX] - _hand.PalmPosition.ToVector3();
       Vector3 mockThumbJointPos = _hand.PalmPosition.ToVector3() + Vector3.Reflect(thumbBaseToPalm, _hand.Basis.xBasis.ToVector3());
