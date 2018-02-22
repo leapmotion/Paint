@@ -66,8 +66,14 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected void OnTriggerStay(Collider other) {
-      ColorMixingBasin mixingLiquid = other.GetComponentInParent<ColorMixingBasin>();
+      Debug.Log("IndexTipColor go On Trigger Stay for " + other.name, other.gameObject);
+
+      var rigidbody = other.attachedRigidbody;
+      if (rigidbody == null) return;
+
+      ColorMixingBasin mixingLiquid = rigidbody.GetComponent<ColorMixingBasin>();
       if (mixingLiquid != null && mixingLiquid.enabled) {
+        Debug.Log("ONTRIGGERSTAY FOUND MIXING LIQUID IN INDEXTIPCOLOR");
         if (IsClean) {
           this.SetColor(mixingLiquid.GetColor());
         }

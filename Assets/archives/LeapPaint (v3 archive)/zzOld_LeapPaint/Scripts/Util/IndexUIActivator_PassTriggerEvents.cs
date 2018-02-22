@@ -8,7 +8,7 @@ namespace Leap.Unity.LeapPaint_v3 {
   [System.Serializable]
   public class ColliderEvent : UnityEvent<Collider> { }
 
-  public class PassTriggerEvents : MonoBehaviour {
+  public class IndexUIActivator_PassTriggerEvents : MonoBehaviour {
 
     public ColliderEvent PassedOnTriggerEnter = new ColliderEvent();
     public ColliderEvent PassedOnTriggerStay = new ColliderEvent();

@@ -300,9 +300,9 @@ namespace Leap.Unity.LeapPaint_v3 {
     private Pulsator _marblePulsator;
 
     private void InitMarbleTouch() {
-      PassTriggerEvents triggerEvents = _marbleCollider.GetComponent<PassTriggerEvents>();
+      IndexUIActivator_PassTriggerEvents triggerEvents = _marbleCollider.GetComponent<IndexUIActivator_PassTriggerEvents>();
       if (triggerEvents == null) {
-        triggerEvents = _marbleCollider.gameObject.AddComponent<PassTriggerEvents>();
+        triggerEvents = _marbleCollider.gameObject.AddComponent<IndexUIActivator_PassTriggerEvents>();
       }
       triggerEvents.PassedOnTriggerEnter.AddListener(NotifyFingerEnterMarble);
       triggerEvents.PassedOnTriggerExit.AddListener(NotifyFingerExitMarble);
@@ -319,7 +319,7 @@ namespace Leap.Unity.LeapPaint_v3 {
         _marbleDepthCollider.radius = 0.96F;
         _marbleDepthCollider.height = 2.88F;
         _marbleDepthCollider.transform.localPosition = new Vector3(0F, 0F, -1.144F);
-        triggerEvents = depthColliderObj.AddComponent<PassTriggerEvents>();
+        triggerEvents = depthColliderObj.AddComponent<IndexUIActivator_PassTriggerEvents>();
         triggerEvents.PassedOnTriggerEnter.AddListener(NotifyFingerEnterDepthCollider);
         triggerEvents.PassedOnTriggerExit.AddListener(NotifyFingerExitDepthCollider);
       }
