@@ -5,6 +5,7 @@ using Leap.Unity;
 using Leap.Unity.RuntimeGizmos;
 using Leap.Unity.Animation;
 using Leap.Unity.Interaction;
+using Leap.Unity.Attributes;
 
 namespace Leap.Unity.LeapPaint_v3 {
   
@@ -23,6 +24,13 @@ namespace Leap.Unity.LeapPaint_v3 {
     public SoundEffect _throwEffect;
     public float _maxVolumeVelocity = 1;
     public SoundEffect _returnEffect;
+
+    [SerializeField]
+    [ImplementsInterface(typeof(IPropertySwitch))]
+    private MonoBehaviour _returnToAnchorSwitch;
+    public IPropertySwitch returnToAnchorSwitch {
+      get { return _returnToAnchorSwitch as IPropertySwitch; }
+    }
 
     private WearableManager _manager;
     private WearableAnchor _wearableAnchor;
@@ -116,13 +124,22 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
     }
 
-    private void MoveBackToAnchor() {
+    public void MoveBackToAnchor() {
       RefreshVisibility();
+
+      _marbleReady = false;
+      _marbleCooldownTimer = MARBLE_COOLDOWN * 10f;
+
+      _isWorkstation = false;
 
       // this should be redundant, it no longer changes
       _anchorTransform = _wearableAnchor.transform;
 
       AttachToAnchor();
+
+      if (returnToAnchorSwitch != null && returnToAnchorSwitch.GetIsOnOrTurningOn()) {
+        returnToAnchorSwitch.Off();
+      }
 
       DoOnReturnedToAnchor();
     }
@@ -431,6 +448,10 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     protected virtual void DoOnGrabbed() {
       ReleaseFromAnchor();
+
+      if (returnToAnchorSwitch != null && returnToAnchorSwitch.GetIsOnOrTurningOn()) {
+        returnToAnchorSwitch.OffNow();
+      }
       
       _isWorkstation = false;
 
@@ -687,6 +708,10 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected virtual void DoOnMovementToWorkstationBegan() {
+      if (returnToAnchorSwitch != null) {
+        returnToAnchorSwitch.On();
+      }
+
       _isAttached = false;
     }
 

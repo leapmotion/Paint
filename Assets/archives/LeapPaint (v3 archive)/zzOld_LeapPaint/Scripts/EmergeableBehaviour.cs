@@ -82,6 +82,20 @@ namespace Leap.Unity.LeapPaint_v3 {
       _vanishTween.Play(Direction.Forward);
     }
 
+    public void TryVanishNow(bool isInWorkstation) {
+      if (IsEmergedOrEmerging) {
+        if (_seperateWorkstationEffect && isInWorkstation) {
+          _workstationVanishEffect.PlayAtPosition(transform);
+        }
+        else {
+          _vanishEffect.PlayAtPosition(transform);
+        }
+      }
+
+      _vanishTween.progress = 0.999f;
+      _vanishTween.Play(Direction.Forward);
+    }
+
     private Tween CreateVanishTween() {
       return Tween.Persistent().Target(this.transform)
         .ToLocalScale(this.transform.localScale / 100F)

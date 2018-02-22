@@ -127,6 +127,13 @@ namespace Leap.Unity.LeapPaint_v3 {
       for (int i = 0; i < _menuButtonMoveables.Length; i++) {
         _menuButtonMoveables[i].MoveToA();
       }
+
+      for (int i = 0; i < _menuButtonEmergeables.Length; i++) {
+        _menuButtonEmergeables[i].TryVanishNow(IsWorkstation);
+      }
+      _fileMenuEmergeable.TryVanishNow(IsWorkstation);
+      _sceneMenuEmergeable.TryVanishNow(IsWorkstation);
+      _clearMenuEmergeable.TryVanishNow(IsWorkstation);
     }
 
     #endregion

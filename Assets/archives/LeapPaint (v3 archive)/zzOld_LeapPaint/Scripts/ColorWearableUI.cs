@@ -113,6 +113,11 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnReturnedToAnchor() {
       base.DoOnReturnedToAnchor();
 
+      _primaryPaletteEmergeable.TryVanishNow(IsWorkstation);
+      for (int i = 0; i < _workstationEmergeables.Length; i++) {
+        _workstationEmergeables[i].TryVanishNow(IsWorkstation);
+      }
+
       _primaryPaletteMoveable.MoveToA();
     }
 
