@@ -3,6 +3,7 @@ using System.Collections;
 using Leap.Unity;
 using System;
 using Leap.Unity.Animation;
+using Leap.Unity.Attributes;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
@@ -18,6 +19,15 @@ namespace Leap.Unity.LeapPaint_v3 {
     public Material _opaqueMaterial;
     [Tooltip("The material to use when this object is fading in or out.")]
     public Material _fadeMaterial;
+
+    [Header("Other")]
+
+    [SerializeField]
+    [ImplementsInterface(typeof(IPropertySwitch))]
+    private MonoBehaviour _otherElementsSwitch;
+    public IPropertySwitch otherElementsSwitch {
+      get { return _otherElementsSwitch as IPropertySwitch; }
+    }
 
     public SoundEffect showEffect;
     private Material _opaqueInstance;
@@ -171,11 +181,15 @@ namespace Leap.Unity.LeapPaint_v3 {
       _appearTween.Play(Direction.Forward);
       OnAnchorBeginAppearing();
       showEffect.PlayOnTransform(transform);
+
+      otherElementsSwitch.On();
     }
 
     public void Vanish() {
       _appearTween.Play(Direction.Backward);
       OnAnchorBeginDisappearing();
+
+      otherElementsSwitch.Off();
     }
 
     #endregion
