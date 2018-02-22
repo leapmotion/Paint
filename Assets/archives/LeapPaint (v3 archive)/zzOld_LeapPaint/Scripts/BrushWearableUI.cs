@@ -84,9 +84,9 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnReturnedToAnchor() {
       base.DoOnReturnedToAnchor();
       
-      _brushControlsEmergeable.TryVanish(IsWorkstation);
+      _brushControlsEmergeable.TryVanishNow(IsWorkstation);
       _brushControlsEmerged = false;
-      _brushWorkstationEmergeable.TryVanish(IsWorkstation);
+      _brushWorkstationEmergeable.TryVanishNow(IsWorkstation);
 
       _brushControlsMoveable.MoveToA();
     }
