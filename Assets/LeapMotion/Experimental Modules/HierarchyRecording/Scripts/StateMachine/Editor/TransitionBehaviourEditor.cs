@@ -26,8 +26,15 @@ namespace Leap.Unity.Recording {
 
     private void drawIndentedTransitionState(SerializedProperty prop) {
       EditorGUI.indentLevel++;
+
+      if (prop.objectReferenceValue == null) {
+        GUI.contentColor = new Color(0.7f, 0.7f, 0.7f, 1);
+      }
+
       EditorGUILayout.PropertyField(prop);
       EditorGUI.indentLevel--;
+      GUI.contentColor = Color.white;
+
       EditorGUILayout.Space();
     }
 

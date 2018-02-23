@@ -22,5 +22,9 @@ public class TutorialControl : MonoBehaviour {
     rightPinch.enabled = true;
   }
 
+  public void EnableColorPallete() {
+
+  }
+
 
 }

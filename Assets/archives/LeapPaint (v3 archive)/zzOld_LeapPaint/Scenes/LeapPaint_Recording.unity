@@ -4256,9 +4256,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   recordWhen: 4
-  recordingName: 3.0.0 - How To Paint
+  recordingName: 3.0.0 - Here Is A Tree
   targetFolder:
-    _assetFolder: {fileID: 102900000, guid: 7af88481cef376d4dbeff63bd0149190, type: 3}
+    _assetFolder: {fileID: 102900000, guid: 0be21fb90e8ff6a4abec8962b48ad33e, type: 3}
   provider: {fileID: 206709972}
   recordLeapData: 1
   beginRecordingKey: 286
@@ -14497,11 +14497,10 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1083463350}
-  m_Text: "Today we are going to learn how to create three dimensional drawings, all
-    with our hands!\r\nYour hand will be your paintbrush\r\nTo begin painting, you
-    will need to do two things\r\nFirst, you need to prepare your hand, open it completely!\r\nThen,
-    bring your index and thumb together, like this!\nNow you can draw a stroke of
-    paint directly in mid air!\r\n"
+  m_Text: "Now, Take a look at your hand!\r\nYou can use this palette to select different
+    colors to draw with!  Give it a try!\r\nTry choosing a different color!  Touch
+    the color with your finger!  Use your index finger!\r\nTutorial bot waits until
+    the user touches any color \r\n"
   m_OffsetZ: 0
   m_CharacterSize: 0.24
   m_LineSpacing: 1
@@ -18220,7 +18219,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1457780253}
-  m_LocalRotation: {x: -0.18366595, y: -0.12492772, z: -0.029339107, w: 0.9745764}
+  m_LocalRotation: {x: -0.18366593, y: -0.12492772, z: -0.029339088, w: 0.9745764}
   m_LocalPosition: {x: 4.142978, y: 24.917301, z: 29.18804}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -27481,6 +27480,11 @@ Prefab:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 23000010081545854, guid: c915520bed265f24c95aebc38ee51557,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fe23424e1b8ab5a4dba239a686477554, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c915520bed265f24c95aebc38ee51557, type: 2}
   m_IsPrefabParent: 0

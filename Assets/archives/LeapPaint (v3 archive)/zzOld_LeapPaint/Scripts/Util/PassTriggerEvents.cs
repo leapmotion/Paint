@@ -13,16 +13,24 @@ namespace Leap.Unity.LeapPaint_v3 {
     public ColliderEvent PassedOnTriggerStay = new ColliderEvent();
     public ColliderEvent PassedOnTriggerExit = new ColliderEvent();
 
+    private void Start() { }
+
     protected void OnTriggerEnter(Collider other) {
-      PassedOnTriggerEnter.Invoke(other);
+      if (enabled) {
+        PassedOnTriggerEnter.Invoke(other);
+      }
     }
 
     protected void OnTriggerStay(Collider other) {
-      PassedOnTriggerStay.Invoke(other);
+      if (enabled) {
+        PassedOnTriggerStay.Invoke(other);
+      }
     }
 
     protected void OnTriggerExit(Collider other) {
-      PassedOnTriggerExit.Invoke(other);
+      if (enabled) {
+        PassedOnTriggerExit.Invoke(other);
+      }
     }
 
   }

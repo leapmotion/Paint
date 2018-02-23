@@ -63,6 +63,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     public void TryEmerge(bool isInWorkstation) {
+      Debug.Log("emerge!");
       if (_seperateWorkstationEffect && isInWorkstation) {
         _workstationEmergeEffect.PlayAtPosition(transform);
       } else {
