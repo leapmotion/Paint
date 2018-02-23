@@ -4256,9 +4256,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   recordWhen: 4
-  recordingName: 3.0.0 - Here Is A Tree
+  recordingName: 3.0.0 - Gonna Draw A Face
   targetFolder:
-    _assetFolder: {fileID: 102900000, guid: 0be21fb90e8ff6a4abec8962b48ad33e, type: 3}
+    _assetFolder: {fileID: 102900000, guid: d9549f29d2c6c6c4c81c9cc66c455194, type: 3}
   provider: {fileID: 206709972}
   recordLeapData: 1
   beginRecordingKey: 286
@@ -5799,7 +5799,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &367387700
 Transform:
   m_ObjectHideFlags: 0
@@ -7133,7 +7133,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &467928888
 Transform:
   m_ObjectHideFlags: 0
@@ -14497,10 +14497,8 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1083463350}
-  m_Text: "Now, Take a look at your hand!\r\nYou can use this palette to select different
-    colors to draw with!  Give it a try!\r\nTry choosing a different color!  Touch
-    the color with your finger!  Use your index finger!\r\nTutorial bot waits until
-    the user touches any color \r\n"
+  m_Text: "Take a look at your hand again\r\nThese buttons allow you to undo or redo
+    strokes\r\nYou can use these if you make a mistake!"
   m_OffsetZ: 0
   m_CharacterSize: 0.24
   m_LineSpacing: 1
@@ -18212,14 +18210,14 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1457780254
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1457780253}
-  m_LocalRotation: {x: -0.18366593, y: -0.12492772, z: -0.029339088, w: 0.9745764}
+  m_LocalRotation: {x: -0.18366593, y: -0.12492772, z: -0.029339086, w: 0.9745764}
   m_LocalPosition: {x: 4.142978, y: 24.917301, z: 29.18804}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -19231,7 +19229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1530708584
 Transform:
   m_ObjectHideFlags: 0

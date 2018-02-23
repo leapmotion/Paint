@@ -31,6 +31,8 @@ namespace Leap.Unity.Recording {
       } else if (_director.state == PlayState.Playing) {
         _hasStartedPlaying = true;
       }
+
+      Debug.Log(_director.state);
     }
   }
 }

@@ -92,8 +92,6 @@ namespace Leap.Unity.Recording {
         endIndex = ~endIndex;
       }
 
-      Debug.Log("Sweep from " + from + " (" + startIndex + ") to " + to + " (" + endIndex + ")");
-
       for (int i = startIndex; i < endIndex; i++) {
         InvokeArgs(data.args[i]);
       }

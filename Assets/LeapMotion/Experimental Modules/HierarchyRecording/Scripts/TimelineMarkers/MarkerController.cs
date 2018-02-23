@@ -68,7 +68,10 @@ namespace Leap.Unity.Recording {
       updateMarkersIfNeeded();
 
       foreach (var action in _actions) {
-        var clip = _markers[action.Key];
+        TimelineClip clip;
+        if (!_markers.TryGetValue(action.Key, out clip)) {
+          continue;
+        }
 
         switch (action.Value) {
           case Action.Pause:
