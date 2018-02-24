@@ -62,7 +62,33 @@ public class TutorialControl : MonoBehaviour {
       widget.SetActive(true);
       ring.SetActive(true);
 
+      Debug.Log("######");
+      Debug.Log(widget.transform.position + " : " + ring.transform.position);
+      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
+
       yield return null;
+
+      Debug.Log("######");
+      Debug.Log(widget.transform.position + " : " + ring.transform.position);
+      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
+
+      yield return null;
+
+      Debug.Log("######");
+      Debug.Log(widget.transform.position + " : " + ring.transform.position);
+      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
+
+      yield return null;
+
+      Debug.Log("######");
+      Debug.Log(widget.transform.position + " : " + ring.transform.position);
+      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
+
+      yield return null;
+
+      Debug.Log("######");
+      Debug.Log(widget.transform.position + " : " + ring.transform.position);
+      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
 
       emergable.TryEmerge(isInWorkstation: true);
     }

@@ -22,7 +22,7 @@ namespace Leap.Unity.Recording {
     private void OnEnable() {
       _hasStartedPlaying = false;
     }
-
+    
     private void Update() {
       if (_hasStartedPlaying) {
         if (_director.state != PlayState.Playing) {

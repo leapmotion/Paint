@@ -46,14 +46,14 @@ public class AnchoredBehaviour : MonoBehaviour, IRuntimeGizmoComponent {
     if (_shouldAnchorRotation != _oldAnchorRotationValue && _shouldAnchorRotation == true) {
       if (_alignToAnchorRotation) {
         _rotationOffset = Quaternion.identity;
-      }
-      else {
+      } else {
         RecalculateRotationOffset();
       }
     }
   }
 
   protected virtual void Update() {
+
     if (_isAttached && _anchorTransform != null) {
       this.transform.position = _anchorTransform.position;
       if (_shouldAnchorRotation) {
@@ -75,6 +75,10 @@ public class AnchoredBehaviour : MonoBehaviour, IRuntimeGizmoComponent {
   #region PRIVATE METHODS
 
   private void RecalculateRotationOffset() {
+    if (_alignToAnchorRotation) {
+      _rotationOffset = Quaternion.identity;
+      return;
+    }
     if (_anchorTransform != null) {
       _rotationOffset = Quaternion.Inverse(_anchorTransform.rotation) * this.transform.rotation;
     }
