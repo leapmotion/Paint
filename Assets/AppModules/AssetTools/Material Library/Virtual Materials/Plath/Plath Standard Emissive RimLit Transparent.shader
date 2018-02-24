@@ -1,4 +1,4 @@
-﻿Shader "Virtual Materials/Plath Standard Emissive RimLit" {
+﻿Shader "Virtual Materials/Plath Standard Emissive RimLit Transparent" {
 	Properties {
     // Plath parameters
     [NoScaleOffset]
@@ -14,8 +14,9 @@
     _RimColor("Rim Color", Color) = (1, 1, 1, 1)
 	}
 	SubShader {
-		Tags { "RenderType"="Opaque" }
+		Tags { "Queue"="Transparent" "RenderType"="Transparent" }
 		LOD 200
+    Blend SrcAlpha OneMinusSrcAlpha
 
 		Stencil{
 			Ref[_PortalMask]
@@ -28,7 +29,7 @@
     #include "Assets/AppModules/TodoUMward/Shader Hand Data/Resources/HandData.cginc"
 
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows
+		#pragma surface surf Standard fullforwardshadows alpha:blend
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -65,22 +66,24 @@
 
       // Proximity emission effect from Plath.
       o.Emission = _BaseEmissionColor
-                    + evalProximityColor(IN.worldPos, _ProximityGradient,
-                                         _ProximityMapping);
+        + evalProximityColor(IN.worldPos, _ProximityGradient,
+          _ProximityMapping);
 
       // Rim lighting.
       float toCameraAmount = 1 - dot(IN.worldNormal, IN.viewDir);
       toCameraAmount *= 1.1;
       toCameraAmount *= toCameraAmount;
       toCameraAmount = saturate(toCameraAmount);
-      o.Emission += _RimColor.rgb * _RimColor.a * toCameraAmount;
+      float3 rimEmission = _RimColor * _RimColor.a * toCameraAmount;
+      o.Emission += rimEmission;
 
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
 
       // Alpha
-			o.Alpha = c.a * _Color.a;
+      float rimAlpha = max(o.Emission.r, max(o.Emission.g, o.Emission.b));
+			o.Alpha = saturate(c.a * _Color.a + rimAlpha);
 		}
 		ENDCG
 	}

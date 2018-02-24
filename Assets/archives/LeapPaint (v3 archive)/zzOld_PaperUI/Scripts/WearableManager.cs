@@ -31,7 +31,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     private bool _isLeftHandTracked;
     private bool _isRightHandTracked;
     private bool _isLeftPalmFacingCamera;
-    private bool _isRightPalmFacingCamera;
+    //private bool _isRightPalmFacingCamera;
     private Chirality _lastHandFacingCamera;
 
     protected void Start() {
@@ -78,18 +78,18 @@ namespace Leap.Unity.LeapPaint_v3 {
         _isLeftPalmFacingCamera = false;
       }
 
-      if (_rightPalmFacingDetector.IsActive && !_isRightPalmFacingCamera) {
+      //if (_rightPalmFacingDetector.IsActive && !_isRightPalmFacingCamera) {
         // Disable right-hand palm data to prevent the menu from appearing
         // on the right hand. -Nick 02/21/2018
         //OnRightHandBeganFacingCamera();
         //_isRightPalmFacingCamera = true;
-      }
-      else if (!_rightPalmFacingDetector.IsActive && _isRightPalmFacingCamera) {
+      //}
+      //else if (!_rightPalmFacingDetector.IsActive && _isRightPalmFacingCamera) {
         // Disable right-hand palm data to prevent the menu from appearing
         // on the right hand. -Nick 02/21/2018
         //OnRightHandStoppedFacingCamera();
         //_isRightPalmFacingCamera = false;
-      }
+      //}
     }
 
     private void OnLeftHandBeganTracking() {

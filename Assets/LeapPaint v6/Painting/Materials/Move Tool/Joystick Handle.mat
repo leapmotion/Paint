@@ -7,12 +7,12 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Joystick Handle
-  m_Shader: {fileID: 4800000, guid: 0b946aa7a77f4df4c9dcd24cc035543d, type: 3}
+  m_Shader: {fileID: 4800000, guid: 5139f4cd0f7fa9445a891348fa927081, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2900
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -55,7 +55,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ProximityGradient:
-        m_Texture: {fileID: 28753282921749494, guid: c03d4be4cd437784586c723b44029682,
+        m_Texture: {fileID: 28753282921749494, guid: ee27c2e6f27c93d4ea13972da56a52d1,
           type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -78,7 +78,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseEmissionColor: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.8897059, g: 0.8897059, b: 0.8897059, a: 1}
+    - _Color: {r: 0.8897059, g: 0.8897059, b: 0.8897059, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ProximityMapping: {r: 0, g: 0.1, b: 1, a: 0}
-    - _RimColor: {r: 0, g: 1, b: 0.0039999485, a: 0.328}
+    - _RimColor: {r: 0, g: 1, b: 0.0039999485, a: 1}

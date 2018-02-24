@@ -816,24 +816,26 @@ namespace Leap.Unity.RuntimeGizmos {
 
       float extent = (targetScale / 2f);
 
+      float negativeAlpha = 0.6f;
+
       color = Color.red;
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
       DrawLine(pos, pos + Vector3.right * extent);
-      color = Color.Lerp(color, Color.gray, 0.75f).WithAlpha(0.4f);
+      color = Color.black.WithAlpha(negativeAlpha);
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
       DrawLine(pos, pos - Vector3.right * extent);
 
       color = Color.green;
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
       DrawLine(pos, pos + Vector3.up * extent);
-      color = Color.Lerp(color, Color.gray, 0.75f).WithAlpha(0.4f);
+      color = Color.black.WithAlpha(negativeAlpha);
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
       DrawLine(pos, pos - Vector3.up * extent);
 
       color = Color.blue;
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
       DrawLine(pos, pos + Vector3.forward * extent);
-      color = Color.Lerp(color, Color.gray, 0.75f).WithAlpha(0.4f);
+      color = Color.black.WithAlpha(negativeAlpha);
       if (lerpCoeff != 0f) { color = color.LerpHSV(lerpColor, lerpCoeff); }
       DrawLine(pos, pos - Vector3.forward * extent);
     }
