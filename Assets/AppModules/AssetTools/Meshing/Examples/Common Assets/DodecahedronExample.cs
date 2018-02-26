@@ -30,7 +30,7 @@ namespace Leap.Unity.Meshing.Examples {
       if (polyMesh == null) {
         polyMesh = new PolyMesh(this.transform);
       }
-      Dodecahedron.FillPolyMesh(polyMesh);
+      Dodecahedron.FillPolyMesh(polyMesh, Dodecahedron.PolygonMode.Triangles);
     }
 
     public void UpdateMesh() {

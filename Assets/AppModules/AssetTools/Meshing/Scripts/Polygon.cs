@@ -78,6 +78,26 @@ namespace Leap.Unity.Meshing {
       return polygon;
     }
 
+    /// <summary>
+    /// Creates a new triangular Polygon with Pooled vertex indices. Use indices that
+    /// index into the positions of a PolyMesh, then add the Polygon to that PolyMesh via
+    /// AddPolygon.
+    /// 
+    /// You can optionally pass an indexOffset to be added to each argument index.
+    /// 
+    /// Polygons are always assumed to have coplanar vertices.
+    /// </summary>
+    public static Polygon SpawnTriangle(int a, int b, int c,
+                                        int indexOffset = 0) {
+      Polygon polygon = new Polygon();
+      polygon.verts = Pool<List<int>>.Spawn();
+      polygon.verts.Clear();
+      polygon.verts.Add(a + indexOffset);
+      polygon.verts.Add(b + indexOffset);
+      polygon.verts.Add(c + indexOffset);
+      return polygon;
+    }
+
     #endregion
 
     #region Operations

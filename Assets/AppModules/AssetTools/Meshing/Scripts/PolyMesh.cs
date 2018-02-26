@@ -540,6 +540,38 @@ namespace Leap.Unity.Meshing {
       AddPolygon(polygon, out addedPolyIdx, copyPolygonVertList);
     }
 
+
+    /// <summary>
+    /// Creates a new Polygon with three pooled vertices by consuming three indices at
+    /// a time from the provided triIndices list.
+    /// 
+    /// The provided indices should index positions in this PolyMesh.
+    /// </summary>
+    public void AddTriangles(ReadonlyList<int> triIndices) {
+      int count = triIndices.Count;
+      int modThree = count % 3;
+      if (modThree != 0) {
+        Debug.LogWarning("[PolyMesh] AddTriangles: Provided number of indices was not "
+                       + "divisible by 3. Will skip the extra " + modThree + " indices.");
+      }
+      count -= modThree;
+      for (int i = 0; i < count; i += 3) {
+        AddTriangle(triIndices[i + 0],
+                    triIndices[i + 1],
+                    triIndices[i + 2]);
+      }
+    }
+
+    /// <summary>
+    /// Creates a new Polygon with pooled vertices and adds it to this PolyMesh.
+    /// 
+    /// The provided indices should index positions in this PolyMesh.
+    /// </summary>
+    public void AddTriangle(int a, int b, int c) {
+      Polygon newTriangle = Polygon.SpawnTriangle(a, b, c);
+      AddPolygon(newTriangle);
+    }
+
     /// <summary>
     /// Sets the polygon at the argument polygon index to the provided Polygon.
     /// 
