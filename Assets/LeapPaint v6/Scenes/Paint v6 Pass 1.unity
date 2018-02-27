@@ -6781,6 +6781,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   provider: {fileID: 1882949155}
   whichHand: 1
+  drawDebugPinchDistance: 0
+  activationPinchDistance: 0.01
   useVelocities: 0
   requirePinkySafetyPinch: 0
   minPinkySafetyProduct: 0.5
@@ -12496,6 +12498,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   provider: {fileID: 0}
   whichHand: 1
+  drawDebugPinchDistance: 0
+  activationPinchDistance: 0.01
   useVelocities: 0
   requirePinkySafetyPinch: 0
   minPinkySafetyProduct: 0.5
@@ -13453,6 +13457,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   provider: {fileID: 1882949155}
   whichHand: 1
+  drawDebugPinchDistance: 1
+  activationPinchDistance: 0.01
   useVelocities: 0
   requirePinkySafetyPinch: 0
   minPinkySafetyProduct: 0.5
@@ -19047,6 +19053,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   provider: {fileID: 1882949155}
   whichHand: 0
+  drawDebugPinchDistance: 0
+  activationPinchDistance: 0.01
   useVelocities: 0
   requirePinkySafetyPinch: 0
   minPinkySafetyProduct: 0.5
@@ -38540,6 +38548,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   provider: {fileID: 1882949155}
   whichHand: 1
+  drawDebugPinchDistance: 0
+  activationPinchDistance: 0.01
   useVelocities: 0
   requirePinkySafetyPinch: 0
   minPinkySafetyProduct: 0.5
@@ -39360,6 +39370,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   provider: {fileID: 1882949155}
   whichHand: 1
+  drawDebugPinchDistance: 0
+  activationPinchDistance: 0.01
   useVelocities: 0
   requirePinkySafetyPinch: 0
   minPinkySafetyProduct: 0.5
@@ -40743,12 +40755,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd66228b20306d49ad7f891f6269e17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _leftFingertipsUniformParamId: 269
-  _rightFingertipsUniformParamId: 270
-  _leftPalmTrisUniformParamId: 271
-  _rightPalmTrisUniformParamId: 272
-  _leftFingerSegmentsUniformParamId: 273
-  _rightFingerSegmentsUniformParamId: 274
+  _leftFingertipsUniformParamId: 311
+  _rightFingertipsUniformParamId: 312
+  _leftPalmTrisUniformParamId: 313
+  _rightPalmTrisUniformParamId: 314
+  _leftFingerSegmentsUniformParamId: 315
+  _rightFingerSegmentsUniformParamId: 316
 --- !u!4 &1756187802
 Transform:
   m_ObjectHideFlags: 0

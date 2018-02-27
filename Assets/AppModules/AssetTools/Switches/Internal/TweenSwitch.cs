@@ -323,7 +323,7 @@ namespace Leap.Unity.Animation {
       _tweenTarget = targetValue;
 
       if (Application.isPlaying) {
-        var updater = Updater.singleton;
+        var updater = Updater.instance;
         updater.OnUpdate -= updateSwitch_TargetValueMode;
         updater.OnUpdate += updateSwitch_TargetValueMode;
       }
@@ -352,7 +352,7 @@ namespace Leap.Unity.Animation {
     private void cancelTargetedMode() {
       _tweenTarget = null;
       if (Application.isPlaying) {
-        Updater.singleton.OnUpdate -= updateSwitch_TargetValueMode;
+        Updater.instance.OnUpdate -= updateSwitch_TargetValueMode;
       }
     }
 

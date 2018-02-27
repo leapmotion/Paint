@@ -207,6 +207,10 @@ namespace Leap.Unity.Gestures {
 
     #region Custom Pinch Strength
 
+    public static Vector3 PinchSegment2SegmentDisplacement(Hand h) {
+      Vector3 c0, c1;
+      return PinchSegment2SegmentDisplacement(h, out c0, out c1);
+    }
     public static Vector3 PinchSegment2SegmentDisplacement(Hand h,
                                                            out Vector3 c0,
                                                            out Vector3 c1) {
@@ -217,6 +221,20 @@ namespace Leap.Unity.Gestures {
 
       return Segment2SegmentDisplacement(indexDistal, indexTip, thumbDistal, thumbTip,
                                          out c0, out c1);
+    }
+
+    public static float Static_GetCustomPinchStrength(Hand h) {
+      Vector3 c0, c1;
+      var pinchDistance = PinchSegment2SegmentDisplacement(h, out c0, out c1).magnitude;
+
+      pinchDistance -= 0.01f;
+      pinchDistance = pinchDistance.Clamped01();
+
+      if (Input.GetKeyDown(KeyCode.C)) {
+        Debug.Log(pinchDistance);
+      }
+
+      return pinchDistance.MapUnclamped(0.0168f, 0.08f, 1f, 0f);
     }
 
     public float GetCustomPinchStrength(Hand h) {
@@ -232,7 +250,10 @@ namespace Leap.Unity.Gestures {
 
       if (drawDebugPinchDistance) {
         DebugPing.Line("RH pinch",  c0, c1, LeapColor.blue);
-        DebugPing.Label("RH pinch", ((c1 + c0) / 2f), LeapColor.blue);
+        DebugPing.Label("RH pinch",
+                        labelText: pinchDistance.ToString("F3"),
+                        labeledPosition: ((c1 + c0) / 2f),
+                        color: LeapColor.blue);
       }
 
       return pinchDistance.MapUnclamped(0.0168f, 0.08f, 1f, 0f);

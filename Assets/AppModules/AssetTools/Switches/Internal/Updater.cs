@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace Leap.Unity.Animation {
+namespace Leap.Unity {
 
   public class Updater : MonoBehaviour {
 
     private static Updater _singleton = null;
-    public static Updater singleton {
+    public static Updater instance {
       get {
         if (_singleton == null) {
           GameObject updaterObj = new GameObject("__Updater Singleton__");

@@ -86,7 +86,7 @@ namespace Leap.Unity.LeapPaint {
         //var indexLenOverThumbLen = indexLen / thumbLen;
 
         if (autoDetectPinchAmount) {
-          var pinchStrength = Gestures.PinchGesture.GetCustomPinchStrength(hand)
+          var pinchStrength = Gestures.PinchGesture.Static_GetCustomPinchStrength(hand)
                                                    .Clamped01();
           pinchAmount = pinchStrength;
         }

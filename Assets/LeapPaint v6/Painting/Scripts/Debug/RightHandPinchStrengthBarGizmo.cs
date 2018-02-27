@@ -15,7 +15,7 @@ namespace Leap.Unity.LeapPaint {
       var useColor = color;
 
       if (hand != null) {
-        _pinchStrength = Gestures.PinchGesture.GetCustomPinchStrength(hand);
+        _pinchStrength = Gestures.PinchGesture.Static_GetCustomPinchStrength(hand);
 
         var handFOVAngle = Vector3.Angle(Camera.main.transform.forward,
             hand.PalmPosition.ToVector3() - Camera.main.transform.position);

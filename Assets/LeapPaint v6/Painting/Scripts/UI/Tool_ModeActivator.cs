@@ -18,7 +18,7 @@ namespace Leap.Unity.LeapPaint {
     public StringChannel modeChannel = new StringChannel("tool");
 
     private void Start() {
-      Updater.singleton.OnUpdate += onUpdaterUpdate;
+      Updater.instance.OnUpdate += onUpdaterUpdate;
 
       if (setModeOnStart) {
         modeChannel.Set(activeMode);

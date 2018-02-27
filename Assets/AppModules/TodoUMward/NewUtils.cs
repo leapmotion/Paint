@@ -173,6 +173,17 @@ namespace Leap.Unity {
 
     #endregion
 
+    #region Nullable Utils
+
+    public static T? ValueOr<T>(this T? foo, T? other) where T : struct {
+      if (foo.HasValue) {
+        return foo;
+      }
+      return other;
+    }
+
+    #endregion
+
   }
 
   #region Grids
