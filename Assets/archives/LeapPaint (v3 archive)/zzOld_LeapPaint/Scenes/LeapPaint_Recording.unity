@@ -4256,9 +4256,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   recordWhen: 4
-  recordingName: 3.0.0 - Gonna Draw A Face
+  recordingName: 1.0.0 - How To Thickness
   targetFolder:
-    _assetFolder: {fileID: 102900000, guid: d9549f29d2c6c6c4c81c9cc66c455194, type: 3}
+    _assetFolder: {fileID: 102900000, guid: 0c5f9ecfe8de26b4e9252be5b5df4ce4, type: 3}
   provider: {fileID: 206709972}
   recordLeapData: 1
   beginRecordingKey: 286
@@ -5799,7 +5799,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &367387700
 Transform:
   m_ObjectHideFlags: 0
@@ -14497,8 +14497,8 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1083463350}
-  m_Text: "Take a look at your hand again\r\nThese buttons allow you to undo or redo
-    strokes\r\nYou can use these if you make a mistake!"
+  m_Text: "Alright, let\u2019s get a little more control\r\nCheck out this slider
+    here\r\nThis slider controls the width of your stroke\r\nGive it a try!\r\n\n"
   m_OffsetZ: 0
   m_CharacterSize: 0.24
   m_LineSpacing: 1
