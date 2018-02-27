@@ -1,4 +1,5 @@
-﻿using Leap.Unity.RuntimeGizmos;
+﻿using Leap.Unity.LemurUI;
+using Leap.Unity.RuntimeGizmos;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,9 +12,31 @@ namespace Leap.Unity {
 
     public const string PING_OBJECT_NAME = "__Debug Ping Runner__";
 
-    public const float DEFAULT_PING_RADIUS = 0.10f;
-
     public const float PING_DURATION = 0.25f;
+
+    private static DebugPing s_instance = null;
+
+    private static void ensurePingRunnerExists() {
+      if (s_instance == null) {
+        s_instance = Utils.FindObjectInHierarchy<DebugPing>();
+
+        if (s_instance == null) {
+          s_instance = new GameObject(PING_OBJECT_NAME).AddComponent<DebugPing>();
+        }
+      }
+    }
+
+    private void Update() {
+      UpdatePing();
+    }
+
+    public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      DrawPingGizmos(drawer);
+    }
+
+    #region DebugPing.Ping
+
+    public const float DEFAULT_PING_RADIUS = 0.10f;
 
     public static AnimationCurve pingAnimCurve = DefaultCurve.SigmoidUp;
 
@@ -105,9 +128,9 @@ namespace Leap.Unity {
       Ping(
         worldPosition,
         Vector3.zero,
-        color:          color,
+        color: color,
         sizeMultiplier: sizeMultiplier,
-        animType:       animType
+        animType: animType
       );
     }
 
@@ -189,25 +212,13 @@ namespace Leap.Unity {
 
     #endregion
 
-    private static DebugPing s_instance = null;
-
-    private static void ensurePingRunnerExists() {
-      if (s_instance == null) {
-        s_instance = Utils.FindObjectInHierarchy<DebugPing>();
-
-        if (s_instance == null) {
-          s_instance = new GameObject(PING_OBJECT_NAME).AddComponent<DebugPing>();
-        }
-      }
-    }
-
     private List<PingState> _activePings = new List<PingState>();
 
     public void AddPing(PingState ping) {
       _activePings.Add(ping);
     }
 
-    void Update() {
+    private void UpdatePing() {
       var indicesToRemove = Pool<List<int>>.Spawn();
       try {
         for (int i = 0; i < _activePings.Count; i++) {
@@ -232,7 +243,7 @@ namespace Leap.Unity {
       }
     }
 
-    public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+    public void DrawPingGizmos(RuntimeGizmoDrawer drawer) {
       Color pingColor;
       float pingSize;
       float animTime;
@@ -246,7 +257,7 @@ namespace Leap.Unity {
         else {
           pingPos0 = ping.position0;
         }
-        
+
         if (ping.position1Func != null) {
           pingPos1 = ping.position1Func();
         }
@@ -275,7 +286,7 @@ namespace Leap.Unity {
             pingColor = ping.color.WithAlpha(1f - animTime);
             break;
         }
-        
+
 
         drawer.color = pingColor;
 
@@ -294,7 +305,102 @@ namespace Leap.Unity {
       }
     }
 
+    #endregion
+
+    #region DebugPing.Line
+
+    public abstract class PingObject {
+      public Color color = LeapColor.white;
+      public float t = 0f;
+      public float lifetime = PING_DURATION;
+
+      public abstract void Draw(RuntimeGizmoDrawer drawer);
+    }
+
+    public class PingLine : PingObject {
+      public Func<Vector3> p0Func;
+      public Vector3 p0;
+      public Func<Vector3> p1Func;
+      public Vector3 p1;
+
+      private Vector3 getP0() {
+        if (p0Func != null) return p0Func();
+        return p0;
+      }
+
+      private Vector3 getP1() {
+        if (p1Func != null) return p1Func();
+        return p1;
+      }
+
+      public override void Draw(RuntimeGizmoDrawer drawer) {
+        var p0 = getP0(); var p1 = getP1();
+        drawer.DrawLine(p0, p1);
+      }
+    }
+
+    public Dictionary<string, PingLine> pingLines = new Dictionary<string, PingLine>();
+
+    #endregion
+
+    #region DebugPing.Label
+
+    public class PingLabel : PingObject {
+      private Label _label;
+      public Label label {
+        get {
+          if (_label == null) {
+            _label = Lemur.Spawn<Label>();
+          }
+        }
+      }
+
+      public Func<Vector3> overrideFacingPositionFunc;
+      public Vector3? overrideFacingPosition; // otherwise Camera.main.transform.position
+      private Vector3 getFacingPosition() {
+        if (overrideFacingPositionFunc != null) {
+          return overrideFacingPositionFunc();
+        }
+        else if (overrideFacingPosition.HasValue) {
+          return overrideFacingPosition.Value;
+        }
+        else {
+          var cam = Camera.main;
+          if (cam != null) {
+            return cam.transform.position;
+          }
+          else {
+            return Vector3.zero;
+          }
+        }
+      }
+
+      public Vector3 getAnchorOrigin() {
+        
+      }
+
+      /// <summary> Label anchor offset from the bottom-right corner. </summary>
+      public Func<Vector3> labelOffsetFunc;
+      public Vector3 labelOffset;
+      private Vector3 getLabelOffset() {
+        if (labelOffsetFunc != null) return labelOffsetFunc();
+        return labelOffset;
+      }
+
+      public override void Draw(RuntimeGizmoDrawer drawer) {
+        var facingPosition = getFacingPosition();
+        var anchorOrigin = getAnchorOrigin();
+        var anchorOffset = getLabelOffset();
+
+        
+      }
+    }
+
+    #endregion
+
   }
+
+  #region Drawing Extensions
 
   public static class RuntimeGizmoDrawerExtensions {
 
@@ -327,5 +433,7 @@ namespace Leap.Unity {
     }
 
   }
+
+  #endregion
 
 }

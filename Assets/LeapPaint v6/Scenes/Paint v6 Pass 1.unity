@@ -677,7 +677,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 14080527}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5bf60f69469bfe74abbb26bcc0aa5dc6, type: 3}
   m_Name: 
@@ -6724,7 +6724,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &288710822
 Transform:
   m_ObjectHideFlags: 0
@@ -12759,7 +12759,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: 0.00001835823, z: 0}
+  m_ConnectedAnchor: {x: 0, y: 0.091799974, z: 0}
   serializedVersion: 2
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 2
@@ -36711,7 +36711,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1591972607
 Transform:
   m_ObjectHideFlags: 0
@@ -38125,7 +38125,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1645453303
 Transform:
   m_ObjectHideFlags: 0
@@ -38134,7 +38134,7 @@ Transform:
   m_GameObject: {fileID: 1645453302}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.0002, y: 0.0002, z: 0.0002}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 451402373}
   - {fileID: 576597801}
@@ -38156,7 +38156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tweenTime: 0.33
-  _startOn: 0
+  _startOn: 1
   localScaleTarget: {fileID: 1645453303}
   onLocalScale: {x: 1, y: 1, z: 1}
   offLocalScale: {x: 0, y: 0, z: 0}
@@ -40743,12 +40743,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd66228b20306d49ad7f891f6269e17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _leftFingertipsUniformParamId: 318
-  _rightFingertipsUniformParamId: 319
-  _leftPalmTrisUniformParamId: 320
-  _rightPalmTrisUniformParamId: 321
-  _leftFingerSegmentsUniformParamId: 322
-  _rightFingerSegmentsUniformParamId: 323
+  _leftFingertipsUniformParamId: 269
+  _rightFingertipsUniformParamId: 270
+  _leftPalmTrisUniformParamId: 271
+  _rightPalmTrisUniformParamId: 272
+  _leftFingerSegmentsUniformParamId: 273
+  _rightFingerSegmentsUniformParamId: 274
 --- !u!4 &1756187802
 Transform:
   m_ObjectHideFlags: 0

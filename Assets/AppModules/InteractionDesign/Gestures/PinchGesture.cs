@@ -15,41 +15,56 @@ namespace Leap.Unity.Gestures {
 
     #region Inspector
 
+    #region Core Pinch Heuristic Checks
+
+    private const string CATEGORY_PINCH_HEURISTIC = "Pinch Heuristic";
+
     [Header("Activation")]
 
-    [DevGui.DevCategory("Pinch Heuristic")]
+    [DevGui.DevCategory(CATEGORY_PINCH_HEURISTIC)]
+    [DevGui.DevValue]
+    public bool drawDebugPinchDistance = false;
+
+    [DevGui.DevCategory(CATEGORY_PINCH_HEURISTIC)]
+    [DevGui.DevValue]
+    [Range(0f, 0.3f)]
+    public float activationPinchDistance = 0.01f;
+
+    [DevGui.DevCategory(CATEGORY_PINCH_HEURISTIC)]
     [DevGui.DevValue]
     public bool useVelocities = false;
 
+    #endregion
+
     #region Safety Checks (Pinky Checks)
 
-    private const string PINKY_SAFETY_CATEGORY = "Pinky Safety Pinch";
+    private const string CATEGORY_PINKY_SAFETY = "Pinky Safety Pinch";
 
-    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_PINKY_SAFETY)]
     [DevGui.DevValue]
     public bool requirePinkySafetyPinch = false;
 
-    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_PINKY_SAFETY)]
     [DevGui.DevValue]
     [Range(0f, 1f)]
     [DisableIf("requirePinkySafetyPinch", isEqualTo: false)]
     public float minPinkySafetyProduct = 0.50f;
 
-    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_PINKY_SAFETY)]
     [DevGui.DevValue]
     [Tooltip("Higher = pinky must be opened further out to begin a pinch")]
     [Range(0f, 1f)]
     [DisableIf("requirePinkySafetyPinch", isEqualTo: false)]
     public float maxPinkyCurl = 0.2f;
 
-    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_PINKY_SAFETY)]
     [DevGui.DevValue]
     [Tooltip("Higher = index must curl faster relative to pinky curl velocity to pinch")]
     [Range(-1f, 7f)]
     [DisableIf("requirePinkySafetyPinch", isEqualTo: false)]
     public float minIndexMinusPinkyCurlVel = 1.5f;
 
-    [DevGui.DevCategory(PINKY_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_PINKY_SAFETY)]
     [DevGui.DevValue]
     [Range(0f, 5f)]
     [DisableIf("requirePinkySafetyPinch", isEqualTo: false)]
@@ -59,19 +74,19 @@ namespace Leap.Unity.Gestures {
 
     #region Safety Checks (Middle Finger Checks)
 
-    private const string MIDDLE_SAFETY_CATEGORY = "Middle Finger Safety Pinch";
+    private const string CATEGORY_MIDDLE_SAFETY = "Middle Finger Safety Pinch";
 
-    [DevGui.DevCategory(MIDDLE_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_MIDDLE_SAFETY)]
     [DevGui.DevValue]
     public bool requireMiddleFingerAngle = true;
 
-    [DevGui.DevCategory(MIDDLE_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_MIDDLE_SAFETY)]
     [DevGui.DevValue]
     [Range(-20f, 30f)]
     [DisableIf("requireMiddleFingerAngle", isEqualTo: false)]
     public float minSignedMiddleIndexAngle = -20f;
 
-    [DevGui.DevCategory(MIDDLE_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_MIDDLE_SAFETY)]
     [DevGui.DevValue]
     [Range(0f, 90f)]
     [DisableIf("requireMiddleFingerAngle", isEqualTo: false)]
@@ -81,19 +96,19 @@ namespace Leap.Unity.Gestures {
 
     #region Safety Checks (Ring Finger Checks)
 
-    private const string RING_SAFETY_CATEGORY = "Ring Finger Safety Pinch";
+    private const string CATEGORY_RING_SAFETY = "Ring Finger Safety Pinch";
 
-    [DevGui.DevCategory(RING_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_RING_SAFETY)]
     [DevGui.DevValue]
     public bool requireRingFingerAngle = true;
 
-    [DevGui.DevCategory(RING_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_RING_SAFETY)]
     [DevGui.DevValue]
     [Range(-20f, 30f)]
     [DisableIf("requireRingFingerAngle", isEqualTo: false)]
     public float minSignedRingIndexAngle = -20f;
 
-    [DevGui.DevCategory(RING_SAFETY_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_RING_SAFETY)]
     [DevGui.DevValue]
     [Range(0f, 90f)]
     [DisableIf("requireRingFingerAngle", isEqualTo: false)]
@@ -103,9 +118,9 @@ namespace Leap.Unity.Gestures {
     
     #region Finger Safety Eligibility Hysteresis
 
-    private const string GENERIC_HYSTERESIS_CATEGORY = "Ring & Middle Safety Hysteresis";
+    private const string CATEGORY_GLOBAL_HYSTERESIS = "Ring & Middle Safety Hysteresis";
 
-    [DevGui.DevCategory(GENERIC_HYSTERESIS_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_GLOBAL_HYSTERESIS)]
     [DevGui.DevValue]
     [Range(0.6f, 1f)]
     public float ringMiddleSafetyHysteresisMult = 0.8f;
@@ -114,13 +129,13 @@ namespace Leap.Unity.Gestures {
 
     #region Palm Vs Leap Angle
 
-    private const string PALM_ANGLE_CATEGORY = "Palm Normal Angle";
+    private const string CATEGORY_PALM_ANGLE = "Palm Normal Angle";
 
-    [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_PALM_ANGLE)]
     [DevGui.DevValue]
     public bool requirePalmVsLeapAngle = false;
 
-    [DevGui.DevCategory(PALM_ANGLE_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_PALM_ANGLE)]
     [DevGui.DevValue]
     [Range(10f, 181f)]
     [DisableIf("requirePalmVsLeapAngle", isEqualTo: false)]
@@ -130,14 +145,14 @@ namespace Leap.Unity.Gestures {
 
     #region Index Angle (Eligibility Only)
 
-    private const string INDEX_ANGLE_CATEGORY = "Index Angle (Eligibility Only)";
+    private const string CATEGORY_INDEX_ANGLE = "Index Angle (Eligibility Only)";
 
-    [DevGui.DevCategory(INDEX_ANGLE_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_INDEX_ANGLE)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
     public float maxIndexAngleForEligibilityActivation = 98f;
 
-    [DevGui.DevCategory(INDEX_ANGLE_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_INDEX_ANGLE)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
     public float maxIndexAngleForEligibilityDeactivation = 110f;
@@ -146,14 +161,14 @@ namespace Leap.Unity.Gestures {
 
     #region Thumb Angle (Eligibility Only)
 
-    private const string THUMB_ANGLE_CATEGORY = "Thumb Angle (Eligibility Only)";
+    private const string CATEGORY_THUMB_ANGLE = "Thumb Angle (Eligibility Only)";
 
-    [DevGui.DevCategory(THUMB_ANGLE_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_THUMB_ANGLE)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
     public float maxThumbAngleForEligibilityActivation = 85f;
 
-    [DevGui.DevCategory(THUMB_ANGLE_CATEGORY)]
+    [DevGui.DevCategory(CATEGORY_THUMB_ANGLE)]
     [DevGui.DevValue]
     [Range(45f, 130f)]
     public float maxThumbAngleForEligibilityDeactivation = 100f;
@@ -167,7 +182,7 @@ namespace Leap.Unity.Gestures {
     [DevGui.DevCategory("Pinch Heuristic")]
     [DevGui.DevValue]
     [Range(0.01f, 0.08f)]
-    public float pinchDeactivateDistance = 0.04f;
+    public float pinchDeactivateDistance = 0.035f;
 
     #endregion
 
@@ -192,17 +207,21 @@ namespace Leap.Unity.Gestures {
 
     #region Custom Pinch Strength
 
-    public static Vector3 PinchSegment2SegmentDisplacement(Hand h) {
+    public static Vector3 PinchSegment2SegmentDisplacement(Hand h,
+                                                           out Vector3 c0,
+                                                           out Vector3 c1) {
       var indexDistal = h.GetIndex().bones[3].PrevJoint.ToVector3();
       var indexTip = h.GetIndex().TipPosition.ToVector3();
       var thumbDistal = h.GetThumb().bones[3].PrevJoint.ToVector3();
       var thumbTip = h.GetThumb().TipPosition.ToVector3();
 
-      return Segment2SegmentDisplacement(indexDistal, indexTip, thumbDistal, thumbTip);
+      return Segment2SegmentDisplacement(indexDistal, indexTip, thumbDistal, thumbTip,
+                                         out c0, out c1);
     }
 
-    public static float GetCustomPinchStrength(Hand h) {
-      var pinchDistance = PinchSegment2SegmentDisplacement(h).magnitude;
+    public float GetCustomPinchStrength(Hand h) {
+      Vector3 c0, c1;
+      var pinchDistance = PinchSegment2SegmentDisplacement(h, out c0, out c1).magnitude;
 
       pinchDistance -= 0.01f;
       pinchDistance = pinchDistance.Clamped01();
@@ -211,23 +230,30 @@ namespace Leap.Unity.Gestures {
         Debug.Log(pinchDistance);
       }
 
+      if (drawDebugPinchDistance) {
+        DebugPing.Line("RH pinch",  c0, c1, LeapColor.blue);
+        DebugPing.Label("RH pinch", ((c1 + c0) / 2f), LeapColor.blue);
+      }
+
       return pinchDistance.MapUnclamped(0.0168f, 0.08f, 1f, 0f);
     }
-
-    #endregion
 
     #region Segment-to-Segment Displacement (John S)
 
     public static Vector3 Segment2SegmentDisplacement(Vector3 a1, Vector3 a2,
-                                                      Vector3 b1, Vector3 b2) {
+                                                      Vector3 b1, Vector3 b2,
+                                                      out Vector3 c0, out Vector3 c1) {
       float outTimeToA2 = 0f, outTimeToB2 = 0f;
-      return Segment2SegmentDisplacement(a1, a2, b1, b2, out outTimeToA2, out outTimeToB2);
+      return Segment2SegmentDisplacement(a1, a2, b1, b2,
+                                         out outTimeToA2, out outTimeToB2,
+                                         out c0, out c1);
     }
 
     public static Vector3 Segment2SegmentDisplacement(Vector3 a1, Vector3 a2,
                                                       Vector3 b1, Vector3 b2,
                                                       out float timeToa2,
-                                                      out float timeTob2) {
+                                                      out float timeTob2,
+                                                      out Vector3 c0, out Vector3 c1) {
       Vector3 u = a2 - a1; //from a1 to a2
       Vector3 v = b2 - b1; //from b1 to b2
       Vector3 w = a1 - b1;
@@ -293,8 +319,15 @@ namespace Leap.Unity.Gestures {
       // get the difference of the two closest points
       Vector3 dP = w + (sc * u) - (tc * v);  // =  S1(sc) - S2(tc)
       timeToa2 = sc; timeTob2 = tc;
+
+      // output the closest points on each segment
+      c0 = a1 + (sc * u);
+      c1 = b1 + (tc * v);
+
       return dP;   // return the closest distance
     }
+
+    #endregion
 
     #endregion
 
