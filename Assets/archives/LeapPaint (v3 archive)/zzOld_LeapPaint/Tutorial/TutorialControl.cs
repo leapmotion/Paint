@@ -13,6 +13,7 @@ public class TutorialControl : MonoBehaviour {
   public Widget colorWidget;
   public Widget brushWidget;
   public Widget menuWidget;
+  public GameObject brushThicknessObject;
 
   [NonSerialized]
   public bool colorPalleteHasBeenTouched = false;
@@ -36,6 +37,10 @@ public class TutorialControl : MonoBehaviour {
 
   public void EnableUndoRedo() {
     StartCoroutine(brushWidget.Enable());
+  }
+
+  public void EnableBrushThickness() {
+    brushThicknessObject.SetActive(true);
   }
 
   public void NotifyColorPalleteTouched() {
