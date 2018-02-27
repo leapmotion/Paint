@@ -4589,8 +4589,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 273669485}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.627, z: 0}
+  m_LocalRotation: {x: 0.23990163, y: -0.26905832, z: 0.085567996, w: 0.9288342}
+  m_LocalPosition: {x: -0.049548116, y: 1.5518601, z: -0.2525127}
   m_LocalScale: {x: 0.14530975, y: 0.14530976, z: 0.14530976}
   m_Children:
   - {fileID: 1092424975}
@@ -5210,6 +5210,7 @@ PlayableDirector:
     - 4b36b1c05466fa448b5c96943750f1e7: {fileID: 587459124}
     - 155bd8d4801fc5046ad0df04a7f9f5ac: {fileID: 587459124}
     - e67015423cfc1c1479447278d821c170: {fileID: 587459124}
+    - 78d1ace861ce8774d960fa30bb1dbc30: {fileID: 587459124}
     - 20a03641a30f5ce4888ff52c914f6800: {fileID: 587459124}
     - 98dbd003d4b352744b48903cfe602896: {fileID: 587459124}
     - 12c7d6dd508d6b94490213c4d5a42b72: {fileID: 587459124}
@@ -5226,6 +5227,7 @@ PlayableDirector:
     - 0aa0acf02c7fd1d4198da1ecf24870d0: {fileID: 587459124}
     - bc60c94fc89121441833b0ba7049528b: {fileID: 587459124}
     - c659a8c0b81a7884f8a7c0ba5aa4f888: {fileID: 587459124}
+    - 018637785f65ebe499117daaf8b5510b: {fileID: 587459124}
     - c3182fd7e1cc1d04091cf50474a9973d: {fileID: 587459124}
     - 5b378522446413141b175e00fd5bfafb: {fileID: 587459124}
     - 296937c1cd4af584698baeb31a275b09: {fileID: 587459124}
@@ -5246,6 +5248,7 @@ PlayableDirector:
     - a5579fc9ca4c49d40bbd9dfc7c7c2cb3: {fileID: 587459124}
     - 74be518cb6b21b141816f058cc170169: {fileID: 587459124}
     - 657b40e40dfa7884c9ddbd501a35795b: {fileID: 587459124}
+    - 93e7a5f6bcae8e54ca6963b6ee762619: {fileID: 587459124}
     - f546e254fd510fc4183c294f345216dc: {fileID: 587459124}
     - 9108871aa9a7bf64897ed4fe5901c9b8: {fileID: 587459124}
     - b5a99dca685a11640a77e8ba1c855154: {fileID: 587459124}
@@ -10038,7 +10041,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &524315391
 Transform:
   m_ObjectHideFlags: 0
@@ -14545,7 +14548,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &808398431
 Transform:
   m_ObjectHideFlags: 0
