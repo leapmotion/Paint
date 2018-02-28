@@ -156,6 +156,12 @@ namespace Leap.Unity.LeapPaint_v3 {
         }
       }
 
+      // Update _minRadius and _maxRadius based on PinchGesture settings.
+      if (pinchMode == PinchDetectionMode.PinchGesture) {
+        _minRadius = pinchGesture.pinchActivateDistance / 2f;
+        _maxRadius = pinchGesture.pinchDeactivateDistance;
+      }
+
       // Calc radius
       float pinchRadiusTarget = indexThumbDist / 2f * 0.8f;
       if (pinchMode == PinchDetectionMode.PinchGesture) {

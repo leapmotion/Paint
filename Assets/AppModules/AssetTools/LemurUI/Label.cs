@@ -13,19 +13,38 @@ namespace Leap.Unity.LemurUI {
     public bool?       richText;
     public Color?      color;
 
+    public TextStyle Copy() {
+      return new TextStyle() {
+        font = font,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
+        richText = richText,
+        color = color
+      };
+    }
+
     /// <summary>
     /// Returns a new style with the properties of the argument style overlayed onto this
     /// style. Any non-null properties of the argument style will overwrite the
     /// corresponding property on this style.
     /// </summary>
     public TextStyle OverlayedWith(TextStyle other) {
-      return new TextStyle() {
-        font = other.font.ValueOr(this.font),
-        fontSize = other.fontSize.ValueOr(this.fontSize),
-        fontStyle = other.fontStyle.ValueOr(this.fontStyle),
-        richText = other.richText.ValueOr(this.richText),
-        color = other.color.ValueOr(this.color)
-      };
+      var copy = Copy();
+      copy.Overlay(other);
+      return copy;
+    }
+
+    /// <summary>
+    /// Overwrites the style properties on this style with non-null properties in the
+    /// argument style.
+    /// </summary>
+    /// <param name="other"></param>
+    public void Overlay(TextStyle other) {
+      font = other.font.ValueOr(this.font);
+      fontSize = other.fontSize.ValueOr(this.fontSize);
+      fontStyle = other.fontStyle.ValueOr(this.fontStyle);
+      richText = other.richText.ValueOr(this.richText);
+      color = other.color.ValueOr(this.color);
     }
   }
 

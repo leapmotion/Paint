@@ -380,7 +380,11 @@ namespace Leap.Unity {
     }
 
     private static void drawLineGizmos(RuntimeGizmoDrawer drawer) {
+      var color = drawer.color;
       foreach (var idLinePair in _pingLines) {
+        if (idLinePair.Value.color != color) {
+          color = drawer.color = idLinePair.Value.color;
+        }
         idLinePair.Value.Draw(drawer);
       }
     }
@@ -440,7 +444,10 @@ namespace Leap.Unity {
         label.gameObject.transform.position = labeledPosition;
         label.gameObject.transform.rotation = Utils.FaceTargetWithoutTwist(
                                                 labeledPosition,
-                                                facingPosition);
+                                                facingPosition,
+                                                flip180: true);
+
+        label.textStyle.Overlay(Style.Color(this.color));
 
         label.text = this.text;
       }

@@ -6,6 +6,7 @@ using Leap.Unity.RuntimeGizmos;
 using Leap.Unity.Animation;
 using Leap.Unity.Interaction;
 using Leap.Unity.Attributes;
+using Leap.Unity.Query;
 
 namespace Leap.Unity.LeapPaint_v3 {
   
@@ -406,6 +407,8 @@ namespace Leap.Unity.LeapPaint_v3 {
     private Vector3 _curPosition;
     private Vector3 _lastPosition;
 
+    private bool _lastGraspingHandWasLeft = false;
+
     protected bool isGrasped {
       get { return _intObj.isGrasped; }
     }
@@ -417,14 +420,17 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     private void initGraspAndRelease() {
       _intObj.OnGraspBegin -= DoOnGrabbed;
-      _intObj.OnGraspEnd -= DoOnReleasedFromGrab;
       _intObj.OnGraspBegin += DoOnGrabbed;
+      _intObj.OnGraspEnd -= DoOnReleasedFromGrab;
       _intObj.OnGraspEnd += DoOnReleasedFromGrab;
+      _intObj.OnGraspStay -= DoWhileGrasped;
+      _intObj.OnGraspStay += DoWhileGrasped;
     }
 
     private void teardownGraspAndRelease() {
       _intObj.OnGraspBegin -= DoOnGrabbed;
       _intObj.OnGraspEnd -= DoOnReleasedFromGrab;
+      _intObj.OnGraspStay -= DoWhileGrasped;
     }
 
     protected void FixedGrabUpdate() {
@@ -458,6 +464,10 @@ namespace Leap.Unity.LeapPaint_v3 {
       _grabEffect.PlayOnTransform(transform);
     }
 
+    private void DoWhileGrasped() {
+      _lastGraspingHandWasLeft = _intObj.graspingHands.Query().First().isLeft;
+    }
+
     private void DoOnReleasedFromGrab() {
       bool shouldActivateWorkstation = EvaluateShouldActivateWorkstation();
 
@@ -486,8 +496,12 @@ namespace Leap.Unity.LeapPaint_v3 {
         //  return true;
         //}
       }
-      // New logic: Nothing to replace it; shouldn't have to ask whether to launch the
-      // workstation if a release occurs from a left hand.
+      // New logic: Should always open workstation if the widget was release from the
+      // left hand.
+      if (_lastGraspingHandWasLeft) return true;
+
+      // We also can't return to our anchor if the anchor isn't visible.
+      if (!_wearableAnchor.IsDisplaying) return true;
 
       if ((_wearableAnchor._chirality == Chirality.Left && _isLeftHandTracked)
        || (_wearableAnchor._chirality == Chirality.Right && _isRightHandTracked)) {
