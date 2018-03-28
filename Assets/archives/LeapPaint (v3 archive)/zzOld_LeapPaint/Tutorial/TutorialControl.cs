@@ -18,6 +18,9 @@ public class TutorialControl : MonoBehaviour {
   [NonSerialized]
   public bool colorPalleteHasBeenTouched = false;
 
+  [NonSerialized]
+  public bool colorPalleteHasBeenExpanded = false;
+
   public void SetText(string text) {
     this.text.text = text;
   }
@@ -43,8 +46,16 @@ public class TutorialControl : MonoBehaviour {
     brushThicknessObject.SetActive(true);
   }
 
+  public void EnableWidgetGrabPower() {
+
+  }
+
   public void NotifyColorPalleteTouched() {
     colorPalleteHasBeenTouched = true;
+  }
+
+  public void NotifyColorPalleteExpanded() {
+    colorPalleteHasBeenExpanded = true;
   }
 
   public void UndoStroke() {

@@ -5749,6 +5749,8 @@ PlayableDirector:
     value: {fileID: 636289157}
   - key: {fileID: 0}
     value: {fileID: 0}
+  - key: {fileID: 114190676117979244, guid: 058111a9d90a4f043bc9b61354670d93, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References:
     - 023e1542c65502c4f8397f4ede37458c: {fileID: 587459124}
@@ -5760,6 +5762,7 @@ PlayableDirector:
     - e3264c720b4f3ba4bbcc59dab7debf7a: {fileID: 587459124}
     - c716adab998850d47b5f19f0df6c66af: {fileID: 587459124}
     - 3ca6737c5575f1649bc555f77a3d9038: {fileID: 587459124}
+    - f4c46288870abf44694455e7ca6439c0: {fileID: 587459124}
     - 378cb4b8cd71f76439787d1f6ed66806: {fileID: 587459124}
     - 86ed5b5bbd8714a4ebf0cc5065e10809: {fileID: 587459124}
     - bdc3f0c5c75951641be0f44cc6f6ad3d: {fileID: 587459124}
@@ -5771,7 +5774,9 @@ PlayableDirector:
     - 20a03641a30f5ce4888ff52c914f6800: {fileID: 587459124}
     - 98dbd003d4b352744b48903cfe602896: {fileID: 587459124}
     - 12c7d6dd508d6b94490213c4d5a42b72: {fileID: 587459124}
+    - 1beb9f077d25d9241970f0e622ebaf93: {fileID: 587459124}
     - ad7ed3c84fae07b4e8849bc1e33309ee: {fileID: 587459124}
+    - 523392fefde89aa4f966de48b68b7b76: {fileID: 587459124}
     - 6e620706c28387740a884c70e58f97db: {fileID: 587459124}
     - 1f2a0ddb0c72cbc48aa977133db8bcb2: {fileID: 587459124}
     - 2f18afd7e5e7d1544b22ffdad4e3e034: {fileID: 587459124}
@@ -5779,6 +5784,7 @@ PlayableDirector:
     - bdf3104245db9c640a83447cbab41773: {fileID: 587459124}
     - b630a38a193799b458bc8ac000d967ca: {fileID: 587459124}
     - f4f52d1827f08f448a99b8101bcb6004: {fileID: 587459124}
+    - e8a854197de20d7408051a95e87e728a: {fileID: 587459124}
     - f90573edc2f4ca74ab2c887dc264c86e: {fileID: 587459124}
     - ecd53d9eedd2c5149a25a2db3e5a72bd: {fileID: 587459124}
     - 0aa0acf02c7fd1d4198da1ecf24870d0: {fileID: 587459124}
@@ -5794,6 +5800,7 @@ PlayableDirector:
     - d0631810c46b2d141915b426f2673421: {fileID: 587459124}
     - 5bd84cabb8bb3b846a0481d0ce569e03: {fileID: 587459124}
     - 4ae08894a059ea9468b9e584470dfab8: {fileID: 587459124}
+    - 996cc904d026ea54197cd64e6a70b4f8: {fileID: 587459124}
     - 21c8a0e0f368f76448791df03450777f: {fileID: 587459124}
     - a6f1bb7dad4097f4ba6ab36767da17c8: {fileID: 587459124}
     - eaad583bbfe3e69469a6f9d6f4b6d615: {fileID: 587459124}
@@ -5810,7 +5817,9 @@ PlayableDirector:
     - 9108871aa9a7bf64897ed4fe5901c9b8: {fileID: 587459124}
     - b5a99dca685a11640a77e8ba1c855154: {fileID: 587459124}
     - 2b3a15adf4549a44daf753f896e5d96b: {fileID: 587459124}
+    - b0e9a122ec237c3428bdfb382f8d9ba4: {fileID: 587459124}
     - e7542e3f781b819469b2bdef9e610d42: {fileID: 587459124}
+    - a0fb29447ec66e34a87c4a040c72d0d2: {fileID: 587459124}
     - a7dca105b7a23e949b5c3487cd6311ba: {fileID: 587459124}
     - 5806297049b5d1643aaba5b14e3f0a8e: {fileID: 587459124}
     - dc4d3fcc370841b4a9e2b5b276124ada: {fileID: 587459124}
@@ -8567,6 +8576,7 @@ GameObject:
   m_Component:
   - component: {fileID: 379521072}
   - component: {fileID: 379521073}
+  - component: {fileID: 379521074}
   m_Layer: 0
   m_Name: Now, don't we need more colors?
   m_TagString: Untagged
@@ -8601,6 +8611,22 @@ MonoBehaviour:
   _director: {fileID: 279845038}
   _playable: {fileID: 11400000, guid: 058111a9d90a4f043bc9b61354670d93, type: 2}
   _wrapMode: 2
+--- !u!114 &379521074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 379521071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76f3179ee3c21564a81795625cc0cabb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destination: {fileID: 1864991936}
+  transitionState: {fileID: 0}
+  controller: {fileID: 279845040}
+  markerName: TryWidget
+  condition: 1
 --- !u!1 &380482246
 GameObject:
   m_ObjectHideFlags: 0
@@ -9977,6 +10003,7 @@ GameObject:
   m_Component:
   - component: {fileID: 438525059}
   - component: {fileID: 438525060}
+  - component: {fileID: 438525061}
   m_Layer: 0
   m_Name: Give thumbs up to continue
   m_TagString: Untagged
@@ -10027,6 +10054,21 @@ MonoBehaviour:
             m_CallState: 2
         m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
+--- !u!114 &438525061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 438525058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 715153d525c322e47890cc24adb976b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destination: {fileID: 379521071}
+  transitionState: {fileID: 1194710330}
+  withinAngle: 70
+  forDuration: 1
 --- !u!1 &440947874
 GameObject:
   m_ObjectHideFlags: 0
@@ -12851,6 +12893,8 @@ Transform:
   - {fileID: 1864991937}
   - {fileID: 1157521738}
   - {fileID: 657016358}
+  - {fileID: 1623583210}
+  - {fileID: 2142219846}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14211,6 +14255,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 657016358}
+  - component: {fileID: 657016360}
+  - component: {fileID: 657016359}
   m_Layer: 0
   m_Name: Give me thumbs up to continue!
   m_TagString: Untagged
@@ -14231,6 +14277,84 @@ Transform:
   m_Father: {fileID: 587459126}
   m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &657016359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 657016357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 715153d525c322e47890cc24adb976b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destination: {fileID: 2142219845}
+  transitionState: {fileID: 1194710330}
+  withinAngle: 70
+  forDuration: 1
+--- !u!114 &657016360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 657016357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9af06f222e8680440b476670b3efaf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _table:
+    _entries:
+    - enumValue: 2
+      callback:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 587459127}
+            m_MethodName: SetText
+            m_Mode: 5
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: Give me the thumbs up when you are ready to move on!
+              m_BoolArgument: 0
+            m_CallState: 2
+          - m_Target: {fileID: 587459127}
+            m_MethodName: UndoStroke
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+          - m_Target: {fileID: 587459127}
+            m_MethodName: UndoStroke
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+          - m_Target: {fileID: 587459127}
+            m_MethodName: UndoStroke
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+        m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
 --- !u!1001 &664427926
 Prefab:
   m_ObjectHideFlags: 0
@@ -25570,6 +25694,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1157521738}
+  - component: {fileID: 1157521739}
+  - component: {fileID: 1157521740}
   m_Layer: 0
   m_Name: It's some very cool suff
   m_TagString: Untagged
@@ -25590,6 +25716,50 @@ Transform:
   m_Father: {fileID: 587459126}
   m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1157521739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1157521737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9af06f222e8680440b476670b3efaf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _table:
+    _entries:
+    - enumValue: 2
+      callback:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 279845040}
+            m_MethodName: SkipMarker
+            m_Mode: 5
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: TryWidget
+              m_BoolArgument: 0
+            m_CallState: 2
+        m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+--- !u!114 &1157521740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1157521737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b580d315682b3949a58d75661dd69f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destination: {fileID: 657016357}
+  transitionState: {fileID: 0}
+  _director: {fileID: 279845038}
 --- !u!1001 &1158567370
 Prefab:
   m_ObjectHideFlags: 0
@@ -34382,6 +34552,34 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1616340664}
   m_Mesh: {fileID: 4300000, guid: bb552b845e1247e4b96d83b9c9bd0207, type: 3}
+--- !u!1 &1623583209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1623583210}
+  m_Layer: 0
+  m_Name: '--------'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1623583210
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1623583209}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 587459126}
+  m_RootOrder: 32
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1623838754
 GameObject:
   m_ObjectHideFlags: 0
@@ -39457,6 +39655,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1864991937}
+  - component: {fileID: 1864991938}
+  - component: {fileID: 1864991939}
   m_Layer: 0
   m_Name: Try the pallete! (waiting)
   m_TagString: Untagged
@@ -39477,6 +39677,50 @@ Transform:
   m_Father: {fileID: 587459126}
   m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1864991938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1864991936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9af06f222e8680440b476670b3efaf00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _table:
+    _entries:
+    - enumValue: 2
+      callback:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 279845040}
+            m_MethodName: LoopAtMarker
+            m_Mode: 5
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: TryWidget
+              m_BoolArgument: 0
+            m_CallState: 2
+        m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+--- !u!114 &1864991939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1864991936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a7cb37f67ac5a542ba7599f71e1c82b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destination: {fileID: 1157521737}
+  transitionState: {fileID: 0}
+  control: {fileID: 587459127}
 --- !u!1 &1873275593
 GameObject:
   m_ObjectHideFlags: 0
@@ -43381,3 +43625,31 @@ MonoBehaviour:
 Transform:
   m_PrefabParentObject: {fileID: 464466, guid: 39d18871c11b53c4082d8202e3db68a3, type: 2}
   m_PrefabInternal: {fileID: 2138859985}
+--- !u!1 &2142219845
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 2142219846}
+  m_Layer: 0
+  m_Name: Farewell
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &2142219846
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2142219845}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 587459126}
+  m_RootOrder: 33
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
