@@ -17,7 +17,7 @@ namespace Leap.Unity.Streams {
       specifyCustomDrawer("_receiver", drawReceiverProperty);
 
       // Only show wire settings if it makes sense to draw a wire (connector must connect
-      // two different objects instead of being an 'internal' connection.
+      // two different objects instead of being an 'internal' connection).
       specifyConditionalDrawing(() => getStreamBehaviour() == null
                                       || getReceiverBehaviour() == null
                                       || (getStreamBehaviour().gameObject
