@@ -19,7 +19,13 @@ namespace Leap.Unity.LeapPaint_v3 {
     public Material _transparentMarbleMaterial;
     public Renderer _colorMarbleRenderer;
 
+    [Header("SFX")]
     public SoundEffect _dipEffect;
+
+    [Header("Color Palette Receiving State Feedback")]
+    public ColorPalette handPalette;
+    public ColorWearableUI colorWearableUI;
+
     private float _canPlayDipTime;
 
     private Color _paintColor;
@@ -37,6 +43,21 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       _velocity = this.transform.position.From(_lastPos) / Time.deltaTime;
       _lastPos = this.transform.position;
+
+      if (handPalette != null && colorWearableUI != null) {
+        if (_paintColor.a > 0.01F) {
+          // Color palette should have "receiving" icon -- because in workstation mode
+          // while the index tip has a color, the hand palette receives color from
+          // the index tip rather than assigning it.
+          if (colorWearableUI.IsWorkstation) {
+            handPalette.SetSwatchMode(ColorSwatch.SwatchMode.ReceiveColor);
+          }
+        }
+        else {
+          // Color palette should reflect "assigning".
+          handPalette.SetSwatchMode(ColorSwatch.SwatchMode.AssignColor);
+        }
+      }
     }
 
     public Color GetColor() {
@@ -48,9 +69,11 @@ namespace Leap.Unity.LeapPaint_v3 {
       _tipMeshRenderer.material.color = new Color(color.r, color.g, color.b, _cursor.GetHandAlpha() * _paintColor.a);
 
       if (_paintColor.a < 0.01F) {
+        // "Cleaned" finger of paint color.
         _colorMarbleRenderer.material = _transparentMarbleMaterial;
       }
       else {
+        // Got a new paint color.
         _colorMarbleRenderer.material = _colorMarbleMaterial;
         _colorMarbleMaterial.color = color;
       }
