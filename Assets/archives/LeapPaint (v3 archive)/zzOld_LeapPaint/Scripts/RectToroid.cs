@@ -60,6 +60,8 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     private void initMesh() {
+      if (this == null) return; // in case we were destroyed.
+
       _meshFilter = GetComponent<MeshFilter>();
 
       if (_mesh == null) {

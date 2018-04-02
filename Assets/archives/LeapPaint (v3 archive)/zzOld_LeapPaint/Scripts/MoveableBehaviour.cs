@@ -3,6 +3,7 @@ using System.Collections;
 using Leap.Unity.Animation;
 using Leap.Unity.Attributes;
 using UnityEngine.Serialization;
+using UnityEngine.Events;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
@@ -17,17 +18,22 @@ namespace Leap.Unity.LeapPaint_v3 {
     [FormerlySerializedAs("_B")]
     public Transform B;
 
+    public UnityEvent OnMoveToAEvent;
+    public UnityEvent OnMoveToBEvent;
+
     private Tween _movementTween;
 
     public void MoveToA() {
-      MoveTo(A);
+      moveTo(A);
+      OnMoveToAEvent.Invoke();
     }
 
     public void MoveToB() {
-      MoveTo(B);
+      moveTo(B);
+      OnMoveToBEvent.Invoke();
     }
 
-    public void MoveTo(Transform t) {
+    private void moveTo(Transform t) {
       if (t != null) {
         this.transform.position = t.position;
         this.transform.rotation = t.rotation;

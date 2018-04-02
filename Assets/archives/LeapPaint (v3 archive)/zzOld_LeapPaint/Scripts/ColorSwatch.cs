@@ -95,7 +95,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     private IndexTipColor GetNearestTipColor() {
-      IndexTipColor[] eligibleTipColors = _palette._eligibleIndexTipColors;
+      IndexTipColor[] eligibleTipColors = _palette.eligibleIndexTipColors;
       IndexTipColor nearestIndexTipColor = null;
       for (int i = 0; i < eligibleTipColors.Length; i++) {
         if (nearestIndexTipColor == null

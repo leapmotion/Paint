@@ -1,4 +1,5 @@
 ﻿using Leap.Unity.Attributes;
+using Leap.Unity.GraphicalRenderer;
 using UnityEngine;
 
 namespace Leap.Unity.LeapPaint {
@@ -15,7 +16,7 @@ namespace Leap.Unity.LeapPaint {
     private float _animT = 0f;
     public Color colorWhenDisabled = Color.gray;
 
-    [Header("Renderer Reference")]
+    [Header("Renderer Reference - Pick One (Graphic Overrides)")]
 
     public Renderer rendererToDrive;
     public struct RendererMaterialInstancePair {
@@ -41,20 +42,36 @@ namespace Leap.Unity.LeapPaint {
         }
       }
     }
+    public LeapGraphic graphicToDrive;
 
     private void OnEnable() {
-      materialInstance.color = colorWhenEnabled0;
+      setColor(colorWhenEnabled0);
       _animT = 0f;
     }
     private void Update() {
       _animT += Time.deltaTime;
       _animT %= animPeriod;
 
-      materialInstance.color
-        = Color.Lerp(colorWhenEnabled0, colorWhenEnabled1, animCurve.Evaluate(_animT));
+      setColor(Color.Lerp(colorWhenEnabled0, colorWhenEnabled1, animCurve.Evaluate(_animT)));
     }
     private void OnDisable() {
-      materialInstance.color = colorWhenDisabled;
+      setColor(colorWhenDisabled);
+    }
+
+    private void setColor(Color c) {
+      if (graphicToDrive != null) {
+        var colorFeature = graphicToDrive.GetFeatureData<LeapRuntimeTintData>();
+        if (colorFeature == null) {
+          Debug.LogError("No runtime tint (color) feature available for "
+            + graphicToDrive.name, this);
+        }
+        else {
+          colorFeature.color = c;
+        }
+      }
+      else {
+        materialInstance.color = c;
+      }
     }
 
   }
