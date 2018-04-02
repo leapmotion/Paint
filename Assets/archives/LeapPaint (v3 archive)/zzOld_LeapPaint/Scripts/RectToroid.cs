@@ -77,11 +77,6 @@ namespace Leap.Unity.LeapPaint_v3 {
       _tris = new int[NUM_DIVISIONS * 24];  // 8 tris per division * 3 entries per tri
     }
 
-    protected void OnValidate() {
-      refreshVerts();
-      refreshTris();
-    }
-
     private void refreshVerts() {
       Vector3 r = Vector3.right;
       Vector3 h = Vector3.up;

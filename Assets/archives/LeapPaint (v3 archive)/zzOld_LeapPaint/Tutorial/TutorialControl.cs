@@ -72,7 +72,7 @@ public class TutorialControl : MonoBehaviour {
     public GameObject widget;
     public GameObject ring;
     public EmergeableBehaviour emergable;
-    public PassTriggerEvents marbleTrigger;
+    //public PassTriggerEvents marbleTrigger;
 
     public IEnumerator Enable() {
       widget.SetActive(true);
