@@ -1,35 +1,55 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Leap.Unity;
+using UnityEngine.Serialization;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
   public class ColorPalette : MonoBehaviour {
 
-    public ColorSwatch.SwatchMode _swatchMode = ColorSwatch.SwatchMode.AssignColor;
-    public ColorSwatch[] _swatches;
-    public Color[] _swatchColors;
-    public IndexTipColor[] _eligibleIndexTipColors;
+    [FormerlySerializedAs("_swatchMode")]
+    public ColorSwatch.SwatchMode swatchMode = ColorSwatch.SwatchMode.AssignColor;
+
+    [FormerlySerializedAs("_swatches")]
+    public ColorSwatch[] swatches;
+
+    [FormerlySerializedAs("_swatchColors")]
+    public Color[] swatchColors;
+
+    [FormerlySerializedAs("_eligibleIndexTipColors")]
+    public IndexTipColor[] eligibleIndexTipColors;
+
+    [Header("Swatch Mode Feedback")]
+    public GameObject enabledWhenReceivingColor = null;
 
     protected void OnValidate() {
-      for (int i = 0; i < _swatchColors.Length; i++) {
-        _swatchColors[i] = new Color(_swatchColors[i].r, _swatchColors[i].g, _swatchColors[i].b, 1F);
+      for (int i = 0; i < swatchColors.Length; i++) {
+        swatchColors[i] = new Color(swatchColors[i].r, swatchColors[i].g, swatchColors[i].b, 1F);
       }
     }
 
     protected void Awake() {
-      Debug.Assert(_swatches.Length == _swatchColors.Length, "[ColorPalette] Registered swatches must be the same size as registered swatch colors!");
+      Debug.Assert(swatches.Length == swatchColors.Length, "[ColorPalette] Registered swatches must be the same size as registered swatch colors!");
 
-      for (int i = 0; i < _swatches.Length; i++) {
-        _swatches[i].SetColor(_swatchColors[i]);
-        _swatches[i].SetPalette(this);
-        _swatches[i].SetMode(_swatchMode);
+      for (int i = 0; i < swatches.Length; i++) {
+        swatches[i].SetColor(swatchColors[i]);
+        swatches[i].SetPalette(this);
+        swatches[i].SetMode(swatchMode);
+      }
+    }
+
+    protected void Update() {
+      var receivingColorStateEnabled = swatchMode == ColorSwatch.SwatchMode.ReceiveColor;
+
+      if (enabledWhenReceivingColor != null) {
+        enabledWhenReceivingColor.SetActive(receivingColorStateEnabled);
       }
     }
 
     public void SetSwatchMode(ColorSwatch.SwatchMode toSet) {
-      for (int i = 0; i < _swatchColors.Length; i++) {
-        _swatches[i].SetMode(toSet);
+      swatchMode = toSet;
+      for (int i = 0; i < swatchColors.Length; i++) {
+        swatches[i].SetMode(toSet);
       }
     }
 

@@ -62,7 +62,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _LitCoeff: 1
+    - _LitCoeff: 0.75
     - _Metallic: 0
     - _Mode: 0
     - _ModelWidth: 0

@@ -286,7 +286,7 @@ float4 evalProximityColor(float3 worldPos, sampler2D proximityGradient, float4 p
   float sqrDist = Leap_SqrDistToHand(worldPos);
   float eval = saturate(Leap_Map(sqrDist, proximityMapping.x * proximityMapping.x,
                                           proximityMapping.y * proximityMapping.y,
-                                          proximityMapping.z, proximityMapping.w));
+                                          proximityMapping.z,  proximityMapping.w));
   return tex2D(proximityGradient, float2(eval, 0));
 }
 

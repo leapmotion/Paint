@@ -35,7 +35,8 @@ namespace Leap.Unity.Drawing {
       OnSend(new StrokePoint() {
         pose = data,
         color = color,
-        radius = size
+        radius = size,
+        temp_refFrame = Matrix4x4.identity
       });
     }
 

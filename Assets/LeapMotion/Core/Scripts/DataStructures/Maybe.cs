@@ -157,6 +157,35 @@ namespace Leap.Unity {
       }
     }
 
+    /// <summary>
+    /// If this Maybe has a value, returns the value, otherwise returns the argument
+    /// custom default value.
+    /// </summary>
+    public T ValueOr(T customDefault) {
+      if (hasValue) {
+        return _t;
+      }
+      else {
+        return customDefault;
+      }
+    }
+
+    /// <summary>
+    /// Returns this Maybe if it has a value, otherwise returns the argument Maybe value.
+    /// Useful for overlaying multiple Maybe values.
+    /// For example, if I want to overlay a "maybe override font" variable with
+    /// another "maybe override font" variable, I can call:
+    /// this.font = other.font.ValueOr(this.font);
+    /// </summary>
+    public Maybe<T> ValueOr(Maybe<T> maybeCustomDefault) {
+      if (hasValue) {
+        return Some(_t);
+      }
+      else {
+        return maybeCustomDefault;
+      }
+    }
+
     public QueryWrapper<T, Maybe<T>.MaybeOp> Query() {
       return new QueryWrapper<T, MaybeOp>(new MaybeOp(this));
     }

@@ -121,7 +121,8 @@ namespace Leap.Unity {
     #region RuntimeGizmoDrawer Utils
 
     public static void DrawPose(this RuntimeGizmos.RuntimeGizmoDrawer drawer,
-                                Pose pose, float radius = 0.10f) {
+                                Pose pose, float radius = 0.10f,
+                                bool drawCube = false) {
       drawer.PushMatrix();
 
       drawer.matrix = Matrix4x4.TRS(pose.position, pose.rotation, Vector3.one);
@@ -129,7 +130,9 @@ namespace Leap.Unity {
       var origColor = drawer.color;
 
       //drawer.DrawWireSphere(Vector3.zero, radius);
-      drawer.DrawCube(Vector3.zero, Vector3.one * radius * 0.3f);
+      if (drawCube) {
+        drawer.DrawCube(Vector3.zero, Vector3.one * radius * 0.3f);
+      }
       drawer.DrawPosition(Vector3.zero, radius * 2);
 
       drawer.color = origColor;
@@ -166,6 +169,17 @@ namespace Leap.Unity {
 
     public static Color Lerp(this Color a, Color b, float t) {
       return Color.Lerp(a, b, t);
+    }
+
+    #endregion
+
+    #region Nullable Utils
+
+    public static T? ValueOr<T>(this T? foo, T? other) where T : struct {
+      if (foo.HasValue) {
+        return foo;
+      }
+      return other;
     }
 
     #endregion

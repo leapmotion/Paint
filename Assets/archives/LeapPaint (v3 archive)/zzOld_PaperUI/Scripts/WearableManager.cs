@@ -16,10 +16,8 @@ namespace Leap.Unity.LeapPaint_v3 {
     [Header("Hand State Tracking")]
     public HandModelBase _leftHand;
     public PalmDirectionDetector _leftPalmFacingDetector;
-    public PinchDetector _leftPinchDetector;
     public HandModelBase _rightHand;
     public PalmDirectionDetector _rightPalmFacingDetector;
-    public PinchDetector _rightPinchDetector;
 
     [Header("Pinch Grabbable Wearables")]
     public float _pinchGrabDistance = 0.05F;
@@ -33,23 +31,10 @@ namespace Leap.Unity.LeapPaint_v3 {
     private bool _isLeftHandTracked;
     private bool _isRightHandTracked;
     private bool _isLeftPalmFacingCamera;
-    private bool _isRightPalmFacingCamera;
+    //private bool _isRightPalmFacingCamera;
     private Chirality _lastHandFacingCamera;
-  
-    // Wearable state tracking
-    [HideInInspector]
-    public IWearable _leftGrabbedWearable = null;
-    private bool _isLeftHandGrabbing = false;
-    [HideInInspector]
-    public IWearable _rightGrabbedWearable = null;
-    private bool _isRightHandGrabbing = false;
 
     protected void Start() {
-      _leftPinchDetector.OnActivate.AddListener(OnLeftPinchDetected);
-      _leftPinchDetector.OnDeactivate.AddListener(OnLeftPinchEnded);
-      _rightPinchDetector.OnActivate.AddListener(OnRightPinchDetected);
-      _rightPinchDetector.OnDeactivate.AddListener(OnRightPinchEnded);
-
       for (int i = 0; i < _wearableUIs.Length; i++) {
         _wearables.Add(_wearableUIs[i]);
       }
@@ -93,14 +78,18 @@ namespace Leap.Unity.LeapPaint_v3 {
         _isLeftPalmFacingCamera = false;
       }
 
-      if (_rightPalmFacingDetector.IsActive && !_isRightPalmFacingCamera) {
-        OnRightHandBeganFacingCamera();
-        _isRightPalmFacingCamera = true;
-      }
-      else if (!_rightPalmFacingDetector.IsActive && _isRightPalmFacingCamera) {
-        OnRightHandStoppedFacingCamera();
-        _isRightPalmFacingCamera = false;
-      }
+      //if (_rightPalmFacingDetector.IsActive && !_isRightPalmFacingCamera) {
+        // Disable right-hand palm data to prevent the menu from appearing
+        // on the right hand. -Nick 02/21/2018
+        //OnRightHandBeganFacingCamera();
+        //_isRightPalmFacingCamera = true;
+      //}
+      //else if (!_rightPalmFacingDetector.IsActive && _isRightPalmFacingCamera) {
+        // Disable right-hand palm data to prevent the menu from appearing
+        // on the right hand. -Nick 02/21/2018
+        //OnRightHandStoppedFacingCamera();
+        //_isRightPalmFacingCamera = false;
+      //}
     }
 
     private void OnLeftHandBeganTracking() {
@@ -145,42 +134,6 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
     }
 
-    private void OnLeftPinchDetected() {
-      for (int i = 0; i < _wearables.Count; i++) {
-        _wearables[i].NotifyPinchChanged(true, Chirality.Left);
-      }
-      TryGrab(EvaluatePossiblePinch(_leftPinchDetector), Chirality.Left);
-    }
-
-    private void OnLeftPinchEnded() {
-      for (int i = 0; i < _wearables.Count; i++) {
-        _wearables[i].NotifyPinchChanged(false, Chirality.Left);
-      }
-      if (_leftGrabbedWearable != null) {
-        OnGrabEnd();
-        _leftGrabbedWearable.ReleaseFromGrab(_leftPinchDetector.transform);
-        _isLeftHandGrabbing = false;
-      }
-    }
-
-    private void OnRightPinchDetected() {
-      for (int i = 0; i < _wearables.Count; i++) {
-        _wearables[i].NotifyPinchChanged(true, Chirality.Right);
-      }
-      TryGrab(EvaluatePossiblePinch(_rightPinchDetector), Chirality.Right);
-    }
-
-    private void OnRightPinchEnded() {
-      for (int i = 0; i < _wearables.Count; i++) {
-        _wearables[i].NotifyPinchChanged(false, Chirality.Right);
-      }
-      if (_rightGrabbedWearable != null) {
-        OnGrabEnd();
-        _rightGrabbedWearable.ReleaseFromGrab(_rightPinchDetector.transform);
-        _isRightHandGrabbing = false;
-      }
-    }
-
     /// <summary> Returns the closest WearableUI to the PinchDetector, or null of they are all further than _pinchGrabDistance.</summary>
     private IWearable EvaluatePossiblePinch(PinchDetector pinchToTest) {
       IWearable closestWearable = null;
@@ -198,47 +151,8 @@ namespace Leap.Unity.LeapPaint_v3 {
       return closestWearable;
     }
 
-    private void TryGrab(IWearable toGrab, Chirality whichHand) {
-      if (toGrab == null) return;
-      OnGrabBegin();
-      if (toGrab.BeGrabbedBy((whichHand == Chirality.Left ? _leftPinchDetector.transform : _rightPinchDetector.transform))) {
-        if (whichHand == Chirality.Left) {
-          _leftGrabbedWearable = toGrab;
-          _isLeftHandGrabbing = true;
-          if (_rightGrabbedWearable == _leftGrabbedWearable) {
-            _rightGrabbedWearable = null;
-          }
-        }
-        else {
-          _rightGrabbedWearable = toGrab;
-          _isRightHandGrabbing = true;
-          if (_leftGrabbedWearable == _rightGrabbedWearable) {
-            _leftGrabbedWearable = null;
-          }
-        }
-      }
-    }
-
-    public IWearable LastGrabbedByLeftHand() {
-      return _leftGrabbedWearable;
-    }
-
-    public IWearable LastGrabbedByRightHand() {
-      return _rightGrabbedWearable;
-    }
-
     public Transform GetCenterEyeAnchor() {
       return _centerEyeAnchor;
-    }
-
-    public bool IsPinchDetectorGrabbing(PinchDetector toTest) {
-      if (toTest == _leftPinchDetector && _isLeftHandGrabbing) {
-        return true;
-      }
-      else if (toTest == _rightPinchDetector && _isRightHandGrabbing) {
-        return true;
-      }
-      return false;
     }
 
     public Vector3 ValidateTargetWorkstationPosition(Vector3 targetPosition, WearableUI workstation) {

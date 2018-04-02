@@ -4,6 +4,9 @@ using System.Collections;
 using Leap.Unity;
 using Leap.Unity.RuntimeGizmos;
 using Leap.Unity.Animation;
+using Leap.Unity.Interaction;
+using Leap.Unity.Attributes;
+using Leap.Unity.Query;
 
 namespace Leap.Unity.LeapPaint_v3 {
   
@@ -14,6 +17,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     [Header("Wearable UI")]
     public MeshRenderer _appearanceExplosionRenderer;
+    public InteractionBehaviour _intObj;
     public Collider _marbleCollider;
     public MeshRenderer _marbleRenderer;
     public SoundEffect _activateEffect;
@@ -21,6 +25,13 @@ namespace Leap.Unity.LeapPaint_v3 {
     public SoundEffect _throwEffect;
     public float _maxVolumeVelocity = 1;
     public SoundEffect _returnEffect;
+
+    [SerializeField]
+    [ImplementsInterface(typeof(IPropertySwitch))]
+    private MonoBehaviour _returnToAnchorSwitch;
+    public IPropertySwitch returnToAnchorSwitch {
+      get { return _returnToAnchorSwitch as IPropertySwitch; }
+    }
 
     private WearableManager _manager;
     private WearableAnchor _wearableAnchor;
@@ -38,6 +49,20 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     private bool _isDisplayingOnAnyHand = false;
+
+    protected override void OnEnable() {
+      base.OnEnable();
+
+      if (Application.isPlaying) {
+        initGraspAndRelease();
+      }
+    }
+
+    protected virtual void OnDisable() {
+      if (Application.isPlaying) {
+        teardownGraspAndRelease();
+      }
+    }
 
     protected virtual void Start() {
       InitAppearVanish();
@@ -81,11 +106,12 @@ namespace Leap.Unity.LeapPaint_v3 {
           else if (_isRightHandTracked && _isRightPalmFacingCamera && !_isRightHandPinching) {
             ScheduleAppear(Chirality.Right);
           }
-          else if (_anchorTransform != _grabbingTransform) {
-            ScheduleVanish();
-          }
+          // Not sure what this was for. TODO: If there's a visiblity bug, investigate
+          //else if (_anchorTransform != _grabbingTransform) {
+          //  ScheduleVanish();
+          //}
         }
-        else if (_grabbingTransform != null) {
+        else if (isGrasped) {
           // If currently grabbed, don't change visibility.
         }
         else {
@@ -99,21 +125,24 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
     }
 
-    private void RefreshAnchorState() {
-      if (_grabbingTransform == null) {
-        bool returningToAnchor = false;
-        if (_anchorTransform != _wearableAnchor.transform) {
-          RefreshVisibility();
-          returningToAnchor = true;
-        }
-        _anchorTransform = _wearableAnchor.transform;
-        if (returningToAnchor) {
-          DoOnReturnedToAnchor();
-        }
+    public void MoveBackToAnchor() {
+      RefreshVisibility();
+
+      _marbleReady = false;
+      _marbleCooldownTimer = MARBLE_COOLDOWN * 10f;
+
+      _isWorkstation = false;
+
+      // this should be redundant, it no longer changes
+      _anchorTransform = _wearableAnchor.transform;
+
+      AttachToAnchor();
+
+      if (returnToAnchorSwitch != null && returnToAnchorSwitch.GetIsOnOrTurningOn()) {
+        returnToAnchorSwitch.Off();
       }
-      else {
-        _anchorTransform = _grabbingTransform;
-      }
+
+      DoOnReturnedToAnchor();
     }
 
     protected virtual void DoOnAnchorChiralityChanged(Chirality whichHand) {
@@ -272,9 +301,9 @@ namespace Leap.Unity.LeapPaint_v3 {
     private Pulsator _marblePulsator;
 
     private void InitMarbleTouch() {
-      PassTriggerEvents triggerEvents = _marbleCollider.GetComponent<PassTriggerEvents>();
+      IndexUIActivator_PassTriggerEvents triggerEvents = _marbleCollider.GetComponent<IndexUIActivator_PassTriggerEvents>();
       if (triggerEvents == null) {
-        triggerEvents = _marbleCollider.gameObject.AddComponent<PassTriggerEvents>();
+        triggerEvents = _marbleCollider.gameObject.AddComponent<IndexUIActivator_PassTriggerEvents>();
       }
       triggerEvents.PassedOnTriggerEnter.AddListener(NotifyFingerEnterMarble);
       triggerEvents.PassedOnTriggerExit.AddListener(NotifyFingerExitMarble);
@@ -291,7 +320,7 @@ namespace Leap.Unity.LeapPaint_v3 {
         _marbleDepthCollider.radius = 0.96F;
         _marbleDepthCollider.height = 2.88F;
         _marbleDepthCollider.transform.localPosition = new Vector3(0F, 0F, -1.144F);
-        triggerEvents = depthColliderObj.AddComponent<PassTriggerEvents>();
+        triggerEvents = depthColliderObj.AddComponent<IndexUIActivator_PassTriggerEvents>();
         triggerEvents.PassedOnTriggerEnter.AddListener(NotifyFingerEnterDepthCollider);
         triggerEvents.PassedOnTriggerExit.AddListener(NotifyFingerExitDepthCollider);
       }
@@ -373,23 +402,39 @@ namespace Leap.Unity.LeapPaint_v3 {
     private const float VELOCITY_DEPENDENT_RETURN_TO_ANCHOR_DISTANCE = 0.2F;
     private const float OVERRIDE_VELOCITY_RETURN_TO_ANCHOR_DISTANCE = 0.05F;
 
-    private Transform _grabbingTransform = null;
-
     private bool _hasGrabVelocity = false;
     private int _framesGrabbed = 0;
     private Vector3 _curPosition;
     private Vector3 _lastPosition;
 
-    protected bool IsGrabbed {
-      get { return _grabbingTransform != null; }
+    private bool _lastGraspingHandWasLeft = false;
+
+    protected bool isGrasped {
+      get { return _intObj.isGrasped; }
     }
 
+    // TODO: upgrade note: used by pinch grabbing, probably should delete.
     public bool CanBeGrabbed() {
       return _isDisplayingOnAnyHand;
     }
 
+    private void initGraspAndRelease() {
+      _intObj.OnGraspBegin -= DoOnGrabbed;
+      _intObj.OnGraspBegin += DoOnGrabbed;
+      _intObj.OnGraspEnd -= DoOnReleasedFromGrab;
+      _intObj.OnGraspEnd += DoOnReleasedFromGrab;
+      _intObj.OnGraspStay -= DoWhileGrasped;
+      _intObj.OnGraspStay += DoWhileGrasped;
+    }
+
+    private void teardownGraspAndRelease() {
+      _intObj.OnGraspBegin -= DoOnGrabbed;
+      _intObj.OnGraspEnd -= DoOnReleasedFromGrab;
+      _intObj.OnGraspStay -= DoWhileGrasped;
+    }
+
     protected void FixedGrabUpdate() {
-      if (_grabbingTransform != null) {
+      if (isGrasped) {
         _framesGrabbed += 1;
         _lastPosition = _curPosition;
         _curPosition = this.transform.position;
@@ -407,36 +452,20 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
     }
 
-    public bool BeGrabbedBy(Transform grabber) {
-      if (_grabbingTransform != null) {
-
-      }
-      _grabbingTransform = grabber;
-      _isAttached = true;
-      _isWorkstation = false;
-      RefreshAnchorState();
-      DoOnGrabbed();
-      return true;
-    }
-
     protected virtual void DoOnGrabbed() {
+      ReleaseFromAnchor();
+
+      if (returnToAnchorSwitch != null && returnToAnchorSwitch.GetIsOnOrTurningOn()) {
+        returnToAnchorSwitch.OffNow();
+      }
+      
+      _isWorkstation = false;
+
       _grabEffect.PlayOnTransform(transform);
     }
 
-    public void ReleaseFromGrab(Transform grabber) {
-      bool doOnReleased = false;
-      if (_grabbingTransform != null && _grabbingTransform == grabber) {
-        doOnReleased = true;
-        _grabbingTransform = null;
-
-        // Prevent the marble from activating hand UI shortly after release
-        _marbleReady = false;
-        _marbleCooldownTimer = MARBLE_COOLDOWN;
-      }
-
-      if (doOnReleased) {
-        DoOnReleasedFromGrab();
-      }
+    private void DoWhileGrasped() {
+      _lastGraspingHandWasLeft = _intObj.graspingHands.Query().First().isLeft;
     }
 
     private void DoOnReleasedFromGrab() {
@@ -446,19 +475,33 @@ namespace Leap.Unity.LeapPaint_v3 {
         ActivateWorkstationTransition();
       }
       else {
-        RefreshAnchorState();
+        _marbleReady = false;
+        _marbleCooldownTimer = MARBLE_COOLDOWN * 2f;
+        MoveBackToAnchor();
       }
     }
 
     private bool EvaluateShouldActivateWorkstation() {
       bool shouldActivateWorkstation = false;
 
-      if ((_wearableAnchor._chirality == Chirality.Left
-        && (WearableUI)_manager.LastGrabbedByLeftHand() == this)
-       || (_wearableAnchor._chirality == Chirality.Right
-        && (WearableUI)_manager.LastGrabbedByRightHand() == this)) {
-        return true;
+      // Old logic: When the menu could switch hands,
+      // a release from the hand that contains the menu can NEVER re-dock, so always
+      // return true.
+      // Commented out because the menu can't switch and also relies on old pinch logic.
+      {
+        //if ((_wearableAnchor._chirality == Chirality.Left
+        //     && (WearableUI)_manager.LastGrabbedByLeftHand() == this)
+        //    || (_wearableAnchor._chirality == Chirality.Right
+        //        && (WearableUI)_manager.LastGrabbedByRightHand() == this)) {
+        //  return true;
+        //}
       }
+      // New logic: Should always open workstation if the widget was release from the
+      // left hand.
+      if (_lastGraspingHandWasLeft) return true;
+
+      // We also can't return to our anchor if the anchor isn't visible.
+      if (!_wearableAnchor.IsDisplaying) return true;
 
       if ((_wearableAnchor._chirality == Chirality.Left && _isLeftHandTracked)
        || (_wearableAnchor._chirality == Chirality.Right && _isRightHandTracked)) {
@@ -679,6 +722,10 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected virtual void DoOnMovementToWorkstationBegan() {
+      if (returnToAnchorSwitch != null) {
+        returnToAnchorSwitch.On();
+      }
+
       _isAttached = false;
     }
 

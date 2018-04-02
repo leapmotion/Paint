@@ -4,6 +4,7 @@ using Leap.Unity.RuntimeGizmos;
 using Leap.Unity;
 using Leap.Unity.Attributes;
 using Leap.Unity.Gestures;
+using Leap.Unity.Infix;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
@@ -155,15 +156,21 @@ namespace Leap.Unity.LeapPaint_v3 {
         }
       }
 
+      // Update _minRadius and _maxRadius based on PinchGesture settings.
+      if (pinchMode == PinchDetectionMode.PinchGesture) {
+        _minRadius = pinchGesture.pinchActivateDistance / 2f;
+        _maxRadius = pinchGesture.pinchDeactivateDistance;
+      }
+
       // Calc radius
-      float pinchRadiusTarget = indexThumbDist / 2f;
-      if (pinchMode == PinchDetectionMode.PinchDetector) {
-        _radius = Mathf.Max(_minRadius, pinchRadiusTarget);
+      float pinchRadiusTarget = indexThumbDist / 2f * 0.8f;
+      if (pinchMode == PinchDetectionMode.PinchGesture) {
+        if (!pinchGesture.isEligible) {
+          pinchRadiusTarget = _maxRadius;
+        }
       }
-      else {
-        pinchRadiusTarget = pinchGesture.isActive ? _minRadius : _maxRadius;
-        _radius = Mathf.Lerp(_radius, pinchRadiusTarget, 20f * Time.deltaTime);
-      }
+      pinchRadiusTarget = pinchRadiusTarget.Clamped(_minRadius, _maxRadius);
+      _radius = Mathf.Lerp(_radius, pinchRadiusTarget, 20f * Time.deltaTime);
 
       // Calc fade
       float cursorAlpha = _radius.Map(_minRadius, _maxRadius, 1F, 0F);

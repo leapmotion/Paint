@@ -27,7 +27,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnMarbleActivated() {
       base.DoOnMarbleActivated();
 
-      if (!IsGrabbed && !IsWorkstation) {
+      if (!isGrasped && !IsWorkstation) {
         if (!_brushControlsEmerged) {
           _brushControlsEmergeable.TryEmerge(IsWorkstation);
           _brushControlsEmerged = true;
@@ -43,8 +43,8 @@ namespace Leap.Unity.LeapPaint_v3 {
       base.DoOnAnchorChiralityChanged(newChirality);
 
       if (newChirality != DisplayingChirality) {
-        _brushControlsMoveable._A.localPosition = new Vector3(-_brushControlsMoveable._A.localPosition.x, _brushControlsMoveable._A.localPosition.y, _brushControlsMoveable._A.localPosition.z);
-        _brushControlsMoveable._A.rotation = MirrorUtil.GetMirroredRotation(_brushControlsMoveable._A.rotation, this.transform);
+        _brushControlsMoveable.A.localPosition = new Vector3(-_brushControlsMoveable.A.localPosition.x, _brushControlsMoveable.A.localPosition.y, _brushControlsMoveable.A.localPosition.z);
+        _brushControlsMoveable.A.rotation = MirrorUtil.GetMirroredRotation(_brushControlsMoveable.A.rotation, this.transform);
         if (!IsWorkstation) {
           _brushControlsMoveable.MoveToA();
         }
@@ -70,7 +70,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       _brushControlsMoveable.MoveToB();
 
-      if (!IsGrabbed) {
+      if (!isGrasped) {
         _brushControlsEmergeable.TryEmerge(IsWorkstation);
         _brushControlsEmerged = true;
         _brushWorkstationEmergeable.TryEmerge(IsWorkstation);
@@ -83,6 +83,10 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     protected override void DoOnReturnedToAnchor() {
       base.DoOnReturnedToAnchor();
+      
+      _brushControlsEmergeable.TryVanishNow(IsWorkstation);
+      _brushControlsEmerged = false;
+      _brushWorkstationEmergeable.TryVanishNow(IsWorkstation);
 
       _brushControlsMoveable.MoveToA();
     }

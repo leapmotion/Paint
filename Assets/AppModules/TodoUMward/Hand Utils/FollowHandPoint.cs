@@ -45,14 +45,19 @@ namespace Leap.Unity.Attachments {
     private bool _isHandTracked = false;
     public bool isHandTracked { get { return _isHandTracked; } }
 
-    [Header("Pose Stream Offset")]
+    [Header("Pose Stream")]
 
+    [Tooltip("Follow Hand Point implements IStream<Pose>; It will stream data as long as "
+          + "the component is enabled, the hand is tracked, and this option is enabled.")]
+    public bool doPoseStream = true;
+
+    [DisableIf("doPoseStream", isEqualTo: false)]
     public bool usePoseStreamOffset = false;
 
-    [DisableIf("usePoseStreamOffset", isEqualTo: false)]
+    [DisableIfAny("usePoseStreamOffset", "doPoseStream", areEqualTo: false)]
     public Transform poseStreamOffsetSource = null;
 
-    [DisableIf("usePoseStreamOffset", isEqualTo: false)]
+    [Disable]
     public Pose poseStreamOffset = Pose.identity;
 
     private bool _isStreamOpen = false;
@@ -95,14 +100,11 @@ namespace Leap.Unity.Attachments {
 
       var hand = frame.Hands.Query()
                             .FirstOrDefault(h => h.IsLeft == (whichHand == Chirality.Left));
+
+      bool shouldStream = false;
+      Pose streamPose = Pose.identity;
       
       if (hand != null) {
-        if (!_isHandTracked && Application.isPlaying) {
-          // Hand just began tracking, open Pose stream.
-          OnOpen();
-          _isStreamOpen = true;
-        }
-
         _isHandTracked = true;
 
         if (enabled && gameObject.activeInHierarchy) {
@@ -122,31 +124,34 @@ namespace Leap.Unity.Attachments {
           this.transform.position = pointPosition;
           this.transform.rotation = pointRotation;
 
-          var streamPose = new Pose(pointPosition, pointRotation);
+          streamPose = new Pose(pointPosition, pointRotation);
           var streamOffset = Pose.identity;
           if (usePoseStreamOffset && poseStreamOffsetSource != null) {
             streamOffset = poseStreamOffsetSource.transform.ToWorldPose()
                              .From(streamPose);
           }
-
-          if (Application.isPlaying) {
-            if (!_isStreamOpen) {
-              OnOpen();
-              _isStreamOpen = true;
-            }
-            OnSend(streamPose.Then(streamOffset));
-          }
+          streamPose = streamPose.Then(streamOffset);
+          shouldStream = true;
         }
       }
       else {
-        if (_isHandTracked && Application.isPlaying && _isStreamOpen) {
-          // Hand just stopped tracking; close Pose stream.
-          OnClose();
-
-          _isStreamOpen = false;
-        }
-
         _isHandTracked = false;
+      }
+
+      // Pose Stream data.
+      shouldStream &= doPoseStream;
+      shouldStream &= Application.isPlaying;
+      shouldStream &= this.enabled && gameObject.activeInHierarchy;
+      if (!shouldStream && _isStreamOpen) {
+        OnClose();
+        _isStreamOpen = false;
+      }
+      if (shouldStream && !_isStreamOpen) {
+        OnOpen();
+        _isStreamOpen = true;
+      }
+      if (shouldStream) {
+        OnSend(streamPose);
       }
     }
 

@@ -60,7 +60,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnMarbleActivated() {
       base.DoOnMarbleActivated();
 
-      if (!IsGrabbed && !IsWorkstation) {
+      if (!isGrasped && !IsWorkstation) {
         if (!_primaryPaletteEmergeable.IsEmergedOrEmerging) {
           _primaryPaletteEmergeable.TryEmerge(IsWorkstation);
         }
@@ -74,8 +74,8 @@ namespace Leap.Unity.LeapPaint_v3 {
       base.DoOnAnchorChiralityChanged(newChirality);
 
       if (newChirality != DisplayingChirality) {
-        _primaryPaletteMoveable._A.localPosition = new Vector3(-_primaryPaletteMoveable._A.localPosition.x, _primaryPaletteMoveable._A.localPosition.y, _primaryPaletteMoveable._A.localPosition.z);
-        _primaryPaletteMoveable._A.rotation = MirrorUtil.GetMirroredRotation(_primaryPaletteMoveable._A.rotation, this.transform);
+        _primaryPaletteMoveable.A.localPosition = new Vector3(-_primaryPaletteMoveable.A.localPosition.x, _primaryPaletteMoveable.A.localPosition.y, _primaryPaletteMoveable.A.localPosition.z);
+        _primaryPaletteMoveable.A.rotation = MirrorUtil.GetMirroredRotation(_primaryPaletteMoveable.A.rotation, this.transform);
         if (!IsWorkstation) {
           _primaryPaletteMoveable.MoveToA();
         }
@@ -102,7 +102,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     protected override void DoOnMovementToWorkstationFinished() {
       base.DoOnMovementToWorkstationFinished();
 
-      if (!IsGrabbed) {
+      if (!isGrasped) {
         _primaryPaletteEmergeable.TryEmerge(IsWorkstation);
         for (int i = 0; i < _workstationEmergeables.Length; i++) {
           _workstationEmergeables[i].TryEmerge(IsWorkstation);
@@ -112,6 +112,11 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     protected override void DoOnReturnedToAnchor() {
       base.DoOnReturnedToAnchor();
+
+      _primaryPaletteEmergeable.TryVanishNow(IsWorkstation);
+      for (int i = 0; i < _workstationEmergeables.Length; i++) {
+        _workstationEmergeables[i].TryVanishNow(IsWorkstation);
+      }
 
       _primaryPaletteMoveable.MoveToA();
     }

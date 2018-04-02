@@ -158,6 +158,9 @@ namespace Leap.Unity.Streams {
       }
       #endif
     }
+    
+    /// <summary> Debug wire flash period in seconds. </summary>
+    private static float DEBUG_WIRE_FLASH_PERIOD = 0.3f;
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
       if (!this.enabled || !this.gameObject.activeInHierarchy) return;
@@ -165,6 +168,13 @@ namespace Leap.Unity.Streams {
       if (_stream != null && _receiver != null) {
         // No wire to render if the stream and receiver components are on the same object.
         if (_stream.gameObject == _receiver.gameObject) return;
+
+        float time = 0f;
+        if (Application.isPlaying) {
+          time = Time.time;
+        }
+        var flashAmount = (Mathf.Sin((time % DEBUG_WIRE_FLASH_PERIOD) * Mathf.PI * 2)
+                         + 1) / 2f;
 
         var a = _stream.transform.position;
         var b = _receiver.transform.position;
@@ -175,7 +185,8 @@ namespace Leap.Unity.Streams {
         }
 
         if (debugWire) {
-          drawer.color = LeapColor.magenta.Lerp(LeapColor.white, 0.4f);
+          drawer.color = LeapColor.magenta.Lerp(LeapColor.white, 0.4f)
+                                  .WithAlpha(flashAmount);
           drawer.DrawDashedLine(a, b, segmentsPerMeter: 128);
         }
       }

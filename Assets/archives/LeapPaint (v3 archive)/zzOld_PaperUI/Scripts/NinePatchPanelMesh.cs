@@ -22,18 +22,20 @@ public class NinePatchPanelMesh : MonoBehaviour {
   public float _edgeUvSize;
 
   private MeshFilter _meshFilter;
-
+  
   protected virtual void OnValidate() {
+    #if UNITY_EDITOR
     _meshFilter = GetComponent<MeshFilter>();
-    //RefreshMesh();
+    UnityEditor.EditorApplication.delayCall += refreshMesh;
+    #endif
   }
 
   protected virtual void Start() {
     _meshFilter = GetComponent<MeshFilter>();
-    RefreshMesh();
+    refreshMesh();
   }
 
-  private void RefreshMesh() {
+  private void refreshMesh() {
     Mesh mesh = _meshFilter.sharedMesh;
     if (mesh == null) {
       _meshFilter.sharedMesh = mesh = new Mesh();

@@ -125,6 +125,15 @@ namespace Leap.Unity.Animation {
 
     #endregion
 
+    public void Toggle() {
+      if (GetIsOffOrTurningOff()) {
+        this.AutoOn();
+      }
+      else {
+        this.AutoOff();
+      }
+    }
+
   }
 
 }

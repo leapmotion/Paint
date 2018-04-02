@@ -1,4 +1,5 @@
-﻿using Leap.Unity.RuntimeGizmos;
+﻿using Leap.Unity.LemurUI;
+using Leap.Unity.RuntimeGizmos;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,9 +12,35 @@ namespace Leap.Unity {
 
     public const string PING_OBJECT_NAME = "__Debug Ping Runner__";
 
-    public const float DEFAULT_PING_RADIUS = 0.10f;
-
     public const float PING_DURATION = 0.25f;
+
+    private static DebugPing s_instance = null;
+
+    private static void ensurePingRunnerExists() {
+      if (s_instance == null) {
+        s_instance = Utils.FindObjectInHierarchy<DebugPing>();
+
+        if (s_instance == null) {
+          s_instance = new GameObject(PING_OBJECT_NAME).AddComponent<DebugPing>();
+        }
+      }
+    }
+
+    private void Update() {
+      updatePings();
+      updateLines();
+      updateLabels();
+    }
+
+    public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+      drawPingGizmos(drawer);
+      drawLineGizmos(drawer);
+      drawLabelGizmos(drawer);
+    }
+
+    #region DebugPing.Ping
+
+    public const float DEFAULT_PING_RADIUS = 0.10f;
 
     public static AnimationCurve pingAnimCurve = DefaultCurve.SigmoidUp;
 
@@ -105,9 +132,9 @@ namespace Leap.Unity {
       Ping(
         worldPosition,
         Vector3.zero,
-        color:          color,
+        color: color,
         sizeMultiplier: sizeMultiplier,
-        animType:       animType
+        animType: animType
       );
     }
 
@@ -189,25 +216,13 @@ namespace Leap.Unity {
 
     #endregion
 
-    private static DebugPing s_instance = null;
-
-    private static void ensurePingRunnerExists() {
-      if (s_instance == null) {
-        s_instance = Utils.FindObjectInHierarchy<DebugPing>();
-
-        if (s_instance == null) {
-          s_instance = new GameObject(PING_OBJECT_NAME).AddComponent<DebugPing>();
-        }
-      }
-    }
-
     private List<PingState> _activePings = new List<PingState>();
 
     public void AddPing(PingState ping) {
       _activePings.Add(ping);
     }
 
-    void Update() {
+    private void updatePings() {
       var indicesToRemove = Pool<List<int>>.Spawn();
       try {
         for (int i = 0; i < _activePings.Count; i++) {
@@ -232,7 +247,7 @@ namespace Leap.Unity {
       }
     }
 
-    public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+    public void drawPingGizmos(RuntimeGizmoDrawer drawer) {
       Color pingColor;
       float pingSize;
       float animTime;
@@ -246,7 +261,7 @@ namespace Leap.Unity {
         else {
           pingPos0 = ping.position0;
         }
-        
+
         if (ping.position1Func != null) {
           pingPos1 = ping.position1Func();
         }
@@ -275,7 +290,7 @@ namespace Leap.Unity {
             pingColor = ping.color.WithAlpha(1f - animTime);
             break;
         }
-        
+
 
         drawer.color = pingColor;
 
@@ -294,7 +309,207 @@ namespace Leap.Unity {
       }
     }
 
+    #endregion
+
+    #region DebugPing.Line
+
+    public abstract class PingObject {
+      public Color color = LeapColor.white;
+      public float time = 0f;
+      public float lifespan = PING_DURATION;
+
+      public abstract void Draw(RuntimeGizmoDrawer drawer);
+    }
+
+    public class PingLine : PingObject {
+      public Func<Vector3> p0Func;
+      public Vector3 p0;
+      public Func<Vector3> p1Func;
+      public Vector3 p1;
+
+      private Vector3 getP0() {
+        if (p0Func != null) return p0Func();
+        return p0;
+      }
+
+      private Vector3 getP1() {
+        if (p1Func != null) return p1Func();
+        return p1;
+      }
+
+      public override void Draw(RuntimeGizmoDrawer drawer) {
+        var p0 = getP0(); var p1 = getP1();
+        drawer.DrawLine(p0, p1);
+      }
+    }
+
+    private static Dictionary<string, PingLine> _pingLines = new Dictionary<string, PingLine>();
+
+    public static void Line(string lineIdentifier, Vector3 p0, Vector3 p1, Color color) {
+      ensurePingRunnerExists();
+
+      PingLine line;
+      if (!_pingLines.TryGetValue(lineIdentifier, out line)) {
+        _pingLines[lineIdentifier] = line = new PingLine();
+      }
+      line.p0 = p0;
+      line.p1 = p1;
+      line.color = color;
+    }
+
+    private static void updateLines() {
+      var identifiersToRemove = Pool<HashSet<string>>.Spawn();
+      try {
+        foreach (var idLinePair in _pingLines) {
+          var curLine = idLinePair.Value;
+
+          curLine.time += Time.deltaTime;
+
+          if (curLine.time > curLine.lifespan) {
+            identifiersToRemove.Add(idLinePair.Key);
+          }
+        }
+        foreach (var idToRemove in identifiersToRemove) {
+          _pingLines.Remove(idToRemove);
+        }
+      }
+      finally {
+        identifiersToRemove.Clear();
+        Pool<HashSet<string>>.Recycle(identifiersToRemove);
+      }
+    }
+
+    private static void drawLineGizmos(RuntimeGizmoDrawer drawer) {
+      var color = drawer.color;
+      foreach (var idLinePair in _pingLines) {
+        if (idLinePair.Value.color != color) {
+          color = drawer.color = idLinePair.Value.color;
+        }
+        idLinePair.Value.Draw(drawer);
+      }
+    }
+
+    #endregion
+
+    #region DebugPing.Label
+
+    public class PingLabel : PingObject {
+      private Label _backingLabel;
+      public Label label {
+        get {
+          if (_backingLabel == null) {
+            _backingLabel = Lemur.Default<Label>();
+          }
+          return _backingLabel;
+        }
+      }
+
+      public string text = "";
+
+      public Func<Vector3> overrideFacingPositionFunc;
+      public Vector3? overrideFacingPosition; // otherwise Camera.main.transform.position
+      private Vector3 getFacingPosition() {
+        if (overrideFacingPositionFunc != null) {
+          return overrideFacingPositionFunc();
+        }
+        else if (overrideFacingPosition.HasValue) {
+          return overrideFacingPosition.Value;
+        }
+        else {
+          var cam = Camera.main;
+          if (cam != null) {
+            return cam.transform.position;
+          }
+          else {
+            return Vector3.zero;
+          }
+        }
+      }
+
+      public Func<Vector3> labeledPositionFunc;
+      public Vector3 labeledPosition;
+      private Vector3 getLabeledPosition() {
+        if (labeledPositionFunc != null) {
+          return labeledPositionFunc();
+        }
+        return labeledPosition;
+      }
+
+      public override void Draw(RuntimeGizmoDrawer drawer) {
+        var facingPosition = getFacingPosition();
+        var labeledPosition = getLabeledPosition();
+
+        // Instead of "drawing", we're going to update the data for the Label,
+        // which handles its own drawing.
+        label.gameObject.transform.position = labeledPosition;
+        label.gameObject.transform.rotation = Utils.FaceTargetWithoutTwist(
+                                                labeledPosition,
+                                                facingPosition,
+                                                flip180: true);
+
+        label.textStyle.Overlay(Style.Color(this.color));
+
+        label.text = this.text;
+      }
+    }
+
+    public static Dictionary<string, PingLabel> _labels
+      = new Dictionary<string, PingLabel>();
+
+    public static void Label(string labelName,
+                             string labelText,
+                             Vector3 labeledPosition,
+                             Color color) {
+      ensurePingRunnerExists();
+
+      PingLabel label;
+      if (!_labels.TryGetValue(labelName, out label)) {
+        _labels[labelName] = label = new PingLabel() {
+          labeledPosition = labeledPosition,
+          color = color,
+          text = labelText
+        };
+      }
+      else {
+        label.labeledPosition = labeledPosition;
+        label.color = color;
+        label.text = labelText;
+      }
+    }
+
+    private static void updateLabels() {
+      var identifiersToRemove = Pool<HashSet<string>>.Spawn();
+      try {
+        foreach (var idLabelPair in _labels) {
+          var curLabel = idLabelPair.Value;
+
+          curLabel.time += Time.deltaTime;
+
+          if (curLabel.time > curLabel.lifespan) {
+            identifiersToRemove.Add(idLabelPair.Key);
+          }
+        }
+        foreach (var idToRemove in identifiersToRemove) {
+          _pingLines.Remove(idToRemove);
+        }
+      }
+      finally {
+        identifiersToRemove.Clear();
+        Pool<HashSet<string>>.Recycle(identifiersToRemove);
+      }
+    }
+
+    private static void drawLabelGizmos(RuntimeGizmoDrawer drawer) {
+      foreach (var idLabelPair in _labels) {
+        idLabelPair.Value.Draw(drawer);
+      }
+    }
+
+    #endregion
+
   }
+
+  #region Drawing Extensions
 
   public static class RuntimeGizmoDrawerExtensions {
 
@@ -327,5 +542,7 @@ namespace Leap.Unity {
     }
 
   }
+
+  #endregion
 
 }

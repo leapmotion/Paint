@@ -14,15 +14,26 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
     public SwatchMode _swatchMode = SwatchMode.AssignColor;
 
+    [Header("Swatch Mode Feedback")]
+    public Transform enableWhenReceivingColor = null;
+
     [Header("Choose one but not both; Graphic overrides the MeshRenderer.")]
     [Tooltip("The swatch's color is stored in this Graphic's color property.")]
     public Graphic _targetColorGraphic;
     [Tooltip("The swatch's color is stored in a Material instance's color property.")]
     public MeshRenderer _targetColorRenderer;
 
+    [Header("SFX")]
     public SoundEffect soundEffect;
 
     private ColorPalette _palette;
+
+    private void Update() {
+      if (enableWhenReceivingColor != null) {
+        enableWhenReceivingColor.gameObject
+          .SetActive(_swatchMode == SwatchMode.ReceiveColor);
+      }
+    }
 
     public void SetColor(Color color) {
       if (_targetColorGraphic != null) {
@@ -84,7 +95,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     private IndexTipColor GetNearestTipColor() {
-      IndexTipColor[] eligibleTipColors = _palette._eligibleIndexTipColors;
+      IndexTipColor[] eligibleTipColors = _palette.eligibleIndexTipColors;
       IndexTipColor nearestIndexTipColor = null;
       for (int i = 0; i < eligibleTipColors.Length; i++) {
         if (nearestIndexTipColor == null

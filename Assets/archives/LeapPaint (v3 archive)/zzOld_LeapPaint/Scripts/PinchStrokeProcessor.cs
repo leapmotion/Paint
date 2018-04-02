@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity.Attributes;
-
+using Leap.Unity.Interaction;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
@@ -23,6 +23,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     public FilterIndexTipColor _colorFilter;
     public FilterApplyThickness _thicknessFilter;
     public AnimationCurve _thicknessCurve;
+    public InteractionHand interactionHand;
 
     [Header("Effect Settings")]
     public SoundEffect _beginEffect;
@@ -108,14 +109,34 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
 
       _inDangerZone = false;
-      for (int i = 0; i < _wearableManager._wearableUIs.Length; i++) {
-        WearableUI marble = _wearableManager._wearableUIs[i];
-        float distance = Vector3.Distance(_paintCursor.transform.position, marble.transform.position);
-        if (!marble._isAttached) {
-          _inDangerZone |= distance < marble.GetWorkstationDangerZoneRadius();
-        }
-        else {
-          _inDangerZone |= marble.IsDisplaying && distance < marble.GetAnchoredDangerZoneRadius();
+      // old shitty danger zone system
+      {
+        //for (int i = 0; i < _wearableManager._wearableUIs.Length; i++) {
+        //  WearableUI marble = _wearableManager._wearableUIs[i];
+        //  float distance = Vector3.Distance(_paintCursor.transform.position, marble.transform.position);
+        //  if (!marble._isAttached) {
+        //    _inDangerZone |= distance < marble.GetWorkstationDangerZoneRadius();
+        //  }
+        //  else {
+        //    _inDangerZone |= marble.IsDisplaying && distance < marble.GetAnchoredDangerZoneRadius();
+        //  }
+        //}
+      }
+      // slightly better system
+      Collider noPaintZoneCollider = null;
+      {
+        var cursorPos = _paintCursor.transform.position;
+        float closestColliderSqrDist = float.PositiveInfinity;
+        foreach (var collider in NoPaintZone.noPaintColliders) {
+          var doesCollide = collider.ClosestPoint(cursorPos).ApproxEquals(cursorPos);
+          if (doesCollide) {
+            var testSqrDist = (collider.transform.position - cursorPos).sqrMagnitude;
+            if (testSqrDist < closestColliderSqrDist) {
+              noPaintZoneCollider = collider;
+              closestColliderSqrDist = testSqrDist;
+            }
+            _inDangerZone = true;
+          }
         }
       }
 
@@ -127,15 +148,21 @@ namespace Leap.Unity.LeapPaint_v3 {
       bool isLoading = _ribbonIO.IsLoading;
 
       bool possibleToActualize = false;
+      bool possibleToActualizeButForDangerZone = false;
       Color drawColor = _paintCursor.Color;
       if (drawColor.a > 0.99F
-        && !_inDangerZone
-        && !_wearableManager.IsPinchDetectorGrabbing(_paintCursor.pinchDetector)
+        && !interactionHand.isGraspingObject
         && !isUIDisplayingOnThisHand
         && _handLifetime > MIN_HAND_DRAWING_LIFETIME
         && !isLoading
         ) {
-        possibleToActualize = true;
+        if (_inDangerZone) {
+          possibleToActualizeButForDangerZone = true;
+          possibleToActualize = false;
+        }
+        else {
+          possibleToActualize = true;
+        }
       }
       _paintCursor.NotifyPossibleToActualize(possibleToActualize);
 
@@ -165,25 +192,36 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       // Drawing State //
 
-      if (_paintCursor.IsTracked && !_strokeProcessor.IsBufferingStroke && !_inDangerZone && possibleToActualize && possibleToBeginActualizing) {
-        BeginStroke();
+      if (_paintCursor.IsTracked && !_strokeProcessor.IsBufferingStroke && possibleToBeginActualizing) {
+        if (possibleToActualize) {
+          BeginStroke();
+        }
+        else if (possibleToActualizeButForDangerZone) {
+          
+        }
       }
 
-      if (_paintCursor.IsPinching && possibleToActualize && possibleToBeginActualizing && !_strokeProcessor.IsActualizingStroke) {
-        StartActualizingStroke();
-        _paintCursor.NotifyIsPainting(true);
+      if (_paintCursor.DidStartPinch && possibleToBeginActualizing && !_strokeProcessor.IsActualizingStroke) {
+        if (possibleToActualize) {
+          StartActualizingStroke();
+          _paintCursor.NotifyIsPainting(true);
+        }
+        else if (possibleToActualizeButForDangerZone) {
+          NoPaintZoneFeedbackDrawer.DrawFailedPaintGizmo(_paintCursor.transform.position,
+                                                         noPaintZoneCollider);
+        }
       }
 
       if (_paintCursor.IsTracked && _strokeProcessor.IsBufferingStroke) {
         UpdateStroke();
       }
 
-      if ((!_paintCursor.IsPinching || _inDangerZone || !possibleToActualize) && _strokeProcessor.IsActualizingStroke) {
+      if ((!_paintCursor.IsTracked || !_paintCursor.IsPinching) && _strokeProcessor.IsActualizingStroke) {
         StopActualizingStroke();
         _paintCursor.NotifyIsPainting(false);
       }
 
-      if ((!_paintCursor.IsTracked || _inDangerZone || !possibleToActualize || (!_strokeProcessor.IsActualizingStroke && !possibleToBeginActualizing)) && _strokeProcessor.IsBufferingStroke) {
+      if ((!_paintCursor.IsTracked || (!_strokeProcessor.IsActualizingStroke && !possibleToBeginActualizing)) && _strokeProcessor.IsBufferingStroke) {
         EndStroke();
       }
     }
