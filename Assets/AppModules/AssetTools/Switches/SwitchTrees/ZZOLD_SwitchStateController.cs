@@ -28,8 +28,7 @@ namespace Leap.Unity.Animation {
 
       public UnityEvent onSwitchedOn;
     }
-
-    [SDictionary]
+    
     public StateDictionary states;
 
     [SerializeField, OnEditorChange("curState")]

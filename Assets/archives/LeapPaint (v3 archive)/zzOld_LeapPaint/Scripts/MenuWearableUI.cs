@@ -76,8 +76,8 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       if (newChirality != DisplayingChirality) {
         for (int i = 0; i < _menuButtonMoveables.Length; i++) {
-          _menuButtonMoveables[i]._A.localPosition = new Vector3(-_menuButtonMoveables[i]._A.localPosition.x, _menuButtonMoveables[i]._A.localPosition.y, _menuButtonMoveables[i]._A.localPosition.z);
-          _menuButtonMoveables[i]._A.rotation = MirrorUtil.GetMirroredRotation(_menuButtonMoveables[i]._A.rotation, _menuButtonMoveables[i].transform.parent);
+          _menuButtonMoveables[i].A.localPosition = new Vector3(-_menuButtonMoveables[i].A.localPosition.x, _menuButtonMoveables[i].A.localPosition.y, _menuButtonMoveables[i].A.localPosition.z);
+          _menuButtonMoveables[i].A.rotation = MirrorUtil.GetMirroredRotation(_menuButtonMoveables[i].A.rotation, _menuButtonMoveables[i].transform.parent);
           if (!IsWorkstation) {
             _menuButtonMoveables[i].MoveToA();
           }

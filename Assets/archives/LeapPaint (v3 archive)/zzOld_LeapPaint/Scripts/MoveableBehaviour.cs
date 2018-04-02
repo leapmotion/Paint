@@ -1,28 +1,37 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Leap.Unity.Animation;
+using Leap.Unity.Attributes;
+using UnityEngine.Serialization;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
 
   public class MoveableBehaviour : MonoBehaviour {
 
-    public Transform _A;
-    public Transform _B;
+    [QuickButton("Move To Now", "MoveToA")]
+    [FormerlySerializedAs("_A")]
+    public Transform A;
+
+    [QuickButton("Move To Now", "MoveToB")]
+    [FormerlySerializedAs("_B")]
+    public Transform B;
 
     private Tween _movementTween;
 
     public void MoveToA() {
-      MoveTo(_A);
+      MoveTo(A);
     }
 
     public void MoveToB() {
-      MoveTo(_B);
+      MoveTo(B);
     }
 
     public void MoveTo(Transform t) {
-      this.transform.position = t.position;
-      this.transform.rotation = t.rotation;
+      if (t != null) {
+        this.transform.position = t.position;
+        this.transform.rotation = t.rotation;
+      }
     }
 
   }

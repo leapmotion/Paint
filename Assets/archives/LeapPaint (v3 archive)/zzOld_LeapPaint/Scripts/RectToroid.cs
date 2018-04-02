@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
-
+  /// <summary>
+  /// Generates a toroid mesh with a low-resolution (square) minor cross-section.
+  /// </summary>
   [RequireComponent(typeof(MeshFilter))]
   public class RectToroid : MonoBehaviour {
 
@@ -18,32 +19,47 @@ namespace Leap.Unity.LeapPaint_v3 {
       get { return _radius; }
       set {
         _radius = value;
-        _dirty = true;
+        _isDirty = true;
       }
     }
     public float RadialThickness {
       get { return _radialThickness; }
       set {
         _radialThickness = value;
-        _dirty = true;
+        _isDirty = true;
       }
     }
     public float VerticalThickness {
       get { return _verticalThickness; }
       set {
         _verticalThickness = value;
-        _dirty = true;
+        _isDirty = true;
       }
     }
 
+    private const int NUM_DIVISIONS = 64;
+
     private Mesh _mesh;
     private MeshFilter _meshFilter;
-    private const int NUM_DIVISIONS = 64;
     private Vector3[] _verts;
     private int[] _tris;
-    private bool _dirty;
+    private bool _isDirty;
 
+    #if UNITY_EDITOR
+    protected void OnValidate() {
+      UnityEditor.EditorApplication.delayCall += initMesh;
+    }
+    #endif
     protected void Start() {
+      initMesh();
+    }
+    protected void Update() {
+      if (_isDirty) {
+        refreshVerts();
+      }
+    }
+
+    private void initMesh() {
       _meshFilter = GetComponent<MeshFilter>();
 
       if (_mesh == null) {
@@ -55,21 +71,11 @@ namespace Leap.Unity.LeapPaint_v3 {
       _mesh.Clear();
       _verts = new Vector3[NUM_DIVISIONS * 4]; // 4 verts per division (rectangular cross section)
       _tris = new int[NUM_DIVISIONS * 24];  // 8 tris per division * 3 entries per tri
-      RefreshVerts();
-      RefreshTris();
+      refreshVerts();
+      refreshTris();
     }
 
-    protected void Update() {
-      if (_dirty) {
-        RefreshVerts();
-      }
-    }
-
-    protected void OnValidate() {
-      Start();
-    }
-
-    private void RefreshVerts() {
+    private void refreshVerts() {
       Vector3 r = Vector3.right;
       Vector3 h = Vector3.up;
       Quaternion rot = Quaternion.AngleAxis((360F / NUM_DIVISIONS), Vector3.up);
@@ -85,7 +91,7 @@ namespace Leap.Unity.LeapPaint_v3 {
       _mesh.RecalculateBounds();
     }
 
-    private void RefreshTris() {
+    private void refreshTris() {
       int numVerts = _verts.Length;
       int trisIdx = 0;
       for (int i = 0; i < numVerts; i += 4) {

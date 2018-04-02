@@ -491,8 +491,10 @@ namespace Leap.Unity.Gestures {
             // Goal: Reduce accidental pinches when e.g. dropping the hands by requiring
             // a more "certain" pinch while the hand is moving.
             // CURRENTLY UNUSED. Comment left here as potential inspiration for
-            // additional heuristics. todo deleteme.
+            // additional heuristics. TODO DELETEME.
+            #pragma warning disable 0219
             var handVelocity = _handPositionBuffer.Delta();
+            #pragma warning restore 0219
 
             #region Middle Finger Safety
 
