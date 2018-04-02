@@ -115,7 +115,7 @@ Transform:
   m_GameObject: {fileID: 1000013550044236}
   m_LocalRotation: {x: -7.400445e-15, y: -0.000000010536694, z: -0.000000031610167,
     w: 1}
-  m_LocalPosition: {x: -2.9074705, y: 0, z: 2.7168818}
+  m_LocalPosition: {x: 0.43666276, y: 0, z: 3.5479634}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4000013218696686}
@@ -346,6 +346,7 @@ MonoBehaviour:
     m_RotationOrder: 0
   animPeriod: 2
   colorWhenDisabled: {r: 0.86666673, g: 0.86666673, b: 0.86666673, a: 1}
+  loop: 0
   rendererToDrive: {fileID: 23000010081545854}
   graphicToDrive: {fileID: 0}
 --- !u!114 &114721258737835146
