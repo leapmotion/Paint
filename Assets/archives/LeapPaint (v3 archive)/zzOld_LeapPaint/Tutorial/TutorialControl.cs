@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Leap.Unity.Interaction;
 using Leap.Unity.Gestures;
 using Leap.Unity.LeapPaint_v3;
 
@@ -46,8 +47,14 @@ public class TutorialControl : MonoBehaviour {
     brushThicknessObject.SetActive(true);
   }
 
-  public void EnableWidgetGrabPower() {
+  public void EnableWidgetGrasping() {
+    colorWidget.ieBehaviour.ignoreGrasping = false;
+    menuWidget.ieBehaviour.ignoreGrasping = false;
+    brushWidget.ieBehaviour.ignoreGrasping = false;
 
+    colorWidget.trigger.enabled = true;
+    menuWidget.trigger.enabled = true;
+    brushWidget.trigger.enabled = true;
   }
 
   public void NotifyColorPalleteTouched() {
@@ -72,7 +79,8 @@ public class TutorialControl : MonoBehaviour {
     public GameObject widget;
     public GameObject ring;
     public EmergeableBehaviour emergable;
-    //public PassTriggerEvents marbleTrigger;
+    public InteractionBehaviour ieBehaviour;
+    public IndexUIActivator_PassTriggerEvents trigger;
 
     public IEnumerator Enable() {
       widget.SetActive(true);
