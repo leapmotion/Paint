@@ -64,6 +64,10 @@ public class TutorialControl : MonoBehaviour {
     brushWidget.trigger.enabled = true;
   }
 
+  public void EnableFinalMenu() {
+    menuWidget.Enable();
+  }
+
   public void NotifyColorPalleteTouched() {
     colorPalleteHasBeenTouched = true;
   }
@@ -96,7 +100,10 @@ public class TutorialControl : MonoBehaviour {
 
       widget.GetComponent<WearableUI>().forceHide = false;
       widget.GetComponent<WearableUI>().RefreshVisibility();
-      emergable.TryEmerge(isInWorkstation: true);
+
+      if (emergable != null) {
+        emergable.TryEmerge(isInWorkstation: true);
+      }
 
       yield return null;
     }
