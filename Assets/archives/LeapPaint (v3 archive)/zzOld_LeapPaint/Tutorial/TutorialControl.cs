@@ -83,38 +83,15 @@ public class TutorialControl : MonoBehaviour {
     public IndexUIActivator_PassTriggerEvents trigger;
 
     public IEnumerator Enable() {
-      widget.SetActive(true);
       ring.SetActive(true);
 
-      Debug.Log("######");
-      Debug.Log(widget.transform.position + " : " + ring.transform.position);
-      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
 
-      yield return null;
 
-      Debug.Log("######");
-      Debug.Log(widget.transform.position + " : " + ring.transform.position);
-      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
-
-      yield return null;
-
-      Debug.Log("######");
-      Debug.Log(widget.transform.position + " : " + ring.transform.position);
-      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
-
-      yield return null;
-
-      Debug.Log("######");
-      Debug.Log(widget.transform.position + " : " + ring.transform.position);
-      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
-
-      yield return null;
-
-      Debug.Log("######");
-      Debug.Log(widget.transform.position + " : " + ring.transform.position);
-      Debug.Log(widget.transform.rotation + " : " + ring.transform.rotation);
-
+      widget.GetComponent<WearableUI>().forceHide = false;
+      widget.GetComponent<WearableUI>().RefreshVisibility();
       emergable.TryEmerge(isInWorkstation: true);
+
+      yield return null;
     }
   }
 }

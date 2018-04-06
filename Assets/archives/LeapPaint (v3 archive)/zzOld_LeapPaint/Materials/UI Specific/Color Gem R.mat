@@ -73,6 +73,6 @@ Material:
     - _Width: 0.002
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.6392157, g: 0.10980393, b: 0.08627451, a: 1}
+    - _Color: {r: 0.9333334, g: 0.08235294, b: 0.08235294, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Outline: {r: 1, g: 1, b: 1, a: 1}

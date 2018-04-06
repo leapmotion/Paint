@@ -18,6 +18,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     public Material _ribbonMaterial;
     public GameObject _finalizedRibbonParent;
+    public bool registerWithHistoryManager = true;
 
     private Mesh _mesh;
     private MeshFilter _meshFilter;
@@ -415,7 +416,10 @@ namespace Leap.Unity.LeapPaint_v3 {
       MeshFilter filter = meshObj.AddComponent<MeshFilter>();
       filter.mesh = _mesh;
 
-      _historyManager.NotifyStroke(meshObj, _cachedStrokeRenderered);
+      if (registerWithHistoryManager) {
+        _historyManager.NotifyStroke(meshObj, _cachedStrokeRenderered);
+      }
+
       _cachedStrokeRenderered = new List<StrokePoint>();
 
       _meshFilter.mesh = _mesh = null;
