@@ -15,7 +15,7 @@ public class TransitionWhenOpenHand : TransitionBehaviour {
   private float _time = 0;
 
   private void Update() {
-    if (isOpen(Hands.Left) || isOpen(Hands.Right)) {
+    if (isOpen(Hands.Right)) {
       _time += Time.deltaTime;
     } else {
       _time = 0;

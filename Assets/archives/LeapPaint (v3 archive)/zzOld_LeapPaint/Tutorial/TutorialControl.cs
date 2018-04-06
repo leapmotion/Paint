@@ -14,6 +14,7 @@ public class TutorialControl : MonoBehaviour {
   public Widget colorWidget;
   public Widget brushWidget;
   public Widget menuWidget;
+  public EmergeableBehaviour bigColorEmergable;
   public GameObject brushThicknessObject;
 
   [NonSerialized]
@@ -21,6 +22,12 @@ public class TutorialControl : MonoBehaviour {
 
   [NonSerialized]
   public bool colorPalleteHasBeenExpanded = false;
+
+  private void Update() {
+    if (bigColorEmergable.IsEmergedOrEmerging) {
+      colorPalleteHasBeenExpanded = true;
+    }
+  }
 
   public void SetText(string text) {
     this.text.text = text;
