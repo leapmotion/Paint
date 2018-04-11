@@ -15,16 +15,15 @@ namespace Leap.Unity.Encoding {
   /// <summary>
   /// A Vector-based encoding of a Leap Hand.
   /// 
-  /// You and Encode a VectorHand from a Leap hand, Decode a VectorHand into a Leap hand,
+  /// You can Encode a VectorHand from a Leap hand, Decode a VectorHand into a Leap hand,
   /// convert the VectorHand to a compressed byte representation using FillBytes,
   /// and decompress back into a VectorHand using FromBytes.
   /// 
   /// Also see CurlHand for a more compressed but slightly less articulated encoding.
+  /// TODO: CurlHand not yet brought in from Networking module!
   /// </summary>
   [Serializable]
-  public class VectorHand : IEncoding<Leap.Hand>,
-                            IByteEncoding,
-                            IByteCodec<Leap.Hand> {
+  public class VectorHand {
 
     #region Data
 
@@ -193,14 +192,18 @@ namespace Leap.Unity.Encoding {
           + numBytesRequired + " bytes from the offset position.");
       }
 
+      // Chirality.
+      isLeft = bytes[offset++] == 0x00;
+
+      // Palm position and rotation.
       for (int i = 0; i < 3; i++) {
         palmPos[i] = Convert.ToSingle(
-                       BitConverterNonAlloc.ToUInt16(bytes, ref offset))
+                       BitConverterNonAlloc.ToInt16(bytes, ref offset))
                      / 4096f;
       }
-
       palmRot = Utils.DecompressBytesToQuat(bytes, ref offset);
 
+      // Palm-local bone joint positions.
       for (int i = 0; i < NUM_JOINT_POSITIONS; i++) {
         for (int j = 0; j < 3; j++) {
           jointPositions[i][j] = VectorHandExtensions.ByteToFloat(bytes[offset++]);
@@ -265,7 +268,7 @@ namespace Leap.Unity.Encoding {
 
     /// <summary>
     /// Shortcut for reading a VectorHand-encoded byte representation of a Leap hand and
-    /// decoding it immdiately into a Hand object.
+    /// decoding it immediately into a Hand object.
     /// </summary>
     public void ReadBytes(byte[] bytes, ref int offset, Hand intoHand) {
       ReadBytes(bytes, ref offset);
