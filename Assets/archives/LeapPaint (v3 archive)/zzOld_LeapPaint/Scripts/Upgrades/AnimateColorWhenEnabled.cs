@@ -15,6 +15,8 @@ namespace Leap.Unity.LeapPaint {
     public float animPeriod = 2.0f;
     private float _animT = 0f;
     public Color colorWhenDisabled = Color.gray;
+    public bool loop = true;
+    private bool _playing = true;
 
     [Header("Renderer Reference - Pick One (Graphic Overrides)")]
 
@@ -47,12 +49,19 @@ namespace Leap.Unity.LeapPaint {
     private void OnEnable() {
       setColor(colorWhenEnabled0);
       _animT = 0f;
+      _playing = true;
     }
     private void Update() {
       _animT += Time.deltaTime;
-      _animT %= animPeriod;
+      if (_animT > animPeriod && loop == false) {
+        _playing = false;
+      }
 
-      setColor(Color.Lerp(colorWhenEnabled0, colorWhenEnabled1, animCurve.Evaluate(_animT)));
+      if (_playing) {
+        _animT %= animPeriod;
+
+        setColor(Color.Lerp(colorWhenEnabled0, colorWhenEnabled1, animCurve.Evaluate(_animT)));
+      }
     }
     private void OnDisable() {
       setColor(colorWhenDisabled);
