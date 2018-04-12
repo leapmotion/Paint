@@ -18,13 +18,14 @@ namespace Leap.Unity {
     protected override void OnEnable() {
       base.OnEnable();
 
-      specifyConditionalDrawing("testPoseMode",
-                                (int)LeapTestProvider.TestPoseMode.CapturedPose,
-                                "poseFolder",
-                                "poseName",
-                                "captureModeEnabled",
-                                "poseCaptureSource",
-                                "captureKey");
+      // DELETEME old LeapTestProvider code
+      //specifyConditionalDrawing("testPoseMode",
+      //                          (int)LeapTestProvider.TestPoseMode.CapturedPose,
+      //                          "poseFolder",
+      //                          "poseName",
+      //                          "captureModeEnabled",
+      //                          "poseCaptureSource",
+      //                          "captureKey");
     }
 
   }

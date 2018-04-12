@@ -20,17 +20,17 @@ namespace Leap.Unity {
   /// <summary>
   /// Enumerator for an IGameObjectSequence.
   /// </summary>
-  public struct IGameObjectSequenceEnumerator : IQueryOp<GameObject> {
+  public struct GameObjectSequenceEnumerator {
 
     IGameObjectSequenceProvider sequence;
     int index;
 
-    public IGameObjectSequenceEnumerator(IGameObjectSequenceProvider sequence) {
+    public GameObjectSequenceEnumerator(IGameObjectSequenceProvider sequence) {
       this.sequence = sequence;
       index = -1;
     }
     
-    public IGameObjectSequenceEnumerator GetEnumerator() { return this; }
+    public GameObjectSequenceEnumerator GetEnumerator() { return this; }
 
     public bool MoveNext() { index++;  return index < sequence.Count - 1; }
 
@@ -51,13 +51,14 @@ namespace Leap.Unity {
 
   public static class IGameObjectSequenceProviderExtensions {
 
-    public static IGameObjectSequenceEnumerator GetEnumerator(this IGameObjectSequenceProvider sequence) {
-      return new IGameObjectSequenceEnumerator(sequence);
+    public static GameObjectSequenceEnumerator GetEnumerator(this IGameObjectSequenceProvider sequence) {
+      return new GameObjectSequenceEnumerator(sequence);
     }
 
-    public static QueryWrapper<GameObject, IGameObjectSequenceEnumerator> Query(this IGameObjectSequenceProvider sequence) {
-      return new QueryWrapper<GameObject, IGameObjectSequenceEnumerator>(GetEnumerator(sequence));
-    }
+    // deleteme old query system
+    //public static QueryWrapper<GameObject, GameObjectSequenceEnumerator> Query(this IGameObjectSequenceProvider sequence) {
+    //  return new QueryWrapper<GameObject, GameObjectSequenceEnumerator>(GetEnumerator(sequence));
+    //}
 
   }
 

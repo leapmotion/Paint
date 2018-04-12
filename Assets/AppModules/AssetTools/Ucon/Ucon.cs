@@ -167,31 +167,31 @@ namespace Leap.Unity.UserContext {
         return TypedFor<T>().TryGet(out value);
       }
 
-      /// <summary>
-      /// Synonym for Query().
-      /// 
-      /// Returns a Queryable representation of the data at the channel for the argument
-      /// type. If the channel is empty or has been Clear()'d, the query will be empty;
-      /// if only Set(value) calls have been performed on this channel, the channel will
-      /// contain a single element. If Append(value) or Set(IList) calls have been
-      /// performed on the channel for the argument type, the channel may contain more
-      /// than one element of the argument type.
-      /// </summary>
-      public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> GetEach<T>() {
-        return TypedFor<T>().GetEach();
-      }
+      ///// <summary>
+      ///// Synonym for Query().
+      ///// 
+      ///// Returns a Queryable representation of the data at the channel for the argument
+      ///// type. If the channel is empty or has been Clear()'d, the query will be empty;
+      ///// if only Set(value) calls have been performed on this channel, the channel will
+      ///// contain a single element. If Append(value) or Set(IList) calls have been
+      ///// performed on the channel for the argument type, the channel may contain more
+      ///// than one element of the argument type.
+      ///// </summary>
+      //public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> GetEach<T>() {
+      //  return TypedFor<T>().GetEach();
+      //}
 
-      /// <summary>
-      /// Returns a Queryable representation of the data at the channel for the argument
-      /// type. If the channel is empty or has been Clear()'d, the query will be empty;
-      /// if only Set(value) calls have been performed on this channel, the channel will
-      /// contain a single element. If Append(value) or Set(IList) calls have been
-      /// performed on the channel for the argument type, the channel may contain more
-      /// than one element of the argument type.
-      /// </summary>
-      public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> Query<T>() {
-        return TypedFor<T>().Query();
-      }
+      ///// <summary>
+      ///// Returns a Queryable representation of the data at the channel for the argument
+      ///// type. If the channel is empty or has been Clear()'d, the query will be empty;
+      ///// if only Set(value) calls have been performed on this channel, the channel will
+      ///// contain a single element. If Append(value) or Set(IList) calls have been
+      ///// performed on the channel for the argument type, the channel may contain more
+      ///// than one element of the argument type.
+      ///// </summary>
+      //public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> Query<T>() {
+      //  return TypedFor<T>().Query();
+      //}
 
       /// <summary>
       /// Clears the channel of the argument type of any value or values that may exist
@@ -349,19 +349,19 @@ namespace Leap.Unity.UserContext {
         return true;
       }
 
-      public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> GetEach() {
-        return Query();
-      }
+      //public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> GetEach() {
+      //  return Query();
+      //}
 
-      public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> Query() {
-        List<T> outTs;
-        if (!Board<T>.memory.TryGetValue(channelHash, out outTs)) {
-          outTs = new List<T>();
-          Board<T>.memory[channelHash] = outTs;
-        }
-        return new QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>>(
-                 new QueryConversionExtensions.ListQueryOp<T>(outTs));
-      }
+      //public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> Query() {
+      //  List<T> outTs;
+      //  if (!Board<T>.memory.TryGetValue(channelHash, out outTs)) {
+      //    outTs = new List<T>();
+      //    Board<T>.memory[channelHash] = outTs;
+      //  }
+      //  return new QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>>(
+      //           new QueryConversionExtensions.ListQueryOp<T>(outTs));
+      //}
 
       #endregion
 
