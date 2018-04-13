@@ -129,12 +129,12 @@ public class MeshGridRepeater : MonoBehaviour, IRuntimeGizmoComponent {
             Vector3[] deltaNormals = new Vector3[inputMesh.vertexCount];
             Vector3[] deltaTangents = new Vector3[inputMesh.vertexCount];
             inputMesh.GetBlendShapeFrameVertices(0, 0, deltaVerts, deltaNormals, deltaTangents);
-            foreach (var vertIdx in Values.From(0).To(inputMeshVertexCount)) {
+            foreach (var vertIdx in Values.Range(0, inputMeshVertexCount)) {
               blendShapeDeltaVerts.Add(deltaVerts[vertIdx] * meshScaleMultiplier);
             }
           }
 
-          foreach (var vert in Values.From(0).To(inputMeshVertexCount)) {
+          foreach (var vert in Values.Range(0, inputMeshVertexCount)) {
             gridIds.Add(gridPoint.gridId);
           }
         }

@@ -1,4 +1,13 @@
-﻿using Leap.Unity.Query;
+/******************************************************************************
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
+ * Leap Motion proprietary and confidential.                                  *
+ *                                                                            *
+ * Use subject to the terms of the Leap Motion SDK Agreement available at     *
+ * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
+ * between Leap Motion and you, your company or other organization.           *
+ ******************************************************************************/
+
+using Leap.Unity.Query;
 using System;
 
 namespace Leap.Unity {
@@ -103,9 +112,7 @@ namespace Leap.Unity {
   /// to quickly define an Enumerator that avoids allocation.
   /// </summary>
   public struct IndexableStructEnumerator<Element, IndexableStruct>
-                  : IQueryOp<Element>
-                  where IndexableStruct : struct,
-                                          IIndexableStruct<Element, IndexableStruct> {
+    where IndexableStruct : struct, IIndexableStruct<Element, IndexableStruct> {
 
     IndexableStruct? maybeIndexable;
     int index;
@@ -124,24 +131,10 @@ namespace Leap.Unity {
       index++; return index < maybeIndexable.Value.Count;
     }
 
-    public bool TryGetNext(out Element t) {
-      var hasNext = MoveNext();
-      if (!hasNext) {
-        t = default(Element);
-        return false;
-      }
-      else {
-        t = Current;
-        return true;
-      }
-    }
-
     public void Reset() {
       index = -1;
     }
 
     public Element Current { get { return maybeIndexable.Value[index]; } }
-
   }
-
 }

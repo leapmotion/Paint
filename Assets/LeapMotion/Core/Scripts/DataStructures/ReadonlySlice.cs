@@ -1,4 +1,13 @@
-﻿using Leap.Unity.Query;
+/******************************************************************************
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
+ * Leap Motion proprietary and confidential.                                  *
+ *                                                                            *
+ * Use subject to the terms of the Leap Motion SDK Agreement available at     *
+ * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
+ * between Leap Motion and you, your company or other organization.           *
+ ******************************************************************************/
+
+using Leap.Unity.Query;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -84,9 +93,12 @@ namespace Leap.Unity {
       return new IndexableStructEnumerator<T, ReadonlySlice<T>>(this);
     }
 
-    public QueryWrapper<T, IndexableStructEnumerator<T, ReadonlySlice<T>>> Query() {
-      return new QueryWrapper<T, IndexableStructEnumerator<T,
-                                   ReadonlySlice<T>>>(GetEnumerator());
+    public Query<T> Query() {
+      T[] array = ArrayPool<T>.Spawn(Count);
+      for (int i = 0; i < Count; i++) {
+        array[i] = this[i];
+      }
+      return new Query<T>(array, Count);
     }
 
     #endregion

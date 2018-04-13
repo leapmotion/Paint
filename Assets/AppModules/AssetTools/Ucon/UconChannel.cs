@@ -289,20 +289,20 @@ namespace Leap.Unity.UserContext {
       return true;
     }
 
-    /// <summary>
-    /// Returns a Queryable object on the data in this channel.
-    /// </summary>
-    public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> Query() {
-      return new QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>>(
-                   new QueryConversionExtensions.ListQueryOp<T>(source));
-    }
+    ///// <summary>
+    ///// Returns a Queryable object on the data in this channel.
+    ///// </summary>
+    //public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> Query() {
+    //  return new QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>>(
+    //               new QueryConversionExtensions.ListQueryOp<T>(source));
+    //}
 
-    /// <summary>
-    /// Synonym for Query(). Returns a Queryable object on the data in this channel.
-    /// </summary>
-    public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> GetEach() {
-      return Query();
-    }
+    ///// <summary>
+    ///// Synonym for Query(). Returns a Queryable object on the data in this channel.
+    ///// </summary>
+    //public QueryWrapper<T, QueryConversionExtensions.ListQueryOp<T>> GetEach() {
+    //  return Query();
+    //}
 
     #endregion
 
