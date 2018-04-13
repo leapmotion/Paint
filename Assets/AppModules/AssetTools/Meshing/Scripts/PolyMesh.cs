@@ -471,7 +471,7 @@ namespace Leap.Unity.Meshing {
       AddPositions(positions);
 
       addedIndicesToFill.Clear();
-      foreach (var n in Values.From(startCount).To(_positions.Count)) {
+      foreach (var n in Values.Range(startCount, _positions.Count)) {
         addedIndicesToFill.Add(n);
       }
     }

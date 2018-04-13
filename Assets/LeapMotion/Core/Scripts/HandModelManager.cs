@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -475,13 +475,15 @@ namespace Leap.Unity {
     #if UNITY_EDITOR
     /**In the Unity Editor, Validate that the HandModelBase is an instance of a prefab from the scene vs. a prefab from the project. */
     void OnValidate() {
-      for (int i = 0; i < ModelPool.Count; i++) {
-        if (ModelPool[i] != null) {
-          if (ModelPool[i].LeftModel) {
-            ModelPool[i].IsLeftToBeSpawned = shouldBeSpawned(ModelPool[i].LeftModel);
-          }
-          if (ModelPool[i].RightModel) {
-            ModelPool[i].IsRightToBeSpawned = shouldBeSpawned(ModelPool[i].RightModel);
+      if (ModelPool != null) {
+        for (int i = 0; i < ModelPool.Count; i++) {
+          if (ModelPool[i] != null) {
+            if (ModelPool[i].LeftModel) {
+              ModelPool[i].IsLeftToBeSpawned = shouldBeSpawned(ModelPool[i].LeftModel);
+            }
+            if (ModelPool[i].RightModel) {
+              ModelPool[i].IsRightToBeSpawned = shouldBeSpawned(ModelPool[i].RightModel);
+            }
           }
         }
       }

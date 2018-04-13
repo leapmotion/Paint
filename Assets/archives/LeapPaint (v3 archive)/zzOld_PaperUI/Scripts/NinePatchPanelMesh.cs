@@ -36,13 +36,15 @@ public class NinePatchPanelMesh : MonoBehaviour {
   }
 
   private void refreshMesh() {
-    Mesh mesh = _meshFilter.sharedMesh;
-    if (mesh == null) {
-      _meshFilter.sharedMesh = mesh = new Mesh();
-      mesh.name = "PanelMesh";
-      mesh.hideFlags = HideFlags.HideAndDontSave;
+    if (this != null && _meshFilter != null) { // check this object hasn't been destroyed
+      Mesh mesh = _meshFilter.sharedMesh;
+      if (mesh == null) {
+        _meshFilter.sharedMesh = mesh = new Mesh();
+        mesh.name = "PanelMesh";
+        mesh.hideFlags = HideFlags.HideAndDontSave;
+      }
+      GenerateMesh(mesh);
     }
-    GenerateMesh(mesh);
   }
 
   private List<Vector3> _cachedVerts = new List<Vector3>();

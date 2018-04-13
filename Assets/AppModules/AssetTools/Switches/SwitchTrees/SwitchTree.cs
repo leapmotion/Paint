@@ -131,7 +131,7 @@ namespace Leap.Unity.Animation {
         get { return new PrevSiblingEnumerator(this); }
       }
 
-      public struct PrevSiblingEnumerator : IQueryOp<Node> {
+      public struct PrevSiblingEnumerator : IEnumerator<Node> {
         Node node;
         int curIdx;
 
@@ -142,6 +142,12 @@ namespace Leap.Unity.Animation {
         }
 
         public Node Current { get { return node.parent.node.GetChild(curIdx); } }
+
+        object IEnumerator.Current {
+          get { return Current; }
+        }
+        public void Dispose() { }
+
         public bool MoveNext() {
           curIdx -= 1;
           return curIdx >= 0;
@@ -156,8 +162,8 @@ namespace Leap.Unity.Animation {
 
         public void Reset() { curIdx = node.parent.node.GetIndexOfChild(node); }
 
-        public QueryWrapper<Node, PrevSiblingEnumerator> Query() {
-          return new QueryWrapper<Node, PrevSiblingEnumerator>(this);
+        public Query<Node> Query() {
+          return (this as IEnumerator<Node>).Query();
         }
       }
 
@@ -530,7 +536,7 @@ namespace Leap.Unity.Animation {
 
     #region Enumerators
 
-    public struct DepthFirstEnumerator : IQueryOp<Node> {
+    public struct DepthFirstEnumerator : IEnumerator<Node> {
       private Maybe<Node> maybeCurNode;
       private HashSet<Node> visitedNodes;
       private SwitchTree tree;
@@ -545,6 +551,11 @@ namespace Leap.Unity.Animation {
 
       public DepthFirstEnumerator GetEnumerator() { return this; }
       public Node Current { get { return maybeCurNode.valueOrDefault; } }
+
+      object IEnumerator.Current {
+        get { return Current; }
+      }
+      public void Dispose() { }
 
       public bool MoveNext() {
         if (!maybeCurNode.hasValue) {
@@ -591,11 +602,6 @@ namespace Leap.Unity.Animation {
         visitedNodes.Clear();
         maybeCurNode = Maybe.None;
       }
-
-      public QueryWrapper<Node, DepthFirstEnumerator> Query() {
-        return new QueryWrapper<Node, DepthFirstEnumerator>(this);
-      }
-
     }
 
     #endregion

@@ -611,8 +611,8 @@ namespace Leap.Unity.Meshing {
           radial = rot * radial;
           positions.Add(radial);
         }
-
-        var indices = Values.From(0).To(numVerts);
+        
+        var indices = Values.Range(0, numVerts);
         var polygon = new Polygon() { mesh = mesh, verts = indices.ToList() };
         
         mesh.Fill(positions, polygon);

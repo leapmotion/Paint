@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -18,6 +18,9 @@ namespace Leap.Unity.RuntimeGizmos {
     public bool traverseHierarchy = true;
     public bool drawTriggers = false;
 
+    /// <summary>
+    /// An empty Start() method; gives the MonoBehaviour an enable/disable checkbox.
+    /// </summary>
     void Start() { }
 
     public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
