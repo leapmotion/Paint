@@ -75,6 +75,8 @@ namespace Leap.Unity.LeapPaint_v3 {
       _mesh.Clear();
       _verts = new Vector3[NUM_DIVISIONS * 4]; // 4 verts per division (rectangular cross section)
       _tris = new int[NUM_DIVISIONS * 24];  // 8 tris per division * 3 entries per tri
+      refreshVerts();
+      refreshTris();
     }
 
     private void refreshVerts() {
