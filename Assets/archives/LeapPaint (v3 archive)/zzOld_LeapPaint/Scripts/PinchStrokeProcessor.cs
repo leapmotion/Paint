@@ -81,7 +81,10 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       GameObject rendererObj = new GameObject();
       rendererObj.name = "Thick Ribbon Renderer";
+      rendererObj.transform.parent = transform;
       var thickRibbonRenderer = rendererObj.AddComponent<ThickRibbonRenderer>();
+      rendererObj.AddComponent<ThickLineRendererRecorder>();
+
       thickRibbonRenderer._finalizedRibbonParent = _ribbonParentObject;
       thickRibbonRenderer._ribbonMaterial = _ribbonMaterial;
       _strokeRenderer = thickRibbonRenderer;

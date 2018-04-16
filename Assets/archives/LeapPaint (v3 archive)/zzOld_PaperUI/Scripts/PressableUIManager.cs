@@ -32,6 +32,10 @@ namespace Leap.Unity.LeapPaint_v3 {
 
         float pressableDistance;
         PressableUI closestPressable = _activators[i].gameObject.FindClosest<PressableUI>(_pressables, out pressableDistance);
+        if (closestPressable == null) {
+          continue;
+        }
+
         _cachedClosestPressables[i] = closestPressable;
 
         if (pressableToDistance.ContainsKey(closestPressable)) {

@@ -97,7 +97,13 @@ namespace Leap.Unity.LeapPaint_v3 {
       FinalizeMarbleTouch();
     }
 
-    private void RefreshVisibility() {
+    public bool forceHide = false;
+    public void RefreshVisibility() {
+      if (forceHide) {
+        ScheduleVanish();
+        return;
+      }
+
       if (_isAttached) {
         if (!_isDisplayingOnAnyHand) {
           if (_isLeftHandTracked && _isLeftPalmFacingCamera && !_isLeftHandPinching) {

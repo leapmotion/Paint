@@ -7,10 +7,10 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
-using Leap.Unity.Encoding;
 using UnityEngine;
 
 namespace Leap.Unity.Recording {
+  using Leap.Unity.Encoding;
 
   /// <summary> AnimationCurve data for an animated VectorHand representation. </summary>
   [System.Serializable]
@@ -121,7 +121,7 @@ namespace Leap.Unity.Recording {
         for (int i = 0; i < VectorHand.NUM_JOINT_POSITIONS; i++) {
           vectorHand.jointPositions[i] = jointPositionCurves[i].Evaluate(time);
         }
-        
+
         vectorHand.Decode(intoHand);
 
         // Fill temporal data if we have a hand from the previous sampling.
