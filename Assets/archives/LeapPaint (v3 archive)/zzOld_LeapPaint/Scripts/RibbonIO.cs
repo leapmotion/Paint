@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System;
 using Leap.zzOldPaint;
-using Leap.Unity.zzOld_FlowRoutines_LeapPaintv3;
+using Leap.Unity.Old_FlowRoutines_LeapPaintv3;
 
 namespace Leap.Unity.LeapPaint_v3 {
 

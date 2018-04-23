@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Leap.Unity.zzOld_FlowRoutines_LeapPaintv3 {
+namespace Leap.Unity.Old_FlowRoutines_LeapPaintv3 {
 
 
   public class FlowRunner : MonoBehaviour {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Leap.Unity.zzOld_FlowRoutines_LeapPaintv3.Examples {
+namespace Leap.Unity.Old_FlowRoutines_LeapPaintv3.Examples {
 
 
   public class FlowExample : MonoBehaviour {

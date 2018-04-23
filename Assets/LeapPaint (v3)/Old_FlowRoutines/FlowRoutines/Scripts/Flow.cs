@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Leap.Unity.zzOld_FlowRoutines_LeapPaintv3 {
+namespace Leap.Unity.Old_FlowRoutines_LeapPaintv3 {
 
   public struct Flow {
     public readonly CoValueType Type;
