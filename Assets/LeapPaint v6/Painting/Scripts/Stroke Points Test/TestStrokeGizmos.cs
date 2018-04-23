@@ -41,7 +41,7 @@ namespace Leap.Unity {
       }
 
       if (drawPoseGizmos) {
-        foreach (var pose in strokePoses.Query()) {
+        foreach (var pose in strokePoses.GetEnumerator()) {
           drawer.DrawPose(pose, 0.006f);
         }
       }

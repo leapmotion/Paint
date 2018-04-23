@@ -19,7 +19,7 @@ namespace Leap.Unity.Drawing {
       else {
         StrokePoint? maybeLastStrokePoint = null;
         int polyOffset = 0;
-        foreach (var strokePoint in strokeObj.Query()) {
+        foreach (var strokePoint in strokeObj) {
           var a = strokePoint;
 
           // If the stroke object is "hidden", we can spoof this by creating strokes

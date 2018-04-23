@@ -676,7 +676,12 @@ namespace Leap.Unity.PhysicalInterfaces {
       }
 
       private int CountValid(IIndexable<Vector3?> positions) {
-        return positions.Query().Where(v => v.HasValue).Count();
+        //return positions.Query().Where(v => v.HasValue).Count();
+        int count = 0;
+        foreach (var pos in positions.GetEnumerator()) {
+          if (pos.HasValue) count++;
+        }
+        return count;
       }
     }
 

@@ -77,6 +77,10 @@ namespace Leap.Unity.Drawing {
       _data.Clear();
     }
 
+    public IndexableEnumerator<StrokePoint> GetEnumerator() {
+      return new IndexableEnumerator<StrokePoint>(this);
+    }
+
   }
 
 }

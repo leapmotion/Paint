@@ -35,7 +35,7 @@ public class LeapGraphicToggleBlendShapeController : LeapGraphicButtonBlendShape
     if (graphic != null && toggle != null && button != null) {
       try {
         if (!toggle.isToggled) {
-          graphic.SetBlendShapeAmount(button.depressedAmount.Map(0F, 1F, 0F, 0.8F) + _scalePulsator.value);
+          graphic.SetBlendShapeAmount(button.pressedAmount.Map(0F, 1F, 0F, 0.8F) + _scalePulsator.value);
         }
         else {
           graphic.SetBlendShapeAmount(0.8F + _scalePulsator.value);

@@ -30,10 +30,10 @@ namespace Leap.Unity.Networking {
     public virtual void Start() {
       currentFrame = new Frame();
       long Timestamp = (long)(Time.time * 1e6);
-      InteractionBox box = new InteractionBox(new Vector(0f, 0f, 0f), new Vector(100f, 100f, 100f));
+      //InteractionBox box = new InteractionBox(new Vector(0f, 0f, 0f), new Vector(100f, 100f, 100f));
       currentFrame.Id = frameID;
       currentFrame.CurrentFramesPerSecond = 110f;
-      currentFrame.InteractionBox = box;
+      //currentFrame.InteractionBox = box; // removed as of Core 4.4
       currentFrame.Timestamp = Timestamp;
 
       for (int i = 0; i < fingers.Length; i++) {
