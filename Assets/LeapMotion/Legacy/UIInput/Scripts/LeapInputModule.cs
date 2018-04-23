@@ -191,8 +191,8 @@ namespace Leap.Unity.InputModule {
     //Misc. Objects
     private Canvas[] canvases;
     private Quaternion CurrentRotation;
-    private GameObject[] currentGo;
     private AudioSource SoundPlayer;
+    private GameObject[] currentGo;
     private GameObject[] currentGoing;
     private Vector3 OldCameraPos = Vector3.zero;
     private Quaternion OldCameraRot = Quaternion.identity;

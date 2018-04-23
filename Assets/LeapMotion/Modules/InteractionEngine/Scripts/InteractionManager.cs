@@ -227,42 +227,6 @@ namespace Leap.Unity.Interaction {
     }
 
     void Awake() {
-      #if UNITY_EDITOR
-      if (InteractionPreferences.shouldPrompForGravity && Application.isPlaying) {
-        float magnitude = Physics.gravity.y;
-        if (Mathf.Abs(magnitude) > InteractionPreferences.MAX_GRAVITY_MAGNITUDE) {
-          if (EditorUtility.DisplayDialog("Gravity magnitude too strong!",
-                                          "Your gravity magnitude is " + magnitude
-                                        + " which is stronger than the recommended value "
-                                        + "of -4.905!\n\nGo to Edit/Project Settings/Physics "
-                                        + "to change the magnitude.",
-                                          "I understand, don't show this again",
-                                          "OK, I'll go fix it")) {
-            InteractionPreferences.shouldPrompForGravity = false;
-          }
-          EditorApplication.isPlaying = false;
-          return;
-        }
-      }
-
-      if (InteractionPreferences.shouldPrompForPhysicsTimestep && Application.isPlaying) {
-        if (Time.fixedDeltaTime > InteractionPreferences.MAX_TIMESTEP + Mathf.Epsilon) {
-          float roundedTimestep = (float)Math.Round(InteractionPreferences.MAX_TIMESTEP, 4);
-          if (EditorUtility.DisplayDialog("Timestep too slow!",
-                                           "Your fixed timestep is " + Time.fixedDeltaTime
-                                         + ", which is slower than the recommended value "
-                                         + "of " + roundedTimestep + ".\n\nGo to Edit/Project Settings/Time "
-                                         + "to change the fixed timestep.",
-                                           "I understand, don't show this again",
-                                           "OK, I'll go fix it")) {
-            InteractionPreferences.shouldPrompForPhysicsTimestep = false;
-          }
-          EditorApplication.isPlaying = false;
-          return;
-        }
-      }
-      #endif
-
       refreshInteractionControllers();
 
       if (!Application.isPlaying) return;
@@ -837,18 +801,21 @@ namespace Leap.Unity.Interaction {
     /// Stores data for implementing Soft Contact for interaction controllers.
     /// </summary>
     [NonSerialized]
-    public List<PhysicsUtility.SoftContact> _softContacts = new List<PhysicsUtility.SoftContact>(80);
+    public List<PhysicsUtility.SoftContact> _softContacts
+      = new List<PhysicsUtility.SoftContact>(80);
 
     /// <summary>
     /// Stores data for implementing Soft Contact for interaction controllers.
     /// </summary>
     [NonSerialized]
-    public Dictionary<Rigidbody, PhysicsUtility.Velocities> _softContactOriginalVelocities = new Dictionary<Rigidbody, PhysicsUtility.Velocities>(5);
+    public Dictionary<Rigidbody, PhysicsUtility.Velocities> _softContactOriginalVelocities
+      = new Dictionary<Rigidbody, PhysicsUtility.Velocities>(5);
 
     /// <summary>
     /// Stores data for drawing Soft Contacts for interaction controllers.
     /// </summary>
-    private List<PhysicsUtility.SoftContact> _softContactsToDraw;
+    private List<PhysicsUtility.SoftContact> _softContactsToDraw
+      = new List<PhysicsUtility.SoftContact>();
 
     #endregion
 

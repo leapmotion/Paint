@@ -1,6 +1,6 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -125,9 +125,7 @@ namespace Leap.Unity.Encoding {
           fingerId: fingerIdx,
           timeVisible: Time.time,
           tipPosition: nextJoint.ToVector(),
-          tipVelocity: Vector.Zero,
           direction: (boneRot * Vector3.forward).ToVector(),
-          stabilizedTipPosition: nextJoint.ToVector(),
           width: 1f,
           length: 1f,
           isExtended: true,
