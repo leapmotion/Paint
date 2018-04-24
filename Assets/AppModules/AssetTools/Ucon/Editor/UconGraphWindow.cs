@@ -11,7 +11,7 @@ namespace Leap.Unity.UserContext {
   
   class UconGraphWindow : EditorWindow {
 
-    [MenuItem("Window/Leap Motion/Ucon Graph")]
+    [MenuItem("Window/Leap Motion AppModules/Ucon Graph")]
     public static void ShowWindow() {
       var uconWindow = GetWindow(typeof(UconGraphWindow));
       uconWindow.titleContent = new GUIContent("Ucon Graph");

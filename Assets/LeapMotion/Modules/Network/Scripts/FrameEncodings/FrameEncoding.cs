@@ -83,8 +83,8 @@ namespace Leap.Unity.Networking {
       toFill.HandId = handId;
       toFill.TimeVisible = timeVisible;
       toFill.TipPosition = tipPosition;
-      toFill.TipVelocity = tipVelocity;
-      toFill.StabilizedTipPosition = stabilizedTipPosition;
+      //toFill.TipVelocity = tipVelocity;                     // deprecated as of
+      //toFill.StabilizedTipPosition = stabilizedTipPosition; // Core 4.4
       toFill.Direction = direction;
       toFill.Width = width;
       toFill.Length = length;

@@ -44,7 +44,7 @@ public class LeapGraphicButtonBlendShapeController : MonoBehaviour {
   protected virtual void Update() {
     if (graphic != null && button != null) {
       try {
-        graphic.SetBlendShapeAmount(button.depressedAmount.Map(0F, 1F, 0F, 0.8F) + _scalePulsator.value);
+        graphic.SetBlendShapeAmount(button.pressedAmount.Map(0F, 1F, 0F, 0.8F) + _scalePulsator.value);
       }
       catch (System.Exception) {
         Debug.LogError("Error setting blend shape. Does the attached graphic have a blend shape feature?", this);

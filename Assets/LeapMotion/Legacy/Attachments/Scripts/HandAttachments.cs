@@ -112,7 +112,7 @@ namespace Leap.Unity.Attachments {
         Thumb.rotation = _hand.Fingers[0].Bone(Bone.BoneType.TYPE_DISTAL).Rotation.ToQuaternion();
       }
       if(Index != null) {
-        Index.position = _hand.GetIndex().TipPosition.ToVector3();
+        Index.position = _hand.Fingers[1].Bone(Bone.BoneType.TYPE_DISTAL).NextJoint.ToVector3();
         Index.rotation = _hand.Fingers[1].Bone(Bone.BoneType.TYPE_DISTAL).Rotation.ToQuaternion();
       }
       if(Middle != null) {

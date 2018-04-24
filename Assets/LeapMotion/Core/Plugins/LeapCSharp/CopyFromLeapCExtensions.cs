@@ -21,8 +21,6 @@ namespace LeapInternal {
       frame.Id = (long)trackingMsg.info.frame_id;
       frame.Timestamp = (long)trackingMsg.info.timestamp;
       frame.CurrentFramesPerSecond = trackingMsg.framerate;
-      frame.InteractionBox = new InteractionBox(trackingMsg.interaction_box_center.ToLeapVector(),
-                                                trackingMsg.interaction_box_size.ToLeapVector());
 
       frame.ResizeHandList((int)trackingMsg.nHands);
 
@@ -54,7 +52,7 @@ namespace LeapInternal {
       hand.PinchDistance = leapHand.pinch_distance;
       hand.PalmWidth = leapHand.palm.width;
       hand.IsLeft = leapHand.type == eLeapHandType.eLeapHandType_Left;
-      hand.TimeVisible = leapHand.visible_time;
+      hand.TimeVisible = (float)(leapHand.visible_time * 1e-6);
       hand.PalmPosition = leapHand.palm.position.ToLeapVector();
       hand.StabilizedPalmPosition = leapHand.palm.stabilized_position.ToLeapVector();
       hand.PalmVelocity = leapHand.palm.velocity.ToLeapVector();
@@ -97,9 +95,7 @@ namespace LeapInternal {
       distal.CopyFrom(leapBone.distal, Leap.Bone.BoneType.TYPE_DISTAL);
 
       finger.TipPosition = distal.NextJoint;
-      finger.TipVelocity = leapBone.tip_velocity.ToLeapVector();
       finger.Direction = intermediate.Direction;
-      finger.StabilizedTipPosition = leapBone.stabilized_tip_position.ToLeapVector();
       finger.Width = intermediate.Width;
       finger.Length = (leapBone.finger_id == 0 ? 0.0f : 0.5f * proximal.Length) + intermediate.Length + 0.77f * distal.Length; //The values 0.5 for proximal and 0.77 for distal are used in platform code for this calculation
       finger.IsExtended = leapBone.is_extended != 0;

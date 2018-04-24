@@ -1,18 +1,18 @@
-﻿using Leap.Unity.Animation;
-using Leap.Unity.Attributes;
-using Leap.Unity.PhysicalInterfaces;
-using UnityEngine;
+﻿//using Leap.Unity.Animation;
+//using Leap.Unity.Attributes;
+//using Leap.Unity.PhysicalInterfaces;
+//using UnityEngine;
 
-namespace Leap.Unity.WIPUI {
+//namespace Leap.Unity.WIPUI {
 
-  public class Widget : zzOld_HandledObject {
+//  public class Widget : zzOld_HandledObject {
 
-    // Held Orientability.
+//    // Held Orientability.
 
-    // Held Visibility.
+//    // Held Visibility.
 
-    // Handle Type.
+//    // Handle Type.
     
-  }
+//  }
 
-}
+//}

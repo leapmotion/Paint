@@ -32,7 +32,11 @@ namespace Leap.Unity {
     }
 
     public static Query<T> Query<T>(this IIndexable<T> indexable) {
-      return indexable.Query();
+      var arr = ArrayPool<T>.Spawn(indexable.Count);
+      for (int i = 0; i < indexable.Count; i++) {
+        arr[i] = indexable[i];
+      }
+      return new Query<T>(arr, indexable.Count);
     }
   }
 

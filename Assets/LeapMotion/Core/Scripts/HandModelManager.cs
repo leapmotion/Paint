@@ -87,9 +87,7 @@ namespace Leap.Unity {
         HandRepresentation rep;
         if (!all_hand_reps.TryGetValue(curHand.Id, out rep)) {
           rep = MakeHandRepresentation(curHand, modelType);
-          if (rep != null) {
-            all_hand_reps.Add(curHand.Id, rep);
-          }
+          all_hand_reps.Add(curHand.Id, rep);
         }
         if (rep != null) {
           rep.IsMarked = true;
@@ -189,8 +187,6 @@ namespace Leap.Unity {
       public List<HandModelBase> modelsCheckedOut = new List<HandModelBase>();
       public bool IsEnabled = true;
       public bool CanDuplicate;
-
-      public Hands.HandEvent HandPostProcesses;
 
       /*Looks for suitable HandModelBase is the ModelGroup's modelList, if found, it is added to modelsCheckedOut.
        * If not, one can be cloned*/
