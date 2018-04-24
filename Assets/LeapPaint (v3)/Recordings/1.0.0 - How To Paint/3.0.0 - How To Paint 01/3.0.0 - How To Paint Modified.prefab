@@ -3268,11 +3268,6 @@ MonoBehaviour:
     IsRightToBeSpawned: 0
     IsEnabled: 0
     CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   - GroupName: Attachment Hands
     _handModelManager: {fileID: 114106724292132456}
     LeftModel: {fileID: 0}
@@ -3281,11 +3276,6 @@ MonoBehaviour:
     IsRightToBeSpawned: 0
     IsEnabled: 1
     CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   - GroupName: Capsule Hands
     _handModelManager: {fileID: 114106724292132456}
     LeftModel: {fileID: 0}
@@ -3294,11 +3284,6 @@ MonoBehaviour:
     IsRightToBeSpawned: 0
     IsEnabled: 1
     CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
 --- !u!114 &114149811827228498
 MonoBehaviour:
   m_ObjectHideFlags: 1

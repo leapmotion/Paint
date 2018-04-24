@@ -25105,6 +25105,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114014535192036680
@@ -25176,7 +25177,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -25217,6 +25218,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114019171719873194
@@ -25354,7 +25356,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23060660416888948}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -25447,6 +25449,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114035584089685972
@@ -25548,6 +25551,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114044898196920978
@@ -25642,7 +25646,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -25776,7 +25780,7 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 23410913929318510}
   _activateEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.2
@@ -25784,7 +25788,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _grabEffect:
     _clips:
-    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -25792,7 +25796,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _throwEffect:
     _clips:
-    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -25801,7 +25805,7 @@ MonoBehaviour:
   _maxVolumeVelocity: 5
   _returnEffect:
     _clips:
-    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -25897,7 +25901,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26021,7 +26025,7 @@ MonoBehaviour:
   _colorMarbleRenderer: {fileID: 23163549661577672}
   _dipEffect:
     _clips:
-    - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.5
@@ -26164,7 +26168,7 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 23529752607815106}
   _activateEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.2
@@ -26172,7 +26176,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _grabEffect:
     _clips:
-    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26180,7 +26184,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _throwEffect:
     _clips:
-    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26189,7 +26193,7 @@ MonoBehaviour:
   _maxVolumeVelocity: 5
   _returnEffect:
     _clips:
-    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26281,7 +26285,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23317077004434080}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26327,7 +26331,7 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 23258438530824554}
   _activateEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.2
@@ -26335,7 +26339,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _grabEffect:
     _clips:
-    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26343,7 +26347,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _throwEffect:
     _clips:
-    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26352,7 +26356,7 @@ MonoBehaviour:
   _maxVolumeVelocity: 5
   _returnEffect:
     _clips:
-    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26438,7 +26442,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23677292589042292}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26556,7 +26560,7 @@ MonoBehaviour:
   _otherElementsSwitch: {fileID: 0}
   showEffect:
     _clips:
-    - {fileID: 8300000, guid: e044bd24d3f4c8648ad68883b37e2492, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26634,6 +26638,7 @@ MonoBehaviour:
   deformPositionsState: 1
   ModelPalmAtLeapWrist: 1
   UseMetaCarpals: 1
+  _scaleLastFingerBones: 1
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
   jointList: []
@@ -26907,7 +26912,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23190616162212956}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26949,7 +26954,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23989347868506262}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27068,9 +27073,9 @@ MonoBehaviour:
   interactionHand: {fileID: 0}
   _beginEffect:
     _clips:
-    - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
-    - {fileID: 8300000, guid: 35b37b9ce3d97924980fc2dc98d13f6b, type: 3}
-    - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.45
@@ -27215,7 +27220,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23584824790447870}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27383,7 +27388,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23081737096845172}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27520,7 +27525,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23683342163335540}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27846,7 +27851,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: d97b7a02e4e076740ad646c409d81d47, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27874,7 +27879,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   _tickEffect:
     _clips:
-    - {fileID: 8300000, guid: b49b8756d78e8664789df458f6f2e02d, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000013408054806, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.4
@@ -27987,7 +27992,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28099,7 +28104,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23790231656540808}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28169,7 +28174,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23929554277450226}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28197,6 +28202,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114296403251938844
@@ -28333,7 +28339,7 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips:
-    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28341,7 +28347,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _vanishEffect:
     _clips:
-    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28350,7 +28356,7 @@ MonoBehaviour:
   _seperateWorkstationEffect: 1
   _workstationEmergeEffect:
     _clips:
-    - {fileID: 8300000, guid: 2aad5e1ec9ae12f42aa116aaed017c4a, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28358,7 +28364,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _workstationVanishEffect:
     _clips:
-    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28399,6 +28405,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114320719276178546
@@ -28415,15 +28422,15 @@ MonoBehaviour:
   _liquidMeshRenderer: {fileID: 23297290150983212}
   _mixEffect:
     _clips:
-    - {fileID: 8300000, guid: 13321d07a4e21a14abf6c60a2aba97b5, type: 3}
-    - {fileID: 8300000, guid: 152ab88e5d8ad004392d0a7a67b1152f, type: 3}
-    - {fileID: 8300000, guid: 091c69ba092888e478f8ce81c3dbb79e, type: 3}
-    - {fileID: 8300000, guid: f9b71d3cdeaf48340948914017582bd7, type: 3}
-    - {fileID: 8300000, guid: 6b1f7c443d03ce94c975e0c4d305bf63, type: 3}
-    - {fileID: 8300000, guid: 5959ff87b06ac664999616510034ed28, type: 3}
-    - {fileID: 8300000, guid: 1a210ed343891974f8723e2c6e265884, type: 3}
-    - {fileID: 8300000, guid: 4acc2817858e88a4383fd65fcab57f36, type: 3}
-    - {fileID: 8300000, guid: e89d567497cd0724da108faddf74dfce, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28448,7 +28455,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23751468963011622}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28663,7 +28670,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23510469537888588}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28686,7 +28693,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23058305001225856}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28954,6 +28961,7 @@ MonoBehaviour:
   deformPositionsState: 1
   ModelPalmAtLeapWrist: 1
   UseMetaCarpals: 1
+  _scaleLastFingerBones: 1
   modelFingerPointing: {x: -1, y: -0, z: -0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
   jointList: []
@@ -29014,9 +29022,9 @@ MonoBehaviour:
   interactionHand: {fileID: 0}
   _beginEffect:
     _clips:
-    - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
-    - {fileID: 8300000, guid: 35b37b9ce3d97924980fc2dc98d13f6b, type: 3}
-    - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.45
@@ -29137,7 +29145,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23513604053800026}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29238,7 +29246,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23396110060202500}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29304,7 +29312,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23705759223709050}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29382,7 +29390,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23167266034429228}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29522,7 +29530,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _roomScaleHeightOffset: 1.6
-  autoRecenterOnUserPresence: 1
+  recenterOnUserPresence: 1
+  recenterOnStart: 1
+  recenterOnKey: 0
+  recenterKey: 114
   enableRuntimeAdjustment: 1
   stepUpKey: 273
   stepDownKey: 274
@@ -29685,6 +29696,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114438065702858980
@@ -29737,7 +29749,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29793,7 +29805,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30113,7 +30125,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23786832468424472}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30256,7 +30268,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23508033834610074}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30488,7 +30500,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 8a49726c3cc9bc94fb6b71f7a1bf1d4d, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30647,7 +30659,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30725,7 +30737,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 8a49726c3cc9bc94fb6b71f7a1bf1d4d, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30884,7 +30896,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23480217989132146}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30907,7 +30919,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23199320945190386}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31077,7 +31089,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 2a7efc16446f98a43a2d29977e7b431a, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31147,7 +31159,7 @@ MonoBehaviour:
   _colorMarbleRenderer: {fileID: 23229196462258414}
   _dipEffect:
     _clips:
-    - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.5
@@ -31186,6 +31198,7 @@ MonoBehaviour:
     type: 2}
   _selectorPrefab: {fileID: 224000011509674004, guid: d107f9ddf1e2ea647bceef8c3bdd6880,
     type: 2}
+  noFilesFoundText: {fileID: 0}
 --- !u!114 &114596484694913276
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -31461,7 +31474,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31733,7 +31746,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 8a49726c3cc9bc94fb6b71f7a1bf1d4d, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31815,7 +31828,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31857,7 +31870,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23123503895512424}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31961,7 +31974,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23485342433258790}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32203,11 +32216,6 @@ MonoBehaviour:
     IsRightToBeSpawned: 0
     IsEnabled: 0
     CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   - GroupName: Attachment Hands
     _handModelManager: {fileID: 114672291383990284}
     LeftModel: {fileID: 114446644089871740}
@@ -32216,11 +32224,6 @@ MonoBehaviour:
     IsRightToBeSpawned: 0
     IsEnabled: 1
     CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   - GroupName: Capsule Hands
     _handModelManager: {fileID: 114672291383990284}
     LeftModel: {fileID: 114885154380455520}
@@ -32229,11 +32232,6 @@ MonoBehaviour:
     IsRightToBeSpawned: 0
     IsEnabled: 1
     CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
 --- !u!114 &114673033228072126
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -32266,7 +32264,7 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips:
-    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32274,7 +32272,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _vanishEffect:
     _clips:
-    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32283,7 +32281,7 @@ MonoBehaviour:
   _seperateWorkstationEffect: 1
   _workstationEmergeEffect:
     _clips:
-    - {fileID: 8300000, guid: 2aad5e1ec9ae12f42aa116aaed017c4a, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32291,7 +32289,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _workstationVanishEffect:
     _clips:
-    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32338,7 +32336,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23855635718524198}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32509,7 +32507,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32747,7 +32745,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23199971380036940}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32824,7 +32822,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23225232419887920}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -33051,7 +33049,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -33306,7 +33304,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23206959625320326}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -33756,6 +33754,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114837734793820806
@@ -33884,7 +33883,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 056be44e3e630834ca4e46dfa25253b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _localSaveDir: ./Paintings/
+  localSaveDir: ./Paintings/
+  paintingsDirTextPrefix: 'Folder: '
+  paintingsDirText: {fileID: 0}
 --- !u!114 &114846866883395994
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33914,7 +33915,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23800099295301124}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -33982,7 +33983,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23761264329435676}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34153,7 +34154,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34216,7 +34217,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23105312656091164}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34345,7 +34346,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34586,11 +34587,11 @@ MonoBehaviour:
   _templateLayer:
     layerIndex: 0
   _interactionLayer:
-    layerIndex: 19
+    layerIndex: 8
   _interactionNoContactLayer:
-    layerIndex: 20
+    layerIndex: 9
   _contactBoneLayer:
-    layerIndex: 21
+    layerIndex: 10
   _drawControllerRuntimeGizmos: 0
 --- !u!114 &114908112139751696
 MonoBehaviour:
@@ -34701,7 +34702,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23762260392315588}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34743,7 +34744,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23770811454247082}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34836,6 +34837,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114939265060258258
@@ -34929,7 +34931,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23612795143736584}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35010,6 +35012,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 1
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114968496047735746
@@ -35061,7 +35064,7 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips:
-    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35069,7 +35072,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _vanishEffect:
     _clips:
-    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35078,7 +35081,7 @@ MonoBehaviour:
   _seperateWorkstationEffect: 1
   _workstationEmergeEffect:
     _clips:
-    - {fileID: 8300000, guid: 2aad5e1ec9ae12f42aa116aaed017c4a, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35086,7 +35089,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _workstationVanishEffect:
     _clips:
-    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1

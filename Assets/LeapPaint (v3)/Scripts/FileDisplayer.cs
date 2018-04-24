@@ -4,14 +4,13 @@ using UnityEngine.UI;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
-
-
   public class FileDisplayer : MonoBehaviour {
 
     public FileManager _fileManager;
     public RectTransform _textParent;
     public Text _textPrefab;
     public RectTransform _selectorPrefab;
+    public Text noFilesFoundText;
 
     private string[] _files;
     private List<Text> _fileTexts = new List<Text>();
@@ -47,24 +46,39 @@ namespace Leap.Unity.LeapPaint_v3 {
         Destroy(toDestroy);
       }
 
-      if (_files.Length == 0 && _selector != null) {
-        Destroy(_selector.gameObject);
+      if (_files.Length == 0) {
+        if (_selector != null) {
+          Destroy(_selector.gameObject);
+        }
+
+        if (noFilesFoundText != null) {
+          noFilesFoundText.gameObject.SetActive(true);
+        }
       }
-      else if (_selector == null) {
-        _selector = (RectTransform)Instantiate(_selectorPrefab, _textParent.transform);
-        _selector.localRotation = Quaternion.identity;
-        _selector.localScale = Vector3.one;
-        _selector.sizeDelta = new Vector2(_textParent.rect.width, _textPrefab.rectTransform.rect.height);
+      else {
+        if (_selector == null) {
+          _selector = Instantiate(_selectorPrefab, _textParent.transform);
+          _selector.localRotation = Quaternion.identity;
+          _selector.localScale = Vector3.one;
+          _selector.sizeDelta = new Vector2(_textParent.rect.width,
+            _textPrefab.rectTransform.rect.height);
+        }
+
+        if (noFilesFoundText != null) {
+          noFilesFoundText.gameObject.SetActive(false);
+        }
       }
 
-      _textParent.sizeDelta = new Vector2(_textParent.rect.width, _textPrefab.rectTransform.rect.height * _files.Length);
+      _textParent.sizeDelta = new Vector2(_textParent.rect.width,
+        _textPrefab.rectTransform.rect.height * _files.Length);
       float heightFromTop = 0;
       for (int i = 0; i < _files.Length; i++) {
         if (_fileTexts.Count < _files.Length) {
           Text newText = (Text)Instantiate(_textPrefab, _textParent.transform);
           newText.rectTransform.localRotation = Quaternion.identity;
           newText.rectTransform.localScale = Vector3.one;
-          newText.rectTransform.sizeDelta = new Vector2(_textParent.rect.width, newText.rectTransform.rect.height);
+          newText.rectTransform.sizeDelta = new Vector2(_textParent.rect.width,
+            newText.rectTransform.rect.height);
           _fileTexts.Add(newText);
 
           ListedFile listedFile = newText.gameObject.GetComponent<ListedFile>();
@@ -73,7 +87,9 @@ namespace Leap.Unity.LeapPaint_v3 {
         }
         string filename = _fileManager.NameFromPath(_files[i]);
         _fileTexts[i].text = filename;
-        _fileTexts[i].rectTransform.localPosition = new Vector3(-_textParent.rect.width / 2F, _textParent.rect.height / 2F - heightFromTop, 0F);
+        _fileTexts[i].rectTransform.localPosition = new Vector3(
+          -_textParent.rect.width / 2F,
+          _textParent.rect.height / 2F - heightFromTop, 0F);
       
         _listedFiles[i].FileName = filename;
         _listedFiles[i].FilePath = _files[i];
@@ -81,16 +97,21 @@ namespace Leap.Unity.LeapPaint_v3 {
         heightFromTop += _fileTexts[i].rectTransform.rect.height;
       }
 
-      RefreshSelected();
+      refreshSelected();
     }
 
-    private void RefreshSelected() {
-      _selector.localPosition = new Vector3(-_textParent.rect.width / 2F, _textParent.rect.height / 2F - (_textPrefab.rectTransform.rect.height * _selectedFileIdx), 10F);
+    private void refreshSelected() {
+      if (_selector != null) {
+        _selector.localPosition = new Vector3(-_textParent.rect.width / 2F,
+          _textParent.rect.height / 2F
+            - (_textPrefab.rectTransform.rect.height * _selectedFileIdx),
+          10F);
+      }
     }
 
     public void NotifyPointerDown(ListedFile listedFile) {
       _selectedFileIdx = listedFile.ListIndex;
-      RefreshSelected();
+      refreshSelected();
     }
 
     public string GetSelectedFilename() {
