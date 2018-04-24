@@ -30,7 +30,7 @@ UnityPlayer.dll
 /Temp
 ExportedObj/
 Temp/
-Build/
+Build/*
 
 .vs/
 .vscode/
