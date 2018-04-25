@@ -9,7 +9,7 @@ using Leap.Unity.LeapPaint_v3;
 public class TutorialControl : MonoBehaviour {
 
   public Text text;
-  public PinchGesture leftPinch, rightPinch;
+  public PinchGesture rightPinch;
   public Transform strokeParent;
   public Widget colorWidget;
   public Widget brushWidget;
@@ -29,6 +29,32 @@ public class TutorialControl : MonoBehaviour {
     }
   }
 
+  public void EnableTutorial() {
+    // Set the player rig state to reflect what the beginning of the tutorial expects.
+    rightPinch.enabled = false;
+
+    StartCoroutine(colorWidget.Disable());
+    StartCoroutine(brushWidget.Disable());
+    StartCoroutine(menuWidget.Disable());
+
+    //if (bigColorEmergable != null) {
+    //  bigColorEmergable.TryVanishNow(isInWorkstation: true);
+    //}
+
+    brushThicknessObject.SetActive(false);
+  }
+
+  public void DisableTutorial() {
+    // Unlock everything!
+    rightPinch.enabled = true;
+
+    StartCoroutine(colorWidget.Enable());
+    StartCoroutine(brushWidget.Enable());
+    StartCoroutine(menuWidget.Enable());
+
+    brushThicknessObject.SetActive(true);
+  }
+
   public void SetText(string text) {
     this.text.text = text;
   }
@@ -38,7 +64,6 @@ public class TutorialControl : MonoBehaviour {
   }
 
   public void EnablePinching() {
-    leftPinch.enabled = true;
     rightPinch.enabled = true;
   }
 
@@ -65,7 +90,7 @@ public class TutorialControl : MonoBehaviour {
   }
 
   public void EnableFinalMenu() {
-    menuWidget.Enable();
+    StartCoroutine(menuWidget.Enable());
   }
 
   public void NotifyColorPalleteTouched() {
@@ -89,23 +114,38 @@ public class TutorialControl : MonoBehaviour {
   public struct Widget {
     public GameObject widget;
     public GameObject ring;
-    public EmergeableBehaviour emergable;
+    public EmergeableBehaviour[] emergables;
     public InteractionBehaviour ieBehaviour;
     public IndexUIActivator_PassTriggerEvents trigger;
 
     public IEnumerator Enable() {
       ring.SetActive(true);
 
-
-
       widget.GetComponent<WearableUI>().forceHide = false;
       widget.GetComponent<WearableUI>().RefreshVisibility();
 
-      if (emergable != null) {
-        emergable.TryEmerge(isInWorkstation: true);
+      foreach (var emergable in emergables) {
+        if (emergable != null) {
+          emergable.TryEmerge(isInWorkstation: false);
+        }
       }
 
       yield return null;
+    }
+
+    public IEnumerator Disable() {
+      yield return new WaitForEndOfFrame();
+
+      foreach (var emergable in emergables) {
+        if (emergable != null) {
+          emergable.TryVanish(isInWorkstation: false);
+        }
+      }
+
+      widget.GetComponent<WearableUI>().forceHide = true;
+      widget.GetComponent<WearableUI>().RefreshVisibility();
+
+      ring.SetActive(false);
     }
   }
 }
