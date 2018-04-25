@@ -643,7 +643,7 @@ namespace Leap.Unity.LeapPaint_v3 {
         .OverTime(overTime)
         .Smooth(SmoothType.Smooth)
         .OnLeaveStart(DoOnMovementToWorkstationBegan)
-        .OnReachEnd(DoOnMovementToWorkstationFinished);
+        .OnReachEnd(CheckAttachedBeforeOnMovementToWorkstationFinished);
     }
 
     private void OnGetWorkstationEmergeTransformLerpAmount(float lerpAmount) {
@@ -689,7 +689,8 @@ namespace Leap.Unity.LeapPaint_v3 {
       float timeToTween = timeCoefficient * Vector3.Distance(velocityOffsetPosition, targetPosition);
 
       // Construct tween and play it.
-      ConstructWorkstationPlacementTween(_simulatedThrownBody.transform, _workstationTargetLocation, timeToTween).Play();
+      ConstructWorkstationPlacementTween(
+        _simulatedThrownBody.transform, _workstationTargetLocation, timeToTween).Play();
     }
 
     private void ScheduleRigidbodyUpdate(Vector3 position, Quaternion rotation, Vector3 velocity) {
@@ -777,6 +778,16 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
 
       _isAttached = false;
+    }
+
+    /// <summary>
+    /// Gates child functionality of "expanding the workstation" behind making sure we
+    /// haven't been re-attached to the hand via, e.g., the return-to-anchor button.
+    /// </summary>
+    protected virtual void CheckAttachedBeforeOnMovementToWorkstationFinished() {
+      if (!_isAttached) {
+        DoOnMovementToWorkstationFinished();
+      }
     }
 
     protected virtual void DoOnMovementToWorkstationFinished() {
