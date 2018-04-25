@@ -90,6 +90,8 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       if (Application.isPlaying) {
         MarbleTouchUpdate();
+
+        UpdateWaitingForNoGraspToCallMarble();
       }
     }
 
@@ -370,7 +372,7 @@ namespace Leap.Unity.LeapPaint_v3 {
       _fingerTouchingMarble = false;
 
       if (_marbleReady) {
-        DoOnMarbleActivated();
+        CallOnMarbleActivatedAfterWaitingForNoGrasp();
         _marbleReady = false;
       }
       RefreshMarbleCountdown();
@@ -393,6 +395,48 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     private void FinalizeMarbleTouch() {
       DestroyImmediate(_marbleDepthCollider.gameObject);
+    }
+
+    private bool _waitingForGraspToCallMarble = false;
+    private float _waitForGraspTime = 0.04f;
+    private float _waitForGraspTimer = 0f;
+    private InteractionHand _backingRightIntHand = null;
+    private InteractionHand _rightIntHand {
+      get {
+        if (_backingRightIntHand == null) {
+          var manager = InteractionManager.instance;
+          if (manager != null) {
+            _backingRightIntHand = manager.interactionControllers.Query()
+              .Where(h => !h.isLeft && h.intHand != null)
+              .Select(h => h.intHand)
+              .FirstOrDefault();
+          }
+        }
+        return _backingRightIntHand;
+      }
+    }
+    private void CallOnMarbleActivatedAfterWaitingForNoGrasp() {
+      if (!_waitingForGraspToCallMarble) {
+        _waitingForGraspToCallMarble = true;
+      }
+      _waitForGraspTimer = 0f;
+    }
+    private void UpdateWaitingForNoGraspToCallMarble() {
+      if (_waitingForGraspToCallMarble) {
+        _waitForGraspTimer += Time.deltaTime;
+
+        if (_rightIntHand.isGraspingObject) {
+          // Cancel the call, grasp detected.
+          _waitingForGraspToCallMarble = false;
+          return;
+        }
+
+        if (_waitForGraspTimer > _waitForGraspTime) {
+          _waitingForGraspToCallMarble = false;
+          _waitForGraspTimer = 0f;
+          DoOnMarbleActivated();
+        }
+      }
     }
 
     protected virtual void DoOnMarbleActivated() {
