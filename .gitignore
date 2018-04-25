@@ -12,8 +12,10 @@
 *.vs
 
 *.zip
+*.zip.meta
 *.exe
 *_Data/
+*_Data.meta
 
 Paintings/
 Paintings/*
