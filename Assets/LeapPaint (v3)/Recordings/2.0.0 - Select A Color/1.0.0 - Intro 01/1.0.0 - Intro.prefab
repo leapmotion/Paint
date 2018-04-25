@@ -117,6 +117,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &114612726511273318
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -147,5 +148,7 @@ PlayableDirector:
     value: {fileID: 1106855008076468}
   - key: {fileID: 114279283812818858, guid: 072e18c3ad34ec74b92a37b1fee7ead8, type: 2}
     value: {fileID: 114612726511273318}
+  - key: {fileID: 114425158812268760, guid: 072e18c3ad34ec74b92a37b1fee7ead8, type: 2}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
