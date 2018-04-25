@@ -17,6 +17,10 @@ public class TutorialControl : MonoBehaviour {
   public EmergeableBehaviour bigColorEmergable;
   public GameObject brushThicknessObject;
 
+  [Header("Tutorial Objects")]
+  public GameObject tutorialBot;
+  public GameObject tutorialPostProcess;
+
   [NonSerialized]
   public bool colorPalleteHasBeenTouched = false;
 
@@ -37,9 +41,8 @@ public class TutorialControl : MonoBehaviour {
     StartCoroutine(brushWidget.Disable());
     StartCoroutine(menuWidget.Disable());
 
-    //if (bigColorEmergable != null) {
-    //  bigColorEmergable.TryVanishNow(isInWorkstation: true);
-    //}
+    tutorialBot.SetActive(true);
+    tutorialPostProcess.SetActive(true);
 
     brushThicknessObject.SetActive(false);
   }
@@ -51,6 +54,9 @@ public class TutorialControl : MonoBehaviour {
     StartCoroutine(colorWidget.Enable());
     StartCoroutine(brushWidget.Enable());
     StartCoroutine(menuWidget.Enable());
+
+    tutorialBot.SetActive(false);
+    tutorialPostProcess.SetActive(false);
 
     brushThicknessObject.SetActive(true);
   }
@@ -119,6 +125,8 @@ public class TutorialControl : MonoBehaviour {
     public IndexUIActivator_PassTriggerEvents trigger;
 
     public IEnumerator Enable() {
+      yield return new WaitForEndOfFrame();
+
       ring.SetActive(true);
 
       widget.GetComponent<WearableUI>().forceHide = false;

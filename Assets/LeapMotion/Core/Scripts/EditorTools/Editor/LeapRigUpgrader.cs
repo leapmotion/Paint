@@ -1,4 +1,13 @@
-﻿using Leap.Unity.Query;
+/******************************************************************************
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
+ * Leap Motion proprietary and confidential.                                  *
+ *                                                                            *
+ * Use subject to the terms of the Leap Motion SDK Agreement available at     *
+ * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
+ * between Leap Motion and you, your company or other organization.           *
+ ******************************************************************************/
+
+using Leap.Unity.Query;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -972,12 +981,14 @@ namespace Leap.Unity {
       }
       else {
         var enableDepthBufferScript = this.cameraData.enableDepthBuffer;
-        if (options.camera_removeEnableDepthBufferScript) {
+        if (options.camera_removeEnableDepthBufferScript
+            && enableDepthBufferScript != null) {
           Undo.DestroyObjectImmediate(enableDepthBufferScript);
         }
 
         var eyeDislocator = this.cameraData.leapEyeDislocator;
-        if (options.camera_removeLeapEyeDislocator) {
+        if (options.camera_removeLeapEyeDislocator
+            && eyeDislocator != null) {
           Undo.DestroyObjectImmediate(eyeDislocator);
         }
         
@@ -985,7 +996,8 @@ namespace Leap.Unity {
           var rightEyeCamData = this.imageRigData.rightEyeCamData;
           if (rightEyeCamData != null) {
             var rightEyeTransform = rightEyeCamData.cameraTransform;
-            if (options.camera_removeRightEyeCamera) {
+            if (options.camera_removeRightEyeCamera
+                && rightEyeTransform != null) {
               Undo.DestroyObjectImmediate(rightEyeTransform.gameObject);
             }
           }
@@ -1003,8 +1015,9 @@ namespace Leap.Unity {
         }
         else {
           var leapSpaceExtraChildren = leapSpaceData.nonLHCChildTransforms;
-          if (options.leapSpace_mergeExtraChildrenUpward) {
-            foreach (var extraChild in leapSpaceExtraChildren) {
+          if (options.leapSpace_mergeExtraChildrenUpward
+              && leapSpaceExtraChildren != null) {
+            foreach (var extraChild in leapSpaceExtraChildren.Query().Where(t => t != null)) {
               Undo.SetTransformParent(extraChild, cameraTransform,
                 "Move LeapSpace child to Camera");
             }
@@ -1018,8 +1031,9 @@ namespace Leap.Unity {
           }
           else {
             var lhcExtraChildren = lhcData.extraChildTransforms;
-            if (options.lhc_mergeExtraChildrenUpward) {
-              foreach (var extraChild in lhcExtraChildren) {
+            if (options.lhc_mergeExtraChildrenUpward
+                && lhcExtraChildren != null) {
+              foreach (var extraChild in lhcExtraChildren.Query().Where(t => t != null)) {
                 Undo.SetTransformParent(extraChild, cameraTransform,
                   "Move LHC child to Camera");
               }
@@ -1059,7 +1073,7 @@ namespace Leap.Unity {
             // Migrate any extra components on the LHC to the camera.
             var extraComponents = lhcData.extraComponents;
             if (extraComponents != null && extraComponents.Count > 0) {
-              foreach (var component in extraComponents) {
+              foreach (var component in extraComponents.Query().Where(c => c != null)) {
                 var newComponent
                   = cameraTransform.gameObject.AddComponent(component.GetType());
 
