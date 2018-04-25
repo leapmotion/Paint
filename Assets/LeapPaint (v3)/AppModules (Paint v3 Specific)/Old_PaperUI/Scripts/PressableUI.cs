@@ -3,6 +3,7 @@ using System.Collections;
 using Leap.Unity.RuntimeGizmos;
 using Leap.Unity;
 using UnityEngine.Events;
+using Leap.Unity.Attributes;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
@@ -10,12 +11,19 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     #region Setup
 
+    public enum ActivatorFilter { EitherHand, RightHandOnly, LeftHandOnly }
+    [SerializeField, EditTimeOnly]
+    private ActivatorFilter activatedBy = ActivatorFilter.EitherHand;
+
     public float _xWidth = 1F;
     public float _zWidth = 1F;
     public float _maxPenetrationDistance = 1F;
 
     private PressableUIManager _manager;
     private UIActivator _activator;
+    public UIActivator activator {
+      get { return _activator; }
+    }
 
     protected void OnValidate() {
       OnValidateLayers();
@@ -25,20 +33,17 @@ namespace Leap.Unity.LeapPaint_v3 {
       OnValidateLayers();
       InitLayerState();
       _manager = GameObject.FindObjectOfType<PressableUIManager>();
-      _manager.RegisterPressable(this);
+      _manager.RegisterPressable(this, activatedBy);
     }
 
     #endregion
 
     #region Properties
 
-    public bool IsActivated {
+    public bool isActivated {
       get { return _activator != null; }
     }
 
-    public UIActivator Activator {
-      get { return _activator; }
-    }
 
     #endregion
 
@@ -53,7 +58,9 @@ namespace Leap.Unity.LeapPaint_v3 {
     #region Activator State
 
     public void NotifyClosestActivator(UIActivator activator) {
-      ProcessActivator(activator);
+      if (this._activator != activator) {
+        ProcessActivator(activator);
+      }
     }
 
     private void FixedActivatorUpdate() {
@@ -64,7 +71,8 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     private void ProcessActivator(UIActivator activator) {
       if (!this.isActiveAndEnabled) return;
-      if (GetUnsignedWorldPointActivationVolumeDistance(activator.transform.position) < this.transform.InverseTransformVector(Vector3.up * activator.WorldRadius).magnitude) {
+      if (GetUnsignedWorldPointActivationVolumeDistance(activator.transform.position)
+          < this.transform.InverseTransformVector(Vector3.up * activator.WorldRadius).magnitude) {
         _activator = activator;
       }
       else {
@@ -248,7 +256,7 @@ namespace Leap.Unity.LeapPaint_v3 {
         drawer.matrix = this.transform.localToWorldMatrix;
 
         drawer.color = Color.green;
-        if (IsActivated) { drawer.color = Color.white; }
+        if (isActivated) { drawer.color = Color.white; }
         drawer.DrawWireCube(GetActivationVolumeBoxOffset(), GetActivationVolumeBoxBounds());
 
         if (_gizmoColors == null) {
