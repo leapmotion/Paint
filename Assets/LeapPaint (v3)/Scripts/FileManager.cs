@@ -9,6 +9,7 @@ namespace Leap.Unity.LeapPaint_v3 {
   public class FileManager : MonoBehaviour {
 
     public string localSaveDir = "./Paintings/";
+    public string fileNamePrefix = "Paint - ";
 
     public string paintingsDirTextPrefix = "";
     public Text paintingsDirText;
@@ -38,6 +39,17 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     public string NameFromPath(string path) {
       return Path.GetFileName(path);
+    }
+
+    public DateTime CreationDateFromPath(string path) {
+      return Directory.GetCreationTime(path);
+    }
+
+    public int NumberFromName(string name, string prefix = "Paint - ") {
+      if (name.StartsWith(prefix)) {
+        return int.Parse(name.Substring(prefix.Length).TrimEnd(5));
+      }
+      return 0;
     }
 
     public void Save(string fileName, string fileContents) {
