@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -39,6 +40,8 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     public void RefreshFiles() {
       _files = _fileManager.GetFiles();
+      Array.Sort(_files, (a, b) => (_fileManager.CreationDateFromPath(a)
+                         .CompareTo(_fileManager.CreationDateFromPath(b))));
       while (_fileTexts.Count > _files.Length) {
         GameObject toDestroy = _fileTexts[_fileTexts.Count - 1].gameObject;
         _fileTexts.RemoveAt(_fileTexts.Count - 1);

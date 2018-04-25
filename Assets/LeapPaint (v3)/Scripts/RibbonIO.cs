@@ -22,18 +22,22 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     public Action<string> OnSaveSuccessful = (x) => { };
 
-    private string GetHistoryAsJSON() {
+    private string GetHistoryAsJSON(out int strokeNumber) {
       Strokes strokes = new Strokes(_historyManager.GetStrokes());
-      Debug.Log("Created JSON for " + strokes.strokes.Count + " strokes.");
+      strokeNumber = strokes.strokes.Count;
       return JsonUtility.ToJson(strokes);
     }
 
     public void Save() {
-      string fileName = "My Painting " + DateTime.Now.ToString("MM-dd_HH-mm-ss");
-      string json = GetHistoryAsJSON();
+      int strokeNumber = 0;
+      string json = GetHistoryAsJSON(out strokeNumber);
+      if(strokeNumber < 1) { Debug.LogWarning("Aborting Save: No Strokes in Scene!", this); return; }
+      string fileName = _fileManager.fileNamePrefix + 
+                          GetHighestFileNumber(_fileManager.fileNamePrefix);
       _fileManager.Save(fileName + ".json", json);
       _fileManager.Save(fileName + ".ply", PlyExporter.MakePly(_replayProcessor._ribbonParentObject));
       //_fileManager.Save(fileName + ".obj", ObjExporter.makeObj(true, "LeapPaintMesh", _replayProcessor._ribbonParentObject).ToString());
+      Debug.Log("Created JSON for " + strokeNumber + " strokes.");
       OnSaveSuccessful.Invoke(fileName);
     }
 
@@ -79,6 +83,16 @@ namespace Leap.Unity.LeapPaint_v3 {
       }
 
       _isLoading = false;
+    }
+
+    private int GetHighestFileNumber(string prefix = "Paint - ") {
+      int highestNumber = 0;
+      string[] files = _fileManager.GetFiles();
+      foreach (string file in files) {
+        string fileName = _fileManager.NameFromPath(file);
+        highestNumber = Mathf.Max(highestNumber, _fileManager.NumberFromName(fileName, prefix));
+      }
+      return ++highestNumber;
     }
 
   }
