@@ -5870,7 +5870,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
-  m_DragThreshold: 7500
+  m_DragThreshold: 1000
 --- !u!114 &270098724
 MonoBehaviour:
   m_ObjectHideFlags: 0
