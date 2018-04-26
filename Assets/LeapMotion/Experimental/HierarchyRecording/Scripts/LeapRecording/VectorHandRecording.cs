@@ -71,6 +71,12 @@ namespace Leap.Unity.Recording {
       Debug.Log("Finished loading frames.");
     }
 
+#if UNITY_EDITOR
+    public void AddOffset(Vector3 offset) {
+      _frameCurves.AddOffset(offset);
+    }
+#endif
+
     public override bool Sample(float time, Frame toFill, bool clampTimeToValid = true) {
       float timeToSample = time + minKeyframeTime;
 
@@ -81,10 +87,6 @@ namespace Leap.Unity.Recording {
         _frameCurves.Sample(timeToSample, toFill, _leftHand, _rightHand);
         return true;
       }
-    }
-
-    public void AddOffset(Vector3 offset) {
-      _frameCurves.AddOffset(offset);
     }
 
     private bool outsideDataBounds(float time) {

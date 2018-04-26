@@ -155,6 +155,7 @@ namespace Leap.Unity {
       return newCurve;
     }
 
+#if UNITY_EDITOR
     public static AnimationCurve ConstantValueOffset(AnimationCurve curve, float offset) {
       var keys = curve.keys.Query().Select(k => {
         k.value += offset;
@@ -172,7 +173,6 @@ namespace Leap.Unity {
       return newCurve;
     }
 
-#if UNITY_EDITOR
     public static AnimationCurve Compress(AnimationCurve curve, float maxDelta = 0.005f, int checkSteps = 8) {
       var curveArray = new AnimationCurve[] { curve };
 

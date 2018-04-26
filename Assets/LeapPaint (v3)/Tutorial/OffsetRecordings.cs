@@ -1,16 +1,20 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
-using Leap.Unity;
+#endif
 using Leap.Unity.Recording;
+using Leap.Unity.Attributes;
 
 public class OffsetRecordings : MonoBehaviour {
 
+  [QuickButton("Apply", "ApplyTheShift")]
   public Vector3 offset;
 
-  [ContextMenu("Shift it")]
-  void Tryit() {
+#if UNITY_EDITOR
+  [ContextMenu("Apply The Shift")]
+  void ApplyTheShift() {
     foreach (var guid in AssetDatabase.FindAssets("t:VectorHandRecording")) {
       string path = AssetDatabase.GUIDToAssetPath(guid);
 
@@ -27,7 +31,5 @@ public class OffsetRecordings : MonoBehaviour {
       recording.AddOffset(offset);
     }
   }
-
-
-
+#endif
 }

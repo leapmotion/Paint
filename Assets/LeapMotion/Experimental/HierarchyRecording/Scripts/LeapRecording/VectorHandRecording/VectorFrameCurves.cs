@@ -39,11 +39,6 @@ namespace Leap.Unity.Recording {
       rightHandCurves.AddKeyframes(keyframeTime, rightHand);
     }
 
-    public void AddOffset(Vector3 offset) {
-      leftHandCurves.AddOffset(offset);
-      rightHandCurves.AddOffset(offset);
-    }
-
 #if UNITY_EDITOR
     /// <summary>
     /// Processes all of the current keyframe data and compresses them using
@@ -52,6 +47,11 @@ namespace Leap.Unity.Recording {
     public void CompressCurves() {
       leftHandCurves .Compress();
       rightHandCurves.Compress();
+    }
+
+    public void AddOffset(Vector3 offset) {
+      leftHandCurves.AddOffset(offset);
+      rightHandCurves.AddOffset(offset);
     }
 #endif
 
