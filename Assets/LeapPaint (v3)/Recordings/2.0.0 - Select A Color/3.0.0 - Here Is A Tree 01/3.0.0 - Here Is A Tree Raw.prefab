@@ -27236,6 +27236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 0}
   clipTime: 0
+  playbackOffset: 0
 --- !u!114 &114216741149845200
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33894,6 +33895,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 7fd0e09f11e39cc458dc69992d94d3bf, type: 2}
   clipTime: 0
+  playbackOffset: 0
 --- !u!114 &114835025879985424
 MonoBehaviour:
   m_ObjectHideFlags: 1

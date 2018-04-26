@@ -10,6 +10,7 @@ public class ThickLineRendererRecorder : BasicMethodRecording<ThickLineRendererA
   private ThickRibbonRenderer _renderer;
 
   public float clipTime = 0;
+  public float playbackOffset;
 
   protected override void Awake() {
     base.Awake();
@@ -61,13 +62,23 @@ public class ThickLineRendererRecorder : BasicMethodRecording<ThickLineRendererA
     });
   }
 
+  private List<StrokePoint> _strokeList = new List<StrokePoint>();
+
   protected override void InvokeArgs(Args args) {
     switch (args.method) {
       case Method.InitializeRenderer:
         _renderer.InitializeRenderer();
         break;
       case Method.UpdateRenderer:
-        _renderer.UpdateRenderer(args.stroke, args.maxChangedFromEnd);
+        _strokeList.Clear();
+        _strokeList.AddRange(args.stroke);
+        for(int i=0; i<_strokeList.Count; i++) {
+          var item = _strokeList[i];
+          item.position = item.position + Vector3.up * playbackOffset;
+          _strokeList[i] = item;
+        }
+
+        _renderer.UpdateRenderer(_strokeList, args.maxChangedFromEnd);
         break;
       case Method.FinalizeRenderer:
         _renderer.FinalizeRenderer();
