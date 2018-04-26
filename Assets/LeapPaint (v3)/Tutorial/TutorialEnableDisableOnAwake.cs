@@ -12,17 +12,18 @@ namespace Leap.Unity.LeapPaint_v3 {
     public string enableTutorialFlag = "--enable-tutorial";
     public string disableTutorialFlag = "--disable-tutorial";
 
-    private bool _shouldTutorialBeEnabled = true;
+    private bool _shouldTutorialBeEnabled;
 
     private void Awake() {
       _shouldTutorialBeEnabled = tutorialEnabledOnAwake;
 
       string[] arguments = Environment.GetCommandLineArgs();
+
       for (int i = 0; i < arguments.Length; i++) {
-        if (arguments.Equals(enableTutorialFlag)) {
+        if (arguments[i].Equals(enableTutorialFlag)) {
           _shouldTutorialBeEnabled = true;
         }
-        if (arguments.Equals(disableTutorialFlag)) {
+        if (arguments[i].Equals(disableTutorialFlag)) {
           _shouldTutorialBeEnabled = false;
         }
       }
