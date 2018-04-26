@@ -6,7 +6,7 @@ Also be sure to check out our [Unity Modules][unitymodules], which is the backbo
 
 ## License
 
-LeapPaint is licensed for use under the terms of the [Leap Motion developer SDK agreement][sdkagreement].
+UnityModules and the Paint application is licensed for use under the terms of the [Leap Motion developer SDK agreement][sdkagreement].
 
 
 [unitymodules]: https://github.com/leapmotion/UnityModules "Leap Motion Unity Modules"
