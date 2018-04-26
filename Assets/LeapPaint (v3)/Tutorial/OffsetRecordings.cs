@@ -23,6 +23,7 @@ public class OffsetRecordings : MonoBehaviour {
         continue;
       }
 
+      EditorUtility.SetDirty(recording);
       recording.AddOffset(offset);
     }
   }

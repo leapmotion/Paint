@@ -24774,6 +24774,7 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
+  overrideWorkstationDestination: {fileID: 0}
   _menuButtonEmergeables:
   - {fileID: 114778921383587890}
   - {fileID: 114944186690263316}
@@ -25011,6 +25012,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -25721,10 +25723,11 @@ MonoBehaviour:
   _physicsExtrapolation: 1
   _physicsExtrapolationTime: 0.011111111
   _workerThreadProfiling: 0
-  _allowManualDeviceOffset: 0
+  _deviceOffsetMode: 0
   _deviceOffsetYAxis: 0
   _deviceOffsetZAxis: 0.12
   _deviceTiltXAxis: 5
+  _deviceOrigin: {fileID: 0}
   _temporalWarpingMode: 0
   _customWarpAdjustment: 17
   _updateHandInPrecull: 0
@@ -25809,6 +25812,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 2.13
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -25959,6 +25963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -26046,6 +26051,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   localSaveDir: ./Paintings/
+  fileNamePrefix: 'Paint - '
   paintingsDirTextPrefix: 'Folder: '
   paintingsDirText: {fileID: 0}
 --- !u!114 &114146287072822794
@@ -26072,6 +26078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 3.65
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -26341,6 +26348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f364fab413d1194182d80c9e12e543b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 6.73
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -26532,6 +26540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.86
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -26716,6 +26725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -26789,6 +26799,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -26930,6 +26941,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -26984,6 +26996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27051,6 +27064,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27124,6 +27138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27312,6 +27327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27467,6 +27483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27543,6 +27560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27635,6 +27653,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.86
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -27710,6 +27729,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27783,6 +27803,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 3.65
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -27839,6 +27860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27906,6 +27928,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -27994,6 +28017,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -28048,6 +28072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.86
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -28316,6 +28341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -28370,6 +28396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -28443,6 +28470,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -28791,6 +28819,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -28870,6 +28899,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -29004,6 +29034,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 2.13
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -29556,6 +29587,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -29658,6 +29690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -29712,6 +29745,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -30112,6 +30146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -30227,6 +30262,7 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
+  overrideWorkstationDestination: {fileID: 0}
   _brushControlsEmergeable: {fileID: 114975268722965782}
   _brushControlsMoveable: {fileID: 114462131343739324}
   _brushWorkstationEmergeable: {fileID: 114065867237290578}
@@ -30661,6 +30697,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.86
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -30740,6 +30777,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -30836,6 +30874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 3.65
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -30892,6 +30931,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -31097,6 +31137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -31299,6 +31340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 2.13
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -31385,6 +31427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 3.65
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -31527,6 +31570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.86
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -31589,6 +31633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -32267,6 +32312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -32457,6 +32503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -32525,6 +32572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.86
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -32698,6 +32746,7 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
+  overrideWorkstationDestination: {fileID: 0}
   _primaryPaletteEmergeable: {fileID: 114402417337487308}
   _primaryPaletteMoveable: {fileID: 114534521325818324}
   _primaryPalette: {fileID: 114606104476750454}
@@ -32789,6 +32838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 3.65
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -32930,6 +32980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -33326,6 +33377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -33767,6 +33819,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.8
   _zWidth: 1.8
   _maxPenetrationDistance: 2.14
@@ -33958,6 +34011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 3.65
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -34093,6 +34147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 3.65
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
@@ -34622,6 +34677,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad626731e5bb8c640875fb3915c08035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activatedBy: 0
   _xWidth: 1.86
   _zWidth: 1.86
   _maxPenetrationDistance: 2.14
