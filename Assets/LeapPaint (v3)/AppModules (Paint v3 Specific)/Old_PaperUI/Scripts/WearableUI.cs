@@ -632,9 +632,16 @@ namespace Leap.Unity.LeapPaint_v3 {
       return 0.2F;
     }
 
+    [SerializeField]
+    private Transform _overrideDestination;
+
     private Transform _lerpFrom;
     private Transform _lerpTo;
     private Tween ConstructWorkstationPlacementTween(Transform from, Transform to, float overTime) {
+      if (_overrideDestination != null) {
+        to = _overrideDestination;
+      }
+
       _lerpFrom = from;
       _lerpTo = to;
       return Tween.Single().Target(this.transform)
