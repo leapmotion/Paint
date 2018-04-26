@@ -27,9 +27,12 @@ namespace Leap.Unity.Recording {
     private DirectorWrapMode _wrapMode = DirectorWrapMode.None;
 
     private void OnEnable() {
-      _director.time = 0;
       _director.extrapolationMode = _wrapMode;
-      _director.Play(_playable);
+
+      if (_playable != null) {
+        _director.time = 0;
+        _director.Play(_playable);
+      }
     }
 
     public void PauseAndHold() {
