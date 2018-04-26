@@ -450,8 +450,8 @@ namespace Leap.Unity.InputModule {
         ProcessStateEvents(whichPointer);
         if ((PointEvents[whichPointer] != null)) {
           //Tell Leap Buttons how far away the finger is
-          GameObject Hoverer = ExecuteEvents.GetEventHandler<IPointerClickHandler>(PointEvents[whichPointer].pointerCurrentRaycast.gameObject);
-          if ((Hoverer != null)) {
+          GameObject Hoverer = ExecuteEvents.GetEventHandler<IPointerEnterHandler>(PointEvents[whichPointer].pointerCurrentRaycast.gameObject);
+          if (Hoverer != null) {
             ILeapWidget comp = Hoverer.GetComponent<ILeapWidget>();
             if (comp == null) { comp = Hoverer.GetComponentInParent<ILeapWidget>(); }
             if (comp != null) {

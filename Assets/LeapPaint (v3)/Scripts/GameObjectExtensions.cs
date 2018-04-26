@@ -1,15 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
-
   public static class GameObjectExtensions {
 
-    public static T FindClosest<T>(this GameObject obj, List<T> candidates, out float distance) where T : MonoBehaviour {
+    public static T FindClosest<T>(this GameObject obj,
+                                   List<T> candidates,
+                                   out float distance,
+                                   Func<T, bool> optionalFilter = null) where T : MonoBehaviour {
       T closestCandidate = null;
       float closestCandidateDistance = float.PositiveInfinity;
       for (int i = 0; i < candidates.Count; i++) {
+        if (optionalFilter != null && !optionalFilter(candidates[i])) {
+          continue;
+        }
+
         if (closestCandidate != null) {
           float tempDistance = Vector3.Distance(candidates[i].transform.position, obj.transform.position);
           if (tempDistance < closestCandidateDistance) {
@@ -19,7 +26,8 @@ namespace Leap.Unity.LeapPaint_v3 {
         }
         else {
           closestCandidate = candidates[i];
-          closestCandidateDistance = Vector3.Distance(closestCandidate.transform.position, obj.transform.position);
+          closestCandidateDistance = Vector3.Distance(closestCandidate.transform.position,
+            obj.transform.position);
         }
       }
       distance = closestCandidateDistance;

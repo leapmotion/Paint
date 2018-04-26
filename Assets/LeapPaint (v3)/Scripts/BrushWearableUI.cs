@@ -78,7 +78,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected override float GetOptimalWorkstationVerticalOffset() {
-      return -0.1F;
+      return -0.15F;
     }
 
     protected override void DoOnReturnedToAnchor() {

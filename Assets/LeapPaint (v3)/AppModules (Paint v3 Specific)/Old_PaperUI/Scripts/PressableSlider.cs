@@ -41,7 +41,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       _framesUntilTickAllowed--;
 
-      if (IsActivated) {
+      if (isActivated) {
         _slideXZPosition = GetAxisSlideXZPosition();
 
         float sliderValue = GetSliderValue();
@@ -79,7 +79,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     private Vector3 GetAxisSlideXZPosition() {
-      if (!IsActivated) {
+      if (!isActivated) {
         return GetSliderStartPosition();
       }
       else {
@@ -118,7 +118,7 @@ namespace Leap.Unity.LeapPaint_v3 {
         drawer.DrawWireCube(GetSliderEndPosition(), Vector3.one * 0.5F);
 
 
-        if (IsActivated) {
+        if (isActivated) {
           drawer.color = Color.cyan;
           drawer.DrawWireCube(this.transform.InverseTransformPoint(GetActivatorWorldPosition()), Vector3.one);
 
