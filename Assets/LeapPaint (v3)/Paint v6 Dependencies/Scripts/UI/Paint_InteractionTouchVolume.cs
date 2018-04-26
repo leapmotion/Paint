@@ -21,12 +21,18 @@ namespace Leap.Unity.LeapPaint {
     private bool _isTouched = false;
     public bool isTouched { get { return _isTouched; } }
 
+    public bool preventTouchFromGraspingHand = true;
+
     public UnityEvent OnTapEvent;
 
     void FixedUpdate() {
       bool currentlyTouched = false;
       if (isPrimaryHovered) {
         currentlyTouched = touchDistance < MAX_TOUCHING_DISTANCE;
+
+        if (preventTouchFromGraspingHand && primaryHoveringController.isGraspingObject) {
+          currentlyTouched = false;
+        }
       }
 
       if (currentlyTouched && !_isTouched) {
