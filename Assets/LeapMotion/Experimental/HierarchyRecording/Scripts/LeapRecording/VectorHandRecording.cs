@@ -83,6 +83,10 @@ namespace Leap.Unity.Recording {
       }
     }
 
+    public void AddOffset(Vector3 offset) {
+      _frameCurves.AddOffset(offset);
+    }
+
     private bool outsideDataBounds(float time) {
       return time < minKeyframeTime || time > maxKeyframeTime;
     }

@@ -60,6 +60,10 @@ namespace Leap.Unity.Recording {
     /// generate velocity data for hands sampled in sequence. </summary>
     private Hand _lastHand;
 
+    public void AddOffset(Vector3 offset) {
+      palmPosCurves.AddOffset(offset);
+    }
+
     /// <summary>
     /// Adds keyframe data into these VectorHandCurves at the specified time using the
     /// provided hand data.

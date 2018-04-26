@@ -44,6 +44,12 @@ namespace Leap.Unity.Recording {
       zCurve.AddKey(time, value.z);
     }
 
+    public void AddOffset(Vector3 offset) {
+      _xCurve = AnimationCurveUtil.ConstantValueOffset(_xCurve, offset.x);
+      _yCurve = AnimationCurveUtil.ConstantValueOffset(_yCurve, offset.y);
+      _zCurve = AnimationCurveUtil.ConstantValueOffset(_zCurve, offset.z);
+    }
+
     public Vector3 Evaluate(float time) {
       return new Vector3(xCurve.Evaluate(time),
                          yCurve.Evaluate(time),

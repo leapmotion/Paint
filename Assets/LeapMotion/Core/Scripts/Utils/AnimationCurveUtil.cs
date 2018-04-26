@@ -75,9 +75,9 @@ namespace Leap.Unity {
     public static AnimationCurve SigmoidUpDown {
       get {
         AnimationCurve curve = new AnimationCurve();
-        curve.AddKey(new Keyframe(0,    0, 0, 0));
+        curve.AddKey(new Keyframe(0, 0, 0, 0));
         curve.AddKey(new Keyframe(0.5f, 1, 0, 0));
-        curve.AddKey(new Keyframe(1,    0, 0, 0));
+        curve.AddKey(new Keyframe(1, 0, 0, 0));
         return curve;
       }
     }
@@ -150,6 +150,23 @@ namespace Leap.Unity {
         var toInsert = latestBeforeStart.Value;
         toInsert.time = 0;
         newCurve.AddKey(toInsert);
+      }
+
+      return newCurve;
+    }
+
+    public static AnimationCurve ConstantValueOffset(AnimationCurve curve, float offset) {
+      var keys = curve.keys.Query().Select(k => {
+        k.value += offset;
+        return k;
+      }).ToArray();
+
+      AnimationCurve newCurve = new AnimationCurve();
+      newCurve.keys = keys;
+
+      for (int i = 0; i < keys.Length; i++) {
+        AnimationUtility.SetKeyLeftTangentMode(newCurve, i, AnimationUtility.GetKeyLeftTangentMode(curve, i));
+        AnimationUtility.SetKeyRightTangentMode(newCurve, i, AnimationUtility.GetKeyRightTangentMode(curve, i));
       }
 
       return newCurve;
