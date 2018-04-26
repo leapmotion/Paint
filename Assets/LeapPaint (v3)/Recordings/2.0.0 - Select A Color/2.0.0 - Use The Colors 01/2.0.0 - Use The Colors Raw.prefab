@@ -28585,7 +28585,6 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
-  overrideWorkstationDestination: {fileID: 0}
   _primaryPaletteEmergeable: {fileID: 114668824012750672}
   _primaryPaletteMoveable: {fileID: 114116575021388242}
   _primaryPalette: {fileID: 114098406181757954}
@@ -29848,7 +29847,6 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
-  overrideWorkstationDestination: {fileID: 0}
   _menuButtonEmergeables:
   - {fileID: 114563561617977006}
   - {fileID: 114224724729147612}
@@ -35360,7 +35358,6 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
-  overrideWorkstationDestination: {fileID: 0}
   _brushControlsEmergeable: {fileID: 114522349542772356}
   _brushControlsMoveable: {fileID: 114377822332081968}
   _brushWorkstationEmergeable: {fileID: 114597827763158918}

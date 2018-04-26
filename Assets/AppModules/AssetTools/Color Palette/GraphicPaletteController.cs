@@ -10,7 +10,9 @@ public class GraphicPaletteController : MonoBehaviour {
 
   [Header("Graphic Alternative (MeshRenderer) -- Play Mode Only")]
 
+  #pragma warning disable 0109 // Otherwise a warning is raised when building.
   public new Renderer renderer;
+  #pragma warning restore 0109
   public string shaderColorName = "_Color";
   private int _shaderColorID;
 
