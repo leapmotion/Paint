@@ -27,6 +27,9 @@ public class TutorialControl : MonoBehaviour {
   [NonSerialized]
   public bool colorPalleteHasBeenExpanded = false;
 
+  private string _prevText = "";
+  private int _possibilityIndex = 0;
+
   private void Update() {
     if (bigColorEmergable.IsEmergedOrEmerging) {
       colorPalleteHasBeenExpanded = true;
@@ -62,7 +65,18 @@ public class TutorialControl : MonoBehaviour {
   }
 
   public void SetText(string text) {
-    this.text.text = text;
+    if (text.Contains("#")) {
+      string[] possibilities = text.Split(new char[] { '#' }, StringSplitOptions.RemoveEmptyEntries);
+      if (text != _prevText) {
+        _possibilityIndex = 0;
+      }
+      _prevText = text;
+
+      this.text.text = possibilities[_possibilityIndex];
+      _possibilityIndex = (_possibilityIndex + 1) % possibilities.Length;
+    } else {
+      this.text.text = text;
+    }
   }
 
   public void ClearText() {
