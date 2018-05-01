@@ -132,6 +132,17 @@ public class TutorialControl : MonoBehaviour {
     DestroyImmediate(strokeParent.GetChild(strokeParent.childCount - 1).gameObject);
   }
 
+  public void UndoAllStrokes() {
+    GameObject[] children = new GameObject[strokeParent.childCount];
+    for (int i = 0; i < strokeParent.childCount; i++) {
+      children[i] = strokeParent.GetChild(i).gameObject;
+    }
+
+    foreach (var child in children) {
+      DestroyImmediate(child);
+    }
+  }
+
   [Serializable]
   public struct Widget {
     public GameObject widget;
