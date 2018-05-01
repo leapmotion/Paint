@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Leap.Unity.Interaction;
 using Leap.Unity.Gestures;
 using Leap.Unity.LeapPaint_v3;
+using Leap.Unity.Attributes;
 
 public class TutorialControl : MonoBehaviour {
 
@@ -21,10 +22,11 @@ public class TutorialControl : MonoBehaviour {
   public GameObject tutorialBot;
   public GameObject tutorialPostProcess;
 
-  [NonSerialized]
+  [Header("Runtime")]
+  [Disable]
   public bool colorPalleteHasBeenTouched = false;
 
-  [NonSerialized]
+  [Disable]
   public bool colorPalleteHasBeenExpanded = false;
 
   private string _prevText = "";
