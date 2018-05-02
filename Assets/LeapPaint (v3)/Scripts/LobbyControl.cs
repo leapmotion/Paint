@@ -53,10 +53,6 @@ public class LobbyControl : MonoBehaviour {
     });
   }
 
-  private void OnDisable() {
-    _buttonTween.Release();
-  }
-
   public void OnSelectTutorial() {
     selectionState = LobbySelectionState.Tutorial;
     StartCoroutine(transitionMinimizeButtons());
@@ -74,15 +70,17 @@ public class LobbyControl : MonoBehaviour {
     tutorialButton.enabled = false;
     sandboxButton.enabled = false;
 
-    yield return _buttonTween.Play(Direction.Backward).Yield();
-    yield return new WaitUntil(() => asyncOp.isDone);
+    _buttonTween.Play(Direction.Backward);
+    yield return new WaitWhile(() => _buttonTween.isRunning);
 
+    _buttonTween.Release();
     asyncOp.allowSceneActivation = true;
   }
 
   private void transitionWithoutButtons() {
     var asyncOp = SceneManager.LoadSceneAsync(sceneToLoad);
     asyncOp.allowSceneActivation = true;
+    _buttonTween.Release();
   }
 
   public enum LobbySelectionState {
