@@ -4,4 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/LeapPaint (v3)/Scenes/LeapPaint (v3) (lobby).unity
+    guid: 63df7e96b341ab64cbcf39db3a59e610
+  - enabled: 1
+    path: Assets/LeapPaint (v3)/Scenes/LeapPaint (v3).unity
+    guid: aa89c5c3c04e1de49a2b12fa9f4747a9
+  m_configObjects: {}

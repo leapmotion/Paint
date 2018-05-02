@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Leap.Unity.Animation;
@@ -23,31 +22,35 @@ public class LobbyControl : MonoBehaviour {
     }
   }
 
+  public bool forceLobbyExperience;
   public string sceneToLoad;
   public PressableUI tutorialButton;
   public PressableUI sandboxButton;
+  public float appearDelay = 0.5f;
   public float transitionTime;
   public AnimationCurve transitionCurve;
 
   private Tween _buttonTween;
 
   void OnEnable() {
-    if (!hasExperiencedTutorial) {
+    if (!hasExperiencedTutorial && !forceLobbyExperience) {
       transitionWithoutButtons();
       return;
     }
 
-    _buttonTween = Tween.Persistent().
-                   Target(tutorialButton.transform).LocalScale(Vector3.zero, tutorialButton.transform.localScale).
-                   Target(sandboxButton.transform).LocalScale(Vector3.zero, sandboxButton.transform.localScale).
-                   Smooth(transitionCurve).
-                   OverTime(transitionTime).
-                   OnReachEnd(() => {
-                     tutorialButton.enabled = true;
-                     sandboxButton.enabled = true;
-                   });
+    Tween.AfterDelay(appearDelay, () => {
+      _buttonTween = Tween.Persistent().
+                     Target(tutorialButton.transform).LocalScale(Vector3.zero, tutorialButton.transform.localScale).
+                     Target(sandboxButton.transform).LocalScale(Vector3.zero, sandboxButton.transform.localScale).
+                     Smooth(transitionCurve).
+                     OverTime(transitionTime).
+                     OnReachEnd(() => {
+                       tutorialButton.enabled = true;
+                       sandboxButton.enabled = true;
+                     });
 
-    _buttonTween.Play();
+      _buttonTween.Play();
+    });
   }
 
   private void OnDisable() {
@@ -55,12 +58,12 @@ public class LobbyControl : MonoBehaviour {
   }
 
   public void OnSelectTutorial() {
-    shouldPlayTutorial = true;
+    selectionState = LobbySelectionState.Tutorial;
     StartCoroutine(transitionMinimizeButtons());
   }
 
   public void OnSelectSandbox() {
-    shouldPlayTutorial = false;
+    selectionState = LobbySelectionState.Sandbox;
     StartCoroutine(transitionMinimizeButtons());
   }
 

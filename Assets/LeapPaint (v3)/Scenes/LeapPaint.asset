@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e58c151f0d00e9649b15495e395f62f3, type: 3}
+  m_Name: Build
+  m_EditorClassIdentifier: 
+  _definitionName: LeapPaint
+  _showInBuildMenu: 1
+  _trySuffixWithGitHash: 0
+  _options: 0
+  _scenes:
+  - {fileID: 102900000, guid: aa89c5c3c04e1de49a2b12fa9f4747a9, type: 3}
+  - {fileID: 102900000, guid: 63df7e96b341ab64cbcf39db3a59e610, type: 3}
+  _targets: 13000000
