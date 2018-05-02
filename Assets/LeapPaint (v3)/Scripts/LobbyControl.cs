@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Leap.Unity.Animation;
 using Leap.Unity.LeapPaint_v3;
+using UnityEngine.Rendering.PostProcessing;
 
 public class LobbyControl : MonoBehaviour {
 
@@ -30,11 +31,15 @@ public class LobbyControl : MonoBehaviour {
   public float transitionTime;
   public AnimationCurve transitionCurve;
 
+  [Header("Transition Settings")]
+  public float fadeOutTime;
+  public float fadeInTime;
+
   private Tween _buttonTween;
 
   void OnEnable() {
     if (!hasExperiencedTutorial && !forceLobbyExperience) {
-      transitionWithoutButtons();
+      StartCoroutine(transitionWithoutButtons());
       return;
     }
 
@@ -51,6 +56,8 @@ public class LobbyControl : MonoBehaviour {
 
       _buttonTween.Play();
     });
+
+
   }
 
   public void OnSelectTutorial() {
@@ -64,23 +71,54 @@ public class LobbyControl : MonoBehaviour {
   }
 
   private IEnumerator transitionMinimizeButtons() {
+    DontDestroyOnLoad(gameObject);
+
     var asyncOp = SceneManager.LoadSceneAsync(sceneToLoad);
     asyncOp.allowSceneActivation = false;
 
     tutorialButton.enabled = false;
     sandboxButton.enabled = false;
 
+    PostProcessVolume volume = FindObjectOfType<PostProcessVolume>();
+    var fadeTween = Tween.Persistent().
+                          Value(0, 1, v => volume.weight = v).
+                          OverTime(fadeInTime).
+                          Play();
+
     _buttonTween.Play(Direction.Backward);
     yield return new WaitWhile(() => _buttonTween.isRunning);
+    yield return new WaitWhile(() => fadeTween.isRunning);
 
     _buttonTween.Release();
+    fadeTween.Release();
+
     asyncOp.allowSceneActivation = true;
+    while (volume != null) {
+      yield return null;
+    }
+
+    fadeIn();
+
+    Destroy(gameObject);
   }
 
-  private void transitionWithoutButtons() {
+  private IEnumerator transitionWithoutButtons() {
+    var volume = FindObjectOfType<PostProcessVolume>();
+
     var asyncOp = SceneManager.LoadSceneAsync(sceneToLoad);
     asyncOp.allowSceneActivation = true;
     _buttonTween.Release();
+
+    while (volume != null) {
+      yield return null;
+    }
+
+    fadeIn();
+  }
+
+  private void fadeIn() {
+    PostProcessVolume volume = FindObjectOfType<PostProcessVolume>();
+    Tween.Single().Value(1, 0, v => volume.weight = v).OverTime(fadeInTime).Play();
   }
 
   public enum LobbySelectionState {
