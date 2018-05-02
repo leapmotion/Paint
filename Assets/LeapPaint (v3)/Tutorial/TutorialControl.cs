@@ -9,7 +9,7 @@ using Leap.Unity.Attributes;
 
 public class TutorialControl : MonoBehaviour {
 
-  public Text text;
+  public TextFader text;
   public PinchGesture rightPinch;
   public Transform strokeParent;
   public Widget colorWidget;
@@ -74,15 +74,15 @@ public class TutorialControl : MonoBehaviour {
       }
       _prevText = text;
 
-      this.text.text = possibilities[_possibilityIndex];
+      this.text.SetText(possibilities[_possibilityIndex]);
       _possibilityIndex = (_possibilityIndex + 1) % possibilities.Length;
     } else {
-      this.text.text = text;
+      this.text.SetText(text);
     }
   }
 
   public void ClearText() {
-    text.text = "";
+    text.SetText("");
   }
 
   public void EnablePinching() {
