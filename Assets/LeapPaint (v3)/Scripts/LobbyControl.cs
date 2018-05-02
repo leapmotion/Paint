@@ -39,7 +39,7 @@ public class LobbyControl : MonoBehaviour {
 
   void OnEnable() {
     if (!hasExperiencedTutorial && !forceLobbyExperience) {
-      StartCoroutine(transitionWithoutButtons());
+      transitionWithoutButtons();
       return;
     }
 
@@ -71,8 +71,6 @@ public class LobbyControl : MonoBehaviour {
   }
 
   private IEnumerator transitionMinimizeButtons() {
-    DontDestroyOnLoad(gameObject);
-
     var asyncOp = SceneManager.LoadSceneAsync(sceneToLoad);
     asyncOp.allowSceneActivation = false;
 
@@ -93,32 +91,12 @@ public class LobbyControl : MonoBehaviour {
     fadeTween.Release();
 
     asyncOp.allowSceneActivation = true;
-    while (volume != null) {
-      yield return null;
-    }
-
-    fadeIn();
-
-    Destroy(gameObject);
   }
 
-  private IEnumerator transitionWithoutButtons() {
-    var volume = FindObjectOfType<PostProcessVolume>();
-
+  private void transitionWithoutButtons() {
     var asyncOp = SceneManager.LoadSceneAsync(sceneToLoad);
     asyncOp.allowSceneActivation = true;
     _buttonTween.Release();
-
-    while (volume != null) {
-      yield return null;
-    }
-
-    fadeIn();
-  }
-
-  private void fadeIn() {
-    PostProcessVolume volume = FindObjectOfType<PostProcessVolume>();
-    Tween.Single().Value(1, 0, v => volume.weight = v).OverTime(fadeInTime).Play();
   }
 
   public enum LobbySelectionState {
