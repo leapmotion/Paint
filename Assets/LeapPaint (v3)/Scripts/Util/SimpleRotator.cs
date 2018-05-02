@@ -14,7 +14,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     protected virtual void Update() {
-      this.transform.Rotate(_localRotationAxis, (360F / _period) * Time.deltaTime, UnityEngine.Space.Self);
+      transform.localRotation = Quaternion.AngleAxis(360 * Time.time / _period, _localRotationAxis);
     }
 
   }
