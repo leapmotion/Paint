@@ -38,7 +38,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     }
 
     public string NameFromPath(string path) {
-      return Path.GetFileName(path);
+      return Path.GetFileNameWithoutExtension(path);
     }
 
     public DateTime CreationDateFromPath(string path) {
