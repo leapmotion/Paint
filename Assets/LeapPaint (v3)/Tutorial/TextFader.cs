@@ -54,8 +54,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       updateVisualState();
     }
-
-    private const float HIDDEN_TIME = 0.020f;
+    
     private void updateTransitions() {
       // Staying -> FadingOut
       // This can occur by a natural wait OR if the target text has changed.
