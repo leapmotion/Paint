@@ -123,6 +123,10 @@ public class TutorialControl : MonoBehaviour {
     colorPalleteHasBeenExpanded = true;
   }
 
+  public void NotifyTutorialCompleted() {
+    LobbyControl.hasExperiencedTutorial = true;
+  }
+
   public void UndoStroke() {
     if (strokeParent.childCount == 0) {
       Debug.LogWarning("Could not undo a stroke because there are none!");
