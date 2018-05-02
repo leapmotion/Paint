@@ -58,7 +58,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     #region WearableUI Implementations
 
     protected override float GetOptimalWorkstationVerticalOffset() {
-      return -0.23F;
+      return -0.26F;
     }
 
     protected override void DoOnMarbleActivated() {
