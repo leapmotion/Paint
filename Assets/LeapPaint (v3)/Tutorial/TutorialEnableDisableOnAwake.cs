@@ -15,7 +15,19 @@ namespace Leap.Unity.LeapPaint_v3 {
     private bool _shouldTutorialBeEnabled;
 
     private void Awake() {
-      _shouldTutorialBeEnabled = tutorialEnabledOnAwake;
+      switch (LobbyControl.selectionState) {
+        case LobbyControl.LobbySelectionState.Sandbox:
+          _shouldTutorialBeEnabled = false;
+          break;
+        case LobbyControl.LobbySelectionState.Tutorial:
+          _shouldTutorialBeEnabled = true;
+          break;
+        case LobbyControl.LobbySelectionState.None:
+          _shouldTutorialBeEnabled = tutorialEnabledOnAwake;
+          break;
+        default:
+          throw new InvalidOperationException();
+      }
 
       string[] arguments = Environment.GetCommandLineArgs();
 
@@ -31,13 +43,10 @@ namespace Leap.Unity.LeapPaint_v3 {
       if (tutorialControl != null) {
         if (_shouldTutorialBeEnabled) {
           tutorialControl.EnableTutorial();
-        }
-        else {
+        } else {
           tutorialControl.DisableTutorial();
         }
       }
     }
-
   }
-
 }
