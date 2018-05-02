@@ -10,7 +10,7 @@ public class SceneFadeIn : MonoBehaviour {
   public float fadeTime;
 
   private void Start() {
-    Tween.Single().Value(0, 1, w => volume.weight = w).
+    Tween.Single().Value(1, 0, w => volume.weight = w).
                    OverTime(fadeTime).
                    Play();
   }
