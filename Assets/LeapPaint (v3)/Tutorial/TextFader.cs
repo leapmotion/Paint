@@ -50,7 +50,7 @@ namespace Leap.Unity.LeapPaint_v3 {
       updateTransitions();
 
       // Progress animation time.
-      _currT = Mathf.Clamp01(_currT + Time.deltaTime);
+      _currT += Time.deltaTime;
 
       updateVisualState();
     }
@@ -98,7 +98,7 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       var alpha = 1f;
       var offset = Vector3.zero;
-      var evalT = fadeCurve.Evaluate(_currT / fadeTime);
+      var evalT = Mathf.Clamp01(fadeCurve.Evaluate(_currT / fadeTime));
       switch (_currState) {
         case TextFadeState.Hidden:
           alpha = 0f;
