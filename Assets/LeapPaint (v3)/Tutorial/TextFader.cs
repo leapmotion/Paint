@@ -8,6 +8,8 @@ namespace Leap.Unity.LeapPaint_v3 {
 
     [Header("Required")]
     public Text uiText;
+    public UnityEngine.UI.Image panel;
+    public UnityEngine.UI.Image backPanel;
 
     [Header("Animation")]
     public float durationPerCharacter = 0.1f;
@@ -15,6 +17,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     public float fadeTime = 0.5f;
     public Vector3 fadedPositionOffset = Vector3.down * 0.1f;
     public AnimationCurve fadeCurve = DefaultCurve.SigmoidUp;
+    public AnimationCurve panelCurve = DefaultCurve.SigmoidUp;
   
     private enum TextFadeState { FadingIn, Staying, FadingOut, Hidden }
     private TextFadeState _currState = TextFadeState.Hidden;
@@ -120,6 +123,10 @@ namespace Leap.Unity.LeapPaint_v3 {
 
       uiText.color = uiText.color.WithAlpha(alpha);
       uiText.transform.position = _startPosition + offset;
+
+      float panelAlpha = panelCurve.Evaluate(alpha);
+      panel.color = panel.color.WithAlpha(panelAlpha);
+      backPanel.color = backPanel.color.WithAlpha(panelAlpha);
     }
 
     public void SetText(string text) {
