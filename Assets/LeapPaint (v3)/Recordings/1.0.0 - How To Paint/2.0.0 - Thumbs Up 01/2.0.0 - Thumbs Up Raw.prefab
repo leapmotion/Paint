@@ -26561,11 +26561,11 @@ MonoBehaviour:
   _templateLayer:
     layerIndex: 0
   _interactionLayer:
-    layerIndex: 8
-  _interactionNoContactLayer:
     layerIndex: 9
-  _contactBoneLayer:
+  _interactionNoContactLayer:
     layerIndex: 10
+  _contactBoneLayer:
+    layerIndex: 11
   _drawControllerRuntimeGizmos: 0
 --- !u!114 &114193213467281238
 MonoBehaviour:
@@ -26943,6 +26943,7 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
+  _overrideDestination: {fileID: 0}
   _primaryPaletteEmergeable: {fileID: 114645462885156298}
   _primaryPaletteMoveable: {fileID: 114435176914307854}
   _primaryPalette: {fileID: 114375530571188938}
@@ -27951,6 +27952,8 @@ MonoBehaviour:
   _trackingProviderType: Leap.Unity.Interaction.DefaultXRNodeTrackingProvider
   _deviceJoystickTokens: oculus touch right
   _chirality: 1
+  _pollConnection: 1
+  pollConnectionInterval: 2
   _hoverPoint: {fileID: 4524827817870008}
   primaryHoverPoints:
   - {fileID: 4590329248412070}
@@ -27959,6 +27962,7 @@ MonoBehaviour:
   maxGraspDistance: 0.06
   graspButtonAxis: RightVRTriggerAxis
   graspTimingSlop: 0.1
+  _enableObjectsOnlyWhenTracked: []
 --- !u!114 &114311511319843184
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -28955,6 +28959,8 @@ MonoBehaviour:
   _trackingProviderType: Leap.Unity.Interaction.DefaultXRNodeTrackingProvider
   _deviceJoystickTokens: oculus touch left
   _chirality: 0
+  _pollConnection: 1
+  pollConnectionInterval: 2
   _hoverPoint: {fileID: 4290645805820704}
   primaryHoverPoints:
   - {fileID: 4686746364998112}
@@ -28963,6 +28969,7 @@ MonoBehaviour:
   maxGraspDistance: 0.06
   graspButtonAxis: LeftVRTriggerAxis
   graspTimingSlop: 0.1
+  _enableObjectsOnlyWhenTracked: []
 --- !u!114 &114395876644518254
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -30585,6 +30592,7 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
+  _overrideDestination: {fileID: 0}
   _menuButtonEmergeables:
   - {fileID: 114502919179628950}
   - {fileID: 114487485037982690}
@@ -31280,6 +31288,7 @@ MonoBehaviour:
   _marbleReady: 1
   _fingerTouchingMarble: 0
   _fingerTouchingDepthCollider: 0
+  _overrideDestination: {fileID: 0}
   _brushControlsEmergeable: {fileID: 114088552251796630}
   _brushControlsMoveable: {fileID: 114557077631099442}
   _brushWorkstationEmergeable: {fileID: 114355322757164636}
@@ -31513,6 +31522,8 @@ MonoBehaviour:
   _trackingProviderType: Leap.Unity.Interaction.DefaultXRNodeTrackingProvider
   _deviceJoystickTokens: openvr controller right
   _chirality: 1
+  _pollConnection: 1
+  pollConnectionInterval: 2
   _hoverPoint: {fileID: 4520899637680258}
   primaryHoverPoints:
   - {fileID: 4618592209809950}
@@ -31521,6 +31532,7 @@ MonoBehaviour:
   maxGraspDistance: 0.06
   graspButtonAxis: RightVRTriggerAxis
   graspTimingSlop: 0.1
+  _enableObjectsOnlyWhenTracked: []
 --- !u!114 &114642746635616464
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -32448,6 +32460,8 @@ MonoBehaviour:
   _trackingProviderType: Leap.Unity.Interaction.DefaultXRNodeTrackingProvider
   _deviceJoystickTokens: openvr controller left
   _chirality: 0
+  _pollConnection: 1
+  pollConnectionInterval: 2
   _hoverPoint: {fileID: 4918161922104696}
   primaryHoverPoints:
   - {fileID: 4721208261260166}
@@ -32456,6 +32470,7 @@ MonoBehaviour:
   maxGraspDistance: 0.06
   graspButtonAxis: LeftVRTriggerAxis
   graspTimingSlop: 0.1
+  _enableObjectsOnlyWhenTracked: []
 --- !u!114 &114739237917948114
 MonoBehaviour:
   m_ObjectHideFlags: 1

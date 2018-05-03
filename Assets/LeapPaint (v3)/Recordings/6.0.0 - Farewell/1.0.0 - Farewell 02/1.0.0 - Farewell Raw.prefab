@@ -34094,11 +34094,11 @@ MonoBehaviour:
   _templateLayer:
     layerIndex: 0
   _interactionLayer:
-    layerIndex: 8
-  _interactionNoContactLayer:
     layerIndex: 9
-  _contactBoneLayer:
+  _interactionNoContactLayer:
     layerIndex: 10
+  _contactBoneLayer:
+    layerIndex: 11
   _drawControllerRuntimeGizmos: 0
 --- !u!114 &114686911189815114
 MonoBehaviour:
@@ -34111,7 +34111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a556b57af5586b4dbefb616d1d34b4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 1be473db13d504c459abd41891ed5b1f, type: 2}
+  data: {fileID: 0}
   clipTime: 0
   playbackOffset: 0
 --- !u!114 &114692425507833212

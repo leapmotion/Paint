@@ -26025,6 +26025,8 @@ MonoBehaviour:
   _trackingProviderType: Leap.Unity.Interaction.DefaultXRNodeTrackingProvider
   _deviceJoystickTokens: openvr controller right
   _chirality: 1
+  _pollConnection: 1
+  pollConnectionInterval: 2
   _hoverPoint: {fileID: 4786802795885966}
   primaryHoverPoints:
   - {fileID: 4690106124156082}
@@ -26033,6 +26035,7 @@ MonoBehaviour:
   maxGraspDistance: 0.06
   graspButtonAxis: RightVRTriggerAxis
   graspTimingSlop: 0.1
+  _enableObjectsOnlyWhenTracked: []
 --- !u!114 &114198519942018128
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -28385,11 +28388,11 @@ MonoBehaviour:
   _templateLayer:
     layerIndex: 0
   _interactionLayer:
-    layerIndex: 8
-  _interactionNoContactLayer:
     layerIndex: 9
-  _contactBoneLayer:
+  _interactionNoContactLayer:
     layerIndex: 10
+  _contactBoneLayer:
+    layerIndex: 11
   _drawControllerRuntimeGizmos: 0
 --- !u!114 &114453893304287506
 MonoBehaviour:
@@ -31946,6 +31949,8 @@ MonoBehaviour:
   _trackingProviderType: Leap.Unity.Interaction.DefaultXRNodeTrackingProvider
   _deviceJoystickTokens: openvr controller left
   _chirality: 0
+  _pollConnection: 1
+  pollConnectionInterval: 2
   _hoverPoint: {fileID: 4783482239100844}
   primaryHoverPoints:
   - {fileID: 4766672400428802}
@@ -31954,6 +31959,7 @@ MonoBehaviour:
   maxGraspDistance: 0.06
   graspButtonAxis: LeftVRTriggerAxis
   graspTimingSlop: 0.1
+  _enableObjectsOnlyWhenTracked: []
 --- !u!114 &114842974372126316
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -32666,6 +32672,8 @@ MonoBehaviour:
   _trackingProviderType: Leap.Unity.Interaction.DefaultXRNodeTrackingProvider
   _deviceJoystickTokens: oculus touch left
   _chirality: 0
+  _pollConnection: 1
+  pollConnectionInterval: 2
   _hoverPoint: {fileID: 4564720288641346}
   primaryHoverPoints:
   - {fileID: 4783923181192392}
@@ -32674,6 +32682,7 @@ MonoBehaviour:
   maxGraspDistance: 0.06
   graspButtonAxis: LeftVRTriggerAxis
   graspTimingSlop: 0.1
+  _enableObjectsOnlyWhenTracked: []
 --- !u!114 &114919554080525458
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33001,6 +33010,8 @@ MonoBehaviour:
   _trackingProviderType: Leap.Unity.Interaction.DefaultXRNodeTrackingProvider
   _deviceJoystickTokens: oculus touch right
   _chirality: 1
+  _pollConnection: 1
+  pollConnectionInterval: 2
   _hoverPoint: {fileID: 4739301045103292}
   primaryHoverPoints:
   - {fileID: 4176535229408574}
@@ -33009,6 +33020,7 @@ MonoBehaviour:
   maxGraspDistance: 0.06
   graspButtonAxis: RightVRTriggerAxis
   graspTimingSlop: 0.1
+  _enableObjectsOnlyWhenTracked: []
 --- !u!114 &114939271890784874
 MonoBehaviour:
   m_ObjectHideFlags: 1
