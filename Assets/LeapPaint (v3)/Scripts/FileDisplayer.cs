@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.IO;
 
 namespace Leap.Unity.LeapPaint_v3 {
 
@@ -89,7 +90,7 @@ namespace Leap.Unity.LeapPaint_v3 {
           _listedFiles.Add(listedFile);
         }
         string filename = _fileManager.NameFromPath(_files[i]);
-        _fileTexts[i].text = filename;
+        _fileTexts[i].text = Path.GetFileNameWithoutExtension(filename);
         _fileTexts[i].rectTransform.localPosition = new Vector3(
           -_textParent.rect.width / 2F,
           _textParent.rect.height / 2F - heightFromTop, 0F);
