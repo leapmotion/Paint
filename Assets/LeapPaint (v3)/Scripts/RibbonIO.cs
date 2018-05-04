@@ -90,7 +90,7 @@ namespace Leap.Unity.LeapPaint_v3 {
       string[] files = _fileManager.GetFiles();
       foreach (string file in files) {
         string fileName = _fileManager.NameFromPath(file);
-        highestNumber = Mathf.Max(highestNumber, _fileManager.NumberFromName(fileName, prefix));
+        highestNumber = Mathf.Max(highestNumber, _fileManager.TryGetNumberFromName(fileName, prefix));
       }
       return ++highestNumber;
     }

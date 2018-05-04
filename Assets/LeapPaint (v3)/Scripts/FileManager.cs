@@ -37,19 +37,25 @@ namespace Leap.Unity.LeapPaint_v3 {
       return jsonFiles.ToArray();
     }
 
-    public string NameFromPath(string path) {
-      return Path.GetFileNameWithoutExtension(path);
+    public string NameFromPath(string filepath) {
+      return Path.GetFileName(filepath);
     }
 
     public DateTime CreationDateFromPath(string path) {
       return Directory.GetCreationTime(path);
     }
-
-    public int NumberFromName(string name, string prefix = "Paint - ") {
+    
+    /// <summary>
+    /// Tries to get the number directly after the prefix IF the string has the argument
+    /// prefix, or returns 0 if there is no such number.
+    /// </summary>
+    public int TryGetNumberFromName(string name, string prefix = "Paint - ") {
+      int result = 0;
       if (name.StartsWith(prefix)) {
-        return int.Parse(name.Substring(prefix.Length).TrimEnd(5));
+        string fileName = Path.GetFileNameWithoutExtension(name);
+        int.TryParse(fileName.Substring(prefix.Length), out result);
       }
-      return 0;
+      return result;
     }
 
     public void Save(string fileName, string fileContents) {
