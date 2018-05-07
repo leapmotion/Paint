@@ -25554,7 +25554,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -25810,7 +25810,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -25856,7 +25856,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26086,7 +26086,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23402816409560502}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26258,7 +26258,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23372193560977800}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26306,7 +26306,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23388406212526488}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26329,7 +26329,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23081754418251180}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26689,7 +26689,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23308979556539732}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -26831,7 +26831,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 8a49726c3cc9bc94fb6b71f7a1bf1d4d, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27019,7 +27019,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23828975913736216}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27379,7 +27379,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27618,7 +27618,7 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips:
-    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27626,7 +27626,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _vanishEffect:
     _clips:
-    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27635,7 +27635,7 @@ MonoBehaviour:
   _seperateWorkstationEffect: 1
   _workstationEmergeEffect:
     _clips:
-    - {fileID: 8300000, guid: 2aad5e1ec9ae12f42aa116aaed017c4a, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27643,7 +27643,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _workstationVanishEffect:
     _clips:
-    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -27794,7 +27794,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28047,7 +28047,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23631632664332164}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28463,7 +28463,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28543,7 +28543,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23161300901945070}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -28677,7 +28677,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23155797961201970}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29056,7 +29056,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23316107866300274}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29157,7 +29157,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29302,7 +29302,7 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 23048893444879712}
   _activateEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.2
@@ -29310,7 +29310,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _grabEffect:
     _clips:
-    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29318,7 +29318,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _throwEffect:
     _clips:
-    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29327,7 +29327,7 @@ MonoBehaviour:
   _maxVolumeVelocity: 5
   _returnEffect:
     _clips:
-    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29366,7 +29366,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23805951959640246}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29440,7 +29440,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23126696290329634}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29611,7 +29611,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23279738007718552}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29723,7 +29723,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 8a49726c3cc9bc94fb6b71f7a1bf1d4d, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -29791,7 +29791,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 8a49726c3cc9bc94fb6b71f7a1bf1d4d, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30082,7 +30082,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30154,7 +30154,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30190,7 +30190,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23823533474594010}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -30627,7 +30627,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31195,7 +31195,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23545625013325578}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31532,7 +31532,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23564078786618514}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31789,7 +31789,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23057224677524908}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31862,7 +31862,7 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 23051917103735818}
   _activateEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.2
@@ -31870,7 +31870,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _grabEffect:
     _clips:
-    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31878,7 +31878,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _throwEffect:
     _clips:
-    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -31887,7 +31887,7 @@ MonoBehaviour:
   _maxVolumeVelocity: 5
   _returnEffect:
     _clips:
-    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32127,7 +32127,7 @@ MonoBehaviour:
   _colorMarbleRenderer: {fileID: 23622563727130390}
   _dipEffect:
     _clips:
-    - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.5
@@ -32579,7 +32579,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23467322280366940}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32711,15 +32711,15 @@ MonoBehaviour:
   _liquidMeshRenderer: {fileID: 23951213523086088}
   _mixEffect:
     _clips:
-    - {fileID: 8300000, guid: 13321d07a4e21a14abf6c60a2aba97b5, type: 3}
-    - {fileID: 8300000, guid: 152ab88e5d8ad004392d0a7a67b1152f, type: 3}
-    - {fileID: 8300000, guid: 091c69ba092888e478f8ce81c3dbb79e, type: 3}
-    - {fileID: 8300000, guid: f9b71d3cdeaf48340948914017582bd7, type: 3}
-    - {fileID: 8300000, guid: 6b1f7c443d03ce94c975e0c4d305bf63, type: 3}
-    - {fileID: 8300000, guid: 5959ff87b06ac664999616510034ed28, type: 3}
-    - {fileID: 8300000, guid: 1a210ed343891974f8723e2c6e265884, type: 3}
-    - {fileID: 8300000, guid: 4acc2817858e88a4383fd65fcab57f36, type: 3}
-    - {fileID: 8300000, guid: e89d567497cd0724da108faddf74dfce, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32778,7 +32778,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -32969,7 +32969,7 @@ MonoBehaviour:
   _colorMarbleRenderer: {fileID: 23956806878327868}
   _dipEffect:
     _clips:
-    - {fileID: 8300000, guid: bf73f7ecf79da314782b6ba6da8015cb, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010115659436, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.5
@@ -33346,7 +33346,7 @@ MonoBehaviour:
   _otherElementsSwitch: {fileID: 114440869146489192}
   showEffect:
     _clips:
-    - {fileID: 8300000, guid: e044bd24d3f4c8648ad68883b37e2492, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -33689,7 +33689,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23305153919285878}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34096,7 +34096,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23109011339713506}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34276,7 +34276,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 2a7efc16446f98a43a2d29977e7b431a, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34947,7 +34947,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23637432726737528}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34984,7 +34984,7 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips:
-    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -34992,7 +34992,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _vanishEffect:
     _clips:
-    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35001,7 +35001,7 @@ MonoBehaviour:
   _seperateWorkstationEffect: 1
   _workstationEmergeEffect:
     _clips:
-    - {fileID: 8300000, guid: 2aad5e1ec9ae12f42aa116aaed017c4a, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35009,7 +35009,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _workstationVanishEffect:
     _clips:
-    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35350,7 +35350,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35373,7 +35373,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23036886832761274}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35439,7 +35439,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23691920741453016}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35494,7 +35494,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23582005761369132}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35634,7 +35634,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23024638949920988}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35717,7 +35717,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23642569515345278}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35976,7 +35976,7 @@ MonoBehaviour:
   _marbleRenderer: {fileID: 23309000638916386}
   _activateEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.2
@@ -35984,7 +35984,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _grabEffect:
     _clips:
-    - {fileID: 8300000, guid: 24f2008bd05db6f47a74b7126fa012c8, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -35992,7 +35992,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _throwEffect:
     _clips:
-    - {fileID: 8300000, guid: c2d05102382c0d8449dfa9198a987f97, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -36001,7 +36001,7 @@ MonoBehaviour:
   _maxVolumeVelocity: 5
   _returnEffect:
     _clips:
-    - {fileID: 8300000, guid: cc1644857b33430489b5e09027fadf07, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000010783655358, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -36111,9 +36111,9 @@ MonoBehaviour:
   interactionHand: {fileID: 114097318532175370}
   _beginEffect:
     _clips:
-    - {fileID: 8300000, guid: f54329085cacc4b4f9d7f9bbb7e5ac6a, type: 3}
-    - {fileID: 8300000, guid: 35b37b9ce3d97924980fc2dc98d13f6b, type: 3}
-    - {fileID: 8300000, guid: 13b9a4adfd6987c45875dc78da9f7bad, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011195632352, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.45
@@ -36212,7 +36212,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23575320078249896}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -36265,7 +36265,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23087291612152444}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -36404,7 +36404,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23300547880874444}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -37040,7 +37040,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 9a0a7ad702e18cf48b48791568270c8e, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -37731,7 +37731,7 @@ MonoBehaviour:
   _graphics: []
   _emergeEffect:
     _clips:
-    - {fileID: 8300000, guid: f7c156eef2ec5fb4dac4209363009658, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -37739,7 +37739,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _vanishEffect:
     _clips:
-    - {fileID: 8300000, guid: f7b0908f4c07eb343b8cd0eff153cb06, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -37748,7 +37748,7 @@ MonoBehaviour:
   _seperateWorkstationEffect: 1
   _workstationEmergeEffect:
     _clips:
-    - {fileID: 8300000, guid: 2aad5e1ec9ae12f42aa116aaed017c4a, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -37756,7 +37756,7 @@ MonoBehaviour:
     _pitchCenter: 1
   _workstationVanishEffect:
     _clips:
-    - {fileID: 8300000, guid: fd6cdbedc5e1b9744a0f6a8eb5471330, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011576059542, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -38442,7 +38442,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23726847948094888}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -38762,7 +38762,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: d97b7a02e4e076740ad646c409d81d47, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000012081016710, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -38790,7 +38790,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   _tickEffect:
     _clips:
-    - {fileID: 8300000, guid: b49b8756d78e8664789df458f6f2e02d, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000013408054806, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 0.4
@@ -39364,7 +39364,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23345662173729792}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -39452,7 +39452,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23423893425718014}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
@@ -39545,7 +39545,7 @@ MonoBehaviour:
   _targetColorRenderer: {fileID: 23581720826580380}
   soundEffect:
     _clips:
-    - {fileID: 8300000, guid: 77d6a7f2b392f3441a7212ec66bcf349, type: 3}
+    - {fileID: 0}
     _mixerGroup: {fileID: 243000011340830754, guid: 43de2443e9a4ff54e842fdf9d3168906,
       type: 2}
     _volume: 1
