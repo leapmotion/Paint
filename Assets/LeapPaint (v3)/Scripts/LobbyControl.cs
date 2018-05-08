@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.IO;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Leap.Unity.Animation;
@@ -6,8 +7,7 @@ using Leap.Unity.LeapPaint_v3;
 using UnityEngine.Rendering.PostProcessing;
 
 public class LobbyControl : MonoBehaviour {
-
-  private const string HAS_EXPERIENCED_TUTORIAL_KEY = "LeapPaintUserHasExperiencedTutorial";
+  private const string HAS_EXPERIENCE_TUTORIAL_FILENAME = "HasExperiencedTutorial.txt";
   private const int FALSE_VALUE = 0;
   private const int TRUE_VALUE = 1;
 
@@ -15,11 +15,22 @@ public class LobbyControl : MonoBehaviour {
 
   public static bool hasExperiencedTutorial {
     get {
-      return PlayerPrefs.GetInt(HAS_EXPERIENCED_TUTORIAL_KEY, defaultValue: FALSE_VALUE) == TRUE_VALUE;
+      return File.Exists(Path.Combine(Application.streamingAssetsPath, HAS_EXPERIENCE_TUTORIAL_FILENAME));
     }
     set {
-      int prefValue = value ? TRUE_VALUE : FALSE_VALUE;
-      PlayerPrefs.SetInt(HAS_EXPERIENCED_TUTORIAL_KEY, prefValue);
+#if UNITY_EDITOR
+      if (value) {
+        Debug.LogWarning("Will not set the tutorial-experienced flag since we are in the editor.");
+        return;
+      }
+#endif
+
+      string path = Path.Combine(Application.streamingAssetsPath, HAS_EXPERIENCE_TUTORIAL_FILENAME);
+      if (value) {
+        File.WriteAllText(path, "");
+      } else {
+        File.Delete(path);
+      }
     }
   }
 
