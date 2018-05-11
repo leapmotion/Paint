@@ -11,10 +11,14 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Leap.Unity.Attributes;
+using UnityEngine.Serialization;
 
 namespace Leap.Unity {
+
   /** A basic Leap hand model constructed dynamically vs. using pre-existing geometry*/
-  public class CapsuleHand : HandModelBase {
+
+  public class Paint_CapsuleHand : HandModelBase {
+
     private const int TOTAL_JOINT_COUNT = 4 * 5;
     private const float CYLINDER_MESH_RESOLUTION = 0.1f; //in centimeters, meshes within this resolution will be re-used
     private const int THUMB_BASE_INDEX = (int)Finger.FingerType.TYPE_THUMB * 4;
@@ -31,8 +35,24 @@ namespace Leap.Unity {
     [SerializeField]
     private bool _showArm = true;
 
+    public bool useGhostable = false;
+
+    public bool doRender = true;
+
+    private Material effMaterial {
+      get {
+        if (useGhostable) {
+          return _materialGhostable;
+        }
+        return _materialNonGhostable;
+      }
+    }
+
     [SerializeField]
-    private Material _material;
+    [FormerlySerializedAs("_material")]
+    private Material _materialNonGhostable;
+    [SerializeField]
+    private Material _materialGhostable;
 
     [SerializeField]
     private Mesh _sphereMesh;
@@ -41,19 +61,29 @@ namespace Leap.Unity {
     [SerializeField]
     private int _cylinderResolution = 12;
 
-    [MinValue(0)]
-    [SerializeField]
-    private float _jointRadius = 0.008f;
+    private Material _sphereMatNonGhostable;
+    private Material _sphereMatGhostable;
+    public Material effSphereMat {
+      get {
+        if (useGhostable) {
+          return _sphereMatGhostable;
+        }
+        return _sphereMatNonGhostable;
+      }
+    }
 
     [MinValue(0)]
     [SerializeField]
-    private float _cylinderRadius = 0.006f;
+    private float _jointRadius = 0.007f;
 
     [MinValue(0)]
     [SerializeField]
-    private float _palmRadius = 0.015f;
+    private float _cylinderRadius = 0.007f;
 
-    private Material _sphereMat;
+    [MinValue(0)]
+    [SerializeField]
+    private float _palmRadius = 0.000f;
+
     private Hand _hand;
     private Vector3[] _spherePositions;
 
@@ -83,9 +113,13 @@ namespace Leap.Unity {
     }
 
     public override void InitHand() {
-      if (_material != null) {
-        _sphereMat = new Material(_material);
-        _sphereMat.hideFlags = HideFlags.DontSaveInEditor;
+      if (_materialNonGhostable != null) {
+        _sphereMatNonGhostable = new Material(_materialNonGhostable);
+        _sphereMatNonGhostable.hideFlags = HideFlags.DontSaveInEditor;
+      }
+      if (_materialGhostable != null) {
+        _sphereMatGhostable = new Material(_materialGhostable);
+        _sphereMatGhostable.hideFlags = HideFlags.DontSaveInEditor;
       }
     }
 
@@ -97,10 +131,11 @@ namespace Leap.Unity {
       base.BeginHand();
 
       if (_hand.IsLeft) {
-        _sphereMat.color = _leftColorList[_leftColorIndex];
+        //_sphereMat.color = _leftColorList[_leftColorIndex];
         _leftColorIndex = (_leftColorIndex + 1) % _leftColorList.Length;
-      } else {
-        _sphereMat.color = _rightColorList[_rightColorIndex];
+      }
+      else {
+        //_sphereMat.color = _rightColorList[_rightColorIndex];
         _rightColorIndex = (_rightColorIndex + 1) % _rightColorList.Length;
       }
     }
@@ -110,9 +145,13 @@ namespace Leap.Unity {
         _spherePositions = new Vector3[TOTAL_JOINT_COUNT];
       }
 
-      if (_sphereMat == null) {
-        _sphereMat = new Material(_material);
-        _sphereMat.hideFlags = HideFlags.DontSaveInEditor;
+      if (_materialNonGhostable != null) {
+        _sphereMatNonGhostable = new Material(_materialNonGhostable);
+        _sphereMatNonGhostable.hideFlags = HideFlags.DontSaveInEditor;
+      }
+      if (_materialGhostable != null) {
+        _sphereMatGhostable = new Material(_materialGhostable);
+        _sphereMatGhostable.hideFlags = HideFlags.DontSaveInEditor;
       }
 
       //Update all joint spheres in the fingers
@@ -130,8 +169,8 @@ namespace Leap.Unity {
       //Now we just have a few more spheres for the hands
       //PalmPos, WristPos, and mockThumbJointPos, which is derived and not taken from the frame obj
 
-      Vector3 palmPosition = _hand.PalmPosition.ToVector3();
-      drawSphere(palmPosition, _palmRadius);
+      //Vector3 palmPosition = _hand.PalmPosition.ToVector3();
+      //drawSphere(palmPosition, _palmRadius);
 
       Vector3 thumbBaseToPalm = _spherePositions[THUMB_BASE_INDEX] - _hand.PalmPosition.ToVector3();
       Vector3 mockThumbJointPos = _hand.PalmPosition.ToVector3() + Vector3.Reflect(thumbBaseToPalm, _hand.Basis.xBasis.ToVector3());
@@ -199,16 +238,20 @@ namespace Leap.Unity {
 
     private void drawSphere(Vector3 position, float radius) {
       //multiply radius by 2 because the default unity sphere has a radius of 0.5 meters at scale 1.
-      Graphics.DrawMesh(_sphereMesh, Matrix4x4.TRS(position, Quaternion.identity, Vector3.one * radius * 2.0f * transform.lossyScale.x), _sphereMat, 0);
+      if (doRender) {
+        Graphics.DrawMesh(_sphereMesh, Matrix4x4.TRS(position, Quaternion.identity, Vector3.one * radius * 2.0f * transform.lossyScale.x), effSphereMat, 0);
+      }
     }
 
     private void drawCylinder(Vector3 a, Vector3 b) {
       float length = (a - b).magnitude;
 
-      Graphics.DrawMesh(getCylinderMesh(length),
+      if (doRender) {
+        Graphics.DrawMesh(getCylinderMesh(length),
                         Matrix4x4.TRS(a, Quaternion.LookRotation(b - a), new Vector3(transform.lossyScale.x, transform.lossyScale.x, 1)),
-                        _material,
+                        effMaterial,
                         gameObject.layer);
+      }
     }
 
     private void drawCylinder(int a, int b) {

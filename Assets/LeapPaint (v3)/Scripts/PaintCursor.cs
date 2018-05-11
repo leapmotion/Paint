@@ -53,7 +53,7 @@ namespace Leap.Unity.LeapPaint_v3 {
     public RectToroid _rectToroidPinchState;
     public MeshRenderer _rectToroidPinchStateRenderer;
     public IndexTipColor _indexTipColor;
-    public CapsuleHand capsuleHand;
+    public Paint_CapsuleHand capsuleHand;
     public Material _ghostableHandMat;
     public Material _nonGhostableHandMat;
     public Renderer _indexTipColorRenderer;
