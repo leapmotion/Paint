@@ -118,7 +118,6 @@ namespace Leap.Unity.Recording {
 
       for (int i = 0; i < timeline.outputTrackCount; i++) {
         var track = timeline.GetOutputTrack(i);
-        Debug.Log(track.name);
         if (tracksToWatch.Contains(track.name)) {
           _clipsToWatch.AddRange(track.GetClips());
         }
