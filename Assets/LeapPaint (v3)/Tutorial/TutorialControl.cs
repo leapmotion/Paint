@@ -29,12 +29,19 @@ public class TutorialControl : MonoBehaviour {
   [Disable]
   public bool colorPalleteHasBeenExpanded = false;
 
+  [Disable]
+  public bool hasPaintedAtAll = false;
+
   private string _prevText = "";
   private int _possibilityIndex = 0;
 
   private void Update() {
     if (bigColorEmergable.IsEmergedOrEmerging) {
       colorPalleteHasBeenExpanded = true;
+    }
+
+    if(rightPinch.isActive) {
+      hasPaintedAtAll = true;
     }
   }
 
@@ -113,6 +120,10 @@ public class TutorialControl : MonoBehaviour {
 
   public void EnableFinalMenu() {
     StartCoroutine(menuWidget.Enable());
+  }
+
+  public void NotifyHasPainted() {
+    hasPaintedAtAll = true;
   }
 
   public void NotifyColorPalleteTouched() {
