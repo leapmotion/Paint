@@ -27,6 +27,7 @@ public class LobbyControl : MonoBehaviour {
 
       string path = Path.Combine(Application.streamingAssetsPath, HAS_EXPERIENCE_TUTORIAL_FILENAME);
       if (value) {
+        Directory.CreateDirectory(Application.streamingAssetsPath);
         File.WriteAllText(path, "");
       } else {
         File.Delete(path);
