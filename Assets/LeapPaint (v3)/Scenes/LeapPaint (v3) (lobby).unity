@@ -360,9 +360,9 @@ MonoBehaviour:
     CanDuplicate: 0
   - GroupName: Capsule Hands
     _handModelManager: {fileID: 0}
-    LeftModel: {fileID: 0}
+    LeftModel: {fileID: 2055914125}
     IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
+    RightModel: {fileID: 1564005043}
     IsRightToBeSpawned: 0
     IsEnabled: 1
     CanDuplicate: 0
