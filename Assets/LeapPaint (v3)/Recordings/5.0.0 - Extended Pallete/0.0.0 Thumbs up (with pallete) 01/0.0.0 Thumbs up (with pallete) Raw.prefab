@@ -26288,6 +26288,7 @@ MonoBehaviour:
   _deviceOffsetZAxis: 0.12
   _deviceTiltXAxis: 5
   _deviceOrigin: {fileID: 0}
+  _preCullCamera: {fileID: 0}
   _temporalWarpingMode: 1
   _customWarpAdjustment: 0
   _updateHandInPrecull: 0
@@ -29162,7 +29163,7 @@ MonoBehaviour:
   _rectToroidPinchState: {fileID: 114104875707740900}
   _rectToroidPinchStateRenderer: {fileID: 23459798096197344}
   _indexTipColor: {fileID: 114114821181168182}
-  capsuleHand: {fileID: 114564192132250964}
+  capsuleHand: {fileID: 0}
   _ghostableHandMat: {fileID: 2100000, guid: f27d4128aba1059498d9e8ecb5c428b3, type: 2}
   _nonGhostableHandMat: {fileID: 2100000, guid: ebee5ae2a6fa28f408e229c68f7a0686,
     type: 2}
@@ -30941,13 +30942,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handedness: 0
   _showArm: 0
-  useGhostable: 0
-  doRender: 1
-  _materialNonGhostable: {fileID: 2100000, guid: 7eed02a120bdd6e499824de34730957d,
-    type: 2}
-  _materialGhostable: {fileID: 2100000, guid: 92fa5c69aadc37442aecefee438af7f3, type: 2}
+  _castShadows: 1
+  _material: {fileID: 0}
   _sphereMesh: {fileID: 4300002, guid: 2f496b1b1bec86743b418551f859020c, type: 3}
   _cylinderResolution: 12
+  _jointRadius: 0.008
+  _cylinderRadius: 0.006
+  _palmRadius: 0.015
 --- !u!114 &114462143578049106
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -32454,13 +32455,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handedness: 1
   _showArm: 0
-  useGhostable: 0
-  doRender: 1
-  _materialNonGhostable: {fileID: 2100000, guid: ebee5ae2a6fa28f408e229c68f7a0686,
-    type: 2}
-  _materialGhostable: {fileID: 2100000, guid: f27d4128aba1059498d9e8ecb5c428b3, type: 2}
+  _castShadows: 1
+  _material: {fileID: 0}
   _sphereMesh: {fileID: 4300002, guid: 2f496b1b1bec86743b418551f859020c, type: 3}
   _cylinderResolution: 12
+  _jointRadius: 0.008
+  _cylinderRadius: 0.006
+  _palmRadius: 0.015
 --- !u!114 &114565219823923140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -37534,13 +37535,10 @@ MonoBehaviour:
   pinchActivateDistance: 0.005
   pinchDeactivateDistance: 0.035
   failedPinchResetDistance: 0.01
-  requireMiddleFingerAngle: 1
+  requireMiddleAndRingSafetyPinch: 1
   minPalmMiddleAngle: 65
-  requireRingFingerAngle: 1
   minPalmRingAngle: 65
   ringMiddleSafetyHysteresisMult: 0.8
-  requirePalmVsLeapAngle: 0
-  maxPalmVsLeapAngle: 181
   maxIndexAngleForEligibilityActivation: 98
   maxIndexAngleForEligibilityDeactivation: 110
   maxThumbAngleForEligibilityActivation: 85

@@ -25506,7 +25506,7 @@ MonoBehaviour:
   _rectToroidPinchState: {fileID: 114388462625397970}
   _rectToroidPinchStateRenderer: {fileID: 23112163198001998}
   _indexTipColor: {fileID: 114155494737188788}
-  capsuleHand: {fileID: 114310537598322050}
+  capsuleHand: {fileID: 0}
   _ghostableHandMat: {fileID: 2100000, guid: 92fa5c69aadc37442aecefee438af7f3, type: 2}
   _nonGhostableHandMat: {fileID: 2100000, guid: 7eed02a120bdd6e499824de34730957d,
     type: 2}
@@ -27773,7 +27773,7 @@ MonoBehaviour:
   _rectToroidPinchState: {fileID: 114638261094936710}
   _rectToroidPinchStateRenderer: {fileID: 23705858637244874}
   _indexTipColor: {fileID: 114983342531697104}
-  capsuleHand: {fileID: 114279705059015836}
+  capsuleHand: {fileID: 0}
   _ghostableHandMat: {fileID: 2100000, guid: f27d4128aba1059498d9e8ecb5c428b3, type: 2}
   _nonGhostableHandMat: {fileID: 2100000, guid: ebee5ae2a6fa28f408e229c68f7a0686,
     type: 2}
@@ -28164,13 +28164,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handedness: 1
   _showArm: 0
-  useGhostable: 0
-  doRender: 1
-  _materialNonGhostable: {fileID: 2100000, guid: ebee5ae2a6fa28f408e229c68f7a0686,
-    type: 2}
-  _materialGhostable: {fileID: 2100000, guid: f27d4128aba1059498d9e8ecb5c428b3, type: 2}
+  _castShadows: 1
+  _material: {fileID: 0}
   _sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   _cylinderResolution: 24
+  _jointRadius: 0.008
+  _cylinderRadius: 0.006
+  _palmRadius: 0.015
 --- !u!114 &114280777092540804
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -28468,13 +28468,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handedness: 0
   _showArm: 0
-  useGhostable: 0
-  doRender: 1
-  _materialNonGhostable: {fileID: 2100000, guid: 7eed02a120bdd6e499824de34730957d,
-    type: 2}
-  _materialGhostable: {fileID: 2100000, guid: 92fa5c69aadc37442aecefee438af7f3, type: 2}
+  _castShadows: 1
+  _material: {fileID: 0}
   _sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   _cylinderResolution: 24
+  _jointRadius: 0.008
+  _cylinderRadius: 0.006
+  _palmRadius: 0.015
 --- !u!114 &114311750023321576
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -30167,13 +30167,10 @@ MonoBehaviour:
   pinchActivateDistance: 0.005
   pinchDeactivateDistance: 0.04
   failedPinchResetDistance: 0.01
-  requireMiddleFingerAngle: 1
+  requireMiddleAndRingSafetyPinch: 1
   minPalmMiddleAngle: 65
-  requireRingFingerAngle: 1
   minPalmRingAngle: 75
   ringMiddleSafetyHysteresisMult: 0.9
-  requirePalmVsLeapAngle: 1
-  maxPalmVsLeapAngle: 181
   maxIndexAngleForEligibilityActivation: 85
   maxIndexAngleForEligibilityDeactivation: 94
   maxThumbAngleForEligibilityActivation: 60
@@ -33287,13 +33284,10 @@ MonoBehaviour:
   pinchActivateDistance: 0.005
   pinchDeactivateDistance: 0.04
   failedPinchResetDistance: 0.01
-  requireMiddleFingerAngle: 1
+  requireMiddleAndRingSafetyPinch: 1
   minPalmMiddleAngle: 65
-  requireRingFingerAngle: 1
   minPalmRingAngle: 75
   ringMiddleSafetyHysteresisMult: 0.9
-  requirePalmVsLeapAngle: 1
-  maxPalmVsLeapAngle: 181
   maxIndexAngleForEligibilityActivation: 85
   maxIndexAngleForEligibilityDeactivation: 94
   maxThumbAngleForEligibilityActivation: 60

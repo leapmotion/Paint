@@ -25017,6 +25017,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handedness: 1
   _showArm: 0
+  _castShadows: 1
   _material: {fileID: 0}
   _sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   _cylinderResolution: 24
@@ -34384,6 +34385,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handedness: 0
   _showArm: 0
+  _castShadows: 1
   _material: {fileID: 0}
   _sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   _cylinderResolution: 24
